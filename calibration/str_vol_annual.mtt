@@ -1,0 +1,6 @@
+ PARAMETER STATISTICAL MATRICES: CASE str_vol_annual
+
+ OPTIMISATION ITERATION NUMBER  1
+
+ Cannot evaluate parameter covariance matrix as the "normal matrix"
+ for the current parameter estimation problem is singular.

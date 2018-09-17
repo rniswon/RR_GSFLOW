@@ -1,0 +1,29 @@
+pcf
+* control data
+restart estimation 
+3 5 1 0 1 
+1 1 single point 1 0 0 
+10.0 -3.0 0.3 0.03 10 
+10.0 10.0 0.001 
+0.1 
+3 0.005 3 3 0.005 3 
+1 1 1 
+* parameter groups
+K relative 0.01 0.0 switch 2.0 parabolic 
+* parameter data
+a log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+b log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+c log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+* observation groups
+head 
+* observation data
+obs10 64669.130638 1.0 head 
+obs11 162523.454579 1.0 head 
+obs12 268541.99699 1.0 head 
+obs13 290067.998063 1.0 head 
+obs14 677975.830976 1.0 head 
+* model command line
+runmodel.bat 
+* model input/output
+Test.tpl input.dat 
+test.ins output.dat 

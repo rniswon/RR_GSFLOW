@@ -1,0 +1,43 @@
+# Comments: Monthly avaerage of Solar Radiations
+$ hopland % 12 # measurement name and number of measurements
+* HRU_ID % 35005 # location in the model
+199.28
+270.33
+379.96
+531.84
+651.69
+718.91
+735.75
+672.79
+529.05
+371.90
+237.08
+166.64
+$ hawkeye % 12 # measurement name and number of measurements
+* HRU_ID % 58328 # location in the model
+185.07
+245.59
+317.33
+424.77
+505.90
+544.59
+600.19
+558.13
+455.20
+323.07
+242.89
+170.86
+$ Sanel % 12 # measurement name and number of measurements
+* HRU_ID % 39556 # location in the model
+168.50
+233.82
+363.40
+486.70
+591.93
+664.40
+686.67
+609.60
+494.00
+330.33
+209.00
+149.29

@@ -1,0 +1,305 @@
+
+                       PEST RUN RECORD: CASE test
+
+
+PEST Version: 14.01
+
+
+PEST run mode:-
+
+   Parameter estimation mode
+
+
+Case dimensions:-
+
+   Number of parameters                           :     3
+   Number of adjustable parameters                :     3
+   Number of parameter groups                     :     1
+   Number of observations                         :     5
+   Number of prior estimates                      :     0
+
+
+Model command line(s):-
+
+   runmodel.bat
+
+
+Jacobian command line:-
+
+   na
+
+
+Model interface files:-
+
+   Templates:
+      Test.tpl
+   for model input files:
+      input.dat
+
+   (Parameter values written using single precision protocol.)
+   (Decimal point always included.)
+
+   Instruction files:
+      test.ins
+   for reading model output files:
+      output.dat
+
+
+PEST-to-model message file:-
+
+   na
+
+
+Derivatives calculation:-
+
+Param        Increment   Increment   Increment   Forward or   Multiplier  Method
+group        type                    low bound   central      (central)   (central)
+k            relative    1.0000E-02   none         switch       2.000     parabolic
+
+
+Parameter definitions:-
+
+Name         Trans-            Change       Initial        Lower          Upper
+             formation         limit        value          bound          bound
+a            log               factor      10.0000       1.000000E-10   1.000000E+10
+b            log               factor      10.0000       1.000000E-10   1.000000E+10
+c            log               factor      10.0000       1.000000E-10   1.000000E+10
+
+Name         Group          Scale         Offset        Model command number
+a            k             1.00000        0.00000            1
+b            k             1.00000        0.00000            1
+c            k             1.00000        0.00000            1
+
+
+Prior information:-
+
+   No prior information supplied
+
+
+Observations:-
+
+Observation name        Observation       Weight       Group
+ obs10                   64669.1          1.000       head        
+ obs11                   162523.          1.000       head        
+ obs12                   268542.          1.000       head        
+ obs13                   290068.          1.000       head        
+ obs14                   677976.          1.000       head        
+
+
+Control settings:-
+
+   Initial lambda                                               :  10.000    
+   Lambda adjustment factor                                     : iteration-dependent
+   Value of variable governing adjustment                       : -3.0000    
+   Sufficient new/old phi ratio per optimisation iteration      : 0.30000    
+   Limiting relative phi reduction between lambdas              : 3.00000E-02
+   Maximum trial lambdas per iteration                          :  10
+   Forgive model run failure during lamda testing               : no
+   Forgive model run failure during Jacobian runs               : no
+
+   Perform Broyden's update of Jacobian matrix                  : no
+   Undertake observation re-referencing                         : no
+
+   Maximum  factor  parameter change (factor-limited changes)   :  10.000
+   Maximum relative parameter change (relative-limited changes) : na
+   Fraction of initial parameter values used in computing
+   change limit for near-zero parameters                        : 1.00000E-03
+   Allow bending of parameter upgrade vector                    : no
+   Allow parameters to stick to their bounds                    : no
+
+   Relative phi reduction below which to begin use of
+   central derivatives                                          : 0.10000             
+   Iteration at which to first consider derivatives switch      :   1
+
+   Relative phi reduction indicating convergence                : 0.50000E-02
+   Number of phi values required within this range              :   3
+   Maximum number of consecutive failures to lower phi          :   3
+   Minimal relative parameter change indicating convergence     : 0.50000E-02
+   Number of consecutive iterations with minimal param change   :   3
+   Maximum number of optimisation iterations                    :   3
+
+   Attempt automatic user intervention                          : no
+
+   Attempt reuse of parameter sensitivities                     : no
+
+   Scale parameters by their bounds                             : no
+
+
+File saving options: -
+
+   Save best JCO file                                           : yes
+   Save multiple JCO files                                      : no
+   Save multiple REI files                                      : no
+   Save multiple PAR files                                      : no
+
+
+                            OPTIMISATION RECORD
+
+
+INITIAL CONDITIONS: 
+   Sum of squared weighted residuals (ie phi) =  6.32580E+11
+
+      Current parameter values
+      a                10.0000    
+      b                10.0000    
+      c                10.0000    
+
+
+OPTIMISATION ITERATION NO.        : 1
+   Model calls so far             : 1
+   Starting phi for this iteration:  6.32580E+11
+
+       Lambda =   10.000     ----->
+          Phi =  2.83451E+10  (  0.045 of starting phi)
+
+   No more lambdas: phi is less than 0.3000 of starting phi
+   Lowest phi this iteration:  2.83451E+10
+
+      Current parameter values                 Previous parameter values
+      a                10.0027                 a                 10.0000    
+      b                6.06547                 b                 10.0000    
+      c                4.66185                 c                 10.0000    
+   Maximum   factor change:  2.145     ["c"]
+   Maximum relative change: 0.5338     ["c"]
+
+
+OPTIMISATION ITERATION NO.        : 2
+   Model calls so far             : 5
+   Starting phi for this iteration:  2.83451E+10
+
+       Lambda =   4.6416     ----->
+          Phi =  1.81661E+08  (  0.006 of starting phi)
+
+   No more lambdas: phi is less than 0.3000 of starting phi
+   Lowest phi this iteration:  1.81661E+08
+
+      Current parameter values                 Previous parameter values
+      a                9.98801                 a                 10.0027    
+      b                5.08856                 b                 6.06547    
+      c                2.84961                 c                 4.66185    
+   Maximum   factor change:  1.636     ["c"]
+   Maximum relative change: 0.3887     ["c"]
+
+
+OPTIMISATION ITERATION NO.        : 3
+   Model calls so far             : 9
+   Starting phi for this iteration:  1.81661E+08
+
+       Lambda =   2.3208     ----->
+          Phi =   3755.5      (  0.000 of starting phi)
+
+   No more lambdas: phi is less than 0.3000 of starting phi
+   Lowest phi this iteration:   3755.5    
+
+      Current parameter values                 Previous parameter values
+      a                9.90643                 a                 9.98801    
+      b                5.00101                 b                 5.08856    
+      c                2.40437                 c                 2.84961    
+   Maximum   factor change:  1.185     ["c"]
+   Maximum relative change: 0.1562     ["c"]
+
+   Optimisation complete: optimisation iteration limit of   3 realized.
+   Total model calls:     13
+
+   The model has been run one final time using best parameters. 
+   Thus all model input files contain best parameter values, and model 
+   output files contain model results based on these parameters.
+
+
+                            OPTIMISATION RESULTS
+
+
+Parameters ----->
+
+Parameter        Estimated         95% percent confidence limits
+                 value             lower limit       upper limit
+ a               9.90643           1.081274E-23      9.076087E+24
+ b               5.00101            4.98694           5.01512    
+ c               2.40437            1.19320           4.84494    
+
+Note: confidence limits provide only an indication of parameter uncertainty.
+      They rely on a linearity assumption which  may not extend as far in 
+      parameter space as the confidence limits themselves - see PEST manual.
+
+See file test.sen for parameter sensitivities.
+
+
+Observations ----->
+
+Observation            Measured       Calculated     Residual       Weight     Group
+                       value          value
+obs10                  64669.1        64670.4       -1.31896        1.000      head        
+obs11                  162523.        162528.       -5.01814        1.000      head        
+obs12                  268542.        268555.       -12.9957        1.000      head        
+obs13                  290068.        290083.       -14.8720        1.000      head        
+obs14                  677976.        678034.       -57.7801        1.000      head        
+
+See file test.res for more details of residuals in graph-ready format.
+
+See file test.seo for composite observation sensitivities.
+
+
+Objective function ----->
+
+  Sum of squared weighted residuals (ie phi)                =   3756.    
+
+
+Correlation Coefficient ----->
+
+  Correlation coefficient                                   =   1.0000    
+
+
+Analysis of residuals ----->
+
+  All residuals:-
+     Number of residuals with non-zero weight                       =     5
+     Mean value of non-zero weighted residuals                      =  -18.40    
+     Maximum weighted residual [observation "obs10"]                =  -1.319    
+     Minimum weighted residual [observation "obs14"]                =  -57.78    
+     Standard variance of weighted residuals                        =   1878.    
+     Standard error of weighted residuals                           =   43.33    
+
+     Note: the above variance was obtained by dividing the objective 
+     function by the number of system degrees of freedom (ie. number of 
+     observations with non-zero weight plus number of prior information 
+     articles with non-zero weight minus the number of adjustable parameters.)
+     If the degrees of freedom is negative the divisor becomes 
+     the number of observations with non-zero weight plus the number of 
+     prior information items with non-zero weight.
+
+
+K-L information statistics ----->
+
+
+  AIC   =   41.10773    
+  AICC  = indeterminate
+  BIC   =   39.54549    
+  KIC   =   56.26322    
+
+Parameter covariance matrix ----->
+
+                  a            b            c      
+a               31.01       1.4669E-03   0.3801    
+b              1.4669E-03   8.0840E-08   1.9911E-05
+c              0.3801       1.9911E-05   5.0006E-03
+
+
+Parameter correlation coefficient matrix ----->
+
+                  a            b            c      
+a               1.000       0.9265       0.9653    
+b              0.9265        1.000       0.9903    
+c              0.9653       0.9903        1.000    
+
+
+Normalized eigenvectors of parameter covariance matrix ----->
+
+              Vector_1     Vector_2     Vector_3   
+a             -2.2132E-05   1.2258E-02  -0.9999    
+b              -1.000      -5.6640E-03  -4.7301E-05
+c              5.6641E-03  -0.9999      -1.2258E-02
+
+
+Eigenvalues ----->
+
+               5.2393E-10   3.4052E-04    31.01    

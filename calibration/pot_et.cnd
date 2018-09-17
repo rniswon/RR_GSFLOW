@@ -1,0 +1,41 @@
+ RECORD OF "NORMAL MATRIX" CONDITION NUMBERS: CASE pot_et
+
+
+ ------------------------------------------------------------------------------
+ OPTIMISATION ITERATION NO.        :    1
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     10.0    
+           MATRIX CONDITION NUMBER =   7.5491    
+
+
+ ------------------------------------------------------------------------------
+ OPTIMISATION ITERATION NO.        :    2
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     4.64    
+           MATRIX CONDITION NUMBER =   4.3203    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     2.32    
+           MATRIX CONDITION NUMBER =   2.7298    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     1.16    
+           MATRIX CONDITION NUMBER =   1.8821    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =    0.580    
+           MATRIX CONDITION NUMBER =   1.4445    
+
+
+ ------------------------------------------------------------------------------
+ OPTIMISATION ITERATION NO.        :    3
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =    0.290    
+           MATRIX CONDITION NUMBER =   1.2228    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =    0.145    
+           MATRIX CONDITION NUMBER =   1.1114    

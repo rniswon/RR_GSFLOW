@@ -1,0 +1,526 @@
+
+                      PEST RUN RECORD: CASE pot_et
+
+
+PEST Version: 14.01
+
+
+PEST run mode:-
+
+   Parameter estimation mode
+
+
+Case dimensions:-
+
+   Number of parameters                           :    12
+   Number of adjustable parameters                :    12
+   Number of parameter groups                     :     1
+   Number of observations                         :    24
+   Number of prior estimates                      :     0
+
+
+Model command line(s):-
+
+   runmodel_ET.bat
+
+
+Jacobian command line:-
+
+   na
+
+
+Model interface files:-
+
+   Templates:
+      pot_ET.tpl
+   for model input files:
+      input_ET.dat
+
+   (Parameter values written using single precision protocol.)
+   (Decimal point always included.)
+
+   Instruction files:
+      pot_ET.ins
+   for reading model output files:
+      output_ET.dat
+
+
+PEST-to-model message file:-
+
+   na
+
+
+Derivatives calculation:-
+
+Param        Increment   Increment   Increment   Forward or   Multiplier  Method
+group        type                    low bound   central      (central)   (central)
+k            relative    1.0000E-02   none         switch       2.000     parabolic
+
+
+Parameter definitions:-
+
+Name         Trans-            Change       Initial        Lower          Upper
+             formation         limit        value          bound          bound
+jh_cof_1     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_2     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_3     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_4     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_5     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_6     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_7     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_8     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_9     none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_10    none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_11    none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+jh_cof_12    none              factor     1.600000E-02   5.000000E-03   6.000000E-02
+
+Name         Group          Scale         Offset        Model command number
+jh_cof_1     k             1.00000        0.00000            1
+jh_cof_2     k             1.00000        0.00000            1
+jh_cof_3     k             1.00000        0.00000            1
+jh_cof_4     k             1.00000        0.00000            1
+jh_cof_5     k             1.00000        0.00000            1
+jh_cof_6     k             1.00000        0.00000            1
+jh_cof_7     k             1.00000        0.00000            1
+jh_cof_8     k             1.00000        0.00000            1
+jh_cof_9     k             1.00000        0.00000            1
+jh_cof_10    k             1.00000        0.00000            1
+jh_cof_11    k             1.00000        0.00000            1
+jh_cof_12    k             1.00000        0.00000            1
+
+
+Prior information:-
+
+   No prior information supplied
+
+
+Observations:-
+
+Observation name        Observation       Weight       Group
+ sanel_0                 1.00000          1.000       head        
+ sanel_1                 1.57000          1.000       head        
+ sanel_2                 2.64000          1.000       head        
+ sanel_3                 3.89000          1.000       head        
+ sanel_4                 5.10000          1.000       head        
+ sanel_5                 6.11000          1.000       head        
+ sanel_6                 6.59000          1.000       head        
+ sanel_7                 5.79000          1.000       head        
+ sanel_8                 4.48000          1.000       head        
+ sanel_9                 2.82000          1.000       head        
+ sanel_10                1.31000          1.000       head        
+ sanel_11               0.850000          1.000       head        
+ healdsburg_0            1.02000          1.000       head        
+ healdsburg_1            1.55000          1.000       head        
+ healdsburg_2            2.41000          1.000       head        
+ healdsburg_3            4.05000          1.000       head        
+ healdsburg_4            4.49000          1.000       head        
+ healdsburg_5            5.67000          1.000       head        
+ healdsburg_6            6.14000          1.000       head        
+ healdsburg_7            5.51000          1.000       head        
+ healdsburg_8            4.45000          1.000       head        
+ healdsburg_9            3.06000          1.000       head        
+ healdsburg_10           1.83000          1.000       head        
+ healdsburg_11          0.980000          1.000       head        
+
+
+Control settings:-
+
+   Initial lambda                                               :  10.000    
+   Lambda adjustment factor                                     : iteration-dependent
+   Value of variable governing adjustment                       : -3.0000    
+   Sufficient new/old phi ratio per optimisation iteration      : 0.30000    
+   Limiting relative phi reduction between lambdas              : 3.00000E-02
+   Maximum trial lambdas per iteration                          :  10
+   Forgive model run failure during lamda testing               : no
+   Forgive model run failure during Jacobian runs               : no
+
+   Perform Broyden's update of Jacobian matrix                  : no
+   Undertake observation re-referencing                         : no
+
+   Maximum  factor  parameter change (factor-limited changes)   :  10.000
+   Maximum relative parameter change (relative-limited changes) : na
+   Fraction of initial parameter values used in computing
+   change limit for near-zero parameters                        : 1.00000E-03
+   Allow bending of parameter upgrade vector                    : no
+   Allow parameters to stick to their bounds                    : no
+
+   Relative phi reduction below which to begin use of
+   central derivatives                                          : 0.10000             
+   Iteration at which to first consider derivatives switch      :   1
+
+   Relative phi reduction indicating convergence                : 0.50000E-02
+   Number of phi values required within this range              :   3
+   Maximum number of consecutive failures to lower phi          :   3
+   Minimal relative parameter change indicating convergence     : 0.50000E-02
+   Number of consecutive iterations with minimal param change   :   3
+   Maximum number of optimisation iterations                    :   3
+
+   Attempt automatic user intervention                          : no
+
+   Attempt reuse of parameter sensitivities                     : no
+
+   Scale parameters by their bounds                             : no
+
+
+File saving options: -
+
+   Save best JCO file                                           : yes
+   Save multiple JCO files                                      : no
+   Save multiple REI files                                      : no
+   Save multiple PAR files                                      : no
+
+
+                            OPTIMISATION RECORD
+
+
+INITIAL CONDITIONS: 
+   Sum of squared weighted residuals (ie phi) =   57.924    
+
+      Current parameter values
+      jh_cof_1        1.600000E-02
+      jh_cof_2        1.600000E-02
+      jh_cof_3        1.600000E-02
+      jh_cof_4        1.600000E-02
+      jh_cof_5        1.600000E-02
+      jh_cof_6        1.600000E-02
+      jh_cof_7        1.600000E-02
+      jh_cof_8        1.600000E-02
+      jh_cof_9        1.600000E-02
+      jh_cof_10       1.600000E-02
+      jh_cof_11       1.600000E-02
+      jh_cof_12       1.600000E-02
+
+
+OPTIMISATION ITERATION NO.        : 1
+   Model calls so far             : 1
+   Starting phi for this iteration:   57.924    
+
+       Lambda =   10.000     ----->
+          Phi =   1.6214      (  0.028 of starting phi)
+
+   No more lambdas: phi is less than 0.3000 of starting phi
+   Lowest phi this iteration:   1.6214    
+
+      Current parameter values                 Previous parameter values
+      jh_cof_1        1.542931E-02             jh_cof_1         1.600000E-02
+      jh_cof_2        1.521636E-02             jh_cof_2         1.600000E-02
+      jh_cof_3        1.452912E-02             jh_cof_3         1.600000E-02
+      jh_cof_4        1.463098E-02             jh_cof_4         1.600000E-02
+      jh_cof_5        1.239424E-02             jh_cof_5         1.600000E-02
+      jh_cof_6        1.138604E-02             jh_cof_6         1.600000E-02
+      jh_cof_7        1.073617E-02             jh_cof_7         1.600000E-02
+      jh_cof_8        1.060879E-02             jh_cof_8         1.600000E-02
+      jh_cof_9        1.179546E-02             jh_cof_9         1.600000E-02
+      jh_cof_10       1.425142E-02             jh_cof_10        1.600000E-02
+      jh_cof_11       1.537418E-02             jh_cof_11        1.600000E-02
+      jh_cof_12       1.569944E-02             jh_cof_12        1.600000E-02
+   Maximum   factor change:  1.508     ["jh_cof_8"]
+   Maximum relative change: 0.3370     ["jh_cof_8"]
+
+
+OPTIMISATION ITERATION NO.        : 2
+   Model calls so far             : 14
+   Starting phi for this iteration:   1.6214    
+
+       Lambda =   4.6416     ----->
+          Phi =  0.94349      (  0.582 of starting phi)
+
+       Lambda =   2.3208     ----->
+          Phi =  0.87896      (  0.542 of starting phi)
+
+       Lambda =   1.1604     ----->
+          Phi =  0.83610      (  0.516 of starting phi)
+
+       Lambda =  0.58020     ----->
+          Phi =  0.81375      (  0.502 of starting phi)
+
+   No more lambdas: relative phi reduction between lambdas less than 0.0300
+   Lowest phi this iteration:  0.81375    
+
+      Current parameter values                 Previous parameter values
+      jh_cof_1        1.280679E-02             jh_cof_1         1.542931E-02
+      jh_cof_2        1.323344E-02             jh_cof_2         1.521636E-02
+      jh_cof_3        1.309918E-02             jh_cof_3         1.452912E-02
+      jh_cof_4        1.411828E-02             jh_cof_4         1.463098E-02
+      jh_cof_5        1.204223E-02             jh_cof_5         1.239424E-02
+      jh_cof_6        1.146442E-02             jh_cof_6         1.138604E-02
+      jh_cof_7        1.101759E-02             jh_cof_7         1.073617E-02
+      jh_cof_8        1.074455E-02             jh_cof_8         1.060879E-02
+      jh_cof_9        1.135398E-02             jh_cof_9         1.179546E-02
+      jh_cof_10       1.305824E-02             jh_cof_10        1.425142E-02
+      jh_cof_11       1.369416E-02             jh_cof_11        1.537418E-02
+      jh_cof_12       1.392031E-02             jh_cof_12        1.569944E-02
+   Maximum   factor change:  1.205     ["jh_cof_1"]
+   Maximum relative change: 0.1700     ["jh_cof_1"]
+
+
+OPTIMISATION ITERATION NO.        : 3
+   Model calls so far             : 30
+   Starting phi for this iteration:  0.81375    
+
+       Lambda =  0.29010     ----->
+          Phi =  0.80028      (  0.983 of starting phi)
+
+       Lambda =  0.14505     ----->
+          Phi =  0.80019      (  0.983 of starting phi)
+
+   No more lambdas: relative phi reduction between lambdas less than 0.0300
+   Lowest phi this iteration:  0.80019    
+   Relative phi reduction between optimisation iterations less than 0.1000
+   Switch to higher order derivatives calculation
+
+      Current parameter values                 Previous parameter values
+      jh_cof_1        1.221865E-02             jh_cof_1         1.280679E-02
+      jh_cof_2        1.313928E-02             jh_cof_2         1.323344E-02
+      jh_cof_3        1.318925E-02             jh_cof_3         1.309918E-02
+      jh_cof_4        1.417011E-02             jh_cof_4         1.411828E-02
+      jh_cof_5        1.208380E-02             jh_cof_5         1.204223E-02
+      jh_cof_6        1.145463E-02             jh_cof_6         1.146442E-02
+      jh_cof_7        1.098180E-02             jh_cof_7         1.101759E-02
+      jh_cof_8        1.072752E-02             jh_cof_8         1.074455E-02
+      jh_cof_9        1.140591E-02             jh_cof_9         1.135398E-02
+      jh_cof_10       1.315575E-02             jh_cof_10        1.305824E-02
+      jh_cof_11       1.359455E-02             jh_cof_11        1.369416E-02
+      jh_cof_12       1.327688E-02             jh_cof_12        1.392031E-02
+   Maximum   factor change:  1.048     ["jh_cof_12"]
+   Maximum relative change: 4.6222E-02 ["jh_cof_12"]
+
+   Optimisation complete: optimisation iteration limit of   3 realized.
+   Total model calls:     44
+
+   The model has been run one final time using best parameters. 
+   Thus all model input files contain best parameter values, and model 
+   output files contain model results based on these parameters.
+
+
+                            OPTIMISATION RESULTS
+
+
+Parameters ----->
+
+Parameter        Estimated         95% percent confidence limits
+                 value             lower limit       upper limit
+ jh_cof_1       1.221865E-02       7.400391E-03      1.703692E-02
+ jh_cof_2       1.313928E-02       9.787055E-03      1.649151E-02
+ jh_cof_3       1.318925E-02       1.111225E-02      1.526626E-02
+ jh_cof_4       1.417011E-02       1.275063E-02      1.558959E-02
+ jh_cof_5       1.208380E-02       1.108042E-02      1.308717E-02
+ jh_cof_6       1.145463E-02       1.068043E-02      1.222882E-02
+ jh_cof_7       1.098180E-02       1.029557E-02      1.166804E-02
+ jh_cof_8       1.072752E-02       9.972228E-03      1.148281E-02
+ jh_cof_9       1.140591E-02       1.038945E-02      1.242237E-02
+ jh_cof_10      1.315575E-02       1.137321E-02      1.493830E-02
+ jh_cof_11      1.359455E-02       1.012973E-02      1.705936E-02
+ jh_cof_12      1.327688E-02       7.499734E-03      1.905402E-02
+
+Note: confidence limits provide only an indication of parameter uncertainty.
+      They rely on a linearity assumption which  may not extend as far in 
+      parameter space as the confidence limits themselves - see PEST manual.
+
+See file pot_et.sen for parameter sensitivities.
+
+
+Observations ----->
+
+Observation            Measured       Calculated     Residual       Weight     Group
+                       value          value
+sanel_0                1.00000        1.06044      -6.043799E-02    1.000      head        
+sanel_1                1.57000        1.59419      -2.419020E-02    1.000      head        
+sanel_2                2.64000        2.53847       0.101533        1.000      head        
+sanel_3                3.89000        3.89508      -5.081631E-03    1.000      head        
+sanel_4                5.10000        4.72698       0.373020        1.000      head        
+sanel_5                6.11000        5.82103       0.288967        1.000      head        
+sanel_6                6.59000        6.53934       5.066408E-02    1.000      head        
+sanel_7                5.79000        5.79088      -8.770481E-04    1.000      head        
+sanel_8                4.48000        4.60569      -0.125686        1.000      head        
+sanel_9                2.82000        3.02331      -0.203313        1.000      head        
+sanel_10               1.31000        1.60778      -0.297781        1.000      head        
+sanel_11              0.850000       0.948762      -9.876176E-02    1.000      head        
+healdsburg_0           1.02000       0.954700       6.530022E-02    1.000      head        
+healdsburg_1           1.55000        1.52400       2.600062E-02    1.000      head        
+healdsburg_2           2.41000        2.51452      -0.104519        1.000      head        
+healdsburg_3           4.05000        4.04703       2.967949E-03    1.000      head        
+healdsburg_4           4.49000        4.85547      -0.365475        1.000      head        
+healdsburg_5           5.67000        5.95189      -0.281889        1.000      head        
+healdsburg_6           6.14000        6.19038      -5.037852E-02    1.000      head        
+healdsburg_7           5.51000        5.50773       2.270649E-03    1.000      head        
+healdsburg_8           4.45000        4.31897       0.131032        1.000      head        
+healdsburg_9           3.06000        2.84690       0.213096        1.000      head        
+healdsburg_10          1.83000        1.51289       0.317114        1.000      head        
+healdsburg_11         0.980000       0.878762       0.101238        1.000      head        
+
+See file pot_et.res for more details of residuals in graph-ready format.
+
+See file pot_et.seo for composite observation sensitivities.
+
+
+Objective function ----->
+
+  Sum of squared weighted residuals (ie phi)                =  0.8002    
+
+
+Correlation Coefficient ----->
+
+  Correlation coefficient                                   =  0.99537    
+
+
+Analysis of residuals ----->
+
+  All residuals:-
+     Number of residuals with non-zero weight                       =    24
+     Mean value of non-zero weighted residuals                      =  2.2839E-03
+     Maximum weighted residual [observation "sanel_4"]              =  0.3730    
+     Minimum weighted residual [observation "healdsburg_4"]         = -0.3655    
+     Standard variance of weighted residuals                        =  6.6682E-02
+     Standard error of weighted residuals                           =  0.2582    
+
+     Note: the above variance was obtained by dividing the objective 
+     function by the number of system degrees of freedom (ie. number of 
+     observations with non-zero weight plus number of prior information 
+     articles with non-zero weight minus the number of adjustable parameters.)
+     If the degrees of freedom is negative the divisor becomes 
+     the number of observations with non-zero weight plus the number of 
+     prior information items with non-zero weight.
+
+
+K-L information statistics ----->
+
+
+  AIC   =  -55.62317    
+  AICC  =  -19.22317    
+  BIC   =  -40.30847    
+  KIC   =   76.03010    
+
+Parameter covariance matrix ----->
+
+               jh_cof_1     jh_cof_2     jh_cof_3     jh_cof_4     jh_cof_5     jh_cof_6     jh_cof_7     jh_cof_8  
+               jh_cof_9    jh_cof_10    jh_cof_11    jh_cof_12  
+
+jh_cof_1       4.8895E-06    0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_2        0.000       2.3668E-06    0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_3        0.000        0.000       9.0858E-07    0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_4        0.000        0.000        0.000       4.2437E-07    0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_5        0.000        0.000        0.000        0.000       2.1204E-07    0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_6        0.000        0.000        0.000        0.000        0.000       1.2624E-07    0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_7        0.000        0.000        0.000        0.000        0.000        0.000       9.9181E-08    0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_8        0.000        0.000        0.000        0.000        0.000        0.000        0.000       1.2015E-07
+                0.000        0.000        0.000        0.000    
+
+jh_cof_9        0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+               2.1760E-07    0.000        0.000        0.000    
+
+jh_cof_10       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000       6.6922E-07    0.000        0.000    
+
+jh_cof_11       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000       2.5284E-06    0.000    
+
+jh_cof_12       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000       7.0293E-06
+
+
+
+Parameter correlation coefficient matrix ----->
+
+               jh_cof_1     jh_cof_2     jh_cof_3     jh_cof_4     jh_cof_5     jh_cof_6     jh_cof_7     jh_cof_8  
+               jh_cof_9    jh_cof_10    jh_cof_11    jh_cof_12  
+
+jh_cof_1        1.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_2        0.000        1.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_3        0.000        0.000        1.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_4        0.000        0.000        0.000        1.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_5        0.000        0.000        0.000        0.000        1.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_6        0.000        0.000        0.000        0.000        0.000        1.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_7        0.000        0.000        0.000        0.000        0.000        0.000        1.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_8        0.000        0.000        0.000        0.000        0.000        0.000        0.000        1.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_9        0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                1.000        0.000        0.000        0.000    
+
+jh_cof_10       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        1.000        0.000        0.000    
+
+jh_cof_11       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        1.000        0.000    
+
+jh_cof_12       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        1.000    
+
+
+
+Normalized eigenvectors of parameter covariance matrix ----->
+
+              Vector_1     Vector_2     Vector_3     Vector_4     Vector_5     Vector_6     Vector_7     Vector_8   
+              Vector_9     Vector_10    Vector_11    Vector_12  
+
+jh_cof_1        0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        1.000        0.000    
+
+jh_cof_2        0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                1.000        0.000        0.000        0.000    
+
+jh_cof_3        0.000        0.000        0.000        0.000        0.000        0.000        0.000        1.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_4        0.000        0.000        0.000        0.000        0.000        1.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_5        0.000        0.000        0.000        1.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_6        0.000        0.000        1.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_7        1.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_8        0.000        1.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_9        0.000        0.000        0.000        0.000        1.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_10       0.000        0.000        0.000        0.000        0.000        0.000        1.000        0.000    
+                0.000        0.000        0.000        0.000    
+
+jh_cof_11       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        1.000        0.000        0.000    
+
+jh_cof_12       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+                0.000        0.000        0.000        1.000    
+
+
+
+Eigenvalues ----->
+
+               9.9181E-08   1.2015E-07   1.2624E-07   2.1204E-07   2.1760E-07   4.2437E-07   6.6922E-07   9.0858E-07
+               2.3668E-06   2.5284E-06   4.8895E-06   7.0293E-06

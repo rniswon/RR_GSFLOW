@@ -1,0 +1,61 @@
+ RECORD OF "NORMAL MATRIX" CONDITION NUMBERS: CASE solar_rad
+
+
+ ------------------------------------------------------------------------------
+ OPTIMISATION ITERATION NO.        :    1
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     10.0    
+           MATRIX CONDITION NUMBER =   414.25    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     4.64    
+           MATRIX CONDITION NUMBER =   462.77    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     21.5    
+           MATRIX CONDITION NUMBER =   398.74    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     46.4    
+           MATRIX CONDITION NUMBER =   402.36    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     100.    
+           MATRIX CONDITION NUMBER =   419.80    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     215.    
+           MATRIX CONDITION NUMBER =   472.65    
+
+
+ ------------------------------------------------------------------------------
+ OPTIMISATION ITERATION NO.        :    2
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     100.    
+           MATRIX CONDITION NUMBER =   1021.6    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     100.    
+           MATRIX CONDITION NUMBER =   1056.7    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     21.5    
+           MATRIX CONDITION NUMBER =   986.12    
+
+
+ ------------------------------------------------------------------------------
+ OPTIMISATION ITERATION NO.        :    3
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     4.64    
+           MATRIX CONDITION NUMBER =   982.43    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     2.32    
+           MATRIX CONDITION NUMBER =   1046.0    
+
+
+ CURRENT VALUE OF MARQUARDT LAMBDA =     9.28    
+           MATRIX CONDITION NUMBER =   950.45    
