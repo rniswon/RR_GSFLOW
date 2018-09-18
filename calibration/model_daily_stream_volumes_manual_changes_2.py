@@ -252,7 +252,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if True:
+if False:
     prms.write_param_file(fn_param)
     prms.run()
 
