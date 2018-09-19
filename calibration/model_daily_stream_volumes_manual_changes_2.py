@@ -114,7 +114,7 @@ slowcoef_sq_mult = 0.5
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.5
+soil_moist_max_mult = 2.0
 soil_rechr_max_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
@@ -152,14 +152,14 @@ gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
 slowcoef_sq_mult = 0.25
-smidx_coef_mult = 0.1
+smidx_coef_mult = 0.05
 carea_max_mult = 1.0
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.0
+soil_moist_max_mult = 1.5
 soil_rechr_max_frac_mult = 1.0
-pref_flow_den = 0.0
+pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.8, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.8]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -207,7 +207,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 2              ### declsre agg_subbasin
+sub_param_stat = 22              ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
@@ -464,16 +464,20 @@ if True: # compare aggregated simulated flows with observations at selected gage
     # compute simulated annual mean and plot along with observed
         if True:
             sim_strflow_ann = zip(sim_years, sim_streamflow, obs_streamflow)
-            sim_annual_mean_streamflow = []
+            sim_annual_mean_streamflow_edit = []
+            obs_annual_mean_streamflow_edit = []
             for year in unique_sim_years:
-                yrf = []
-                yrf = [z4[1] for z4 in sim_strflow_ann if z4[0] == year and str(z4[2]) != 'nan']
-                sim_annual_mean_streamflow.append(np.mean(np.array(yrf)))
+                ysim_edit = []
+                yobs_edit = []
+                ysim_edit = [z4[1] for z4 in sim_strflow_ann if z4[0] == year and str(z4[2]) != 'nan']
+                sim_annual_mean_streamflow_edit.append(np.mean(np.array(ysim_edit)))
+                yobs_edit = [z5[2] for z5 in sim_strflow_ann if z5[0] == year and str(z5[2]) != 'nan']
+                obs_annual_mean_streamflow_edit.append(np.mean(np.array(yobs_edit)))
 
             r = [yplace + 0.3 for yplace in unique_sim_years]
             plt.suptitle('Gage Basin ID %i' % gage)
-            plt.bar(unique_sim_years, obs_annual_average, color='red', width=0.3)
-            plt.bar(r, sim_annual_mean_streamflow, color='blue', width=0.3)
+            plt.bar(unique_sim_years, obs_annual_mean_streamflow_edit, color='red', width=0.3)
+            plt.bar(r, sim_annual_mean_streamflow_edit, color='blue', width=0.3)
             plot_file = 'annual_mean_%i.png' % gage
             plt.savefig(plot_file)
             plt.close()
@@ -644,11 +648,11 @@ for sb in range(len(NSE_list_by_gage)):
     fid.write('%i \n' % columns[sb])
     fid.write('%1.2f \n' % NSE_overall[sb])
     [fid.write('%1.2f \n' % NSE_list_by_gage[sb][yr]) for yr in range(len(NSE_list_by_gage[sb]))]
-for id in sorted(aggregated_streamflow_sim.keys()):
-    daily = aggregated_streamflow_sim[id]['aggregated_daily']
-    for fl in daily:
-        fid.write(str(fl))
-        fid.write("\n")
+# for id in sorted(aggregated_streamflow_sim.keys()):
+#     daily = aggregated_streamflow_sim[id]['aggregated_daily']
+#     for fl in daily:
+#         fid.write(str(fl))
+#         fid.write("\n")
 fid.close()
 plt.close("all")
 print "Process Finished ....."
