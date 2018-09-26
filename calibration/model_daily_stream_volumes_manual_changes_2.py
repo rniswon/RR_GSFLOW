@@ -274,14 +274,14 @@ gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
 slowcoef_sq_mult = 0.25
-smidx_coef_mult = 0.1
-carea_max_mult = 1.0
-sat_threshold_mult = 5.0
+smidx_coef_mult = 1.0
+carea_max_mult = 0.1
+sat_threshold_mult = 3.0
 soil_moist_max_mult = 1.5
 soil_rechr_max_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.9, 1.0, 1.2, 1.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 1.0, 1.2, 1.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.8]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -809,7 +809,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
             except: pass
 
         # one-to-one scatter plot
-        if True:
+        if False:
             try:
                 plt.figure()
                 plt.suptitle('Gage Basin ID %i' % gage)
@@ -843,6 +843,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
             NSE_list = []
             obs_sim_zip = zip(obs_streamflow, sim_streamflow, obs_yearday_dec)
             zip_clean = [x for x in obs_sim_zip if str(x[0]) != 'nan']
+            zip_clean_no_1990 = [y for y in zip_clean if y[2] >= 1991.0]
             num_removed_values.append(len(obs_sim_zip) - len(zip_clean))
             for yr in unique_sim_years:
                 try:
@@ -850,10 +851,10 @@ if True: # compare aggregated simulated flows with observations at selected gage
                 except:
                     NSE_list.append(float('nan'))    # resolves problems if observed values are missing for a particular year
             NSE_list_by_gage.append(NSE_list)
-            NSE_mean = np.mean(np.array(NSE_list[1:26]))
-            NSE_overall.append(compute_NSE(zip_clean))
+            NSE_mean = np.mean(np.array(NSE_list[1:26]))     # hardwired for RR study period
+            NSE_overall.append(compute_NSE(zip_clean_no_1990))
             plt.figure()
-            plt.scatter(unique_sim_years, NSE_list, marker="^")
+            plt.scatter(unique_sim_years[1:26], NSE_list[1:26], marker="^")
             plt.suptitle('Gage Basin ID %i' % gage)
             plt.title('Mean NSE = %1.2f' % NSE_mean, loc='right')
             plt.xlabel('Year')
@@ -865,7 +866,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
     # Plot daily Nash-Sutcliffe efficiency for each year by average annual flow
         if True:
             plt.figure()
-            plt.scatter(obs_annual_average, NSE_list, marker="^")
+            plt.scatter(obs_annual_average[1:26], NSE_list[1:26], marker="^")
             plt.suptitle('Gage Basin ID %i' % gage)
             plt.xlabel('Average Annual Discharge (cfs)')
             plt.ylabel('NSE')
