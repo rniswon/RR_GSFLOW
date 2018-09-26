@@ -240,7 +240,7 @@ soil_moist_max_mult = 2.0
 soil_rechr_max_mult = 1.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.85, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.85, 0.87]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -276,12 +276,12 @@ slowcoef_lin_mult = 1.0
 slowcoef_sq_mult = 0.25
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
-sat_threshold_mult = 10.0
+sat_threshold_mult = 5.0
 soil_moist_max_mult = 1.5
 soil_rechr_max_mult = 1.0
-pref_flow_den = 0.0
+pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 1.0, 1.2, 1.2, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -453,12 +453,12 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 22              ### declsre agg_subbasin
+sub_param_stat = 6              ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
 agg_sub_param_stat = aggregation[sub_param_stat].dropna().tolist()
-loc5 = np.logical_not(prms.prms_parameters['Parameters']['hru_subbasin'][4] != agg_sub_param_stat)
+loc5 = np.isin(prms.prms_parameters['Parameters']['hru_subbasin'][4], agg_sub_param_stat)
 loc6 = loc5
 while len(loc6) < len(loc5) * 12:
     loc6 = np.append(loc6, loc5)
