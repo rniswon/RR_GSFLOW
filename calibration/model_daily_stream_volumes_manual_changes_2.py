@@ -392,9 +392,9 @@ for sub in calibration_subbasins:
 calibration_agg_subbasin = 18
 
 # Set list of scaling multipliers for each parameter
-gwflow_coef_mult = 1.0
+gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
-ssr2gw_rate_mult = 0.01
+ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
 slowcoef_sq_mult = 0.25
 smidx_coef_mult = 0.1
@@ -402,7 +402,7 @@ carea_max_mult = 1.0
 sat_threshold_mult = 10.0
 soil_moist_max_mult = 1.5
 soil_rechr_max_mult = 1.0
-pref_flow_den = 0.0
+pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
 rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
@@ -744,9 +744,13 @@ if True: # compare aggregated simulated flows with observations at selected gage
             span = year_decimal2 - year_decimal1
 
             y1 = []
+            y2 = []
             for x in range(list(obs_yearday_dec).index(year_decimal1),list(obs_yearday_dec).index(year_decimal2)):
                 y1.append(sim_streamflow[x])
-                max_y1 = max(y1)
+                y2.append(obs_streamflow[x])
+            max_y1 = max(y1)
+            max_y2 = max(y2)
+            ymax = max(max_y1, max_y2)
 
             xt = [year_decimal1, 0.2*span+year_decimal1, 0.4*span+year_decimal1,
                             0.6*span+year_decimal1, 0.8*span+year_decimal1, year_decimal2]
@@ -762,7 +766,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plt.plot(obs_yearday_dec, obs_streamflow, color = 'red', linewidth=1.0)
             plt.xlim(year_decimal1, year_decimal2)
             plt.xticks(xtick_locs, xtick_labels)
-            plt.ylim(ymin=1, ymax=max_y1)
+            plt.ylim(ymin=1, ymax=ymax)
             plt.yscale('log')
             plot_file = 'daily_components_%i_' % gage
             plot_file += '%i.png' % int(year_decimal1)
@@ -790,14 +794,19 @@ if True: # compare aggregated simulated flows with observations at selected gage
             try:
                 year_decimal1 = 2008     # declare start year (inclusive)
                 year_decimal2 = 2012     # declare end year (not inclusive)
-                y2 = []
+                y3 = []
+                y4 = []
                 for x in range(list(obs_yearday_dec).index(year_decimal1),list(obs_yearday_dec).index(year_decimal2)):
-                    y2.append(sim_streamflow[x])
-                    max_y2 = max(y2)
+                    y3.append(sim_streamflow[x])
+                    y4.append(obs_streamflow[x])
+                max_y3 = max(y3)
+                max_y4 = max(y4)
+                ymax2 = max(max_y3, max_y4)
+
                 plt.suptitle('Gage Basin ID %i' %gage)
                 plt.plot(obs_yearday_dec, obs_streamflow, color = 'red', linewidth = 0.5)
                 plt.xlim(year_decimal1, year_decimal2)
-                plt.ylim(ymin=0,ymax=max_y2)
+                plt.ylim(ymin=0,ymax=ymax2)
                 plt.plot(obs_yearday_dec, sim_streamflow, color = 'blue', linewidth = 0.5)
                 #plt.yticks(sim_streamflow, " ")
                 #plt.yticks([])
