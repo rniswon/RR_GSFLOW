@@ -317,12 +317,12 @@ slowcoef_lin_mult = 1.0
 slowcoef_sq_mult = 0.25
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
-sat_threshold_mult = 10.0
+sat_threshold_mult = 3.0
 soil_moist_max_mult = 1.5
 soil_rechr_max_mult = 1.0
-pref_flow_den = 0.0
+pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.8, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9, 0.8]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -392,9 +392,9 @@ for sub in calibration_subbasins:
 calibration_agg_subbasin = 18
 
 # Set list of scaling multipliers for each parameter
-gwflow_coef_mult = 10.0
+gwflow_coef_mult = 1.0
 gwsink_coef_mult = 0.00
-ssr2gw_rate_mult = 0.00005
+ssr2gw_rate_mult = 0.01
 slowcoef_lin_mult = 1.0
 slowcoef_sq_mult = 0.25
 smidx_coef_mult = 0.1
@@ -453,7 +453,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 6              ### declsre agg_subbasin
+sub_param_stat = 18             ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
