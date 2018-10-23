@@ -3,12 +3,12 @@ Control File for MODSIM-PRMS simulation, Russian River Watershed
 xyFileName
 1
 4
-..\MODSIM\RRGeoMODSIM_v6.xy
+..\MODSIM\RRGeoMODSIM_v7PRMS.xy
 ####
 mappingFileName
 1
 4
-..\MODSIM\RRModelingSystem.mdb
+..\MODSIM\RRModelingSystem_V7.mdb
 ####
 gwr_swale_flag
 1
@@ -38,7 +38,7 @@ start_time
 end_time
 6
 1
-1995
+1993
 12
 31
 0
