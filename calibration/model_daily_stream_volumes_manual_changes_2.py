@@ -18,7 +18,7 @@ prms = prms_py.Prms_base()
 prms.control_file_name = cname
 prms.load_prms_project()
 
-# read in observation data and subbasin aggregation information from Excel workbook into pandas dataframe
+# read in observation data and subbasin aggregation information from Excel workbook into Pandas dataframe
 # (use only when observation data has changed)
 if False:
     observations = pd.read_excel('RR_local_flows.xlsx', sheet_name='daily_local_flows')
@@ -35,7 +35,7 @@ if False:
     yearday_obs_means.to_pickle('yearday_means.pkl')
     monthly_obs_means.to_pickle('monthly_means.pkl')
 
-# read in observation data and subbasin aggregation information from Pickle files into pandas dataframe (FASTER)
+# read in observation data and subbasin aggregation information from Pickle files into Pandas dataframe (FASTER)
 observations = pd.read_pickle('daily_observations.pkl')
 obs_mean_monthly = pd.read_pickle('mean_monthly.pkl')
 obs_mean_annual = pd.read_pickle('mean_annual.pkl')
