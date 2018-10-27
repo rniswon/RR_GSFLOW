@@ -195,7 +195,7 @@ slowcoef_sq_mult = 0.25
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.5
+soil_moist_max_mult = 1.0
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
@@ -594,17 +594,25 @@ aggregated_streamflow_sim = dict()
 aggregated_sroff_sim = dict()
 aggregated_interflow_sim = dict()
 aggregated_gwflow_sim = dict()
+aggregated_aet = dict()
+aggregated_ppt = dict()
+
 num_list1 = []
 num_list2 = []
 num_list3 = []
 num_list4 = []
+num_list5 = []
+num_list6 = []
 flow_var_ID1 = []
 flow_var_ID2 = []
 flow_var_ID3 = []
 flow_var_ID4 = []
+flow_var_ID5 = []
+flow_var_ID6 = []
 NSE_list_by_gage = []
 NSE_overall = []
 num_removed_values = []
+sim_aet_ppt_ratios = []
 
 ########################################################################################################################
 
@@ -622,6 +630,13 @@ for key in stat.stat_dict.keys():
     if 'subinc_gwflow' in key:
         num = int(key.split("_")[2])
         num_list4.append(num)
+    if 'subinc_actet' in key:
+        num = int(key.split("_")[2])
+        num_list5.append(num)
+    if 'subinc_precip' in key:
+        num = int(key.split("_")[2])
+        num_list6.append(num)
+
 for num in sorted(num_list1):
     nm = 'sub_inq_' + str(num)
     flow_var_ID1.append(nm)
@@ -634,6 +649,13 @@ for num in sorted(num_list3):
 for num in sorted(num_list4):
     nm = 'subinc_gwflow_' + str(num)
     flow_var_ID4.append(nm)
+for num in sorted(num_list5):
+    nm = 'subinc_actet_' + str(num)
+    flow_var_ID5.append(nm)
+for num in sorted(num_list6):
+    nm = 'subinc_precip_' + str(num)
+    flow_var_ID6.append(nm)
+
 
 # process daily simulated output into mean annual and mean monthly values and place in dictionary
 date = stat.stat_dict['Date']
@@ -653,6 +675,9 @@ aggregated_streamflow_sim = daily_sub_aggregation(flow_var_ID1)
 aggregated_sroff_sim = daily_sub_aggregation(flow_var_ID2)
 aggregated_interflow_sim = daily_sub_aggregation(flow_var_ID3)
 aggregated_gwflow_sim = daily_sub_aggregation(flow_var_ID4)
+aggregated_aet = daily_sub_aggregation(flow_var_ID5)
+aggregated_ppt = daily_sub_aggregation(flow_var_ID6)
+
 
 ########################################################################################################################
 
@@ -671,8 +696,13 @@ if True: # compare aggregated simulated flows with observations at selected gage
         sim_sroff = aggregated_sroff_sim[gage]['aggregated_daily']
         sim_interflow = aggregated_interflow_sim[gage]['aggregated_daily']
         sim_gwflow = aggregated_gwflow_sim[gage]['aggregated_daily']
+        sim_aet = aggregated_aet[gage]['aggregated_daily']
+        sim_ppt = aggregated_ppt[gage]['aggregated_daily']
         obs_monthly_average = obs_mean_monthly[gage].tolist()
         obs_annual_average = obs_mean_annual[gage].tolist()
+
+    # compute
+        sim_aet_ppt_ratios.append(np.mean(np.array(sim_aet)) / np.mean(np.array(sim_ppt)))
 
     # compute simulated yearday mean and plot along with observed
         if True:
@@ -899,11 +929,18 @@ for par in range(len(param_list)):
     fid.write('mean: %f \n' % param_stats_mean[par])
     fid.write('max: %f \n' % param_stats_max[par])
     fid.write('\n')
-fid.write('NSE by gage: \n')
+fid.write('NSE by aggregated subbasin: \n')
 for sb in range(len(NSE_list_by_gage)):
     fid.write('%i \n' % columns[sb])
     fid.write('%1.2f \n' % NSE_overall[sb])
     [fid.write('%1.2f \n' % NSE_list_by_gage[sb][yr]) for yr in range(len(NSE_list_by_gage[sb]))]
+
+sim_aet_ppt_ratios = list(sim_aet_ppt_ratios)
+fid.write('\n')
+fid.write('AET/PPT by aggregated subbasin: \n')
+for sb in range(len(sim_aet_ppt_ratios)):
+    fid.write('%i \n' % columns[sb])
+    fid.write('%1.2f \n' % sim_aet_ppt_ratios[sb])
 # for id in sorted(aggregated_streamflow_sim.keys()):
 #     daily = aggregated_streamflow_sim[id]['aggregated_daily']
 #     for fl in daily:
