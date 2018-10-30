@@ -498,7 +498,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if True:
+if False:
     prms.write_param_file(fn_param)
     prms.run()
 
@@ -941,11 +941,12 @@ fid.write('AET/PPT by aggregated subbasin: \n')
 for sb in range(len(sim_aet_ppt_ratios)):
     fid.write('%i \n' % columns[sb])
     fid.write('%1.2f \n' % sim_aet_ppt_ratios[sb])
-# for id in sorted(aggregated_streamflow_sim.keys()):
-#     daily = aggregated_streamflow_sim[id]['aggregated_daily']
-#     for fl in daily:
-#         fid.write(str(fl))
-#         fid.write("\n")
+for id in sorted(aggregated_streamflow_sim.keys()):
+    fid.write('\n%i \n' %id)
+    daily = aggregated_streamflow_sim[id]['aggregated_daily']
+    for fl in daily:
+        fid.write(str(fl))
+        fid.write("\n")
 fid.close()
 plt.close("all")
 print "Process Finished ....."
