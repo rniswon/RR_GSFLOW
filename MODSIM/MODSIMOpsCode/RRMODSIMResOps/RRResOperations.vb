@@ -28,7 +28,7 @@ Module RRResOperations
             AddHandler m_Model.OnModsimError, AddressOf OnMessage
         End If
         If PRMS = "PRMS_ON" Then
-            'NOTE: the comman line arguments for this project have to match the command line arguments expeted in the SurfGWModule
+            'NOTE: the commanD line arguments for this project have to match the command line arguments expeted in the SurfGWModule
             '       For and unknown reason GSFLOW crashed if there are different arguments in this project. 
             SurfGWModule.Main(RRCmdArgs)
         Else
@@ -49,14 +49,14 @@ Module RRResOperations
         pillsburyStorage = m_Model.FindLink("PillsburyStorage")
         'Minimum flows
         Dim m_MinNode As Node
-        m_MinNode = m_Model.FindNode("WestJct")
-        minNodesCollection.Add(m_MinNode, "WestJct")
-        m_MinNode = m_Model.FindNode("hopeland")
-        minNodesCollection.Add(m_MinNode, "hopeland")
-        m_MinNode = m_Model.FindNode("Cloverdale")
-        minNodesCollection.Add(m_MinNode, "Cloverdale")
-        m_MinNode = m_Model.FindNode("Healdsburg")
-        minNodesCollection.Add(m_MinNode, "Healdsburg")
+        m_MinNode = m_Model.FindNode("WestJctOps")
+        minNodesCollection.Add(m_MinNode, "WestJctOps")
+        m_MinNode = m_Model.FindNode("HopelandOps")
+        minNodesCollection.Add(m_MinNode, "HopelandOps")
+        m_MinNode = m_Model.FindNode("CloverdaleOps")
+        minNodesCollection.Add(m_MinNode, "CloverdaleOps")
+        m_MinNode = m_Model.FindNode("HealdsburgOps")
+        minNodesCollection.Add(m_MinNode, "HealdsburgOps")
     End Sub
 
     Private Sub OnIterationTop()
@@ -120,7 +120,7 @@ Module RRResOperations
     End Sub
 
     Private Sub OnMessage(ByVal message As String)
-        'Console.WriteLine(message)
+        If PRMS = "PRMS_OFF" Then Console.WriteLine(message)
     End Sub
     Dim state As Integer
     Private Sub OnIterationBottom()
