@@ -1,20 +1,20 @@
 ﻿Imports Csu.Modsim.ModsimIO
 Imports Csu.Modsim.ModsimModel
 Imports System
-Imports SurfGWModule
+'Imports SurfGWModule
 
 
 Module RRResOperations
     Private m_Model As Model
     'Execution Flags
-    Private PRMS As String = "PRMS_ON"
+    Private PRMS As String = "PRMS_OFF"
     Private Operations As Boolean = True
 
     Sub Main(ByVal RRCmdArgs() As String)
         Dim FileName As String = RRCmdArgs(0)
 
         If PRMS = "PRMS_ON" Then
-            m_Model = SurfGWModule.GetModel()
+            'm_Model = SurfGWModule.GetModel()
         Else
             m_Model = New Model
         End If
@@ -30,7 +30,7 @@ Module RRResOperations
         If PRMS = "PRMS_ON" Then
             'NOTE: the commanD line arguments for this project have to match the command line arguments expeted in the SurfGWModule
             '       For and unknown reason GSFLOW crashed if there are different arguments in this project. 
-            SurfGWModule.Main(RRCmdArgs)
+            'SurfGWModule.Main(RRCmdArgs)
         Else
             XYFileReader.Read(m_Model, FileName)
             Modsim.RunSolver(m_Model)
@@ -42,6 +42,8 @@ Module RRResOperations
     'minimum flows
     Dim minNodesCollection As New Collection
     Dim accuracyFactor As Integer
+    'West Fork
+    Dim westForkFlows, westForkMaxRelease As Link
     Private Sub OnInitialize()
         accuracyFactor = 10 ^ m_Model.accuracy
         LMendocino = m_Model.FindNode("LMendocino")
@@ -57,6 +59,9 @@ Module RRResOperations
         minNodesCollection.Add(m_MinNode, "CloverdaleOps")
         m_MinNode = m_Model.FindNode("HealdsburgOps")
         minNodesCollection.Add(m_MinNode, "HealdsburgOps")
+        'West Fork Flow
+        westForkFlows = m_Model.FindLink("WestForkFlow")
+        westForkMaxRelease = m_Model.FindLink("WestForkReleaseMax")
     End Sub
 
     Private Sub OnIterationTop()
@@ -117,6 +122,14 @@ Module RRResOperations
         For Each node As Node In minNodesCollection
             node.mnInfo.nodedemand(m_Model.mInfo.CurrentModelTimeStepIndex, 0) = minFlow
         Next
+
+        'West Fork flow - Release Check
+        If westForkFlows.mlInfo.flow > 2500 * accuracyFactor And m_Model.mInfo.Iteration > 0 Then
+            ' 25 cfs in acre-feet per day
+            westForkMaxRelease.mlInfo.hi = 49.5867769 * accuracyFactor
+        Else
+            westForkMaxRelease.mlInfo.hi = 299999999999
+        End If
     End Sub
 
     Private Sub OnMessage(ByVal message As String)

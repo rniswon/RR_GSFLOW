@@ -26,7 +26,9 @@ namespace RRModelingSystem
             switch (treeView1.SelectedNode.Text)
             {
                 case "Simulation":
-                    m_SimUserControl.ProjectDB = @"C:\Users\etrianasanchez\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database.mdb";
+                    m_SimUserControl.ProjectDB = @"C:\Users\etriana\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database.mdb";
+                    //m_SimUserControl.ProjectDB = @"C:\Users\etrianasanchez\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database.mdb";
+                    //m_SimUserControl.ProjectDB = @"C:\Users\etrianasanchez\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database PRMS.mdb";
                     //m_SimUserControl.ProjectDB = @"C:\Users\anuragsrivastav\Desktop\RRMS_Database.mdb";
 
                     splitContainer1.Panel2.Controls.Add(m_SimUserControl);

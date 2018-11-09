@@ -3,7 +3,7 @@ Control File for MODSIM-PRMS simulation, Russian River Watershed
 xyFileName
 1
 4
-..\MODSIM\RRGeoMODSIM_v7PRMS.xy
+..\MODSIM\RRGeoMODSIM_v8_Ops90PRMSTS.xy
 ####
 mappingFileName
 1
@@ -38,7 +38,7 @@ start_time
 end_time
 6
 1
-1993
+1992
 12
 31
 0

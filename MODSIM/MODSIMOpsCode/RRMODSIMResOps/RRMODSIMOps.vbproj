@@ -147,12 +147,6 @@
     </None>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\Documents\LocalRepos\MODSIMGSFlow\modsim.git\MODSIM_GSFLOW_C\MODSIM_GSFLOW_C.csproj">
-      <Project>{b23549e7-3c1b-43b5-867c-ba30112bead6}</Project>
-      <Name>MODSIM_GSFLOW_C</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

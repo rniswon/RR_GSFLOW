@@ -219,40 +219,93 @@ namespace RRModelingSystem
             // for each TSTypeID
             foreach(DataRow sr in scenariodt.Rows)
             {
-                cmdtxt = "Select Distinct Timeseries.FeatureID, Features.MOD_Name From Timeseries " +
+                cmdtxt = "Select Distinct Timeseries.FeatureID, Features.MOD_Name, Features.MOD_Type From Timeseries " +
                          $"INNER JOIN  Features on Timeseries.FeatureID = Features.FeatureID where TSTypeID = {sr["TSType"]};";
                 DataTable featuresdt = ExecuteCommand(cmdtxt);
                 foreach(DataRow fr in featuresdt.Rows)
                 {
-                    cmdtxt = $"Select TSDate AS [Date], TSValue AS HS0 From Timeseries Where FeatureID={fr["FeatureID"]} AND TSTypeID={sr["TSType"]} AND TSDate>=DateValue('{startdate}') ORDER BY [TSDate];";
+                    cmdtxt = $"Select TSDate AS [Date], ROUND(TSValue * {Math.Pow(10, (double)modsim.accuracy)},0) AS HS0 From Timeseries Where FeatureID={fr["FeatureID"]} AND TSTypeID={sr["TSType"]} AND TSDate>=DateValue('{startdate}') ORDER BY [TSDate];";
                     DataTable tsdt = ExecuteCommand(cmdtxt);
 
                     if (tsdt != null)
                     {
                         // apply accuracy factor
-                        tsdt = ApplyAccuracyFactor(tsdt, modsim.accuracy);
+                        //tsdt = ApplyAccuracyFactor(tsdt, modsim.accuracy);
 
-                        // assign time-series to MODSIM file
-                        Link link = modsim.FindLink(fr["MOD_Name"].ToString());
-                        if (link != null)
+                        //check for default units
+                        string units = sr["Units"].ToString();
+                        if (units == "Dimensionless" || units == "Default") units = "";
+
+                        switch (fr["MOD_Type"].ToString())
                         {
-                            link.m.maxVariable.dataTable = tsdt;
-                            link.m.maxVariable.VariesByYear = true;
-                            link.m.maxVariable.units = (String) sr["units"];
-                            //new ModsimUnits(VolumeUnitsType.kCM, new ModsimTimeStep(ModsimTimeStepType.Monthly)); 
-                            PrintMessage($"Updated time-series for link {link.name}");
-                            link.m.cost = -150500;
-                        }
-                        else
-                        {
-                            PrintMessage($"link {fr["MOD_Name"]} not found!");
+                            case "Link":
+                                // assign time-series to MODSIM Link
+                                Link link = modsim.FindLink(fr["MOD_Name"].ToString());
+                                if (link != null)
+                                {
+                                    link.m.maxVariable.dataTable = tsdt;
+                                    link.m.maxVariable.VariesByYear = true;
+                                    link.m.maxVariable.units = units;
+                                    //new ModsimUnits(VolumeUnitsType.kCM, new ModsimTimeStep(ModsimTimeStepType.Monthly)); 
+                                    PrintMessage($"Updated time-series for link {link.name}");
+                                    link.m.cost = -150500;
+                                }
+                                else
+                                {
+                                    PrintMessage($"link {fr["MOD_Name"]} not found!");
+                                }
+                                break;
+                            case "Demand":
+                                // assign time-series to MODSIM Node
+                                Node dem = modsim.FindNode(fr["MOD_Name"].ToString());
+                                if (dem != null) PopulateTS(dem, dem.m.adaDemandsM, tsdt, units);
+                                break;
+                            case "NonStorage":
+                                // assign time-series to MODSIM Node
+                                Node NSNode = modsim.FindNode(fr["MOD_Name"].ToString());
+                                PopulateTS(NSNode, NSNode.m.adaInflowsM, tsdt, units);
+                                break;
+                            case "Reservoir":
+                                // assign time-series to MODSIM Node
+                                Node resNode = modsim.FindNode(fr["MOD_Name"].ToString());
+                                PopulateTS(resNode, resNode.m.adaTargetsM, tsdt, units);
+                                break;
                         }
                     }
                 }
             }
 
             PrintMessage($"Writing updated Modsim file...");
+            //Generate a File with TS added
+            ProcessModsimFile = ProcessModsimFile.Replace(".xy", "TS.xy");
+            if (System.IO.File.Exists(ProcessModsimFile))
+                if (MessageBox.Show("Output file already exists.  Do you want to overwrite?", "File overwrite", MessageBoxButtons.YesNo)== DialogResult.No)
+                {
+                    PrintMessage($" --->>> Import ABORTED!");
+                    return;
+                }
+                else
+                {
+                    System.IO.File.Delete(ProcessModsimFile);
+                }
+            PrintMessage($"     File Name: {ProcessModsimFile}");
             XYFileWriter.Write(modsim, ProcessModsimFile);
+        }
+
+        private void PopulateTS(Node m_Node, TimeSeries m_TimeSeries, DataTable tsdt, string units)
+        {
+            if (m_Node != null)
+            {
+                m_TimeSeries.dataTable = tsdt;
+                m_TimeSeries.VariesByYear = true;
+                if (units != "") m_TimeSeries.units = units;
+                //new ModsimUnits(VolumeUnitsType.kCM, new ModsimTimeStep(ModsimTimeStepType.Monthly)); 
+                PrintMessage($"Updated time series for node {m_Node.name}");
+            }
+            else
+            {
+                PrintMessage($"Node {m_Node.name} not found!");
+            }
         }
 
         private DataTable ApplyAccuracyFactor(DataTable dt, int accuracy)
