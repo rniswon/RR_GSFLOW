@@ -453,7 +453,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 22            ### declsre agg_subbasin
+sub_param_stat = 1            ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
@@ -498,7 +498,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if False:
+if True:
     prms.write_param_file(fn_param)
     prms.run()
 
@@ -613,6 +613,7 @@ NSE_list_by_gage = []
 NSE_overall = []
 num_removed_values = []
 sim_aet_ppt_ratios = []
+BFI = []
 
 ########################################################################################################################
 
@@ -701,8 +702,11 @@ if True: # compare aggregated simulated flows with observations at selected gage
         obs_monthly_average = obs_mean_monthly[gage].tolist()
         obs_annual_average = obs_mean_annual[gage].tolist()
 
-    # compute
+    # compute AET/PPT ratio
         sim_aet_ppt_ratios.append(np.mean(np.array(sim_aet)) / np.mean(np.array(sim_ppt)))
+
+    # compute base-flow index
+        BFI.append((np.mean(np.array(sim_gwflow)) + np.mean(np.array(sim_interflow))) / np.mean(np.array(sim_streamflow)))
 
     # compute simulated yearday mean and plot along with observed
         if True:
@@ -931,16 +935,24 @@ for par in range(len(param_list)):
     fid.write('\n')
 fid.write('NSE by aggregated subbasin: \n')
 for sb in range(len(NSE_list_by_gage)):
-    fid.write('%i \n' % columns[sb])
+    fid.write('\n%i \n' % columns[sb])
     fid.write('%1.2f \n' % NSE_overall[sb])
     [fid.write('%1.2f \n' % NSE_list_by_gage[sb][yr]) for yr in range(len(NSE_list_by_gage[sb]))]
 
 sim_aet_ppt_ratios = list(sim_aet_ppt_ratios)
+sim_BFI = list(BFI)
+
 fid.write('\n')
 fid.write('AET/PPT by aggregated subbasin: \n')
 for sb in range(len(sim_aet_ppt_ratios)):
     fid.write('%i \n' % columns[sb])
     fid.write('%1.2f \n' % sim_aet_ppt_ratios[sb])
+fid.write('\n')
+fid.write('BFI by aggregated subbasin: \n')
+for sb in range(len(sim_BFI)):
+    fid.write('%i \n' % columns[sb])
+    fid.write('%1.2f \n' % sim_BFI[sb])
+
 for id in sorted(aggregated_streamflow_sim.keys()):
     fid.write('\n%i \n' %id)
     daily = aggregated_streamflow_sim[id]['aggregated_daily']

@@ -65,6 +65,11 @@ gsflow_output_file
 4
 C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\PRMS\output\RR_gsflow.out
 ####
+csvON_OFF
+1
+1
+1
+####
 csv_output_file
 1
 4

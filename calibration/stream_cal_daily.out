@@ -1,4 +1,4 @@
-Parameter stats for aggregated subbasin 22 
+Parameter stats for aggregated subbasin 1 
 gwflow_coef 
 min: 0.140000 
 mean: 0.140000 
@@ -11,13 +11,13 @@ max: 0.000000
 
 ssr2gw_rate 
 min: 0.000000 
-mean: 0.000375 
-max: 0.004175 
+mean: 0.000510 
+max: 0.004085 
 
 slowcoef_lin 
 min: 0.000000 
-mean: 0.001755 
-max: 0.012483 
+mean: 0.001599 
+max: 0.012230 
 
 slowcoef_sq 
 min: 0.025000 
@@ -25,28 +25,28 @@ mean: 0.025000
 max: 0.025000 
 
 smidx_coef 
-min: 0.000500 
-mean: 0.000500 
-max: 0.000500 
+min: 0.001000 
+mean: 0.001000 
+max: 0.001000 
 
 carea_max 
-min: 0.908611 
-mean: 0.998730 
+min: 0.341433 
+mean: 0.989773 
 max: 1.000000 
 
 sat_threshold 
 min: 0.000000 
-mean: 35.509887 
+mean: 33.589251 
 max: 64.800000 
 
 soil_moist_max 
 min: 0.000000 
-mean: 5.342846 
+mean: 5.152564 
 max: 9.720000 
 
 soil_rechr_max_frac 
 min: 0.000000 
-mean: 0.462542 
+mean: 0.487121 
 max: 0.666670 
 
 pref_flow_den 
@@ -55,9 +55,9 @@ mean: 0.150000
 max: 0.150000 
 
 rain_adj 
-min: 0.503911 
-mean: 1.087899 
-max: 3.296060 
+min: 0.700418 
+mean: 1.247085 
+max: 3.442758 
 
 Parameter stats for entire study area 
 gwflow_coef 
@@ -121,6 +121,7 @@ mean: 1.088604
 max: 4.835050 
 
 NSE by aggregated subbasin: 
+
 1 
 0.74 
 0.31 
@@ -149,6 +150,7 @@ NSE by aggregated subbasin:
 -1.05 
 0.15 
 0.71 
+
 2 
 0.58 
 -40.37 
@@ -177,6 +179,7 @@ NSE by aggregated subbasin:
 0.03 
 0.53 
 0.55 
+
 3 
 -0.15 
 -1.13 
@@ -205,6 +208,7 @@ NSE by aggregated subbasin:
 -0.32 
 -0.29 
 -0.17 
+
 5 
 0.68 
 -3.67 
@@ -233,6 +237,7 @@ NSE by aggregated subbasin:
 0.30 
 -0.77 
 0.62 
+
 6 
 0.64 
 -6.58 
@@ -261,6 +266,7 @@ NSE by aggregated subbasin:
 0.24 
 0.18 
 0.67 
+
 13 
 0.70 
 -3.75 
@@ -289,6 +295,7 @@ NSE by aggregated subbasin:
 0.84 
 0.63 
 0.74 
+
 16 
 -0.72 
 -21.09 
@@ -317,6 +324,7 @@ NSE by aggregated subbasin:
 -11.77 
 0.04 
 -1.74 
+
 18 
 0.12 
 0.21 
@@ -345,6 +353,7 @@ NSE by aggregated subbasin:
 0.23 
 0.24 
 -2.63 
+
 22 
 0.78 
 0.52 
@@ -393,6 +402,26 @@ AET/PPT by aggregated subbasin:
 0.39 
 22 
 0.44 
+
+BFI by aggregated subbasin: 
+1 
+0.89 
+2 
+0.86 
+3 
+0.97 
+5 
+0.70 
+6 
+0.73 
+13 
+0.69 
+16 
+0.84 
+18 
+0.85 
+22 
+0.94 
 
 1 
 62.235293
