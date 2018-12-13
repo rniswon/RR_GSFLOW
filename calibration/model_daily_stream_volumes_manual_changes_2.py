@@ -498,7 +498,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if True:
+if False:
     prms.write_param_file(fn_param)
     prms.run()
 
@@ -825,31 +825,48 @@ if True: # compare aggregated simulated flows with observations at selected gage
 
         # user-defined period
         if True:
-            try:
-                year_decimal1 = 2008     # declare start year (inclusive)
-                year_decimal2 = 2012     # declare end year (not inclusive)
-                y3 = []
-                y4 = []
-                for x in range(list(obs_yearday_dec).index(year_decimal1),list(obs_yearday_dec).index(year_decimal2)):
-                    y3.append(sim_streamflow[x])
-                    y4.append(obs_streamflow[x])
-                max_y3 = max(y3)
-                max_y4 = max(y4)
-                ymax2 = max(max_y3, max_y4)
 
-                plt.suptitle('Gage Basin ID %i' %gage)
-                plt.plot(obs_yearday_dec, obs_streamflow, color = 'red', linewidth = 0.5)
-                plt.xlim(year_decimal1, year_decimal2)
-                plt.ylim(ymin=0,ymax=ymax2)
-                plt.plot(obs_yearday_dec, sim_streamflow, color = 'blue', linewidth = 0.5)
-                #plt.yticks(sim_streamflow, " ")
-                #plt.yticks([])
-                plt.locator_params(nbins = 4)
-                plot_file = 'daily_%i_' % gage
-                plot_file += '%i.png' % int(year_decimal2)
-                plt.savefig(plot_file)
-                plt.close()
-            except: pass
+        # set the starting and ending year and month
+            year_plot1 = 2011
+            month_plot1 = 10
+
+            year_plot2 = 2015
+            month_plot2 = 10
+
+            yd1 = int(format(datetime.datetime(year_plot1, month_plot1, 1), '%j'))
+            year_decimal1 = year_plot1 + (float(yd1) - 1) / 366
+            yd2 = int(format(datetime.datetime(year_plot2, month_plot2, 28), '%j'))
+            year_decimal2 = year_plot2 + (float(yd2) - 1) / 366
+            span = year_decimal2 - year_decimal1
+
+            y1 = []
+            y2 = []
+            for x in range(list(obs_yearday_dec).index(year_decimal1), list(obs_yearday_dec).index(year_decimal2)):
+                y1.append(sim_streamflow[x])
+                y2.append(obs_streamflow[x])
+            max_y1 = max(y1)
+            max_y2 = max(y2)
+            ymax = max(max_y1, max_y2)
+
+            xt = [year_decimal1, 0.2 * span + year_decimal1, 0.4 * span + year_decimal1,
+                  0.6 * span + year_decimal1, 0.8 * span + year_decimal1, year_decimal2]
+            xtick_labels = []
+            [xtick_labels.append("%.2f" % item) for item in xt]
+            xtick_locs = [year_decimal1, 0.2 * span + year_decimal1, 0.4 * span + year_decimal1,
+                          0.6 * span + year_decimal1, 0.8 * span + year_decimal1, year_decimal2]
+
+            plt.suptitle('Gage Basin ID %i' %gage)
+            plt.plot(obs_yearday_dec, obs_streamflow, color = 'red', linewidth = 0.5)
+            plt.xlim(year_decimal1, year_decimal2)
+            plt.ylim(ymin=0,ymax=ymax)
+            plt.plot(obs_yearday_dec, sim_streamflow, color = 'blue', linewidth = 0.5)
+            #plt.yticks(sim_streamflow, " ")
+            #plt.yticks([])
+            plt.locator_params(nbins = 4)
+            plot_file = 'daily_%i_' % gage
+            plot_file += '%i.png' % year_plot1
+            plt.savefig(plot_file)
+            plt.close()
 
         # one-to-one scatter plot
         if False:

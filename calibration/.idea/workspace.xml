@@ -3,10 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="dc12857c-c624-45a6-bb27-baae3e5a7fbf" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2011.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_1_2011.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2014.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/stream_cal_daily.out" beforeDir="false" afterPath="$PROJECT_DIR$/stream_cal_daily.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../gsflow.log" beforeDir="false" afterPath="$PROJECT_DIR$/../gsflow.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../windows/prms_rr.control" beforeDir="false" afterPath="$PROJECT_DIR$/../windows/prms_rr.control" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,23 +19,23 @@
     <session id="1469307869">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="34" />
+          <entry key="project.closed" value="35" />
           <entry key="project.open.time.0" value="2" />
           <entry key="project.open.time.3" value="7" />
-          <entry key="project.open.time.4" value="25" />
+          <entry key="project.open.time.4" value="26" />
           <entry key="project.open.time.5" value="2" />
-          <entry key="project.opened" value="36" />
+          <entry key="project.opened" value="37" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="1027" />
-          <entry key="py" value="2068" />
+          <entry key="Python Console" value="1039" />
+          <entry key="py" value="2127" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3095" />
+          <entry key="Python" value="3166" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -58,30 +59,31 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="367">
-              <caret line="75" column="25" selection-start-line="75" selection-start-column="25" selection-end-line="75" selection-end-column="25" />
+            <state relative-caret-position="397">
+              <caret line="701" column="51" selection-start-line="701" selection-start-column="51" selection-end-line="701" selection-end-column="51" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
                 <element signature="e#764#1590#0" />
+                <element signature="e#7409#9216#0" />
                 <element signature="e#32059#32878#0" />
                 <element signature="e#32201#32847#0" />
                 <element signature="e#32923#33763#0" />
                 <element signature="e#33797#34479#0" />
-                <marker date="1544658633350" expanded="false" signature="2062:3595" ph="..." />
-                <marker date="1544658633350" expanded="true" signature="3972:6547" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="6643:9216" ph="..." />
-                <marker date="1544658633350" expanded="true" signature="6696:6928" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="9313:11886" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="11981:14553" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="14649:17224" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="17320:19891" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="19988:22559" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="22656:25227" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="25324:27896" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="27960:29059" ph="..." />
-                <marker date="1544658633350" expanded="false" signature="29180:30406" ph="..." />
-                <marker date="1544658633350" expanded="true" signature="34630:35820" ph="..." />
-                <marker date="1544658633350" expanded="true" signature="36003:37916" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="2062:3595" ph="..." />
+                <marker date="1544741730667" expanded="true" signature="3972:6547" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="6643:9216" ph="..." />
+                <marker date="1544741730667" expanded="true" signature="6696:6928" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="9313:11886" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="11981:14553" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="14649:17224" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="17320:19891" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="19988:22559" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="22656:25227" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="25324:27896" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="27960:29059" ph="..." />
+                <marker date="1544741730667" expanded="false" signature="29180:30406" ph="..." />
+                <marker date="1544741730667" expanded="true" signature="34631:35821" ph="..." />
+                <marker date="1544741730667" expanded="true" signature="36004:37917" ph="..." />
               </folding>
             </state>
           </provider>
@@ -98,7 +100,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>solr_rad_stat</find>
       <find>compute_SR_mon_ave</find>
       <find>figure.max_open_warning</find>
       <find>max_open_warning</find>
@@ -128,6 +129,7 @@
       <find>control_file_name</find>
       <find>script_dir</find>
       <find>range</find>
+      <find>datetime</find>
     </findStrings>
     <replaceStrings>
       <replace>-2.0</replace>
@@ -211,17 +213,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="calibration" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Project Files">
           <expand>
@@ -233,11 +224,22 @@
           <select />
         </subPane>
       </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="calibration" type="b2602c69:ProjectViewProjectNode" />
+              <item name="calibration" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myIpythonEnabled" value="false" />
@@ -412,20 +414,20 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <frame x="-7" y="-7" width="1550" height="934" extended-state="6" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.21877065" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32918552" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49964055" weight="0.305949" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.3286119" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49964055" weight="0.3054863" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.32793018" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32577905" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5003595" side_tool="true" weight="0.29360464" />
-      <window_info anchor="bottom" id="Python Console" order="8" weight="0.3371105" />
+      <window_info anchor="bottom" id="Python Console" order="8" weight="0.33665836" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.26433915" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.32798833" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
@@ -933,9 +935,6 @@ for gage in stream_volume_averages.keys():
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4199">
           <caret line="254" column="18" selection-start-line="254" selection-start-column="8" selection-end-line="254" selection-end-column="18" />
-          <folding>
-            <element signature="e#1#14#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -947,30 +946,31 @@ for gage in stream_volume_averages.keys():
     </entry>
     <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="75" column="25" selection-start-line="75" selection-start-column="25" selection-end-line="75" selection-end-column="25" />
+        <state relative-caret-position="397">
+          <caret line="701" column="51" selection-start-line="701" selection-start-column="51" selection-end-line="701" selection-end-column="51" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
             <element signature="e#764#1590#0" />
+            <element signature="e#7409#9216#0" />
             <element signature="e#32059#32878#0" />
             <element signature="e#32201#32847#0" />
             <element signature="e#32923#33763#0" />
             <element signature="e#33797#34479#0" />
-            <marker date="1544658633350" expanded="false" signature="2062:3595" ph="..." />
-            <marker date="1544658633350" expanded="true" signature="3972:6547" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="6643:9216" ph="..." />
-            <marker date="1544658633350" expanded="true" signature="6696:6928" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="9313:11886" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="11981:14553" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="14649:17224" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="17320:19891" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="19988:22559" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="22656:25227" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="25324:27896" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="27960:29059" ph="..." />
-            <marker date="1544658633350" expanded="false" signature="29180:30406" ph="..." />
-            <marker date="1544658633350" expanded="true" signature="34630:35820" ph="..." />
-            <marker date="1544658633350" expanded="true" signature="36003:37916" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="2062:3595" ph="..." />
+            <marker date="1544741730667" expanded="true" signature="3972:6547" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="6643:9216" ph="..." />
+            <marker date="1544741730667" expanded="true" signature="6696:6928" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="9313:11886" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="11981:14553" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="14649:17224" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="17320:19891" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="19988:22559" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="22656:25227" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="25324:27896" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="27960:29059" ph="..." />
+            <marker date="1544741730667" expanded="false" signature="29180:30406" ph="..." />
+            <marker date="1544741730667" expanded="true" signature="34631:35821" ph="..." />
+            <marker date="1544741730667" expanded="true" signature="36004:37917" ph="..." />
           </folding>
         </state>
       </provider>
