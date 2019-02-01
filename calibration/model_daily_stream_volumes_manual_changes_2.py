@@ -453,7 +453,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 5            ### declsre agg_subbasin
+sub_param_stat = 1            ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
@@ -904,6 +904,8 @@ if True: # compare aggregated simulated flows with observations at selected gage
             obs_sim_zip = zip(obs_streamflow, sim_streamflow, obs_yearday_dec)
             zip_clean = [x for x in obs_sim_zip if str(x[0]) != 'nan']
             zip_clean_no_1990_1991 = [y for y in zip_clean if y[2] >= 1992.0]
+            zip_clean_no_growseason = [z for z in zip_clean_no_1990_1991 if (z[2] - int(z[2]) < 0.247)
+                                       or (z[2] - int(z[2]) > 0.915)]
             num_removed_values.append(len(obs_sim_zip) - len(zip_clean))
             for yr in unique_sim_years:
                 try:
@@ -912,7 +914,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
                     NSE_list.append(float('nan'))    # resolves problems if observed values are missing for a particular year
             NSE_list_by_gage.append(NSE_list)
             NSE_mean = np.mean(np.array(NSE_list[1:26]))     # hardwired for RR study period
-            NSE_overall.append(compute_NSE(zip_clean_no_1990_1991))
+            NSE_overall.append(compute_NSE(zip_clean_no_growseason))
             plt.figure()
             plt.scatter(unique_sim_years[1:26], NSE_list[1:26], marker="^")
             plt.suptitle('Gage Basin ID %i' % gage)

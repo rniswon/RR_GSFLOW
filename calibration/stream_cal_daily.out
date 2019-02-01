@@ -1,4 +1,4 @@
-Parameter stats for aggregated subbasin 5 
+Parameter stats for aggregated subbasin 1 
 gwflow_coef 
 min: 0.140000 
 mean: 0.140000 
@@ -11,13 +11,13 @@ max: 0.000000
 
 ssr2gw_rate 
 min: 0.000000 
-mean: 0.000457 
-max: 0.004260 
+mean: 0.000510 
+max: 0.004085 
 
 slowcoef_lin 
 min: 0.000000 
-mean: 0.001496 
-max: 0.012486 
+mean: 0.001599 
+max: 0.012230 
 
 slowcoef_sq 
 min: 0.025000 
@@ -30,24 +30,24 @@ mean: 0.001000
 max: 0.001000 
 
 carea_max 
-min: 0.207167 
-mean: 0.979751 
+min: 0.341433 
+mean: 0.989773 
 max: 1.000000 
 
 sat_threshold 
 min: 0.000000 
-mean: 31.954547 
+mean: 33.589251 
 max: 64.800000 
 
 soil_moist_max 
 min: 0.000000 
-mean: 6.559246 
-max: 12.960000 
+mean: 5.152564 
+max: 9.720000 
 
 soil_rechr_max_frac 
 min: 0.000000 
-mean: 1.069265 
-max: 1.500000 
+mean: 0.487121 
+max: 0.666670 
 
 pref_flow_den 
 min: 0.150000 
@@ -55,9 +55,9 @@ mean: 0.150000
 max: 0.150000 
 
 rain_adj 
-min: 0.514100 
-mean: 1.028414 
-max: 2.752190 
+min: 0.700418 
+mean: 1.247085 
+max: 3.442758 
 
 Parameter stats for entire study area 
 gwflow_coef 
@@ -123,7 +123,7 @@ max: 4.835050
 NSE by aggregated subbasin: 
 
 1 
-0.74 
+0.71 
 0.29 
 -0.01 
 0.67 
@@ -152,7 +152,7 @@ NSE by aggregated subbasin:
 0.70 
 
 2 
-0.58 
+0.56 
 -20.68 
 -0.93 
 0.53 
@@ -181,7 +181,7 @@ NSE by aggregated subbasin:
 0.51 
 
 3 
-0.08 
+0.06 
 -7.22 
 -1.30 
 0.22 
@@ -210,7 +210,7 @@ NSE by aggregated subbasin:
 -0.02 
 
 5 
-0.69 
+0.66 
 -3.70 
 -0.39 
 0.62 
@@ -239,7 +239,7 @@ NSE by aggregated subbasin:
 0.62 
 
 6 
-0.63 
+0.59 
 -6.58 
 0.90 
 0.71 
@@ -268,7 +268,7 @@ NSE by aggregated subbasin:
 0.67 
 
 13 
-0.69 
+0.67 
 -3.75 
 0.78 
 0.08 
@@ -297,7 +297,7 @@ NSE by aggregated subbasin:
 0.74 
 
 16 
--0.72 
+-0.68 
 -21.09 
 -1.59 
 -25.10 
@@ -326,7 +326,7 @@ NSE by aggregated subbasin:
 -1.75 
 
 18 
-0.11 
+0.02 
 0.21 
 0.18 
 0.28 
@@ -355,7 +355,7 @@ NSE by aggregated subbasin:
 -2.63 
 
 22 
-0.77 
+0.74 
 0.52 
 0.89 
 0.56 
