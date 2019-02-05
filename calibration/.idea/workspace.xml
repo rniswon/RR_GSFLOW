@@ -2,10 +2,48 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc12857c-c624-45a6-bb27-baae3e5a7fbf" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../PRMS/input/prms_rr.param" beforeDir="false" afterPath="$PROJECT_DIR$/../PRMS/input/prms_rr.param" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cal_parameter_values.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/cal_parameter_values.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_2_ttt.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_3.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cal_iterations_1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cal_iterations_1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_13_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_16_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_18_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_22_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_2_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_3.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_3_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_5.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_5_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_6_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_2_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_3_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_3_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_5_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_5_2010.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_3.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_5.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_5.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stream_cal_daily.out" beforeDir="false" afterPath="$PROJECT_DIR$/stream_cal_daily.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_3.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_5.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_3.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_3.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../gsflow.log" beforeDir="false" afterPath="$PROJECT_DIR$/../gsflow.log" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,23 +56,23 @@
     <session id="1469307869">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="40" />
+          <entry key="project.closed" value="42" />
           <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.3" value="11" />
-          <entry key="project.open.time.4" value="27" />
+          <entry key="project.open.time.4" value="28" />
           <entry key="project.open.time.5" value="2" />
-          <entry key="project.opened" value="43" />
+          <entry key="project.opened" value="44" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="1252" />
-          <entry key="py" value="2357" />
+          <entry key="Python Console" value="1307" />
+          <entry key="py" value="2956" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3609" />
+          <entry key="Python" value="4263" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -58,27 +96,27 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5015">
-              <caret line="559" selection-start-line="559" selection-end-line="559" />
+            <state relative-caret-position="289">
+              <caret line="74" column="25" selection-start-line="74" selection-start-column="25" selection-end-line="74" selection-end-column="25" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
                 <element signature="e#764#1590#0" />
                 <element signature="e#7409#9216#0" />
-                <marker date="1549057172541" expanded="false" signature="2062:3595" ph="..." />
-                <marker date="1549057172541" expanded="true" signature="3972:6547" ph="..." />
-                <marker date="1549057172541" expanded="true" signature="6643:9216" ph="..." />
-                <marker date="1549057172541" expanded="true" signature="6696:6928" ph="..." />
-                <marker date="1549057172541" expanded="true" signature="9313:11886" ph="..." />
-                <marker date="1549057172541" expanded="true" signature="11981:14552" ph="..." />
-                <marker date="1549057172541" expanded="false" signature="14648:17223" ph="..." />
-                <marker date="1549057172541" expanded="false" signature="17319:19890" ph="..." />
-                <marker date="1549057172541" expanded="false" signature="19987:22558" ph="..." />
-                <marker date="1549057172541" expanded="false" signature="22655:25226" ph="..." />
-                <marker date="1549057172541" expanded="false" signature="25323:27895" ph="..." />
-                <marker date="1549057172541" expanded="false" signature="27959:29058" ph="..." />
-                <marker date="1549057172541" expanded="false" signature="29179:30405" ph="..." />
-                <marker date="1549057172541" expanded="true" signature="34630:35820" ph="..." />
-                <marker date="1549057172541" expanded="true" signature="36003:37916" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="2062:3595" ph="..." />
+                <marker date="1549329768903" expanded="true" signature="3972:6543" ph="..." />
+                <marker date="1549329768903" expanded="true" signature="6639:9212" ph="..." />
+                <marker date="1549329768903" expanded="true" signature="6692:6924" ph="..." />
+                <marker date="1549329768903" expanded="true" signature="9309:11882" ph="..." />
+                <marker date="1549329768903" expanded="true" signature="11977:14548" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="14644:17219" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="17315:19886" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="19983:22554" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="22651:25222" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="25319:27891" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="27955:29054" ph="..." />
+                <marker date="1549329768903" expanded="false" signature="29175:30401" ph="..." />
+                <marker date="1549329768903" expanded="true" signature="35245:36464" ph="..." />
+                <marker date="1549329768903" expanded="true" signature="36647:38560" ph="..." />
               </folding>
             </state>
           </provider>
@@ -95,7 +133,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>1991</find>
       <find>statistics</find>
       <find>.all</find>
       <find>ndarray</find>
@@ -125,6 +162,7 @@
       <find>nse</find>
       <find>nse_overall</find>
       <find>zip_clean_no_1990</find>
+      <find>np.</find>
     </findStrings>
     <replaceStrings>
       <replace>-2.0</replace>
@@ -196,11 +234,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
-    <option name="x" value="178" />
-    <option name="y" value="23" />
-    <option name="width" value="1613" />
-    <option name="height" value="1083" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="152" />
+    <option name="width" value="1614" />
+    <option name="height" value="1018" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -208,23 +245,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="calibration" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="Scope">
         <subPane subId="Project Files">
           <expand>
             <path>
               <item name="Root" type="cbb8eebc:String" user="Root" />
               <item name="calibration" type="cbb8eebc:String" user="calibration" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="calibration" type="b2602c69:ProjectViewProjectNode" />
+              <item name="calibration" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -409,15 +446,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="143" y="19" width="1290" height="866" extended-state="0" />
+    <frame x="122" y="0" width="1291" height="814" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.264166" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26395535" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32918552" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49964055" weight="0.29291552" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.32561308" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49964055" weight="0.29178885" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.35043988" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32577905" />
@@ -941,27 +979,27 @@ for gage in stream_volume_averages.keys():
     </entry>
     <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5015">
-          <caret line="559" selection-start-line="559" selection-end-line="559" />
+        <state relative-caret-position="289">
+          <caret line="74" column="25" selection-start-line="74" selection-start-column="25" selection-end-line="74" selection-end-column="25" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
             <element signature="e#764#1590#0" />
             <element signature="e#7409#9216#0" />
-            <marker date="1549057172541" expanded="false" signature="2062:3595" ph="..." />
-            <marker date="1549057172541" expanded="true" signature="3972:6547" ph="..." />
-            <marker date="1549057172541" expanded="true" signature="6643:9216" ph="..." />
-            <marker date="1549057172541" expanded="true" signature="6696:6928" ph="..." />
-            <marker date="1549057172541" expanded="true" signature="9313:11886" ph="..." />
-            <marker date="1549057172541" expanded="true" signature="11981:14552" ph="..." />
-            <marker date="1549057172541" expanded="false" signature="14648:17223" ph="..." />
-            <marker date="1549057172541" expanded="false" signature="17319:19890" ph="..." />
-            <marker date="1549057172541" expanded="false" signature="19987:22558" ph="..." />
-            <marker date="1549057172541" expanded="false" signature="22655:25226" ph="..." />
-            <marker date="1549057172541" expanded="false" signature="25323:27895" ph="..." />
-            <marker date="1549057172541" expanded="false" signature="27959:29058" ph="..." />
-            <marker date="1549057172541" expanded="false" signature="29179:30405" ph="..." />
-            <marker date="1549057172541" expanded="true" signature="34630:35820" ph="..." />
-            <marker date="1549057172541" expanded="true" signature="36003:37916" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="2062:3595" ph="..." />
+            <marker date="1549329768903" expanded="true" signature="3972:6543" ph="..." />
+            <marker date="1549329768903" expanded="true" signature="6639:9212" ph="..." />
+            <marker date="1549329768903" expanded="true" signature="6692:6924" ph="..." />
+            <marker date="1549329768903" expanded="true" signature="9309:11882" ph="..." />
+            <marker date="1549329768903" expanded="true" signature="11977:14548" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="14644:17219" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="17315:19886" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="19983:22554" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="22651:25222" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="25319:27891" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="27955:29054" ph="..." />
+            <marker date="1549329768903" expanded="false" signature="29175:30401" ph="..." />
+            <marker date="1549329768903" expanded="true" signature="35245:36464" ph="..." />
+            <marker date="1549329768903" expanded="true" signature="36647:38560" ph="..." />
           </folding>
         </state>
       </provider>

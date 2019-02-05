@@ -68,16 +68,16 @@ calibration_agg_subbasin = 1
 gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
-slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.25
+slowcoef_lin_mult = 10.0
+slowcoef_sq_mult = 0.4
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.5
+soil_moist_max_mult = 0.5
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.11, 1.07, 1.1, 1.16, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.08, 1.1]            # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]            # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -498,7 +498,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if False:
+if True:
     prms.write_param_file(fn_param)
     prms.run()
 
@@ -567,6 +567,22 @@ def compute_NSE(zip_clean):
     # plt.title('NSE = %1.2f' % NSE, loc='right')
     return NSE
 
+def compute_MAPE(zip_clean):
+    unzip_clean = zip(*zip_clean)
+    obs_streamflow_clean = list(unzip_clean[0])
+    sim_streamflow_clean = list(unzip_clean[1])
+    abs_err = [100 * (abs(x - y) / y) for x, y in zip(sim_streamflow_clean, obs_streamflow_clean)]
+    MAPE = np.mean(np.array(abs_err))
+    return MAPE
+
+def compute_MPE(zip_clean):
+    unzip_clean = zip(*zip_clean)
+    obs_streamflow_clean = list(unzip_clean[0])
+    sim_streamflow_clean = list(unzip_clean[1])
+    pct_err = [100 * ((x - y) / y) for x, y in zip(sim_streamflow_clean, obs_streamflow_clean)]
+    MPE = np.mean(np.array(pct_err))
+    return MPE
+
 ########################################################################################################################
 
 # setup observed variables
@@ -614,6 +630,8 @@ NSE_overall = []
 num_removed_values = []
 sim_aet_ppt_ratios = []
 BFI = []
+MPE_list = []
+MAPE_list = []
 
 ########################################################################################################################
 
@@ -827,11 +845,11 @@ if True: # compare aggregated simulated flows with observations at selected gage
         if True:
 
         # set the starting and ending year and month
-            year_plot1 = 2011
-            month_plot1 = 10
+            year_plot1 = 2010
+            month_plot1 = 1
 
-            year_plot2 = 2015
-            month_plot2 = 10
+            year_plot2 = 2010
+            month_plot2 = 2
 
             yd1 = int(format(datetime.datetime(year_plot1, month_plot1, 1), '%j'))
             year_decimal1 = year_plot1 + (float(yd1) - 1) / 366
@@ -898,14 +916,15 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plt.savefig(plot_file)
             plt.close()
 
-    # compute the daily Nash-Sutcliffe efficiency for each year and plot (do not include 1990 and 1991)
+    # compute the daily Nash-Sutcliffe efficiency, mean percentage error, and mean absolute percentage error for
+    # each year and plot NSE (do not include 1990 and 1991)
         if True:
             NSE_list = []
             obs_sim_zip = zip(obs_streamflow, sim_streamflow, obs_yearday_dec)
             zip_clean = [x for x in obs_sim_zip if str(x[0]) != 'nan']
             zip_clean_no_1990_1991 = [y for y in zip_clean if y[2] >= 1992.0]
-            zip_clean_no_growseason = [z for z in zip_clean_no_1990_1991 if (z[2] - int(z[2]) < 0.247)
-                                       or (z[2] - int(z[2]) > 0.915)]
+            zip_clean_no_growseason = [z for z in zip_clean_no_1990_1991 if (z[2] - int(z[2]) < 0.33)
+                                       or (z[2] - int(z[2]) > 0.83)]
             num_removed_values.append(len(obs_sim_zip) - len(zip_clean))
             for yr in unique_sim_years:
                 try:
@@ -924,6 +943,9 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plot_file = 'yearly_NSE_%i.png' % gage
             plt.savefig(plot_file)
             plt.close()
+
+            MPE_list.append(compute_MPE(zip_clean_no_growseason))
+            MAPE_list.append(compute_MAPE(zip_clean_no_growseason))
 
     # Plot daily Nash-Sutcliffe efficiency for each year by average annual flow
         if True:
@@ -961,6 +983,13 @@ for sb in range(len(NSE_list_by_gage)):
 sim_aet_ppt_ratios = list(sim_aet_ppt_ratios)
 sim_BFI = list(BFI)
 
+fid.write('\n')
+fid.write('MPE and MAPE by aggregated subbasin: \n')
+for sb in range(len(sim_aet_ppt_ratios)):
+    fid.write('%i \n' % columns[sb])
+    fid.write('%1.2f \n' % MPE_list[sb])
+    fid.write('%1.2f \n' % MAPE_list[sb])
+fid.write('\n')
 fid.write('\n')
 fid.write('AET/PPT by aggregated subbasin: \n')
 for sb in range(len(sim_aet_ppt_ratios)):
