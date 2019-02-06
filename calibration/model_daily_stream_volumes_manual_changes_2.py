@@ -69,11 +69,11 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 10.0
-slowcoef_sq_mult = 0.4
+slowcoef_sq_mult = 0.6
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 0.5
+soil_moist_max_mult = 2.0
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
@@ -498,7 +498,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if True:
+if False:
     prms.write_param_file(fn_param)
     prms.run()
 
@@ -784,10 +784,10 @@ if True: # compare aggregated simulated flows with observations at selected gage
         if True:
         # set the starting and ending year and month
             year_plot1 = 2010
-            month_plot1 = 10
+            month_plot1 = 1
 
-            year_plot2 = 2011
-            month_plot2 = 10
+            year_plot2 = 2010
+            month_plot2 = 2
 
             yd1 = int(format(datetime.datetime(year_plot1, month_plot1, 1), '%j'))
             year_decimal1 = year_plot1 + (float(yd1) - 1) / 366
@@ -819,7 +819,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plt.xlim(year_decimal1, year_decimal2)
             plt.xticks(xtick_locs, xtick_labels)
             plt.ylim(ymin=1, ymax=ymax)
-            plt.yscale('log')
+            #plt.yscale('log')
             plot_file = 'daily_components_%i_' % gage
             plot_file += '%i.png' % int(year_decimal1)
             plt.savefig(plot_file)
