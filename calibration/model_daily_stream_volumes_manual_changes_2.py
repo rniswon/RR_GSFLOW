@@ -68,16 +68,16 @@ calibration_agg_subbasin = 1
 gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
-slowcoef_lin_mult = 10.0
-slowcoef_sq_mult = 0.6
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.0
+soil_moist_max_mult = 1.5
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]            # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [1.11, 1.07, 1.1, 1.16, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.08, 1.1]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -579,8 +579,10 @@ def compute_MPE(zip_clean):
     unzip_clean = zip(*zip_clean)
     obs_streamflow_clean = list(unzip_clean[0])
     sim_streamflow_clean = list(unzip_clean[1])
-    pct_err = [100 * ((x - y) / y) for x, y in zip(sim_streamflow_clean, obs_streamflow_clean)]
-    MPE = np.mean(np.array(pct_err))
+    err = [ x - y for x, y in zip(sim_streamflow_clean, obs_streamflow_clean)]
+    mean_err = np.mean(np.array(err))
+    mean_obs_sf = np.mean(np.array(obs_streamflow_clean))
+    MPE = (mean_err / mean_obs_sf) * 100
     return MPE
 
 ########################################################################################################################
@@ -783,10 +785,10 @@ if True: # compare aggregated simulated flows with observations at selected gage
     # plot simulated daily streamflow along with simulated runoff, interflow, and baseflow for a user-defined period
         if True:
         # set the starting and ending year and month
-            year_plot1 = 2010
+            year_plot1 = 2005
             month_plot1 = 1
 
-            year_plot2 = 2010
+            year_plot2 = 2005
             month_plot2 = 2
 
             yd1 = int(format(datetime.datetime(year_plot1, month_plot1, 1), '%j'))

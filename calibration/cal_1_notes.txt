@@ -1,0 +1,10 @@
+1-24
+tends to match daily peaks better
+high in the troughs
+low on the higher annual flows
+
+1-33
+tends to overshoot daily peaks
+good match in the troughs
+no rain_adj adjustment
+lower NSE
