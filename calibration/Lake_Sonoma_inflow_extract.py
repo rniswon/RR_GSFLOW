@@ -3,7 +3,8 @@ from calendar import monthrange
 
 # This script extracts daily 'mean inflow' values in cfs for Lake Sonoma from the U.S. Army Corps of Engineers website
 # Some of the monthly reports are not available. Values of -9999 are given for these days.
-# Works for reports prior to October 2004. Inspect output as some reports are abbreviated or otherwise anomalous
+# Works for reports beginning in October 2004 through March 2013. Inclusion of '????' in some reports causes problems--
+# inspect output!
 # Author: John Engott 5/30/2018
 
 error_out = 'C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\calibration\Lake_Sonoma_error.out'
@@ -13,7 +14,7 @@ monthlist = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct
 inflow_all = []
 error = 0
 
-for yr in range(1990, 2016, 1):         # enter appropriate year range
+for yr in range(2004, 2016, 1):         # enter appropriate year range
     for mo in monthlist:
         url = 'http://www.spk-wc.usace.army.mil/fcgi-bin/monthly.py?month=' + mo + '&year=' + str(yr) + '&project=wrs'
 
@@ -23,7 +24,7 @@ for yr in range(1990, 2016, 1):         # enter appropriate year range
             table = page_content.split('(ac-ft)')[4]
             table = table.split('Totals')[0]
             table = table.split()
-            inflow_month = [table[i] for i in range(4,len(table),13)]
+            inflow_month = [table[i] for i in range(4,len(table),12)]
             inflow_all.append(inflow_month)
 
         # if monthly report is not available, write -9999 to list and write month to file
@@ -41,7 +42,7 @@ inflow_flat = [item for sublist in inflow_all for item in sublist]
 
 # write inflows to output file in a consecutive vertical list
 fid2 = open(output_file, 'w')
-fid2.write('USACE reported inflows to Lake Sonoma for 1990-2015 \n')
+fid2.write('USACE reported inflows to Lake Sonoma for 2004-2015 \n')
 fid2.write('Number of missing months: %i (see error.out for list) \n' %error)
 for item in range(len(inflow_flat)):
     fid2.write(inflow_flat[item])
