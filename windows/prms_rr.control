@@ -636,7 +636,7 @@ nsubOutON_OFF
 nsubOutVars
 1
 1
-10
+12
 ####
 nsubOut_freq
 1
@@ -644,7 +644,7 @@ nsubOut_freq
 1
 ####
 nsubOutVar_names
-10
+12
 4
 sub_cfs
 sub_inq
@@ -656,6 +656,8 @@ ssres_flow
 dunnian_flow
 subinc_gwflow
 subinc_interflow
+recharge
+hru_snow
 ####
 nsubOutBaseFileName
 1

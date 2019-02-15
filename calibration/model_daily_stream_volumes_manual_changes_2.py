@@ -19,14 +19,14 @@ prms.control_file_name = cname
 prms.load_prms_project()
 
 # read in observation data and subbasin aggregation information from Excel workbook into Pandas dataframe
-# (use only when observation data has changed)
+# (use only when observation data has changed) **********************************************************
 if False:
-    observations = pd.read_excel('RR_local_flows.xlsx', sheet_name='daily_local_flows')
-    obs_mean_monthly = pd.read_excel('RR_local_flows.xlsx', sheet_name='mean_monthly')
-    obs_mean_annual = pd.read_excel('RR_local_flows.xlsx', sheet_name='mean_annual')
-    aggregation = pd.read_excel('RR_local_flows.xlsx', sheet_name='aggregated_subbasins')
-    yearday_obs_means = pd.read_excel('RR_local_flows.xlsx', sheet_name='yearday_mean')
-    monthly_obs_means = pd.read_excel('RR_local_flows.xlsx', sheet_name='monthly_mean')
+    observations = pd.read_excel('RR_local_flows_test_2_3.xlsx', sheet_name='daily_local_flows')
+    obs_mean_monthly = pd.read_excel('RR_local_flows_test_2_3.xlsx', sheet_name='mean_monthly')
+    obs_mean_annual = pd.read_excel('RR_local_flows_test_2_3.xlsx', sheet_name='mean_annual')
+    aggregation = pd.read_excel('RR_local_flows_test_2_3.xlsx', sheet_name='aggregated_subbasins')
+    yearday_obs_means = pd.read_excel('RR_local_flows_test_2_3.xlsx', sheet_name='yearday_mean')
+    monthly_obs_means = pd.read_excel('RR_local_flows_test_2_3.xlsx', sheet_name='monthly_mean')
 
     observations.to_pickle('daily_observations.pkl')
     obs_mean_monthly.to_pickle('mean_monthly.pkl')
@@ -110,15 +110,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.4
+slowcoef_sq_mult = 0.2
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.5
+soil_moist_max_mult = 2.0
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.8, 0.9, 0.95, 1.1, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 0.95]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.8, 0.9, 0.95, 1.1, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.1]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -191,15 +191,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.4
+slowcoef_sq_mult = 0.5
 smidx_coef_mult = 0.1
 carea_max_mult = 1.0
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.0
-soil_rechr_max_frac_mult = 1.0
+sat_threshold_mult = 5.0
+soil_moist_max_mult = 1.5
+soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.8]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -453,7 +453,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 1            ### declsre agg_subbasin
+sub_param_stat = 3            ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
@@ -498,7 +498,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if False:
+if True:
     prms.write_param_file(fn_param)
     prms.run()
 
@@ -704,7 +704,7 @@ aggregated_ppt = daily_sub_aggregation(flow_var_ID6)
 
 if True: # compare aggregated simulated flows with observations at selected gages
 
-    min_daily_flow = 1.0   # set minimum observed daily flow (cfs) to plot and use in NSE
+    min_daily_flow = 0.01  # set minimum observed daily flow (cfs) to plot and use in NSE
 
 # remove daily observations with low values
     for gage in columns:
@@ -783,49 +783,50 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plt.close()
 
     # plot simulated daily streamflow along with simulated runoff, interflow, and baseflow for a user-defined period
-        if True:
-        # set the starting and ending year and month
-            year_plot1 = 2005
-            month_plot1 = 1
+        if gage == 3:
+            for year in unique_sim_years[0:-1]:
+            # set the starting and ending year and month
+                year_plot1 = year
+                month_plot1 = 11
 
-            year_plot2 = 2005
-            month_plot2 = 2
+                year_plot2 = year + 1
+                month_plot2 = 3
 
-            yd1 = int(format(datetime.datetime(year_plot1, month_plot1, 1), '%j'))
-            year_decimal1 = year_plot1 + (float(yd1) - 1) / 366
-            yd2 = int(format(datetime.datetime(year_plot2, month_plot2, 28), '%j'))
-            year_decimal2 = year_plot2 + (float(yd2) - 1) / 366
-            span = year_decimal2 - year_decimal1
+                yd1 = int(format(datetime.datetime(year_plot1, month_plot1, 1), '%j'))
+                year_decimal1 = year_plot1 + (float(yd1) - 1) / 366
+                yd2 = int(format(datetime.datetime(year_plot2, month_plot2, 28), '%j'))
+                year_decimal2 = year_plot2 + (float(yd2) - 1) / 366
+                span = year_decimal2 - year_decimal1
 
-            y1 = []
-            y2 = []
-            for x in range(list(obs_yearday_dec).index(year_decimal1),list(obs_yearday_dec).index(year_decimal2)):
-                y1.append(sim_streamflow[x])
-                y2.append(obs_streamflow[x])
-            max_y1 = max(y1)
-            max_y2 = max(y2)
-            ymax = max(max_y1, max_y2)
+                y1 = []
+                y2 = []
+                for x in range(list(obs_yearday_dec).index(year_decimal1),list(obs_yearday_dec).index(year_decimal2)):
+                    y1.append(sim_streamflow[x])
+                    y2.append(obs_streamflow[x])
+                max_y1 = max(y1)
+                max_y2 = max(y2)
+                ymax = max(max_y1, max_y2)
 
-            xt = [year_decimal1, 0.2*span+year_decimal1, 0.4*span+year_decimal1,
-                            0.6*span+year_decimal1, 0.8*span+year_decimal1, year_decimal2]
-            xtick_labels = []
-            [xtick_labels.append("%.2f"%item) for item in xt]
-            xtick_locs = [year_decimal1, 0.2*span+year_decimal1, 0.4*span+year_decimal1,
-                          0.6*span+year_decimal1, 0.8*span+year_decimal1, year_decimal2]
-            plt.suptitle('Gage Basin ID %i' % gage)
-            plt.plot(obs_yearday_dec, sim_sroff, color='green', linewidth=0.5)
-            plt.plot(obs_yearday_dec, sim_interflow, color='orange', linewidth=0.5)
-            plt.plot(obs_yearday_dec, sim_gwflow, color='brown', linewidth=0.5)
-            plt.plot(obs_yearday_dec, sim_streamflow, color='blue', linewidth=0.5)
-            plt.plot(obs_yearday_dec, obs_streamflow, color = 'red', linewidth=1.0)
-            plt.xlim(year_decimal1, year_decimal2)
-            plt.xticks(xtick_locs, xtick_labels)
-            plt.ylim(ymin=1, ymax=ymax)
-            #plt.yscale('log')
-            plot_file = 'daily_components_%i_' % gage
-            plot_file += '%i.png' % int(year_decimal1)
-            plt.savefig(plot_file)
-            plt.close()
+                xt = [year_decimal1, 0.2*span+year_decimal1, 0.4*span+year_decimal1,
+                                0.6*span+year_decimal1, 0.8*span+year_decimal1, year_decimal2]
+                xtick_labels = []
+                [xtick_labels.append("%.2f"%item) for item in xt]
+                xtick_locs = [year_decimal1, 0.2*span+year_decimal1, 0.4*span+year_decimal1,
+                              0.6*span+year_decimal1, 0.8*span+year_decimal1, year_decimal2]
+                plt.suptitle('Gage Basin ID %i' % gage)
+                plt.plot(obs_yearday_dec, sim_sroff, color='green', linewidth=0.5)
+                plt.plot(obs_yearday_dec, sim_interflow, color='orange', linewidth=0.5)
+                plt.plot(obs_yearday_dec, sim_gwflow, color='brown', linewidth=0.5)
+                plt.plot(obs_yearday_dec, sim_streamflow, color='blue', linewidth=0.5)
+                plt.plot(obs_yearday_dec, obs_streamflow, color = 'red', linewidth=1.0)
+                plt.xlim(year_decimal1, year_decimal2)
+                plt.xticks(xtick_locs, xtick_labels)
+                plt.ylim(ymin=1, ymax=ymax)
+                #plt.yscale('log')
+                plot_file = 'daily_components_%i_' % gage
+                plot_file += '%i.png' % int(year_decimal1)
+                plt.savefig(plot_file)
+                plt.close()
 
     # plot simulated versus observed daily streamflow
         # entire period of record
@@ -847,11 +848,11 @@ if True: # compare aggregated simulated flows with observations at selected gage
         if True:
 
         # set the starting and ending year and month
-            year_plot1 = 2010
-            month_plot1 = 1
+            year_plot1 = 1997
+            month_plot1 = 11
 
-            year_plot2 = 2010
-            month_plot2 = 2
+            year_plot2 = 1998
+            month_plot2 = 3
 
             yd1 = int(format(datetime.datetime(year_plot1, month_plot1, 1), '%j'))
             year_decimal1 = year_plot1 + (float(yd1) - 1) / 366
