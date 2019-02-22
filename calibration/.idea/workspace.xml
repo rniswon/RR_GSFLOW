@@ -4,28 +4,252 @@
     <list default="true" id="dc12857c-c624-45a6-bb27-baae3e5a7fbf" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/../PRMS/input/prms_rr.param" beforeDir="false" afterPath="$PROJECT_DIR$/../PRMS/input/prms_rr.param" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AET_PPT_sb_ratios.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lake_Sonoma_inflow_extract.py" beforeDir="false" afterPath="$PROJECT_DIR$/Lake_Sonoma_inflow_extract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lake_Sonoma_inflow_extract_2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RR_local_flows_test_2_3.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/RR_local_flows_test_2_3.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_1_24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_1_33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_1_start.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/annual_mean_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_22.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/annual_mean_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_3.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/annual_mean_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_5.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/annual_mean_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_6.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cal_iterations_1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cal_iterations_1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cal_iterations_13.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cal_iterations_13.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cal_iterations_22.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cal_iterations_22.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cal_iterations_3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cal_iterations_3.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cal_iterations_5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cal_iterations_5.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cal_iterations_6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cal_iterations_6.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cal_parameter_values.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/cal_parameter_values.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_13_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_13_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_1_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_1_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2012_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2012_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2012_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_2012_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_13_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_16.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_16_2012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_18.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_18_2012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2010_25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2010_26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2010_27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2010_30.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_2012_start.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_1_start.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_2.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_22_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_22_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_2_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_2_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_22_2012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_2_2012.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_3_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_3_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_3_2012.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_5_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_5_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_5_2012.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_6_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_6_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_1991.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_1992.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_1993.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_1994.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_1996.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_1997.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2001.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2002.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2006.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2010.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2011.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_2012_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_6_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_13_2005_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_13_2005_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_13_2005_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_13_2010_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1990.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1990.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1991.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1991.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1992.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_24_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_29.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_30.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_33_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1992_final_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1993.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1993.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1994.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1994.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1995.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1995.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1996.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1996.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1998.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1998.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_1999.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1999.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2000.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2000.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2001.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2001.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2002.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2002.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2003.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2003.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2004.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2004.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2005.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2005.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2005_24_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2005_33_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2005_final_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2006.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2006.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2007.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2007.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2008.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2008.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2009.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2009.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_24_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_25.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_26.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_27.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_28.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_29.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_30.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_33_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_34.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_final_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_start.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2010_start_log.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2011.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2011.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2012.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2012.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2012_start_log.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2013.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2013.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_1_2014.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_2014.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_22_2005_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_22_2005_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_22_2005_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_22_2005_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_22_2010_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_1992_10_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_1997_10_11_12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_1997_10_11_12_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_1997_10_11_12_snow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_1997_12_11_12_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_1998_10_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_1998_11_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2005_10_11_12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2005_10_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2006_10_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2006_10_3_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2006_12_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2006_12_3_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_10_1_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_2_2010_8.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_3_1990.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_3_1990.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_3_1991.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_3_1991.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_3_1992.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_3_1992.png" afterDir="false" />
@@ -51,42 +275,192 @@
       <change beforePath="$PROJECT_DIR$/daily_components_3_2012.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_3_2012.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_3_2013.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_3_2013.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_3_2014.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_3_2014.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_5_2010_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_5_2010_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_5_2010_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_5_2010_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_5_2010_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1990.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1990.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1991.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1991.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1992.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1992.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1993.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1993.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1994.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1994.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1995.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1995.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1996.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1996.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1998.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1998.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_1999.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_1999.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2000.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2000.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2001.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2001.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2002.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2002.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2003.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2003.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2004.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2004.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2005.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2005.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2006.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2006.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2007.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2007.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2008.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2008.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2009.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2009.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2010_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2011.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2011.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2012.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2012.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2013.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2013.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_6_2014.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2014.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_observations.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/daily_observations.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mean_annual.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/mean_annual.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mean_monthly.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/mean_monthly.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_16.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_18.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_18.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_1_start.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_2.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_22.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_3.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_5.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_6.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_13_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_13_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_13_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_16.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1_24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1_31.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1_33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1_35.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1_final.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_1_start.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_mean_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_22.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_22_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_22_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_22_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_22_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_22_test.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_10.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_2_9.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_mean_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_3.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_5.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_5_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_5_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_5_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_mean_5_6.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/monthly_mean_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_3.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_5.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_6.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_7.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_6_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_means.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_means.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_13_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_13_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_13_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_18_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_18_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_22_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_22_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_22_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_22_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_2_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_5_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_5_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_5_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_5_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_5_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/annual_mean_6_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_10.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_11.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_12.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_13.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_14.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_15.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_16.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_17.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_18.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_19.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_20.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_21.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/old_iterations/daily_components_1_2011_9.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/stream_cal_daily.out" beforeDir="false" afterPath="$PROJECT_DIR$/stream_cal_daily.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearday_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearday_mean_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_13_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_13_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_13_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_16.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_18.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_18.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_1_24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_1_33.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_1_start.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/yearday_mean_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_2.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearday_mean_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_22.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_2_10.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_2_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_2_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_2_9.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/yearday_mean_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_3.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearday_mean_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_5.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearday_mean_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_6.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_6_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_6_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_6_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_6_5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_6_6.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_6_7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_mean_6_8.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_means.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_means.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_16.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_18.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_18.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_1_24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_1_start.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_22.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_3.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_5.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_6.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_13.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_16.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_18.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_18.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_1_24.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_1_start.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_22.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_3.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_5.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_6.png" afterDir="false" />
@@ -102,24 +476,25 @@
     <session id="1469307869">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="52" />
+          <entry key="project.closed" value="58" />
           <entry key="project.open.time.0" value="3" />
           <entry key="project.open.time.19" value="1" />
           <entry key="project.open.time.3" value="13" />
-          <entry key="project.open.time.4" value="37" />
-          <entry key="project.open.time.5" value="2" />
-          <entry key="project.opened" value="56" />
+          <entry key="project.open.time.4" value="41" />
+          <entry key="project.open.time.5" value="3" />
+          <entry key="project.open.time.6" value="1" />
+          <entry key="project.opened" value="62" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="Python Console" value="1635" />
-          <entry key="py" value="4059" />
+          <entry key="Python Console" value="1651" />
+          <entry key="py" value="4521" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="5694" />
+          <entry key="Python" value="6172" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -143,25 +518,25 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="284" lean-forward="true" selection-start-line="271" selection-end-line="284" />
+            <state relative-caret-position="-8512">
+              <caret line="193" column="23" lean-forward="true" selection-start-line="193" selection-start-column="23" selection-end-line="193" selection-end-column="23" />
               <folding>
                 <element signature="e#0#14#0" expanded="true" />
-                <marker date="1550261061132" expanded="true" signature="2175:3708" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="4085:6660" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="6756:9328" ph="..." />
-                <marker date="1550261061132" expanded="true" signature="6809:7041" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="9425:11998" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="12093:14664" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="14760:17335" ph="..." />
-                <marker date="1550261061132" expanded="true" signature="17431:20004" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="20101:22672" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="22769:25340" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="25437:28009" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="28073:29172" ph="..." />
-                <marker date="1550261061132" expanded="false" signature="29293:30519" ph="..." />
-                <marker date="1550261061132" expanded="true" signature="35446:36665" ph="..." />
-                <marker date="1550261061132" expanded="true" signature="36848:38761" ph="..." />
+                <marker date="1550873397164" expanded="true" signature="2175:3708" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="4085:6659" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="6755:9327" ph="..." />
+                <marker date="1550873397164" expanded="true" signature="6808:7040" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="9424:12000" ph="..." />
+                <marker date="1550873397164" expanded="true" signature="12095:14668" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="14764:17336" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="17432:20004" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="20101:22672" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="22769:25340" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="25437:28009" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="28073:29172" ph="..." />
+                <marker date="1550873397164" expanded="false" signature="29291:30517" ph="..." />
+                <marker date="1550873397164" expanded="true" signature="35444:36663" ph="..." />
+                <marker date="1550873397164" expanded="true" signature="36846:38759" ph="..." />
               </folding>
             </state>
           </provider>
@@ -187,8 +562,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>.all</find>
-      <find>ndarray</find>
       <find>dt</find>
       <find>sim_yr_mon</find>
       <find>yd</find>
@@ -217,6 +590,8 @@
       <find>np.</find>
       <find>unique</find>
       <find>RR_local_flows</find>
+      <find>False</find>
+      <find>NSE_overall</find>
     </findStrings>
     <replaceStrings>
       <replace>-2.0</replace>
@@ -290,10 +665,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="100" />
-    <option name="y" value="5" />
-    <option name="width" value="1760" />
-    <option name="height" value="1103" />
+    <option name="x" value="123" />
+    <option name="y" value="45" />
+    <option name="width" value="1613" />
+    <option name="height" value="992" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -301,23 +676,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <expand>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="calibration" type="cbb8eebc:String" user="calibration" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="calibration" type="b2602c69:ProjectViewProjectNode" />
               <item name="calibration" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <expand>
+            <path>
+              <item name="Root" type="cbb8eebc:String" user="Root" />
+              <item name="calibration" type="cbb8eebc:String" user="calibration" />
             </path>
           </expand>
           <select />
@@ -502,15 +877,15 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="80" y="4" width="1408" height="882" extended-state="0" />
+    <frame x="99" y="36" width="1290" height="793" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24142961" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.264166" />
       <window_info id="Structure" order="1" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32918552" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49964055" weight="0.25866666" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.34762633" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49964055" weight="0.26172465" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3464448" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32577905" />
@@ -967,25 +1342,25 @@ for gage in stream_volume_averages.keys():
     </entry>
     <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="284" lean-forward="true" selection-start-line="271" selection-end-line="284" />
+        <state relative-caret-position="-8512">
+          <caret line="193" column="23" lean-forward="true" selection-start-line="193" selection-start-column="23" selection-end-line="193" selection-end-column="23" />
           <folding>
             <element signature="e#0#14#0" expanded="true" />
-            <marker date="1550261061132" expanded="true" signature="2175:3708" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="4085:6660" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="6756:9328" ph="..." />
-            <marker date="1550261061132" expanded="true" signature="6809:7041" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="9425:11998" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="12093:14664" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="14760:17335" ph="..." />
-            <marker date="1550261061132" expanded="true" signature="17431:20004" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="20101:22672" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="22769:25340" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="25437:28009" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="28073:29172" ph="..." />
-            <marker date="1550261061132" expanded="false" signature="29293:30519" ph="..." />
-            <marker date="1550261061132" expanded="true" signature="35446:36665" ph="..." />
-            <marker date="1550261061132" expanded="true" signature="36848:38761" ph="..." />
+            <marker date="1550873397164" expanded="true" signature="2175:3708" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="4085:6659" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="6755:9327" ph="..." />
+            <marker date="1550873397164" expanded="true" signature="6808:7040" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="9424:12000" ph="..." />
+            <marker date="1550873397164" expanded="true" signature="12095:14668" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="14764:17336" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="17432:20004" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="20101:22672" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="22769:25340" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="25437:28009" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="28073:29172" ph="..." />
+            <marker date="1550873397164" expanded="false" signature="29291:30517" ph="..." />
+            <marker date="1550873397164" expanded="true" signature="35444:36663" ph="..." />
+            <marker date="1550873397164" expanded="true" signature="36846:38759" ph="..." />
           </folding>
         </state>
       </provider>
