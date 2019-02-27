@@ -195,7 +195,7 @@ slowcoef_sq_mult = 0.45
 smidx_coef_mult = 0.01
 carea_max_mult = 0.01
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.5
+soil_moist_max_mult = 1.75
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.3
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
@@ -585,6 +585,16 @@ def compute_MPE(zip_clean):
     MPE = (mean_err / mean_obs_sf) * 100
     return MPE
 
+def compute_VE(zip_clean):
+    unzip_clean = zip(*zip_clean)
+    obs_streamflow_clean = list(unzip_clean[0])
+    sim_streamflow_clean = list(unzip_clean[1])
+    aerr = [abs(x - y) for x, y in zip(sim_streamflow_clean, obs_streamflow_clean)]
+    sum_aerr = np.sum(np.array(aerr))
+    sum_obs_sf = np.sum(np.array(obs_streamflow_clean))
+    VE = 1 - (sum_aerr / sum_obs_sf)
+    return VE
+
 ########################################################################################################################
 
 # setup observed variables
@@ -634,6 +644,7 @@ sim_aet_ppt_ratios = []
 BFI = []
 MPE_list = []
 MAPE_list = []
+VE_list = []
 
 ########################################################################################################################
 
@@ -956,6 +967,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
 
             MPE_list.append(compute_MPE(zip_clean_no_growseason))
             MAPE_list.append(compute_MAPE(zip_clean_no_growseason))
+            VE_list.append(compute_VE(zip_clean_no_growseason))
 
     # Plot daily Nash-Sutcliffe efficiency for each year by average annual flow
         if True:
@@ -994,11 +1006,13 @@ sim_aet_ppt_ratios = list(sim_aet_ppt_ratios)
 sim_BFI = list(BFI)
 
 fid.write('\n')
-fid.write('MPE and MAPE by aggregated subbasin: \n')
+fid.write('MPE, MAPE, and VE by aggregated subbasin: \n')
 for sb in range(len(sim_aet_ppt_ratios)):
     fid.write('%i \n' % columns[sb])
     fid.write('%1.2f \n' % MPE_list[sb])
     fid.write('%1.2f \n' % MAPE_list[sb])
+    fid.write('%1.2f \n' % VE_list[sb])
+    fid.write('\n')
 fid.write('\n')
 fid.write('\n')
 fid.write('AET/PPT by aggregated subbasin: \n')
