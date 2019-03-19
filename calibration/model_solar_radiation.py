@@ -22,7 +22,7 @@ fid.close()
 
 ##-------------------**********************----------------
 ### change input files for the actual model
-cname = "D:\Workspace\projects\RussianRiver\gsflow\prms2\windows\prms_rr.control"
+cname = "C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\windows\prms_rr.control"
 prms = prms_py.Prms_base()
 prms.control_file_name = cname
 prms.load_prms_project()
@@ -36,7 +36,7 @@ prms.prms_parameters['Parameters']['dday_slope'][4] = params[12:]
 
 
 # write parameter file
-folder = r"D:\Workspace\projects\RussianRiver\gsflow\prms2\input"
+folder = r"C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\PRMS\input"
 fn_param = os.path.join(folder,"prms_rr.param")
 
 
@@ -45,7 +45,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 
 ##-------------------**********************----------------
 ### run the model
-if False:
+if True:
     prms.write_param_file(fn_param)
     prms.run()
 ##---------------------------------------------------------

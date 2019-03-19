@@ -181,11 +181,11 @@ class Prms_base(prms_par):
                         print par_name
                         par_order.append(par_name)
                         # 2) this is width, something not used in prms
-                        try:
-                            width = rec[0].split()[1] # not sure Ask Rich
-                            par_widths[par_name]=width
-                        except:
-                            par_widths[par_name] = ''
+                        # try:
+                        #     width = rec[0].split()[1] # not sure Ask Rich
+                        #     par_widths[par_name] = width
+                        # except:
+                        #     par_widths[par_name] = ''
                         # 3) No_dimension : 1d versus 2d
                         try:
                             no_dim = int(rec[1])
