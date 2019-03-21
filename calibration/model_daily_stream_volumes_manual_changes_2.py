@@ -69,15 +69,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.35
-smidx_coef_mult = 0.1
-carea_max_mult = 1.0
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.25
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.1, 1.1, 1.1, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.05]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -151,11 +151,11 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.25
+slowcoef_sq_mult = 0.5
 smidx_coef_mult = 0.05
 carea_max_mult = 0.1
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.0
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 5.0
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
@@ -794,7 +794,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plt.close()
 
     # plot simulated daily streamflow along with simulated runoff, interflow, and baseflow for a user-defined period
-        if gage == 3:
+        if True:
             for year in unique_sim_years[0:-1]:
                 # set the starting and ending year and month
                 year_plot1 = year
@@ -856,7 +856,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
                 pass
 
         # user-defined period
-        if False:
+        if True:
 
         # set the starting and ending year and month
             year_plot1 = 1997
@@ -901,7 +901,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plt.close()
 
         # one-to-one scatter plot
-        if False:
+        if True:
             try:
                 plt.figure()
                 plt.suptitle('Gage Basin ID %i' % gage)
@@ -937,13 +937,13 @@ if True: # compare aggregated simulated flows with observations at selected gage
             obs_sim_zip = zip(obs_streamflow, sim_streamflow, obs_yearday_dec)
             zip_clean = [x for x in obs_sim_zip if str(x[0]) != 'nan']
             zip_clean_no_1990_1991 = [y for y in zip_clean if y[2] >= 1992.0]
-            if gage == 3:
-                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 1994]
-                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2007]
-                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2009]
-                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2013]
-                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2014]
-                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2015]
+            # if gage == 3:
+            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 1994]
+            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2007]
+            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2009]
+            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2013]
+            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2014]
+            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2015]
             zip_clean_no_growseason = [z for z in zip_clean_no_1990_1991 if (z[2] - int(z[2]) < 0.33)
                                        or (z[2] - int(z[2]) > 0.83)]
             num_removed_values.append(len(obs_sim_zip) - len(zip_clean))

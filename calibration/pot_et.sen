@@ -3,50 +3,50 @@
 
  OPTIMISATION ITERATION NO.  1 ----->
  Parameter name    Group          Current value    Sensitivity
-   jh_cof_1        k               1.600000E-02      4.94118    
-   jh_cof_2        k               1.600000E-02      7.52759    
-   jh_cof_3        k               1.600000E-02      12.1608    
-   jh_cof_4        k               1.600000E-02      17.5755    
-   jh_cof_5        k               1.600000E-02      24.3801    
-   jh_cof_6        k               1.600000E-02      29.8693    
-   jh_cof_7        k               1.600000E-02      33.4995    
-   jh_cof_8        k               1.600000E-02      30.3722    
-   jh_cof_9        k               1.600000E-02      23.0522    
-   jh_cof_10       k               1.600000E-02      13.7748    
-   jh_cof_11       k               1.600000E-02      7.06990    
-   jh_cof_12       k               1.600000E-02      4.09745    
+   jh_cof_1        k               1.600000E-02      4.91565    
+   jh_cof_2        k               1.600000E-02      7.57050    
+   jh_cof_3        k               1.600000E-02      12.1125    
+   jh_cof_4        k               1.600000E-02      17.7393    
+   jh_cof_5        k               1.600000E-02      24.2438    
+   jh_cof_6        k               1.600000E-02      30.0007    
+   jh_cof_7        k               1.600000E-02      33.4942    
+   jh_cof_8        k               1.600000E-02      30.1692    
+   jh_cof_9        k               1.600000E-02      22.9847    
+   jh_cof_10       k               1.600000E-02      13.8871    
+   jh_cof_11       k               1.600000E-02      7.17804    
+   jh_cof_12       k               1.600000E-02      4.12727    
 
 
  OPTIMISATION ITERATION NO.  2 ----->
  Parameter name    Group          Current value    Sensitivity
-   jh_cof_1        k               1.538324E-02      4.94123    
-   jh_cof_2        k               1.483203E-02      7.52772    
-   jh_cof_3        k               1.384965E-02      12.1608    
-   jh_cof_4        k               1.387377E-02      17.5754    
-   jh_cof_5        k               1.178755E-02      24.3805    
-   jh_cof_6        k               1.148632E-02      29.8697    
-   jh_cof_7        k               1.090330E-02      33.4996    
-   jh_cof_8        k               1.079811E-02      30.3723    
-   jh_cof_9        k               1.174065E-02      23.0524    
-   jh_cof_10       k               1.377057E-02      13.7746    
-   jh_cof_11       k               1.516566E-02      7.07015    
-   jh_cof_12       k               1.567953E-02      4.09763    
+   jh_cof_1        k               1.540327E-02      4.91566    
+   jh_cof_2        k               1.480870E-02      7.57044    
+   jh_cof_3        k               1.389519E-02      12.1127    
+   jh_cof_4        k               1.376480E-02      17.7393    
+   jh_cof_5        k               1.186539E-02      24.2439    
+   jh_cof_6        k               1.142883E-02      30.0007    
+   jh_cof_7        k               1.089726E-02      33.4940    
+   jh_cof_8        k               1.087747E-02      30.1694    
+   jh_cof_9        k               1.177590E-02      22.9850    
+   jh_cof_10       k               1.369439E-02      13.8871    
+   jh_cof_11       k               1.509752E-02      7.17817    
+   jh_cof_12       k               1.566742E-02      4.12718    
 
 
  OPTIMISATION ITERATION NO.  3 ----->
  Parameter name    Group          Current value    Sensitivity
-   jh_cof_1        k               1.266181E-02      4.94135    
-   jh_cof_2        k               1.229753E-02      7.52771    
-   jh_cof_3        k               1.213906E-02      12.1604    
-   jh_cof_4        k               1.325744E-02      17.5753    
-   jh_cof_5        k               1.155187E-02      24.3803    
-   jh_cof_6        k               1.162284E-02      29.8694    
-   jh_cof_7        k               1.123860E-02      33.4997    
-   jh_cof_8        k               1.098500E-02      30.3726    
-   jh_cof_9        k               1.137292E-02      23.0520    
-   jh_cof_10       k               1.246512E-02      13.7746    
-   jh_cof_11       k               1.313344E-02      7.06989    
-   jh_cof_12       k               1.384009E-02      4.09784    
+   jh_cof_1        k               1.244206E-02      4.91570    
+   jh_cof_2        k               1.217027E-02      7.57082    
+   jh_cof_3        k               1.222699E-02      12.1129    
+   jh_cof_4        k               1.315645E-02      17.7393    
+   jh_cof_5        k               1.163518E-02      24.2440    
+   jh_cof_6        k               1.157396E-02      30.0007    
+   jh_cof_7        k               1.122595E-02      33.4940    
+   jh_cof_8        k               1.104957E-02      30.1693    
+   jh_cof_9        k               1.142137E-02      22.9850    
+   jh_cof_10       k               1.239955E-02      13.8872    
+   jh_cof_11       k               1.287557E-02      7.17811    
+   jh_cof_12       k               1.346026E-02      4.12743    
 
 
 
@@ -56,15 +56,15 @@
 
  Number of observations with non-zero weight =    24
  Parameter name    Group          Current value    Sensitivity
-   jh_cof_1        k               1.203196E-02      4.94135    
-   jh_cof_2        k               1.220630E-02      7.52771    
-   jh_cof_3        k               1.224650E-02      12.1604    
-   jh_cof_4        k               1.331655E-02      17.5753    
-   jh_cof_5        k               1.157795E-02      24.3803    
-   jh_cof_6        k               1.160701E-02      29.8694    
-   jh_cof_7        k               1.119895E-02      33.4997    
-   jh_cof_8        k               1.096325E-02      30.3726    
-   jh_cof_9        k               1.141292E-02      23.0520    
-   jh_cof_10       k               1.256533E-02      13.7746    
-   jh_cof_11       k               1.301804E-02      7.06989    
-   jh_cof_12       k               1.315287E-02      4.09784    
+   jh_cof_1        k               1.208357E-02      4.91570    
+   jh_cof_2        k               1.213868E-02      7.57082    
+   jh_cof_3        k               1.229123E-02      12.1129    
+   jh_cof_4        k               1.319057E-02      17.7393    
+   jh_cof_5        k               1.164974E-02      24.2440    
+   jh_cof_6        k               1.156436E-02      30.0007    
+   jh_cof_7        k               1.120386E-02      33.4940    
+   jh_cof_8        k               1.103818E-02      30.1693    
+   jh_cof_9        k               1.144347E-02      22.9850    
+   jh_cof_10       k               1.245961E-02      13.8872    
+   jh_cof_11       k               1.282858E-02      7.17811    
+   jh_cof_12       k               1.302721E-02      4.12743    
