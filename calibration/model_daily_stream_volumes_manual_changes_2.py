@@ -55,7 +55,7 @@ sat_threshold = np.load('C:\Users\jaengott\Documents\Projects\Russian_River\RR_G
 soil_moist_max = np.load('C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\calibration\orig_params\soil_moist_max.npy')
 soil_rechr_max_frac = np.load('C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\calibration\orig_params\soil_rechr_max_frac.npy')
 pref_flow_den = np.load('C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\calibration\orig_params\\pref_flow_den.npy')
-rain_adj = np.load('C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\calibration\orig_params\\rain_adj.npy')
+rain_adj = np.load('C:\Users\jaengott\Documents\Projects\Russian_River\RR_GSFLOW\calibration\orig_params\\rain_adj4.npy')
 
 # List of parameters adjusted
 param_list = ['gwflow_coef', 'gwsink_coef', 'ssr2gw_rate', 'slowcoef_lin', 'slowcoef_sq', 'smidx_coef', 'carea_max',
@@ -74,10 +74,10 @@ smidx_coef_mult = 0.05
 carea_max_mult = 0.1
 sat_threshold_mult = 15.0
 soil_moist_max_mult = 3.0
-soil_rechr_max_frac_mult = 1.0
+soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -118,7 +118,7 @@ soil_moist_max_mult = 2.0
 soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.8, 0.9, 0.95, 1.1, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.1]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -151,15 +151,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.5
-smidx_coef_mult = 0.05
-carea_max_mult = 0.1
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
 sat_threshold_mult = 15.0
-soil_moist_max_mult = 5.0
-soil_rechr_max_frac_mult = 1.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.85, 0.85, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.95]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -183,6 +183,7 @@ for sub in calibration_subbasins:
                 cell2 = cell + (mon - 1) * (len(prms.prms_parameters['Parameters']['hru_subbasin'][4]))
                 prms.prms_parameters['Parameters']['rain_adj'][4][cell2] = rain_adj[cell2] \
                                                                            * rain_adj_factor[rain_adj_month.index(mon)]
+
 # Set the list of next subbasins to apply parameter adjustments
 calibration_agg_subbasin = 3
 
@@ -195,11 +196,11 @@ slowcoef_sq_mult = 0.45
 smidx_coef_mult = 0.01
 carea_max_mult = 0.01
 sat_threshold_mult = 10.0
-soil_moist_max_mult = 1.5
+soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
-pref_flow_den = 0.3
+pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.8, 0.8, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.8, 0.8, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -232,15 +233,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.2
-smidx_coef_mult = 0.1
-carea_max_mult = 0.5
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.5
-soil_rechr_max_frac_mult = 0.5
+slowcoef_sq_mult = 0.35
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 1.0
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.95, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -273,15 +274,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.25
-smidx_coef_mult = 0.1
-carea_max_mult = 0.5
-sat_threshold_mult = 5.0
-soil_moist_max_mult = 2.0
-soil_rechr_max_frac_mult = 1.0
+slowcoef_sq_mult = 0.3
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 2.5
+soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.95, 1.0, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [1.0, 1.05, 1.05, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -314,15 +315,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.2
-smidx_coef_mult = 0.1
-carea_max_mult = 0.5
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.5
+slowcoef_sq_mult = 0.25
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 5.0
+soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -429,7 +430,6 @@ for sub in calibration_subbasins:
                 prms.prms_parameters['Parameters']['rain_adj'][4][cell2] = rain_adj[cell2] \
                                                                            * rain_adj_factor[rain_adj_month.index(mon)]
 
-
 # compute parameter mean, max, and min for entire study area
 param_stats_mean = []
 param_stats_max = []
@@ -453,7 +453,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 22         ### declsre agg_subbasin
+sub_param_stat = 6       ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
@@ -901,7 +901,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
             plt.close()
 
         # one-to-one scatter plot
-        if True:
+        if False:
             try:
                 plt.figure()
                 plt.suptitle('Gage Basin ID %i' % gage)
@@ -937,13 +937,15 @@ if True: # compare aggregated simulated flows with observations at selected gage
             obs_sim_zip = zip(obs_streamflow, sim_streamflow, obs_yearday_dec)
             zip_clean = [x for x in obs_sim_zip if str(x[0]) != 'nan']
             zip_clean_no_1990_1991 = [y for y in zip_clean if y[2] >= 1992.0]
-            # if gage == 3:
-            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 1994]
-            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2007]
-            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2009]
-            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2013]
-            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2014]
-            #     zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2015]
+            if gage == 3:
+                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 1994]
+                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2007]
+                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2009]
+                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2013]
+                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2014]
+                zip_clean_no_1990_1991 = [x for x in zip_clean_no_1990_1991 if int(x[2]) != 2015]
+            if gage == 22:
+                zip_clean_no_1990_1991 = [y for y in zip_clean if y[2] >= 2000.0]
             zip_clean_no_growseason = [z for z in zip_clean_no_1990_1991 if (z[2] - int(z[2]) < 0.33)
                                        or (z[2] - int(z[2]) > 0.83)]
             num_removed_values.append(len(obs_sim_zip) - len(zip_clean))

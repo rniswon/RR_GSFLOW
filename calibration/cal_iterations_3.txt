@@ -1,0 +1,203 @@
+3-1
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.5
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.8, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.8]             # list of rain_adj adjustment factors corresponding to selected months
+0.60
+1.71
+0.64
+
+3-2
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.0	***
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.7, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]      ***      
+0.62
+7.1
+0.61
+
+3-3
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 20.0	***
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.7, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.59
+7.16
+0.61
+
+3-4
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 2.5		***
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.7, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.60
+13.5
+0.58
+
+3-5
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.3		***
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.7, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.62
+5.17
+0.62
+
+3-6
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.45		***
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.7, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.59
+7.87
+0.61
+
+3-7
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05		***
+carea_max_mult = 0.1		***
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.7, 0.8, 0.8, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.62
+7.53
+0.61
+
+use 3-2
+
+NEW DATAFILE###############################################################################
+
+3-8
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.35
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.8, 0.8, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.69
+-0.06
+0.63
+
+3-9
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4	***
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.8, 0.8, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.72
+0.78
+0.63
+
+3-10
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.45	***
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.8, 0.8, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.73
+1.54
+0.63
+
+3-11
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.5
+smidx_coef_mult = 0.01
+carea_max_mult = 0.01
+sat_threshold_mult = 10.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.8, 0.8, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+0.73
+2.21
+0.63
+
+use 3-10
