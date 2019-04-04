@@ -174,7 +174,7 @@ File saving options: -
 
 
 INITIAL CONDITIONS: 
-   Sum of squared weighted residuals (ie phi) =   56.484    
+   Sum of squared weighted residuals (ie phi) =   58.378    
 
       Current parameter values
       jh_cof_1        1.600000E-02
@@ -193,100 +193,100 @@ INITIAL CONDITIONS:
 
 OPTIMISATION ITERATION NO.        : 1
    Model calls so far             : 1
-   Starting phi for this iteration:   56.484    
+   Starting phi for this iteration:   58.378    
 
        Lambda =   10.000     ----->
-          Phi =   1.9037      (  0.034 of starting phi)
+          Phi =   2.0500      (  0.035 of starting phi)
 
    No more lambdas: phi is less than 0.3000 of starting phi
-   Lowest phi this iteration:   1.9037    
+   Lowest phi this iteration:   2.0500    
 
       Current parameter values                 Previous parameter values
-      jh_cof_1        1.540327E-02             jh_cof_1         1.600000E-02
-      jh_cof_2        1.480870E-02             jh_cof_2         1.600000E-02
-      jh_cof_3        1.389519E-02             jh_cof_3         1.600000E-02
-      jh_cof_4        1.376480E-02             jh_cof_4         1.600000E-02
-      jh_cof_5        1.186539E-02             jh_cof_5         1.600000E-02
-      jh_cof_6        1.142883E-02             jh_cof_6         1.600000E-02
-      jh_cof_7        1.089726E-02             jh_cof_7         1.600000E-02
-      jh_cof_8        1.087747E-02             jh_cof_8         1.600000E-02
-      jh_cof_9        1.177590E-02             jh_cof_9         1.600000E-02
-      jh_cof_10       1.369439E-02             jh_cof_10        1.600000E-02
-      jh_cof_11       1.509752E-02             jh_cof_11        1.600000E-02
-      jh_cof_12       1.566742E-02             jh_cof_12        1.600000E-02
-   Maximum   factor change:  1.471     ["jh_cof_8"]
-   Maximum relative change: 0.3202     ["jh_cof_8"]
+      jh_cof_1        1.540136E-02             jh_cof_1         1.600000E-02
+      jh_cof_2        1.485032E-02             jh_cof_2         1.600000E-02
+      jh_cof_3        1.385312E-02             jh_cof_3         1.600000E-02
+      jh_cof_4        1.373368E-02             jh_cof_4         1.600000E-02
+      jh_cof_5        1.167478E-02             jh_cof_5         1.600000E-02
+      jh_cof_6        1.132605E-02             jh_cof_6         1.600000E-02
+      jh_cof_7        1.088165E-02             jh_cof_7         1.600000E-02
+      jh_cof_8        1.085784E-02             jh_cof_8         1.600000E-02
+      jh_cof_9        1.177298E-02             jh_cof_9         1.600000E-02
+      jh_cof_10       1.376412E-02             jh_cof_10        1.600000E-02
+      jh_cof_11       1.510280E-02             jh_cof_11        1.600000E-02
+      jh_cof_12       1.565934E-02             jh_cof_12        1.600000E-02
+   Maximum   factor change:  1.474     ["jh_cof_8"]
+   Maximum relative change: 0.3214     ["jh_cof_8"]
 
 
 OPTIMISATION ITERATION NO.        : 2
    Model calls so far             : 14
-   Starting phi for this iteration:   1.9037    
+   Starting phi for this iteration:   2.0500    
 
        Lambda =   4.6416     ----->
-          Phi =  0.88878      (  0.467 of starting phi)
+          Phi =   1.0250      (  0.500 of starting phi)
 
        Lambda =   2.3208     ----->
-          Phi =  0.80651      (  0.424 of starting phi)
+          Phi =  0.94101      (  0.459 of starting phi)
 
        Lambda =   1.1604     ----->
-          Phi =  0.75439      (  0.396 of starting phi)
+          Phi =  0.88728      (  0.433 of starting phi)
 
        Lambda =  0.58020     ----->
-          Phi =  0.72766      (  0.382 of starting phi)
+          Phi =  0.85955      (  0.419 of starting phi)
 
        Lambda =  0.29010     ----->
-          Phi =  0.71661      (  0.376 of starting phi)
+          Phi =  0.84806      (  0.414 of starting phi)
 
    No more lambdas: relative phi reduction between lambdas less than 0.0300
-   Lowest phi this iteration:  0.71661    
+   Lowest phi this iteration:  0.84806    
 
       Current parameter values                 Previous parameter values
-      jh_cof_1        1.244206E-02             jh_cof_1         1.540327E-02
-      jh_cof_2        1.217027E-02             jh_cof_2         1.480870E-02
-      jh_cof_3        1.222699E-02             jh_cof_3         1.389519E-02
-      jh_cof_4        1.315645E-02             jh_cof_4         1.376480E-02
-      jh_cof_5        1.163518E-02             jh_cof_5         1.186539E-02
-      jh_cof_6        1.157396E-02             jh_cof_6         1.142883E-02
-      jh_cof_7        1.122595E-02             jh_cof_7         1.089726E-02
-      jh_cof_8        1.104957E-02             jh_cof_8         1.087747E-02
-      jh_cof_9        1.142137E-02             jh_cof_9         1.177590E-02
-      jh_cof_10       1.239955E-02             jh_cof_10        1.369439E-02
-      jh_cof_11       1.287557E-02             jh_cof_11        1.509752E-02
-      jh_cof_12       1.346026E-02             jh_cof_12        1.566742E-02
-   Maximum   factor change:  1.238     ["jh_cof_1"]
-   Maximum relative change: 0.1922     ["jh_cof_1"]
+      jh_cof_1        1.241447E-02             jh_cof_1         1.540136E-02
+      jh_cof_2        1.224330E-02             jh_cof_2         1.485032E-02
+      jh_cof_3        1.214952E-02             jh_cof_3         1.385312E-02
+      jh_cof_4        1.311214E-02             jh_cof_4         1.373368E-02
+      jh_cof_5        1.145437E-02             jh_cof_5         1.167478E-02
+      jh_cof_6        1.148025E-02             jh_cof_6         1.132605E-02
+      jh_cof_7        1.120847E-02             jh_cof_7         1.088165E-02
+      jh_cof_8        1.102700E-02             jh_cof_8         1.085784E-02
+      jh_cof_9        1.140872E-02             jh_cof_9         1.177298E-02
+      jh_cof_10       1.247065E-02             jh_cof_10        1.376412E-02
+      jh_cof_11       1.287581E-02             jh_cof_11        1.510280E-02
+      jh_cof_12       1.339835E-02             jh_cof_12        1.565934E-02
+   Maximum   factor change:  1.241     ["jh_cof_1"]
+   Maximum relative change: 0.1939     ["jh_cof_1"]
 
 
 OPTIMISATION ITERATION NO.        : 3
    Model calls so far             : 31
-   Starting phi for this iteration:  0.71661    
+   Starting phi for this iteration:  0.84806    
 
        Lambda =  0.14505     ----->
-          Phi =  0.71128      (  0.993 of starting phi)
+          Phi =  0.84250      (  0.993 of starting phi)
 
        Lambda =  7.25248E-02 ----->
-          Phi =  0.71127      (  0.993 of starting phi)
+          Phi =  0.84249      (  0.993 of starting phi)
 
    No more lambdas: relative phi reduction between lambdas less than 0.0300
-   Lowest phi this iteration:  0.71127    
+   Lowest phi this iteration:  0.84249    
    Relative phi reduction between optimisation iterations less than 0.1000
    Switch to higher order derivatives calculation
 
       Current parameter values                 Previous parameter values
-      jh_cof_1        1.208357E-02             jh_cof_1         1.244206E-02
-      jh_cof_2        1.213868E-02             jh_cof_2         1.217027E-02
-      jh_cof_3        1.229123E-02             jh_cof_3         1.222699E-02
-      jh_cof_4        1.319057E-02             jh_cof_4         1.315645E-02
-      jh_cof_5        1.164974E-02             jh_cof_5         1.163518E-02
-      jh_cof_6        1.156436E-02             jh_cof_6         1.157396E-02
-      jh_cof_7        1.120386E-02             jh_cof_7         1.122595E-02
-      jh_cof_8        1.103818E-02             jh_cof_8         1.104957E-02
-      jh_cof_9        1.144347E-02             jh_cof_9         1.142137E-02
-      jh_cof_10       1.245961E-02             jh_cof_10        1.239955E-02
-      jh_cof_11       1.282858E-02             jh_cof_11        1.287557E-02
-      jh_cof_12       1.302721E-02             jh_cof_12        1.346026E-02
-   Maximum   factor change:  1.033     ["jh_cof_12"]
-   Maximum relative change: 3.2173E-02 ["jh_cof_12"]
+      jh_cof_1        1.205229E-02             jh_cof_1         1.241447E-02
+      jh_cof_2        1.220924E-02             jh_cof_2         1.224330E-02
+      jh_cof_3        1.221650E-02             jh_cof_3         1.214952E-02
+      jh_cof_4        1.314748E-02             jh_cof_4         1.311214E-02
+      jh_cof_5        1.146855E-02             jh_cof_5         1.145437E-02
+      jh_cof_6        1.146991E-02             jh_cof_6         1.148025E-02
+      jh_cof_7        1.118623E-02             jh_cof_7         1.120847E-02
+      jh_cof_8        1.101566E-02             jh_cof_8         1.102700E-02
+      jh_cof_9        1.143171E-02             jh_cof_9         1.140872E-02
+      jh_cof_10       1.253100E-02             jh_cof_10        1.247065E-02
+      jh_cof_11       1.282899E-02             jh_cof_11        1.287581E-02
+      jh_cof_12       1.295681E-02             jh_cof_12        1.339835E-02
+   Maximum   factor change:  1.034     ["jh_cof_12"]
+   Maximum relative change: 3.2955E-02 ["jh_cof_12"]
 
    Optimisation complete: optimisation iteration limit of   3 realized.
    Total model calls:     45
@@ -303,18 +303,18 @@ Parameters ----->
 
 Parameter        Estimated         95% percent confidence limits
                  value             lower limit       upper limit
- jh_cof_1       1.208357E-02       7.586925E-03      1.658021E-02
- jh_cof_2       1.213868E-02       9.219034E-03      1.505833E-02
- jh_cof_3       1.229123E-02       1.046638E-02      1.411608E-02
- jh_cof_4       1.319057E-02       1.194452E-02      1.443663E-02
- jh_cof_5       1.164974E-02       1.073801E-02      1.256148E-02
- jh_cof_6       1.156436E-02       1.082757E-02      1.230115E-02
- jh_cof_7       1.120386E-02       1.054391E-02      1.186380E-02
- jh_cof_8       1.103818E-02       1.030551E-02      1.177085E-02
- jh_cof_9       1.144347E-02       1.048179E-02      1.240515E-02
- jh_cof_10      1.245961E-02       1.086792E-02      1.405130E-02
- jh_cof_11      1.282858E-02       9.749196E-03      1.590796E-02
- jh_cof_12      1.302721E-02       7.671788E-03      1.838263E-02
+ jh_cof_1       1.205229E-02       7.173760E-03      1.693083E-02
+ jh_cof_2       1.220924E-02       9.013616E-03      1.540486E-02
+ jh_cof_3       1.221650E-02       1.024120E-02      1.419180E-02
+ jh_cof_4       1.314748E-02       1.179586E-02      1.449910E-02
+ jh_cof_5       1.146855E-02       1.049044E-02      1.244665E-02
+ jh_cof_6       1.146991E-02       1.067438E-02      1.226545E-02
+ jh_cof_7       1.118623E-02       1.046911E-02      1.190336E-02
+ jh_cof_8       1.101566E-02       1.021991E-02      1.181142E-02
+ jh_cof_9       1.143171E-02       1.038619E-02      1.247722E-02
+ jh_cof_10      1.253100E-02       1.078924E-02      1.427275E-02
+ jh_cof_11      1.282899E-02       9.484380E-03      1.617360E-02
+ jh_cof_12      1.295681E-02       7.164177E-03      1.874943E-02
 
 Note: confidence limits provide only an indication of parameter uncertainty.
       They rely on a linearity assumption which  may not extend as far in 
@@ -327,30 +327,30 @@ Observations ----->
 
 Observation            Measured       Calculated     Residual       Weight     Group
                        value          value
-sanel_0                1.00000        1.06327      -6.326559E-02    1.000      head        
-sanel_1                1.57000        1.60437      -3.436536E-02    1.000      head        
-sanel_2                2.64000        2.55492       8.507624E-02    1.000      head        
-sanel_3                3.89000        3.93204      -4.204212E-02    1.000      head        
-sanel_4                5.10000        4.76104       0.338961        1.000      head        
-sanel_5                6.11000        5.83810       0.271903        1.000      head        
-sanel_6                6.59000        6.56419       2.580820E-02    1.000      head        
-sanel_7                5.79000        5.80524      -1.523564E-02    1.000      head        
-sanel_8                4.48000        4.59748      -0.117480        1.000      head        
-sanel_9                2.82000        3.01194      -0.191942        1.000      head        
-sanel_10               1.31000        1.60216      -0.292155        1.000      head        
-sanel_11              0.850000       0.948417      -9.841659E-02    1.000      head        
-healdsburg_0           1.02000       0.949598       7.040228E-02    1.000      head        
-healdsburg_1           1.55000        1.51339       3.660979E-02    1.000      head        
-healdsburg_2           2.41000        2.49793      -8.792575E-02    1.000      head        
-healdsburg_3           4.05000        4.00955       4.045118E-02    1.000      head        
-healdsburg_4           4.49000        4.82495      -0.334945        1.000      head        
-healdsburg_5           5.67000        5.93698      -0.266978        1.000      head        
-healdsburg_6           6.14000        6.16641      -2.641056E-02    1.000      head        
-healdsburg_7           5.51000        5.49341       1.659105E-02    1.000      head        
-healdsburg_8           4.45000        4.32585       0.124152        1.000      head        
-healdsburg_9           3.06000        2.85883       0.201173        1.000      head        
-healdsburg_10          1.83000        1.52230       0.307699        1.000      head        
-healdsburg_11         0.980000       0.875067       0.104933        1.000      head        
+sanel_0                1.00000        1.05627      -5.626971E-02    1.000      head        
+sanel_1                1.57000        1.58876      -1.876090E-02    1.000      head        
+sanel_2                2.64000        2.51406       0.125936        1.000      head        
+sanel_3                3.89000        3.87388       1.611802E-02    1.000      head        
+sanel_4                5.10000        4.67504       0.424958        1.000      head        
+sanel_5                6.11000        5.80474       0.305262        1.000      head        
+sanel_6                6.59000        6.54598       4.401502E-02    1.000      head        
+sanel_7                5.79000        5.78923       7.667983E-04    1.000      head        
+sanel_8                4.48000        4.59066      -0.110662        1.000      head        
+sanel_9                2.82000        3.00068      -0.180683        1.000      head        
+sanel_10               1.31000        1.58855      -0.278549        1.000      head        
+sanel_11              0.850000       0.943039      -9.303938E-02    1.000      head        
+healdsburg_0           1.02000       0.958443       6.155716E-02    1.000      head        
+healdsburg_1           1.55000        1.53033       1.966581E-02    1.000      head        
+healdsburg_2           2.41000        2.53580      -0.125797        1.000      head        
+healdsburg_3           4.05000        4.06616      -1.615802E-02    1.000      head        
+healdsburg_4           4.49000        4.89623      -0.406230        1.000      head        
+healdsburg_5           5.67000        5.96655      -0.296555        1.000      head        
+healdsburg_6           6.14000        6.18551      -4.550765E-02    1.000      head        
+healdsburg_7           5.51000        5.51032      -3.181022E-04    1.000      head        
+healdsburg_8           4.45000        4.33351       0.116490        1.000      head        
+healdsburg_9           3.06000        2.87228       0.187716        1.000      head        
+healdsburg_10          1.83000        1.54303       0.286975        1.000      head        
+healdsburg_11         0.980000       0.882316       9.768442E-02    1.000      head        
 
 See file pot_et.res for more details of residuals in graph-ready format.
 
@@ -359,23 +359,23 @@ See file pot_et.seo for composite observation sensitivities.
 
 Objective function ----->
 
-  Sum of squared weighted residuals (ie phi)                =  0.7113    
+  Sum of squared weighted residuals (ie phi)                =  0.8425    
 
 
 Correlation Coefficient ----->
 
-  Correlation coefficient                                   =  0.99589    
+  Correlation coefficient                                   =  0.99513    
 
 
 Analysis of residuals ----->
 
   All residuals:-
      Number of residuals with non-zero weight                       =    24
-     Mean value of non-zero weighted residuals                      =  2.1915E-03
-     Maximum weighted residual [observation "sanel_4"]              =  0.3390    
-     Minimum weighted residual [observation "healdsburg_4"]         = -0.3349    
-     Standard variance of weighted residuals                        =  5.9273E-02
-     Standard error of weighted residuals                           =  0.2435    
+     Mean value of non-zero weighted residuals                      =  2.4423E-03
+     Maximum weighted residual [observation "sanel_4"]              =  0.4250    
+     Minimum weighted residual [observation "healdsburg_4"]         = -0.4062    
+     Standard variance of weighted residuals                        =  7.0208E-02
+     Standard error of weighted residuals                           =  0.2650    
 
      Note: the above variance was obtained by dividing the objective 
      function by the number of system degrees of freedom (ie. number of 
@@ -389,51 +389,51 @@ Analysis of residuals ----->
 K-L information statistics ----->
 
 
-  AIC   =  -58.45007    
-  AICC  =  -22.05007    
-  BIC   =  -43.13537    
-  KIC   =   75.29147    
+  AIC   =  -54.38666    
+  AICC  =  -17.98666    
+  BIC   =  -39.07196    
+  KIC   =   77.39522    
 
 Parameter covariance matrix ----->
 
                jh_cof_1     jh_cof_2     jh_cof_3     jh_cof_4     jh_cof_5     jh_cof_6     jh_cof_7     jh_cof_8  
                jh_cof_9    jh_cof_10    jh_cof_11    jh_cof_12  
 
-jh_cof_1       4.2586E-06    0.000        0.000        0.000        0.000        0.000        0.000        0.000    
+jh_cof_1       5.0126E-06    0.000        0.000        0.000        0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_2        0.000       1.7953E-06    0.000        0.000        0.000        0.000        0.000        0.000    
+jh_cof_2        0.000       2.1508E-06    0.000        0.000        0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_3        0.000        0.000       7.0136E-07    0.000        0.000        0.000        0.000        0.000    
+jh_cof_3        0.000        0.000       8.2177E-07    0.000        0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_4        0.000        0.000        0.000       3.2701E-07    0.000        0.000        0.000        0.000    
+jh_cof_4        0.000        0.000        0.000       3.8476E-07    0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_5        0.000        0.000        0.000        0.000       1.7508E-07    0.000        0.000        0.000    
+jh_cof_5        0.000        0.000        0.000        0.000       2.0149E-07    0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_6        0.000        0.000        0.000        0.000        0.000       1.1433E-07    0.000        0.000    
+jh_cof_6        0.000        0.000        0.000        0.000        0.000       1.3329E-07    0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_7        0.000        0.000        0.000        0.000        0.000        0.000       9.1727E-08    0.000    
+jh_cof_7        0.000        0.000        0.000        0.000        0.000        0.000       1.0831E-07    0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_8        0.000        0.000        0.000        0.000        0.000        0.000        0.000       1.1306E-07
+jh_cof_8        0.000        0.000        0.000        0.000        0.000        0.000        0.000       1.3337E-07
                 0.000        0.000        0.000        0.000    
 
 jh_cof_9        0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
-               1.9478E-07    0.000        0.000        0.000    
+               2.3022E-07    0.000        0.000        0.000    
 
 jh_cof_10       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
-                0.000       5.3358E-07    0.000        0.000    
+                0.000       6.3894E-07    0.000        0.000    
 
 jh_cof_11       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
-                0.000        0.000       1.9972E-06    0.000    
+                0.000        0.000       2.3560E-06    0.000    
 
 jh_cof_12       0.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
-                0.000        0.000        0.000       6.0405E-06
+                0.000        0.000        0.000       7.0670E-06
 
 
 
@@ -500,13 +500,13 @@ jh_cof_4        0.000        0.000        0.000        0.000        0.000       
 jh_cof_5        0.000        0.000        0.000        1.000        0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_6        0.000        0.000        1.000        0.000        0.000        0.000        0.000        0.000    
+jh_cof_6        0.000        1.000        0.000        0.000        0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
 jh_cof_7        1.000        0.000        0.000        0.000        0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
-jh_cof_8        0.000        1.000        0.000        0.000        0.000        0.000        0.000        0.000    
+jh_cof_8        0.000        0.000        1.000        0.000        0.000        0.000        0.000        0.000    
                 0.000        0.000        0.000        0.000    
 
 jh_cof_9        0.000        0.000        0.000        0.000        1.000        0.000        0.000        0.000    
@@ -525,5 +525,5 @@ jh_cof_12       0.000        0.000        0.000        0.000        0.000       
 
 Eigenvalues ----->
 
-               9.1727E-08   1.1306E-07   1.1433E-07   1.7508E-07   1.9478E-07   3.2701E-07   5.3358E-07   7.0136E-07
-               1.7953E-06   1.9972E-06   4.2586E-06   6.0405E-06
+               1.0831E-07   1.3329E-07   1.3337E-07   2.0149E-07   2.3022E-07   3.8476E-07   6.3894E-07   8.2177E-07
+               2.1508E-06   2.3560E-06   5.0126E-06   7.0670E-06
