@@ -21,12 +21,12 @@ prms.load_prms_project()
 # read in observation data and subbasin aggregation information from Excel workbook into Pandas dataframe
 # (use only when observation data has changed) **********************************************************
 if False:
-    observations = pd.read_excel('RR_local_flows_test_21.xlsx', sheet_name='daily_local_flows')
-    obs_mean_monthly = pd.read_excel('RR_local_flows_test_21.xlsx', sheet_name='mean_monthly')
-    obs_mean_annual = pd.read_excel('RR_local_flows_test_21.xlsx', sheet_name='mean_annual')
-    aggregation = pd.read_excel('RR_local_flows_test_21.xlsx', sheet_name='aggregated_subbasins')
-    yearday_obs_means = pd.read_excel('RR_local_flows_test_21.xlsx', sheet_name='yearday_mean')
-    monthly_obs_means = pd.read_excel('RR_local_flows_test_21.xlsx', sheet_name='monthly_mean')
+    observations = pd.read_excel('RR_local_flows.xlsx', sheet_name='daily_local_flows')
+    obs_mean_monthly = pd.read_excel('RR_local_flows.xlsx', sheet_name='mean_monthly')
+    obs_mean_annual = pd.read_excel('RR_local_flows.xlsx', sheet_name='mean_annual')
+    aggregation = pd.read_excel('RR_local_flows.xlsx', sheet_name='aggregated_subbasins')
+    yearday_obs_means = pd.read_excel('RR_local_flows.xlsx', sheet_name='yearday_mean')
+    monthly_obs_means = pd.read_excel('RR_local_flows.xlsx', sheet_name='monthly_mean')
 
     observations.to_pickle('daily_observations.pkl')
     obs_mean_monthly.to_pickle('mean_monthly.pkl')
@@ -494,7 +494,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 21      ### declsre agg_subbasin
+sub_param_stat = 6      ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
@@ -539,7 +539,7 @@ fn_param = os.path.join(folder,"prms_rr.param")
 #prms.write_param_file(fn_param)
 
 ### run the model
-if False:
+if True:
     prms.write_param_file(fn_param)
     prms.run()
 
