@@ -110,15 +110,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.2
-smidx_coef_mult = 0.1
-carea_max_mult = 1.0
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.0
-soil_rechr_max_frac_mult = 1.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -192,15 +192,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.45
-smidx_coef_mult = 0.01
-carea_max_mult = 0.01
-sat_threshold_mult = 10.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
 soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.8, 0.8, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -233,15 +233,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.35
-smidx_coef_mult = 0.01
-carea_max_mult = 0.01
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
 sat_threshold_mult = 15.0
 soil_moist_max_mult = 3.0
-soil_rechr_max_frac_mult = 1.0
+soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.9, 0.9, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -274,15 +274,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.35
-smidx_coef_mult = 0.01
-carea_max_mult = 0.01
-sat_threshold_mult = 5.0
-soil_moist_max_mult = 2.5
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.1, 1.05, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -315,15 +315,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.25
-smidx_coef_mult = 0.01
-carea_max_mult = 0.01
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.5
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [0.9, 1.0, 1.0, 1.1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -364,7 +364,7 @@ soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -397,15 +397,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.25
-smidx_coef_mult = 0.01
-carea_max_mult = 0.01
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.5
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
@@ -438,15 +438,15 @@ gwflow_coef_mult = 10.0
 gwsink_coef_mult = 0.00
 ssr2gw_rate_mult = 0.00005
 slowcoef_lin_mult = 1.0
-slowcoef_sq_mult = 0.25
-smidx_coef_mult = 0.01
-carea_max_mult = 0.01
-sat_threshold_mult = 10.0
-soil_moist_max_mult = 2.5
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
 soil_rechr_max_frac_mult = 0.5
 pref_flow_den = 0.15
 rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
-rain_adj_factor = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
 
 # Make scalar adjustments to subbasin parameters
 calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
