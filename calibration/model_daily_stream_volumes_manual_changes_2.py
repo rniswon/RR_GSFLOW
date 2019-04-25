@@ -494,7 +494,7 @@ for param in param_list:
         param_stats_min.append(np.min(prms.prms_parameters['Parameters'][param][4][loc3]))
 
 # compute parameter mean, max, and min for selected agg_subbasin
-sub_param_stat = 6      ### declsre agg_subbasin
+sub_param_stat = 1      ### declsre agg_subbasin
 sub_param_stats_mean = []
 sub_param_stats_max = []
 sub_param_stats_min = []
@@ -528,6 +528,7 @@ if False:
     np.save('carea_max.npy', prms.prms_parameters['Parameters']['carea_max'][4])
     np.save('sat_threshold.npy', prms.prms_parameters['Parameters']['sat_threshold'][4])
     np.save('soil_moist_max.npy', prms.prms_parameters['Parameters']['soil_moist_max'][4])
+    np.save('soil_rechr_max_frac.npy', prms.prms_parameters['Parameters']['soil_rechr_max_frac'][4])
     np.save('pref_flow_den.npy', prms.prms_parameters['Parameters']['pref_flow_den'][4])
     np.save('rain_adj.npy', prms.prms_parameters['Parameters']['rain_adj'][4])
 
