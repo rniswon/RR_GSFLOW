@@ -1,2 +1,226 @@
 type,package,k,i,j,value,desc
-Error,model,0,0,0,0.000000,No solver package
+Error,UPW,0,69,45,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,84,70,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,85,69,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,86,68,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,88,63,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,88,64,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,97,68,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,99,67,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,99,68,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,302,158,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,302,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,302,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,303,158,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,303,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,303,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,304,158,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,304,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,304,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,304,162,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,304,163,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,304,164,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,305,158,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,305,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,305,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,305,161,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,305,162,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,305,163,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,305,164,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,306,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,306,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,306,161,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,306,162,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,306,163,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,306,164,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,307,158,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,307,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,307,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,307,161,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,307,162,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,307,163,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,308,158,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,308,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,308,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,308,161,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,308,162,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,309,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,309,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,309,161,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,309,162,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,310,159,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,310,160,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,310,161,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,310,162,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,2,354,76,0.000000,zero or negative horizontal hydraulic conductivity values
+Error,UPW,0,69,45,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,84,70,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,85,69,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,86,68,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,88,63,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,88,64,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,97,68,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,99,67,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,0,99,68,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,302,158,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,302,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,302,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,303,158,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,303,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,303,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,304,158,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,304,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,304,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,304,162,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,304,163,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,304,164,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,305,158,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,305,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,305,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,305,161,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,305,162,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,305,163,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,305,164,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,306,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,306,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,306,161,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,306,162,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,306,163,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,306,164,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,307,158,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,307,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,307,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,307,161,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,307,162,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,307,163,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,308,158,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,308,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,308,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,308,161,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,308,162,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,309,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,309,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,309,161,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,309,162,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,310,159,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,310,160,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,310,161,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,310,162,0.000000,zero or negative vertical hydraulic conductivity values
+Error,UPW,2,354,76,0.000000,zero or negative vertical hydraulic conductivity values
+Warning,UPW,0,69,45,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,84,70,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,85,69,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,86,68,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,88,63,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,88,64,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,97,68,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,99,67,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,99,68,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,302,158,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,302,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,302,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,303,158,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,303,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,303,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,158,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,162,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,163,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,164,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,158,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,161,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,162,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,163,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,164,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,161,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,162,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,163,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,164,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,158,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,161,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,162,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,163,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,158,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,161,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,162,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,161,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,162,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,159,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,160,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,161,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,162,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,354,76,0.000000,horizontal hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,69,45,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,84,70,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,85,69,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,86,68,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,88,63,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,88,64,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,97,68,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,99,67,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,0,99,68,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,302,158,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,302,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,302,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,303,158,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,303,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,303,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,158,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,162,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,163,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,304,164,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,158,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,161,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,162,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,163,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,305,164,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,161,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,162,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,163,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,306,164,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,158,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,161,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,162,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,307,163,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,158,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,161,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,308,162,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,161,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,309,162,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,159,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,160,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,161,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,310,162,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,UPW,2,354,76,0.000000,vertical hydraulic conductivity values below checker threshold of 1e-11
+Warning,WEL,0,0,0,0.000000,BC in inactive cell
+Warning,WEL,0,0,0,0.000000,BC in inactive cell
+Warning,WEL,0,0,357,0.000000,BC in inactive cell
+Warning,WEL,357,354,354,0.000000,BC in inactive cell
+Warning,WEL,354,343,343,0.000000,BC in inactive cell
+Warning,WEL,313,155,155,0.000000,BC in inactive cell
+Warning,WEL,153,153,153,0.000000,BC in inactive cell
+Warning,WEL,155,155,218,0.000000,BC in inactive cell
+Warning,OC,0,0,0,0.000000,action(s) defined in OC stress_period_data ignored as they are not part the stress periods defined by DIS

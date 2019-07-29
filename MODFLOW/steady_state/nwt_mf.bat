@@ -1,3 +1,3 @@
-gsflow6.exe gsflow_modflow.control
+gsflow_2_beta.exe gsflow_modflow.control
 
 pause
