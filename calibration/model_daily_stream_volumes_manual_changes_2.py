@@ -20,13 +20,13 @@ prms.load_prms_project()
 
 # read in observation data and subbasin aggregation information from Excel workbook into Pandas dataframe
 # (use only when observation data has changed) **********************************************************
-if False:
-    observations = pd.read_excel('RR_local_flows.xlsx', sheet_name='daily_local_flows')
-    obs_mean_monthly = pd.read_excel('RR_local_flows.xlsx', sheet_name='mean_monthly')
-    obs_mean_annual = pd.read_excel('RR_local_flows.xlsx', sheet_name='mean_annual')
-    aggregation = pd.read_excel('RR_local_flows.xlsx', sheet_name='aggregated_subbasins')
-    yearday_obs_means = pd.read_excel('RR_local_flows.xlsx', sheet_name='yearday_mean')
-    monthly_obs_means = pd.read_excel('RR_local_flows.xlsx', sheet_name='monthly_mean')
+if True:
+    observations = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='daily_local_flows')
+    obs_mean_monthly = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='mean_monthly')
+    obs_mean_annual = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='mean_annual')
+    aggregation = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='aggregated_subbasins')
+    yearday_obs_means = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='yearday_mean')
+    monthly_obs_means = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='monthly_mean')
 
     observations.to_pickle('daily_observations.pkl')
     obs_mean_monthly.to_pickle('mean_monthly.pkl')
@@ -471,6 +471,47 @@ for sub in calibration_subbasins:
                 prms.prms_parameters['Parameters']['rain_adj'][4][cell2] = rain_adj[cell2] \
                                                                            * rain_adj_factor[rain_adj_month.index(mon)]
 
+# Set the list of subbasins to apply parameter adjustments by selecting the aggregated subbasin
+calibration_agg_subbasin = 20
+
+# Set list of scaling multipliers for each parameter
+gwflow_coef_mult = 10.0
+gwsink_coef_mult = 0.00
+ssr2gw_rate_mult = 0.00005
+slowcoef_lin_mult = 1.0
+slowcoef_sq_mult = 0.4
+smidx_coef_mult = 0.05
+carea_max_mult = 0.1
+sat_threshold_mult = 15.0
+soil_moist_max_mult = 3.0
+soil_rechr_max_frac_mult = 0.5
+pref_flow_den = 0.15
+rain_adj_month = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]          # list of months to adjust rain_adj parameter
+rain_adj_factor = [0.9, 0.9, 0.9, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]             # list of rain_adj adjustment factors corresponding to selected months
+
+# Make scalar adjustments to subbasin parameters
+calibration_subbasins = aggregation[calibration_agg_subbasin].dropna().tolist()
+for sub in calibration_subbasins:
+    for cell in range(len(prms.prms_parameters['Parameters']['hru_subbasin'][4])):
+        if prms.prms_parameters['Parameters']['hru_subbasin'][4][cell] == sub:
+            prms.prms_parameters['Parameters']['gwflow_coef'][4][cell] = gwflow_coef[cell] * gwflow_coef_mult
+            prms.prms_parameters['Parameters']['gwsink_coef'][4] = gwsink_coef * gwsink_coef_mult
+            prms.prms_parameters['Parameters']['ssr2gw_rate'][4][cell] = ssr2gw_rate[cell] * ssr2gw_rate_mult
+            prms.prms_parameters['Parameters']['slowcoef_lin'][4][cell] = slowcoef_lin[cell] * slowcoef_lin_mult
+            prms.prms_parameters['Parameters']['slowcoef_sq'][4][cell] = slowcoef_sq[cell] * slowcoef_sq_mult
+            prms.prms_parameters['Parameters']['smidx_coef'][4][cell] = smidx_coef[cell] * smidx_coef_mult
+            prms.prms_parameters['Parameters']['carea_max'][4][cell] = carea_max[cell] * carea_max_mult
+            prms.prms_parameters['Parameters']['sat_threshold'][4][cell] = sat_threshold[cell] * sat_threshold_mult
+            prms.prms_parameters['Parameters']['soil_moist_max'][4][cell] = soil_moist_max[cell] * soil_moist_max_mult
+            prms.prms_parameters['Parameters']['soil_rechr_max_frac'][4][cell] = soil_rechr_max_frac[cell] \
+                                                                                 * soil_rechr_max_frac_mult
+            prms.prms_parameters['Parameters']['pref_flow_den'][4][cell] = pref_flow_den
+
+            for mon in rain_adj_month:
+                cell2 = cell + (mon - 1) * (len(prms.prms_parameters['Parameters']['hru_subbasin'][4]))
+                prms.prms_parameters['Parameters']['rain_adj'][4][cell2] = rain_adj[cell2] \
+                                                                           * rain_adj_factor[rain_adj_month.index(mon)]
+
 # compute parameter mean, max, and min for entire study area
 param_stats_mean = []
 param_stats_max = []
@@ -870,7 +911,7 @@ if True: # compare aggregated simulated flows with observations at selected gage
                 plt.plot(obs_yearday_dec, sim_sroff, color='green', linewidth=0.5)
                 plt.plot(obs_yearday_dec, sim_interflow, color='orange', linewidth=0.5)
                 plt.plot(obs_yearday_dec, sim_gwflow, color='brown', linewidth=0.5)
-                plt.plot(obs_yearday_dec, sim_streamflow, color='blue', linewidth=0.5)
+                plt.plot(obs_yearday_dec, sim_streamflow, color='blue', linewidth=1.0)
                 plt.plot(obs_yearday_dec, obs_streamflow, color = 'red', linewidth=1.0)
                 plt.xlim(year_decimal1, year_decimal2)
                 plt.xticks(xtick_locs, xtick_labels)

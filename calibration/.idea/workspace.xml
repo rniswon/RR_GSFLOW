@@ -2,29 +2,43 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc12857c-c624-45a6-bb27-baae3e5a7fbf" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/../PRMS/input/prms_rr.param" beforeDir="false" afterPath="$PROJECT_DIR$/../PRMS/input/prms_rr.param" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/annual_mean_20.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_20.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_20_1997.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1990.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1991.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1992.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1993.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1994.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1995.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1996.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1997.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1998.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_1999.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2000.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2001.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2002.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2003.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2004.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2005.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2006.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2007.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2008.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2009.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2010.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2011.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2012.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2013.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/daily_components_20_2014.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/monthly_20.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/monthly_mean_20.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/yearday_mean_20.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/yearly_NSE_20.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_20.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/annual_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/annual_mean_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/annual_mean_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/annual_mean_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_13_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_13_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_16_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_16_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_1_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_1_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_21.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_21.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_21_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_21_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_22_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_22_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_2_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_2_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_3_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_3_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_5_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_5_1997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/daily_6_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_6_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RR_local_flows.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/RR_local_flows.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/aggregation.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/aggregation.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cal_parameter_values_recal.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/cal_parameter_values_recal.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_13_1990.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_13_1990.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_13_1991.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_13_1991.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_13_1992.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_13_1992.png" afterDir="false" />
@@ -76,8 +90,30 @@
       <change beforePath="$PROJECT_DIR$/daily_components_16_2013.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_16_2013.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_16_2014.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_16_2014.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_18_1990.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1990.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1991.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1991.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1992.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1992.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1993.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1993.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1994.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1994.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1995.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1995.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1996.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1996.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1997.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1998.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1998.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_1999.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_1999.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2000.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2000.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2001.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2001.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2002.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2002.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2003.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2003.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2004.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2004.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2005.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2005.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2006.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2006.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_18_2007.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2007.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_18_2008.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2008.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2009.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2009.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2010.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2011.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2011.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2012.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2012.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2013.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2013.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_18_2014.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_18_2014.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_1_1990.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1990.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_1_1991.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1991.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_1_1992.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_1_1992.png" afterDir="false" />
@@ -108,18 +144,22 @@
       <change beforePath="$PROJECT_DIR$/daily_components_21_1992.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1992.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_1993.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1993.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_1994.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1994.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_21_1995.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1995.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_1996.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1996.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_1997.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1997.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_1998.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1998.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_1999.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_1999.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2000.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2000.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2001.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2001.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_21_2002.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2002.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_21_2003.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2003.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2004.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2004.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2005.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2005.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2006.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2006.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2007.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2007.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2008.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2008.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2009.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2009.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_components_21_2010.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2010.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2011.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2011.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2012.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2012.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_21_2013.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_21_2013.png" afterDir="false" />
@@ -249,37 +289,13 @@
       <change beforePath="$PROJECT_DIR$/daily_components_6_2012.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2012.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_6_2013.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2013.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/daily_components_6_2014.png" beforeDir="false" afterPath="$PROJECT_DIR$/daily_components_6_2014.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/daily_observations.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/daily_observations.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mean_annual.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/mean_annual.pkl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mean_monthly.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/mean_monthly.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_21.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_21.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monthly_mean_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_mean_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orig_params/soil_rechr_max_frac.npy" beforeDir="false" afterPath="$PROJECT_DIR$/orig_params/soil_rechr_max_frac.npy" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monthly_means.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/monthly_means.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/stream_cal_daily.out" beforeDir="false" afterPath="$PROJECT_DIR$/stream_cal_daily.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_16.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_16.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_21.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_21.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_3.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_5.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearday_mean_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_mean_6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_13.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_22.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_22.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yearly_NSE_by_flow_6.png" beforeDir="false" afterPath="$PROJECT_DIR$/yearly_NSE_by_flow_6.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yearday_means.pkl" beforeDir="false" afterPath="$PROJECT_DIR$/yearday_means.pkl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../gsflow.log" beforeDir="false" afterPath="$PROJECT_DIR$/../gsflow.log" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -291,35 +307,6 @@
   <component name="FavoritesManager">
     <favorites_list name="calibration" />
   </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2959">
-              <caret line="79" column="18" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
-              <folding>
-                <element signature="e#0#14#0" expanded="true" />
-                <marker date="1556145611137" expanded="true" signature="2121:3654" ph="..." />
-                <marker date="1556145611137" expanded="true" signature="4031:4465" ph="..." />
-                <marker date="1556145611137" expanded="true" signature="4031:4485" ph="..." />
-                <marker date="1556145611137" expanded="true" signature="4031:4627" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/export_cal_params_to_csv.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="10" column="26" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -327,153 +314,18 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>obs_month</find>
-      <find>flow</find>
-      <find>sim_streamflow</find>
-      <find>logical</find>
-      <find>mean</find>
-      <find>loc</find>
-      <find>loc2</find>
-      <find>NSE_list_by_gage</find>
-      <find>soil_rechr_max_mult</find>
-      <find>control_file_name</find>
-      <find>script_dir</find>
-      <find>range</find>
-      <find>datetime</find>
-      <find>bfi</find>
-      <find>nse</find>
-      <find>nse_overall</find>
-      <find>zip_clean_no_1990</find>
-      <find>np.</find>
-      <find>unique</find>
-      <find>RR_local_flows</find>
-      <find>False</find>
-      <find>NSE_overall</find>
-      <find>'RR_local_flows_test_2_3</find>
-      <find>unique_sim_years</find>
-      <find>.exe</find>
-      <find>test_2_3</find>
-      <find>run</find>
-      <find>RR_local_flows_test_21</find>
-      <find>if prms.prms_parameters['Parameters']['hru_subbasin'][4][cell] == sub:</find>
-      <find>cell-1</find>
-    </findStrings>
-    <replaceStrings>
-      <replace>-2.0</replace>
-      <replace>average</replace>
-      <replace>1.0000000E+02</replace>
-      <replace>2014</replace>
-      <replace>2015</replace>
-      <replace>year_decimal</replace>
-      <replace>obs_yearday_dec</replace>
-      <replace>max</replace>
-      <replace>min</replace>
-      <replace>sink</replace>
-      <replace>soil_rechr_max_frac_mult</replace>
-      <replace>RR_local_flows_test_2_3</replace>
-      <replace>'RR_local_flows_test_2_3_avg</replace>
-      <replace>test_21</replace>
-      <replace>RR_local_flows</replace>
-      <replace>if prms.prms_parameters['Parameters']['hru_subbasin'][4][cell-1] == sub:</replace>
-      <replace>cell</replace>
-    </replaceStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/para_est/myPest.py" />
-        <option value="$PROJECT_DIR$/../../../Codes/pest/control.py" />
-        <option value="$PROJECT_DIR$/Calib_Solar_Rad.py" />
-        <option value="$PROJECT_DIR$/solar_rad.pst" />
-        <option value="$PROJECT_DIR$/runmodel.bat" />
-        <option value="$PROJECT_DIR$/solar_rad.tpl" />
-        <option value="$PROJECT_DIR$/input_solar.dat" />
-        <option value="$PROJECT_DIR$/pre_calibration_validation.py" />
-        <option value="$PROJECT_DIR$/correct_temp_units.py" />
-        <option value="$PROJECT_DIR$/calibrate_solar_rad_2.py" />
-        <option value="$PROJECT_DIR$/ET0_ETp.meas" />
-        <option value="$PROJECT_DIR$/solar_rad_monthly_aver.meas" />
-        <option value="$PROJECT_DIR$/Extract_stream_flow_data.py" />
-        <option value="$PROJECT_DIR$/correct_subbasin_number_inshapefile.py" />
-        <option value="$PROJECT_DIR$/change_ppt_zones.py" />
-        <option value="$PROJECT_DIR$/calibrate_ET0.py" />
-        <option value="$PROJECT_DIR$/input_ET.dat" />
-        <option value="$PROJECT_DIR$/input_str_vol.dat" />
-        <option value="$PROJECT_DIR$/../../../Codes/pyprms/prms_py.py" />
-        <option value="$PROJECT_DIR$/../../../Codes/pyprms/prms_only_plots.py" />
-        <option value="$PROJECT_DIR$/Extrem_temp_invistigation.py" />
-        <option value="$PROJECT_DIR$/calibrate_StreamVolumes.py" />
-        <option value="$PROJECT_DIR$/../../../Codes/gispy/shp.py" />
-        <option value="$PROJECT_DIR$/Plot_PRMS_Budget_file.py" />
-        <option value="$PROJECT_DIR$/../../../Codes/pyprms/prms_output.py" />
-        <option value="$PROJECT_DIR$/plot_stat_subbasins.py" />
-        <option value="$PROJECT_DIR$/plot_prms_inputs.py" />
-        <option value="$PROJECT_DIR$/input_vol.dat" />
-        <option value="$PROJECT_DIR$/model_Stream_volumes.py" />
-        <option value="$PROJECT_DIR$/calibration_PEST/model_Stream_volumes.py" />
-        <option value="$PROJECT_DIR$/calibrate_StreamVolumesAnnual.py" />
-        <option value="$PROJECT_DIR$/input_str_vol_annual.dat" />
-        <option value="$PROJECT_DIR$/model_Stream_volumes_annual.py" />
-        <option value="$PROJECT_DIR$/pyprms/prms_output.py" />
-        <option value="$PROJECT_DIR$/model_Stream_volumes_mannual_changes.py" />
-        <option value="$PROJECT_DIR$/model_Stream_volumes_mannual_changes_2.py" />
-        <option value="$PROJECT_DIR$/model_Stream_volumes_manual_changes_2.py" />
-        <option value="$PROJECT_DIR$/dbfpy/Lake_Sonoma_inflow_extract.py" />
-        <option value="$PROJECT_DIR$/Lake_Sonoma_inflow_extract.py" />
-        <option value="$PROJECT_DIR$/Lake_Sonoma_inflow_extract_2.py" />
-        <option value="$PROJECT_DIR$/model_pot_ET.py" />
-        <option value="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes.py" />
-        <option value="$PROJECT_DIR$/model_Stream_volumes_manual_changes_3.py" />
-        <option value="$PROJECT_DIR$/pyprms/prms_py.py" />
-        <option value="$PROJECT_DIR$/model_solar_radiation.py" />
-        <option value="$PROJECT_DIR$/export_cal_params_to_csv.py" />
-        <option value="$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="36" />
-    <option name="width" value="1804" />
-    <option name="height" value="1129" />
-  </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope">
-        <subPane subId="Project Files">
-          <expand>
-            <path>
-              <item name="Root" type="cbb8eebc:String" user="Root" />
-              <item name="calibration" type="cbb8eebc:String" user="calibration" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="calibration" type="b2602c69:ProjectViewProjectNode" />
-              <item name="calibration" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
+  <component name="ProjectId" id="1PKuF92dmzR1PtLm3rhLYDHdOhv" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myIpythonEnabled" value="false" />
@@ -502,7 +354,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.export_cal_params_to_csv">
+  <component name="RunManager" selected="Python.model_daily_stream_volumes_manual_changes_2">
     <configuration name="export_cal_params_to_csv" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="calibration" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -609,16 +461,16 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.model_daily_stream_volumes_manual_changes" />
-      <item itemvalue="Python.model_pot_ET" />
-      <item itemvalue="Python.model_daily_stream_volumes_manual_changes_2" />
-      <item itemvalue="Python.model_Stream_volumes_manual_changes_3" />
       <item itemvalue="Python.export_cal_params_to_csv" />
+      <item itemvalue="Python.model_Stream_volumes_manual_changes_3" />
+      <item itemvalue="Python.model_daily_stream_volumes_manual_changes" />
+      <item itemvalue="Python.model_daily_stream_volumes_manual_changes_2" />
+      <item itemvalue="Python.model_pot_ET" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.export_cal_params_to_csv" />
         <item itemvalue="Python.model_daily_stream_volumes_manual_changes_2" />
+        <item itemvalue="Python.export_cal_params_to_csv" />
         <item itemvalue="Python.model_Stream_volumes_manual_changes_3" />
         <item itemvalue="Python.model_daily_stream_volumes_manual_changes" />
         <item itemvalue="Python.model_pot_ET" />
@@ -647,29 +499,6 @@
       <is-autoscroll-to-source value="true" />
     </todo-panel>
   </component>
-  <component name="ToolWindowManager">
-    <frame x="29" y="0" width="1443" height="903" extended-state="0" />
-    <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49780703" visible="true" weight="0.2347084" />
-      <window_info id="Structure" order="1" weight="0.25" />
-      <window_info id="Favorites" order="2" sideWeight="0.502193" side_tool="true" weight="0.25247902" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32918552" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49923664" weight="0.21789883" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.34241244" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="Terminal" order="6" weight="0.25925925" />
-      <window_info anchor="bottom" id="Python Console" order="7" weight="0.3347701" />
-      <window_info anchor="bottom" id="TODO" order="8" weight="0.32561728" />
-      <window_info anchor="bottom" id="Version Control" order="9" weight="0.32784432" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50076336" side_tool="true" weight="0.25771606" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" x="252" y="190" width="1415" height="649" id="Data View" order="3" show_stripe_button="false" type="FLOATING" weight="0.75993556" />
-    </layout>
-  </component>
   <component name="UnknownFeatures">
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.bat" />
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.tpl" />
@@ -680,20 +509,7 @@
         <entry key="MAIN">
           <value>
             <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
-              <option name="COLUMN_ORDER">
-                <list>
-                  <option value="0" />
-                  <option value="1" />
-                  <option value="2" />
-                  <option value="3" />
-                </list>
-              </option>
+              <option name="COLUMN_ORDER" />
             </State>
           </value>
         </entry>
@@ -713,6 +529,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -811,11 +630,6 @@
           <url>file://$PROJECT_DIR$/plot_stat_subbasins.py</url>
           <line>47</line>
           <option name="timeStamp" value="481" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py</url>
-          <line>38</line>
-          <option name="timeStamp" value="482" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -978,129 +792,5 @@ for gage in stream_volume_averages.keys():
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
     </expressions>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/monthly_mean_1.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/yearday_mean_2.png" />
-    <entry file="file://$PROJECT_DIR$/old/monthly_mean_2.png" />
-    <entry file="file://$PROJECT_DIR$/yearly_NSE_2.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monthly_mean_2.png" />
-    <entry file="file://$PROJECT_DIR$/gage_basin_1.png" />
-    <entry file="file://$PROJECT_DIR$/monthly_1.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/daily_1_2011.png" />
-    <entry file="file://C:/ProgramData/Anaconda2/Lib/site-packages/numpy/core/fromnumeric.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="154">
-          <caret line="2956" selection-start-line="2956" selection-end-line="2956" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2011.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_1995.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2000.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2002.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2010_start_log.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_1991.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2007.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2007_21.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2007_22.png" />
-    <entry file="file://$PROJECT_DIR$/annual_mean_2.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/daily_components_2_1995.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_2_2002.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_2_2005.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_2_2010.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_2_2010_1.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_2_2010_6.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_2_1991.png" />
-    <entry file="file://$PROJECT_DIR$/model_Stream_volumes_manual_changes_2.py" />
-    <entry file="file://$PROJECT_DIR$/model_Stream_volumes_manual_changes_3.py" />
-    <entry file="file://$PROJECT_DIR$/daily_components_5_1991.png" />
-    <entry file="file://$PROJECT_DIR$/cal_iterations_2.txt" />
-    <entry file="file://$PROJECT_DIR$/cal_iterations_1.txt" />
-    <entry file="file://$PROJECT_DIR$/cal_iterations_22.txt" />
-    <entry file="file://$PROJECT_DIR$/cal_iterations_5.txt" />
-    <entry file="file://$PROJECT_DIR$/cal_iterations_6.txt" />
-    <entry file="file://$PROJECT_DIR$/cal_iterations_13.txt" />
-    <entry file="file://$PROJECT_DIR$/annual_mean_5.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/annual_mean_3.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/annual_mean_2_8.png" />
-    <entry file="file://$PROJECT_DIR$/annual_mean_1.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2010_start.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2010.png" />
-    <entry file="file://$PROJECT_DIR$/daily_components_1_2010_24.png" />
-    <entry file="file://$PROJECT_DIR$/model_solar_radiation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="48" column="27" selection-start-line="48" selection-start-column="27" selection-end-line="48" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/calibrate_ET0.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model_pot_ET.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/monthly_6.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda2/Lib/site-packages/pandas/io/pickle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="75" selection-start-line="75" selection-end-line="75" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/ProgramData/Anaconda2/Lib/site-packages/pandas/io/common.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="130">
-          <caret line="263" selection-start-line="263" selection-end-line="263" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pyprms/prms_py.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="18" column="13" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/export_cal_params_to_csv.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="10" column="26" selection-start-line="10" selection-start-column="26" selection-end-line="10" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model_daily_stream_volumes_manual_changes_2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2959">
-          <caret line="79" column="18" selection-start-line="79" selection-start-column="18" selection-end-line="79" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-            <marker date="1556145611137" expanded="true" signature="2121:3654" ph="..." />
-            <marker date="1556145611137" expanded="true" signature="4031:4465" ph="..." />
-            <marker date="1556145611137" expanded="true" signature="4031:4485" ph="..." />
-            <marker date="1556145611137" expanded="true" signature="4031:4627" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>
