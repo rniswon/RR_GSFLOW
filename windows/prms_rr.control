@@ -94,7 +94,7 @@ init_vars_from_file
 model_output_file
 1
 4
-..\PRMS\output\rr_budget.ou2
+..\PRMS\output\rr_budget.out2
 ####
 print_freq
 1
@@ -105,11 +105,6 @@ print_type
 1
 1
 2
-####
-nstatVars
-1
-1
-192
 ####
 save_vars_to_file
 1
@@ -130,6 +125,11 @@ strmflow_module
 1
 4
 strmflow
+####
+nstatVars
+1
+1
+193
 ####
 statVar_element
 193

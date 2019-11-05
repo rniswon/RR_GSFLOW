@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dc12857c-c624-45a6-bb27-baae3e5a7fbf" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/old/prms_rr_John.control" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/old/prms_rr_precal.param" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../gsflow.log" beforeDir="false" afterPath="$PROJECT_DIR$/../gsflow.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../windows/prms_rr.control" beforeDir="false" afterPath="$PROJECT_DIR$/../windows/prms_rr.control" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../windows/run.bat" beforeDir="false" afterPath="$PROJECT_DIR$/../windows/run.bat" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
