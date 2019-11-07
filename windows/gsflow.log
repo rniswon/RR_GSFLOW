@@ -71,11 +71,11 @@ Using Control File: prms_rr.control
 
 Using Parameter File: ..\PRMS\input\prms_rr.param
 
-Writing PRMS Water Budget File: ..\PRMS\output\rr_budget.ou2
+Writing PRMS Water Budget File: ..\PRMS\output\rr_budget.out2
 
 Simulation time period: 1990/01/01 - 2015/12/31
 
 ====================================================================
 
-Execution elapsed time    5 minutes 15.48 seconds
+Execution elapsed time    5 minutes  7.21 seconds
 
