@@ -235,7 +235,7 @@ if __name__ == "__main__":
         gage_file = r".\misc_files\gage_info.csv"
         compute_ss_baseflow(sfr_out_file, hru_shp, gage_file)
 
-    if True:
+    if False:
         name_file = r"D:\Workspace\projects\RussianRiver\modflow\model_files\Modflow\ss\rr_ss.nam"
         mf = flopy.modflow.Modflow.load(name_file, model_ws= os.path.dirname(name_file))
         #read_hob_out(mf)

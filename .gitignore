@@ -1,3 +1,9 @@
 MODSIM/ResSimMODSIM/RRMinFLowMODSIM/bin/
 MODSIM/ResSimMODSIM/RRMinFLowMODSIM/obj/
 PRMS/output/
+*.cbc
+*.out
+*.hds
+*.go
+*.list
+.idea
