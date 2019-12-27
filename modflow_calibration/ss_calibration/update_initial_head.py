@@ -17,6 +17,6 @@ def update_initial_head(mfnm, hdf_fn):
     mf.bas6.write_file()
     pass
 
-fn = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
-hfile = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.hds"
+fn = r".\slave_dir\mf_dataset\rr_ss.nam"
+hfile = r".\slave_dir\mf_dataset\rr_ss.hds"
 update_initial_head(mfnm=fn, hdf_fn=hfile)

@@ -52,7 +52,8 @@ def generate_output_file_ss(Sim):
     for i, row in gage_out_df.iterrows():
         sim_val = row['baseflow']
         if np.any(gage_measurments['gage_name'] == row['NWIS_ID']):
-            obs_val = gage_measurments.loc[gage_measurments['gage_name'] == row['NWIS_ID'], 'baseflow'].values[0]
+            #obs_val = gage_measurments.loc[gage_measurments['gage_name'] == row['NWIS_ID'], 'baseflow'].values[0]
+            obs_val = 0.114
         else:
             obs_val = -999
         obs_val = float(obs_val)
