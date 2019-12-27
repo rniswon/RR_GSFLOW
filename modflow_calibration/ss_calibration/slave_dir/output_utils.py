@@ -31,11 +31,13 @@ def generate_output_file_ss(Sim):
     # gages
     # total gage flow
     gage_measurments = pd.read_csv(Sim.gage_measurement_file)
-    gage_out_df  = compute_ss_local_baseflow(Sim)
+    #gage_out_df  = compute_ss_local_baseflow(Sim)
+    compute_wateruse_per_subbasin(Sim)
+    gage_out_df = compute_ss_unimpaired_baseflow(Sim)
     for i, row in gage_out_df.iterrows():
         sim_val = row['flow']
-        if np.any(gage_measurments['gage'] == row['NWIS_ID']):
-            obs_val = gage_measurments.loc[gage_measurments['gage']== row['NWIS_ID'], 'average_flow (m3/day)'].values[0]
+        if np.any(gage_measurments['gage_name'] == row['NWIS_ID']):
+            obs_val = gage_measurments.loc[gage_measurments['gage_name']== row['NWIS_ID'], 'ave_flow'].values[0]
         else:
             obs_val = -999
 
@@ -49,8 +51,8 @@ def generate_output_file_ss(Sim):
     # baseflow flow
     for i, row in gage_out_df.iterrows():
         sim_val = row['baseflow']
-        if np.any(gage_measurments['gage'] == row['NWIS_ID']):
-            obs_val = gage_measurments.loc[gage_measurments['gage'] == row['NWIS_ID'], 'base_flow (m3/day)'].values[0]
+        if np.any(gage_measurments['gage_name'] == row['NWIS_ID']):
+            obs_val = gage_measurments.loc[gage_measurments['gage_name'] == row['NWIS_ID'], 'baseflow'].values[0]
         else:
             obs_val = -999
         obs_val = float(obs_val)
@@ -102,7 +104,7 @@ def read_pump_reduc_file(Sim):
         pmp_chg = pmp_chg + (float(Qact) - float(Qapp))
     return pmp_chg
 
-def compute_ss_local_baseflow(Sim):
+def compute_ss_unimpaired_baseflow(Sim):
     """
 
     :sfr_out (str): sfr output file
@@ -110,10 +112,7 @@ def compute_ss_local_baseflow(Sim):
     :return:
     """
     mf = Sim.mf
-    basin_cascade = pd.read_csv(r".\misc_files\basin_cascade.csv")
     gage_obs_locations = pd.read_csv(r".\misc_files\gage_with_good_obs.csv")
-    gage_topography_file = "sfr_topo.dat"
-    hru_shp_file = Sim.hru_shp_file
     gage_file = Sim.gage_file
 
     # Get sfr.out file name
@@ -139,10 +138,9 @@ def compute_ss_local_baseflow(Sim):
 
     hru_df = hru_df.sort_values(by=['HRU_ID'])
     gage_df = pd.read_csv(gage_file)
-
+    gage_df = gage_df.sort_values(by=['subbasin'])
 
     # For each subbasin, compute baseflow and runoff
-    sub_ids = hru_df['subbasin'].unique()
     basins = []
     gage_output = []
     for igage, gage in gage_df.iterrows():
@@ -154,6 +152,102 @@ def compute_ss_local_baseflow(Sim):
         out_ = sfr_out[sfr_out['segment']== seg]
         out_ = out_[out_['reach']== rch]
 
+        # get subbasin of the gage
+        ibasin = gage.subbasin
+        basins.append(ibasin)
+        ncells = len(hru_df[hru_df['subbasin']== ibasin])
+
+        # get all segments that exist between two gages with good data
+        gage_calib_info = gage_obs_locations[gage_obs_locations['Gage ID']==ibasin]
+        basins_to_include = []
+        for g_ in ['G1', 'G2', 'G3', 'G4', 'G5', 'G6', 'G7']:
+            if not (gage_calib_info[g_].isna().values[0]):
+                if gage_calib_info[g_].values[0] != 0:
+                    basins_to_include.append(gage_calib_info[g_].values[0])
+        ncells = len(hru_df[hru_df['subbasin'].isin(basins_to_include)])
+        area = ncells * 300.0 * 300.0
+        curr_df = hru_df[(hru_df['ISEG'] > 0) & (hru_df['subbasin'].isin(basins_to_include))]
+        seg_to_include = curr_df['ISEG'].unique().tolist()
+        curr_out = sfr_out[sfr_out['segment'].isin(seg_to_include)]
+        if gage_calib_info['Include_aveFlow'].values[0] == 1:
+            outflow = out_['Qout'].values[0]
+            if gage_calib_info['Include_baseFlow'].values[0] == 1:
+                outflow = out_['Qout'].values[0]
+                runoff = curr_out['Qovr'].sum()
+                local_flow = curr_out['Qout'].sum() - curr_out['Qin'].sum()
+                baseflow = local_flow - runoff
+                water_use = Sim.total_water_use[ibasin]
+                baseflow = 1000*(baseflow + abs(water_use))/area
+
+
+            else:
+                baseflow = -999
+            gage_id = gage['Name']
+            gname = gage['Gage_Name']
+        else:
+            outflow = -999
+            runoff = -999
+            baseflow = -999
+            gage_id = gage['Name']
+            gname = gage['Gage_Name']
+
+
+        gage_output.append([gname, gage_id, ibasin, outflow, runoff, baseflow])
+
+
+    gage_output = pd.DataFrame(gage_output, columns=['Name', 'NWIS_ID', 'basin_id', 'flow', 'runoff', 'baseflow' ])
+    gage_output = gage_output.sort_values(by=['basin_id'])
+    return gage_output
+
+
+
+def compute_ss_local_baseflow(Sim):
+    """
+
+    :sfr_out (str): sfr output file
+    : hru_shp (sfr or pandas data frame): hru_shape file
+    :return:
+    """
+    mf = Sim.mf
+    gage_obs_locations = pd.read_csv(r".\misc_files\gage_with_good_obs.csv")
+    gage_file = Sim.gage_file
+
+    # Get sfr.out file name
+    found = 0
+    for i, file in enumerate(mf.output_fnames):
+        if "sfr.out" in file:
+            found = 1
+            uniti = mf.get_output(file)
+            break
+    if found == 0:
+        ValueError("Error: Cannot find sfr output file.....")
+
+    # get sfr output
+    sfr_out = os.path.join(Sim.mf.model_ws, file)
+    sfr_out = flopy.utils.sfroutputfile.SfrFile(sfr_out)
+    sfr_out = sfr_out.df
+
+    if hasattr(Sim, 'hru_df'):
+        hru_df = Sim.hru_df
+    else:
+        hru_df = pd.read_csv(Sim.hru_shp_file)
+        Sim.hru_df = hru_df
+
+    hru_df = hru_df.sort_values(by=['HRU_ID'])
+    gage_df = pd.read_csv(gage_file)
+    gage_df = gage_df.sort_values(by=['subbasin'])
+
+    # For each subbasin, compute baseflow and runoff
+    basins = []
+    gage_output = []
+    for igage, gage in gage_df.iterrows():
+
+        seg = gage['ISEG']
+        rch = gage['IREACH']
+
+        # get output for current seg and rch as specified in gage file
+        out_ = sfr_out[sfr_out['segment']== seg]
+        out_ = out_[out_['reach']== rch]
 
         # get subbasin of the gage
         ibasin = gage.subbasin
@@ -315,8 +409,100 @@ def read_hob_out(mf):
 
     return df
 
-def compute_subbasins_cascade():
+def compute_subbasin_budgets(sim):
+    columns = ['subbasin', 'rain', 'finf', 'recharge',
+               'runoff', 'baseflow', 'sw_inflow', 'gw_inflow','gw_pumping',
+               'sw_diversion', 'gw_et', 'sw_outflow', 'gw_outflow']
+
+    # get budget file name
+    for file in sim.mf.output_fnames:
+        fparts = file.strip().split(".")
+        if 'cbc' in fparts[-1]:
+            break
+    cbc_file = os.path.join(sim.mf.model_ws, file)
+    ibound = sim.mf.bas6.ibound.array
+    GWZones = sim.subbasins
+    Zones = np.zeros_like(ibound)
+    for k in range(ibound.shape[0]):
+        Zones[k, :, :] = ibound[k, :, :] * GWZones
+    cbc = flopy.utils.ZoneBudget(cbc_file, Zones, kstpkper=(0, 0))
+    cbc.get_dataframes().to_csv('bud.csv')
+
     pass
+def compute_subbasins_cascade():
+
+
+    pass
+def compute_wateruse_per_subbasin(Sim):
+
+    # Groundwater pumping
+    # =============================
+    wel = pd.DataFrame(Sim.mf.wel.stress_period_data.data[0])
+    rr_cc = zip(wel['i'].values.copy(), wel['j'].values.copy())
+    wel['rr_cc'] = list(rr_cc)
+    if hasattr(Sim, 'hru_df'):
+        hru_df = Sim.hru_df
+    else:
+        hru_df = pd.read_csv(Sim.hru_shp_file)
+        Sim.hru_df = hru_df
+    hru_df['HRU_ROW'] = hru_df['HRU_ROW'] - 1
+    hru_df['HRU_COL'] = hru_df['HRU_COL'] - 1
+    rr_cc = zip(hru_df['HRU_ROW'].values.copy(), hru_df['HRU_COL'].values.copy())
+    hru_df['rr_cc'] = list(rr_cc)
+
+    subbasins = np.sort(hru_df['subbasin'].unique())
+    gw_water_use = {}
+    for sub_i in subbasins:
+        curr_sub_hru = hru_df[hru_df['subbasin']== sub_i]
+        curr_wells = wel[wel['rr_cc'].isin(curr_sub_hru['rr_cc'].values)]
+        gw_water_use[sub_i] = np.sum(curr_wells['flux'])
+        xx = 1
+
+    # Groundwater diversion
+    # =============================
+    segment_df = pd.DataFrame(Sim.mf.sfr.segment_data[0])
+    found = 0
+    for i, file in enumerate(Sim.mf.output_fnames):
+        if "sfr.out" in file:
+            found = 1
+            uniti = Sim.mf.get_output(file)
+            break
+    if found == 0:
+        ValueError("Error: Cannot find sfr output file.....")
+
+    # get sfr output
+    sfr_out = os.path.join(Sim.mf.model_ws, file)
+    sfr_out = flopy.utils.sfroutputfile.SfrFile(sfr_out)
+    sfr_out = sfr_out.df
+    sfr_out['row'] = sfr_out['row'] - 1
+    sfr_out['column'] = sfr_out['column'] - 1
+    rr_cc = zip(sfr_out['row'].values.copy(), sfr_out['column'].values.copy())
+    sfr_out['rr_cc'] = list(rr_cc)
+
+    ag_water_use = {}
+    reach_data = pd.DataFrame(Sim.mf.sfr.reach_data)
+    rr_cc = zip(reach_data['i'].values.copy(), reach_data['j'].values.copy())
+    reach_data['rr_cc'] = rr_cc
+    for sub_i in subbasins:
+        if sub_i == 0:
+            continue
+        curr_sub_hru = hru_df[hru_df['subbasin'] == sub_i]
+        curr_sfr = sfr_out[sfr_out['rr_cc'].isin(curr_sub_hru['rr_cc'].values)]
+        curr_rchdata = reach_data[reach_data['rr_cc'].isin(curr_sub_hru['rr_cc'].values)]
+        curr_segdf = segment_df[segment_df['nseg'].isin(curr_sfr['segment'].values)]
+        divSeg = curr_segdf[curr_segdf['flow'] < 0]
+        divflow = divSeg['flow'].sum()
+        ag_water_use[sub_i] = divflow
+
+    total_water_use = {}
+    for sub_i in subbasins:
+        if sub_i == 0:
+            continue
+        total_water_use[sub_i] = ag_water_use[sub_i] + gw_water_use[sub_i]
+    Sim.total_water_use = total_water_use
+
+
+
 
 
 if __name__ == "__main__":

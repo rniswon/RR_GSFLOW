@@ -75,8 +75,12 @@ def add_upw_parameters_to_input_file(input_file = r"input_param.csv" ):
 
 def generate_zone_files_from_shp():
     zones_file = r"D:\Workspace\projects\RussianRiver\Data\geology\RR19grid_ELY_v3_7_23.shp"
-    ibound_file = r"D:\Workspace\projects\RussianRiver\modflow_calibration\others\ibound.dat"
-    ibound = load_txt_3d(ibound_file)
+    fn = r".\mf_dataset\rr_ss.nam"
+    mf = flopy.modflow.Modflow.load(os.path.basename(fn), model_ws=os.path.dirname(fn),
+                                    verbose=True, forgive=False, load_only=['DIS', 'BAS6'])
+
+    ibound = mf.bas6.ibound.array
+
     zone_df = geopandas.read_file(zones_file)
     zone_df['HRU_ID'] = zone_df['HRU_ID'].astype(int)
     zone_df = zone_df.sort_values(by=['HRU_ID'])
@@ -97,6 +101,9 @@ def generate_zone_files_from_shp():
         if i< 2:
             flg = np.remainder(zone, 10)
             zone[flg==0] = 0
+        # find activae cells that has no zone
+        mask = np.logical_and(ibound[i,:,:]>0, zone==0)
+        if i==0: zone[mask] = 342
         zone = zone * ibound[i,:,:]
         zone_names[i,:,:] = zone.copy()
 
@@ -249,6 +256,6 @@ def change_upw_ss(Sim):
 if __name__ == "__main__":
     # allways make this inactive
     #generate_zone_files_from_shp()
-    #add_upw_parameters_to_input_file()
+    add_upw_parameters_to_input_file(input_file = r"input_param.csv" )
 
     pass
