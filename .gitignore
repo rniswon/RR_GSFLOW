@@ -6,4 +6,8 @@ PRMS/output/
 *.hds
 *.go
 *.list
-.idea
+idea/
+modflow_calibration/ss_calibration/.idea/
+modflow_calibration/.idea/
+modflow_calibration/ss_calibration/.idea/workspace.xml
+modflow_calibration/ss_calibration/slave_root/
