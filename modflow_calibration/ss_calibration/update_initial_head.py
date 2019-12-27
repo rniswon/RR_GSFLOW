@@ -1,6 +1,7 @@
 import os, sys
 import pandas as pd
-sys.path.insert(0, r"C:\work\Russian_River\py_pkgs" )
+sys.path.insert(0, r"D:\Workspace\Codes\flopy_develop\flopy" )
+sys.path.insert(0, r"D:\Workspace\Codes\pygsflow")
 import flopy
 import numpy as np
 
@@ -16,6 +17,6 @@ def update_initial_head(mfnm, hdf_fn):
     mf.bas6.write_file()
     pass
 
-fn = r"C:\work\Russian_River\monte_carlo\slave_dir\mf_dataset\rr_ss.nam"
-hfile = r"C:\work\Russian_River\monte_carlo\slave_dir\mf_dataset\rr_ss.hds"
+fn = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
+hfile = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.hds"
 update_initial_head(mfnm=fn, hdf_fn=hfile)
