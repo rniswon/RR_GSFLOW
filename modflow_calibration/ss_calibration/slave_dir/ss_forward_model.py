@@ -1,6 +1,7 @@
 import os, sys
 import pandas as pd
 sys.path.insert(0, r"C:\work\Russian_River\py_pkgs" )
+sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
 
 import uzf_utils
 import sfr_utils
