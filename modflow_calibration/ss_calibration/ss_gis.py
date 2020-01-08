@@ -10,9 +10,9 @@ import gw_utils
 """
 This file produces shapefiles for input/out of the steady state model
 """
-output_folder = r"C:\work\Russian_River\gis"
-mfname = r"C:\work\Russian_River\monte_carlo\slave_dir\mf_dataset\rr_ss.nam"
-mf = flopy.modflow.Modflow.load(mfname, model_ws = os.path.dirname(mfname))
+output_folder = r"C:\work\Russian_River\RR_GSFLOW\modflow_calibration\ss_calibration\results\ss_results_equal_weights\gis"
+mfname = os.path.abspath(r".\slave_dir\mf_dataset\rr_ss.nam")
+mf = flopy.modflow.Modflow.load(os.path.basename(mfname), model_ws = os.path.dirname(mfname))
 xoff = 465900
 yoff = 4238400
 epsg = 26910
