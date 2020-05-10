@@ -1,12 +1,14 @@
 import os, sys
 import pandas as pd
 sys.path.insert(0, r"C:\work\Russian_River\py_pkgs" )
+sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
 
 import uzf_utils
 import sfr_utils
 import upw_utils
 import lak_utils
 import output_utils
+import ghb_utils
 #from gsflow.utils.vtk import Gsflowvtk, Mfvtk
 import flopy
 import numpy as np
@@ -67,6 +69,11 @@ def run(input_file = None, real_no=-999, output_file = None):
     # Lake information
     if False:
         lak_utils.change_lak_ss(Sim)
+
+        # GHB iformation
+    if False:
+        ghb_utils.use_section_average_head(Sim)  # todo: REMOVE
+    ghb_utils.change_ghb_ss(Sim)
 
     # UPW information
     upw_utils.change_upw_ss(Sim)
