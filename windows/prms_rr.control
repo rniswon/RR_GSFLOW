@@ -38,7 +38,7 @@ prms_warmup
 modflow_name
 1
 4
-mf_RR_v0.nam
+rr_tr.nam
 ####
 param_file
 2
