@@ -1,14 +1,12 @@
 import os, sys
 import pandas as pd
 sys.path.insert(0, r"C:\work\Russian_River\py_pkgs" )
-sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
 
 import uzf_utils
 import sfr_utils
 import upw_utils
 import lak_utils
 import output_utils
-import ghb_utils
 #from gsflow.utils.vtk import Gsflowvtk, Mfvtk
 import flopy
 import numpy as np
@@ -70,11 +68,6 @@ def run(input_file = None, real_no=-999, output_file = None):
     if False:
         lak_utils.change_lak_ss(Sim)
 
-    # GHB iformation
-    if False:
-        ghb_utils.use_section_average_head(Sim) # todo: REMOVE
-    ghb_utils.change_ghb_ss(Sim)
-
     # UPW information
     upw_utils.change_upw_ss(Sim)
 
@@ -91,7 +84,6 @@ def run(input_file = None, real_no=-999, output_file = None):
     Sim.mf.upw.write_file()
     Sim.mf.uzf.write_file()
     Sim.mf.sfr.write_file()
-    Sim.mf.ghb.write_file()
     base_folder = os.getcwd()
     print("change param....")
     os.chdir(r".\mf_dataset")
@@ -139,8 +131,8 @@ def run_simple_in_out(in_fn, out_fn, csv_in, csv_out):
 
 if __name__ == '__main__':
 
-    #run(input_file= 'input_param.csv')
+    run(input_file= 'input_param.csv')
     print("Start model run....")
-    run_simple_in_out('input_param.dat', 'model_output.dat', 'input_param.csv', 'model_output.csv')
+    #run_simple_in_out('input_param.dat', 'model_output.dat', 'input_param.csv', 'model_output.csv')
     print("End model run....")
     pass

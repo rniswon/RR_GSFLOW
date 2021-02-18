@@ -9,15 +9,15 @@ import sweep
 
 # Declarations
 
-input_file = r".\slave_dir\input_param.csv"
-output_file = r".\slave_dir\model_output.csv"
-zero_weight_gage_file = r".\slave_dir\misc_files\gage_weights.csv"
-slave_root = r".\slave_root"
+input_file = r"C:\work\Russian_River\monte_carlo\slave_dir\input_param.csv"
+output_file = r"C:\work\Russian_River\monte_carlo\slave_dir\model_output.csv"
+zero_weight_gage_file = r"C:\work\Russian_River\RR_GSFLOW\modflow_calibration\model_data\misc_files\gage_weights.csv"
+slave_root = r"C:\work\Russian_River\monte_carlo\slave_root"
 slave_dir = r"slave_dir"
 pstfname = 'ss_mf.pst'
 num_slaves = 16
 port = 4075
-fix_parms = ['lak_cond_1', 'lak_cond_2', 'pet_1' ]
+fix_parms = ['lak_cond_1', 'lak_cond_2', 'pet_1', 'uzf_surfk']
 obs_zero_weight = []
 # -------------------------------------------------------------
 # Generate pst object
@@ -58,18 +58,14 @@ for par in parnames:
 
 
     if grpnm.values[0] in ['uzf_vks', 'uzf_surfk']:
-        pst.parameter_data.loc[mask, 'partrans'] = 'log'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1.0e-10
-        pst.parameter_data.loc[mask, 'parubnd'] = 1.0e-2
-
-    if grpnm.values[0] in ['uzf_surfk']:
         pst.parameter_data.loc[mask, 'partrans'] = 'fixed'
+        pst.parameter_data.loc[mask, 'parlbnd'] = 1.0e-10
+        pst.parameter_data.loc[mask, 'parubnd'] = 300.0
 
     #   Set bounds finf
     if grpnm.values[0] == 'uzf_finf':
-        #pst.parameter_data.loc[mask, 'partrans'] = 'fixed'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.46
-        pst.parameter_data.loc[mask, 'parubnd'] = 0.53
+        pst.parameter_data.loc[mask, 'parlbnd'] = 0.4
+        pst.parameter_data.loc[mask, 'parubnd'] = 0.6
 
         #   Set bounds finf
     if grpnm.values[0] == 'sfr_spil':
@@ -78,7 +74,7 @@ for par in parnames:
 
     if grpnm.values[0] == 'upw_vka':
         pst.parameter_data.loc[mask, 'parlbnd'] = 0.05
-        pst.parameter_data.loc[mask, 'parubnd'] = 0.3
+        pst.parameter_data.loc[mask, 'parubnd'] = 0.5
 
     # check bounds/init values
     val = pst.parameter_data.loc[mask, 'parval1'].values[0]
@@ -106,8 +102,6 @@ for obs in obsnames:
     mask = pst.observation_data['obsnme'] == obs
     pst.observation_data.loc[mask, 'obsval'] = obsval.values[0]
     pst.observation_data.loc[mask, 'obgnme'] = obgnme.values[0]
-    if "bsflo_" in obs:
-        pst.observation_data.loc[mask, 'obsval'] = 0.114
 
 # wieghts
 #  For now just assume that weights for water level is the same and equal 1
