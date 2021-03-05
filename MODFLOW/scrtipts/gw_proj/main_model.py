@@ -1,0 +1,102 @@
+import os, sys
+
+Use_Develop_FLOPY = True
+
+if Use_Develop_FLOPY:
+    fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
+    sys.path.append(fpth)
+    import flopy
+else:
+    import flopy
+
+import numpy as np
+import pandas as pd
+import configparser
+# import flopy
+# package for RR project
+from gw import Gw_model
+# from includes import Include
+import support
+import Compute_Lake2
+config_file = r"D:\Workspace\projects\RussianRiver\modflow\scrtipts\gw_proj\rr_ss_config.ini"
+config = configparser.ConfigParser()
+config.read(config_file)
+
+# initialize GW model
+gw = Gw_model(config)
+
+# generating dis package
+gw.dis_package()
+
+# generate bas package
+fn = r"D:\Workspace\projects\RussianRiver\modflow\other_files\rr_ss_v4.hds"
+hds1 = flopy.utils.HeadFile(fn)
+wt = hds1.get_data(kstpkper = (0,0))
+wt[wt>2000] = 235
+#wt = None
+gw.bas_package(wt)
+
+# ghb
+gw.ghb_package()
+
+# modify the grid to carve lakes
+Compute_Lake2.carve_lakes(gw)
+
+# generate boundary conditions
+
+
+# generate upw package
+geo_zones = []
+gw.upw_package(geo_zones)
+
+# generate hfb
+gw.hfb_package()
+
+# generate sfr2 package
+gw.sfr2_package()
+
+
+# generate uzf package
+gw.uzf_package()
+
+# generate lak package
+gw.lak_package()
+#gw.mf.lak.write_file()
+
+# generate gage package
+
+
+# generate well package
+#gw.well_package()
+gw.well_package2()
+
+# hob
+gw.hob_package()
+gw.gage_package()
+
+# generate Control package
+gw.oc_package()
+
+# for steady-state
+if False:
+    gw.rch_package()
+
+# generate hfb
+
+
+# generate obs
+
+# generate nwt
+nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"D:\Workspace\projects\RussianRiver\modflow\other_files\solver_options4.nwt",
+                                     gw.mf)
+nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"D:\Workspace\projects\RussianRiver\modflow\other_files\solver_options4.nwt",
+                                     gw.mfs)
+
+
+
+# generate transient model
+gw.mf.write_input()
+
+# generate steady state model
+gw.mfs.write_input()
+xx = 1
