@@ -194,6 +194,7 @@ class Gw_model(object):
             stream_widths.append([seg_id, up, dn])
         self.stream_widths = np.array(stream_widths)
 
+
     def sfr2_package(self):
 
         from flopy.utils.optionblock import OptionBlock
@@ -219,6 +220,7 @@ class Gw_model(object):
         # Table fields name
         reach_data_labels = ['node', 'k', 'i', 'j', 'iseg', 'ireach', 'rchlen', 'strtop', 'slope',
                              'strthick', 'strhc1', 'thts', 'thti', 'eps', 'uhc', 'reachID', 'outreach']
+
         # Initialize an empty pandas dataframe
         reach_data = pd.DataFrame(columns=reach_data_labels, dtype='float')
 
@@ -237,12 +239,14 @@ class Gw_model(object):
                     reach_data.at[index,'k'] = kk
                     break
             pass
+
         # IDs
         reach_data['iseg'] = streams_data['ISEG'].values  # Segment ID number
         reach_data['ireach'] = streams_data['IREACH'].values  # Reach ID number
         #reach_data['ireach'][reach_data['ireach'] < 1] = 1
         reach_data.loc[reach_data['ireach'] < 1, 'ireach' ] = 1 # the newly added segments (div and spillways) has
         # ireach =0
+
         # Stream topography
         reach_data['rchlen'] = streams_data['RCHLEN'].values  # reach length
         reach_data.loc[reach_data['rchlen']==0, 'rchlen'] = 300.0
@@ -268,18 +272,21 @@ class Gw_model(object):
                            'cdpth', 'fdpth', 'awdth', 'bwdth', 'hcond1', 'thickm1',
                            'elevup', 'width1', 'depth1', 'hcond2', 'thickm2', 'elevdn',
                            'width2', 'depth2']
+
         # compute width based on flow accumulation
         streams_data = self.cal_stream_width(streams_data, flo_acc)
+
         # Use the stream data from the HRU shapefile
         unique_segments = streams_data.drop_duplicates(['ISEG'], keep='first')
         unique_segments = unique_segments.sort_values(by='ISEG')
 
         n_segments = len(unique_segments)
 
-        # initialize dataframe filled with zeros
+        # initialize segments dataframe filled with zeros
         zero_data = np.zeros((n_segments, len(seg_data_labels)))
         segment_data = pd.DataFrame(zero_data, columns=seg_data_labels, dtype='float')
 
+        # fill in segments data frame
         segment_data['nseg'] = unique_segments['ISEG'].values  # Segment ID
         segment_data['icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
         segment_data['outseg'] = unique_segments['OUTSEG'].values  # Downstream Segment
@@ -390,34 +397,59 @@ class Gw_model(object):
                                          channel_geometry_data=channel_geometry_data,
                                          channel_flow_data=channel_flow_data,
                                          dataset_5=dataset_5, options=options)
+
+
+
+
+
+    def add_rubber_dam_sfr(segment_data, reach_data):
+
+            # Change iupseg and outseg for segments affected by lake 12
+            change_iupseg_outseg()
+
+            # Set streambed conductivities to 0 for all reaches affected by lake 12
+            change_streambed_K()
+
+            # Add two outflow segments for the rubber dam
+
+            pass
+
+
+
+
+
     def sfr3_package(self):
-        """
-        Change cross section ..
-        :return:
-        """
+
+        # Import
         from flopy.utils.optionblock import OptionBlock
 
+        # Create options block
         options = OptionBlock('', flopy.modflow.ModflowSfr2, block=True)
         options.reachinput = True # False
         options.tabfiles = True
 
-
-        # read flow accumulation file
+        # Read flow accumulation file
         flo_acc = self.config.get('SFR', 'str_flow_acc')
         sfr_with_floacc = geopandas.read_file(flo_acc)  #
         sfr_with_floacc = sfr_with_floacc.sort_values(by='HRU_ID')
 
+        # Extract streams data from hru shapefile and add flow accumulation data to it
         hru_shp = self.hru_param
         mask = hru_shp['ISEG'] > 0
         streams_data = hru_shp[mask]  # a compact form is streams_data = hru_shp[hru_shp['ISEG'] > 0]
         streams_data = streams_data.sort_values(by='HRU_ID')
         streams_data['flow_accum'] = sfr_with_floacc['grid_code'].values
 
-        ## Reach Data
-        # The reach data will be saved in a Pandas dataframe, which will make it simpler to handle the tabular data.
-        # Table fields name
+
+
+        #---- Reach data -------------------------------------------------------------------------
+
+        # NOTE: The reach data will be saved in a Pandas dataframe, which will make it simpler to handle the tabular data.
+
+        # Reach data table field names
         reach_data_labels = ['node', 'k', 'i', 'j', 'iseg', 'ireach', 'rchlen', 'strtop', 'slope',
                              'strthick', 'strhc1', 'thts', 'thti', 'eps', 'uhc', 'reachID', 'outreach']
+
         # Initialize an empty pandas dataframe
         reach_data = pd.DataFrame(columns=reach_data_labels, dtype='float')
 
@@ -426,6 +458,7 @@ class Gw_model(object):
         reach_data['i'] = streams_data['HRU_ROW'].values - 1  # row number
         reach_data['j'] = streams_data['HRU_COL'].values - 1  # column number
 
+        # Assign layers IDs after making sure stream cells are in active zone
         for index, rech in reach_data.iterrows(): # get layer
             thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]
             if sum(thk)==0:
@@ -436,12 +469,14 @@ class Gw_model(object):
                     reach_data.at[index,'k'] = kk
                     break
             pass
-        # IDs
+
+        # Reach IDs
         reach_data['iseg'] = streams_data['ISEG'].values  # Segment ID number
         reach_data['ireach'] = streams_data['IREACH'].values  # Reach ID number
         #reach_data['ireach'][reach_data['ireach'] < 1] = 1
         reach_data.loc[reach_data['ireach'] < 1, 'ireach' ] = 1 # the newly added segments (div and spillways) has
         # ireach =0
+
         # Stream topography
         reach_data['rchlen'] = streams_data['RCHLEN'].values  # reach length
         reach_data.loc[reach_data['rchlen']==0, 'rchlen'] = 300.0
@@ -460,25 +495,34 @@ class Gw_model(object):
         reach_data['uhc'] = 0.1  # conductivity of the unsaturated zone
         n_reaches = len(reach_data)  # number of reaches
 
+        # calculate stream slope
         reach_data = self.calculate_stream_slope(reach_data)
 
+
+        #---- Segment data -------------------------------------------------------------------------
+
+        # Segment data table field names
         seg_data_labels = ['nseg', 'icalc', 'outseg', 'iupseg', 'iprior',
                            'nstrpts', 'flow', 'runoff', 'etsw', 'pptsw', 'roughch', 'roughbk',
                            'cdpth', 'fdpth', 'awdth', 'bwdth', 'hcond1', 'thickm1',
                            'elevup', 'width1', 'depth1', 'hcond2', 'thickm2', 'elevdn',
                            'width2', 'depth2']
-        # compute width based on flow accumulation
+
+        # Compute width based on flow accumulation
         streams_data = self.cal_stream_width(streams_data, flo_acc)
-        # Use the stream data from the HRU shapefile
+
+        # Use the segment data from the HRU shapefile
         unique_segments = streams_data.drop_duplicates(['ISEG'], keep='first')
         unique_segments = unique_segments.sort_values(by='ISEG')
 
+        # Extract number of segments
         n_segments = len(unique_segments)
 
-        # initialize dataframe filled with zeros
+        # Initialize dataframe filled with zeros
         zero_data = np.zeros((n_segments, len(seg_data_labels)))
         segment_data = pd.DataFrame(zero_data, columns=seg_data_labels, dtype='float')
 
+        # Fill segments data frame
         segment_data['nseg'] = unique_segments['ISEG'].values  # Segment ID
         segment_data['icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
         segment_data['outseg'] = unique_segments['OUTSEG'].values  # Downstream Segment
@@ -487,7 +531,11 @@ class Gw_model(object):
         segment_data['width1'] = unique_segments['Width'].values  # Upstream width
         segment_data['width2'] = unique_segments['Width'].values  # Downstream width
         segment_data['roughch'] = float(self.config.get('SFR', 'mannings_roughness'))
-        ## This the options in the first line in the SFR package
+
+
+
+        #---- Assign options in the first line of SFR package ------------------------------------------------------
+
         nsfrpar = 0  # number of parameters
         nparseg = 0
         isfropt = 3  # uzf is simulated, k is read from uzf
@@ -501,6 +549,9 @@ class Gw_model(object):
         irtflg = 0  # an integer value that flags whether transient streamflow routing is active
         numtim = 2  # used when irtflg > 0, number of sub time steps to route streamflow
         weight = 0.75  # used when irtflg > 0,A real number equal to the time weighting factor used to calculate the change in channel storage.
+
+
+        #---- Add ag diversions ---------------------------------------------------------------------
 
         if True:
             # todo: from now on we must slice hru_df and assign to reach_data
@@ -516,7 +567,10 @@ class Gw_model(object):
             n_reaches = len(reach_data)
 
 
-        # The Segments information can be changed with time
+        #---- Create sfr dataset 5 ------------------------------------------------------------------
+
+        # NOTE: the Segments information can be changed with time (i.e. by stress period)
+
         dataset_5 = {}
         nper = self.mf.dis.nper
         for i in np.arange(nper):  # we have only two stress period
@@ -525,6 +579,9 @@ class Gw_model(object):
             else:
                 tss_par = -1  # the negative sign indicates that segment data from previous time step will be used
             dataset_5[i] = [tss_par, 0, 0]
+
+
+        #---- Create sfr datasets 6e and 6d ------------------------------------------------------------------
 
         # channel flow data
         channel_flow_data = {}  # for 6e - flow table [flow1 flow2; depth1, depth2, width1, width2]
@@ -541,26 +598,52 @@ class Gw_model(object):
             vall = len(channel_flow_data[0][iseg][0])
             segment_data.loc[segment_data['nseg'] == iseg, 'nstrpts'] = vall
 
+
+        #---- Assign lake gates and spillways ------------------------------------------------------------------
+
         segment_data, reach_data, channel_flow_data = self.gates_calc(segment_data,
                                                                       reach_data, channel_flow_data)
 
         segment_data, reach_data = self.spillway_calc(segment_data, reach_data)
 
-        # Tabfiles
+
+
+        #---- Tabfiles ------------------------------------------------------------------
+
         tabfiles = True
         tabfiles_dict = {}
         tabfiles_dict, average_inflows = self.compute_sfr_inflow()
 
+
+
+        #---- Slope correction ------------------------------------------------------------------
+
         reach_data.slope[reach_data.slope <= 0] = 0.02
+
+
+
+        #---- Incorporate rubber dam ------------------------------------------------------------------
+
+        #segment_data, reach_data = self.add_rubber_dam_sfr(segment_data, reach_data)
+
+
+
+
+        #---- Make changes for steady state model ------------------------------------------------------------------
+
         segment_data_ss, reach_data_ss = self.Steady_state_SFR_changes(segment_data.copy(), reach_data.copy(),
                                                                        average_inflows)
 
 
+        #---- Write transient and steady state sfr packages ------------------------------------------------------------------
+
+        # Prepare to write transient sfr package
         reach_data = reach_data.to_records(index=False)
         segment_data = segment_data.to_records(index=False)
         segment_data = {0: segment_data}
         # you can change segments data for each stress period? segment_data = {0: segment_data0, 1: segment_data1 }
 
+        # Write transient SFR package
         sfr = flopy.modflow.ModflowSfr2(self.mf, nstrm=n_reaches, nss=n_segments, const=const, nsfrpar=nsfrpar,
                                         nparseg=nparseg,
                                         dleak=dleak, ipakcb=ipakcb, nstrail=nstrail, isuzn=isuzn, nsfrsets=nsfrsets,
@@ -572,14 +655,17 @@ class Gw_model(object):
                                         dataset_5=dataset_5, options=options)
         #self.mf.write_input()
 
+        # Compute ag diversions for steady state sfr package
         if True:
             segment_data_ss = self.compute_ag_diversions2(segment_data_ss)
 
+        # Prepare to write steady state sfr package
         reach_data_ss = reach_data_ss.to_records(index=False)
         segment_data_ss = segment_data_ss.to_records(index=False)
         segment_data_ss = {0: segment_data_ss}
         options.tabfiles = False
 
+        # Write steady state sfr package
         sfrs = flopy.modflow.ModflowSfr2(self.mfs, nstrm=n_reaches, nss=n_segments, const=const, nsfrpar=nsfrpar,
                                          nparseg=nparseg,
                                          dleak=dleak, ipakcb=ipakcb, nstrail=nstrail, isuzn=isuzn, nsfrsets=nsfrsets,
@@ -589,6 +675,12 @@ class Gw_model(object):
                                          channel_geometry_data=channel_geometry_data,
                                          channel_flow_data=channel_flow_data,
                                          dataset_5=dataset_5, options=options)
+
+
+
+
+
+
     def add_pods_from_state_board(self, segment_data , reach_data):
         """
         This function adds the PODS that were sent to us from state board, so they have no diversions

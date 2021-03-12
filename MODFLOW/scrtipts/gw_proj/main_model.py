@@ -1,9 +1,9 @@
 import os, sys
 
-Use_Develop_FLOPY = True
+Use_Develop_FLOPY = False   # NOTE: Ayman had this set to True, I don't currently have the develop version of flopy so keep it as False
 
 if Use_Develop_FLOPY:
-    fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
+    fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")   # TODO: change this file path once get develop version of flopy and store it locally
     sys.path.append(fpth)
     import flopy
 else:
@@ -18,7 +18,7 @@ from gw import Gw_model
 # from includes import Include
 import support
 import Compute_Lake2
-config_file = r"D:\Workspace\projects\RussianRiver\modflow\scrtipts\gw_proj\rr_ss_config.ini"
+config_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\scrtipts\gw_proj\rr_ss_config.ini"
 config = configparser.ConfigParser()
 config.read(config_file)
 
@@ -29,7 +29,7 @@ gw = Gw_model(config)
 gw.dis_package()
 
 # generate bas package
-fn = r"D:\Workspace\projects\RussianRiver\modflow\other_files\rr_ss_v4.hds"
+fn = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\other_files\rr_ss_v4.hds"
 hds1 = flopy.utils.HeadFile(fn)
 wt = hds1.get_data(kstpkper = (0,0))
 wt[wt>2000] = 235
@@ -53,7 +53,10 @@ gw.upw_package(geo_zones)
 gw.hfb_package()
 
 # generate sfr2 package
-gw.sfr2_package()
+#gw.sfr2_package()
+
+# generate sfr3 package
+gw.sfr3_package()
 
 
 # generate uzf package
@@ -87,9 +90,9 @@ if False:
 # generate obs
 
 # generate nwt
-nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"D:\Workspace\projects\RussianRiver\modflow\other_files\solver_options4.nwt",
+nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\other_files\solver_options4.nwt",
                                      gw.mf)
-nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"D:\Workspace\projects\RussianRiver\modflow\other_files\solver_options4.nwt",
+nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\other_files\solver_options4.nwt",
                                      gw.mfs)
 
 
