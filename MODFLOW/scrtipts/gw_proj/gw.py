@@ -3,10 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
+
 Use_Develop_FLOPY = True
 
 if Use_Develop_FLOPY:
-    fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
+    fpth = sys.path.insert(0, r"D:\Workspace\Codes\flopy_develop\flopy")
     sys.path.append(fpth)
     import flopy
 else:
@@ -117,13 +118,12 @@ class Gw_model(object):
         # find hru_type = 1 but thickness is zero
         hru_type = self.hru_param['HRU_TYPE'].values
         hru_type = hru_type.reshape(self.nrows, self.ncols)
-        tot_thick = thikness.sum(axis = 0)
+        tot_thick = thikness.sum(axis=0)
         mask = np.logical_and(tot_thick > 0, hru_type == 0)
         for k in range(ibound.shape[0]):
             var_ = ibound[k, :, :].copy()
             var_[mask] = 0
-            ibound[k,:,:] = var_
-
+            ibound[k, :, :] = var_
 
         bas = flopy.modflow.ModflowBas(self.mf, ibound=ibound, strt=strt)
         bass = flopy.modflow.ModflowBas(self.mfs, ibound=ibound, strt=strt)
@@ -154,15 +154,16 @@ class Gw_model(object):
         laywet = np.zeros(self.nlayers)
 
         # Rich suggested increase hk by 2 for the first two layers
-        hk[0,:,:] =  hk[0,:,:] * 2.0
+        hk[0, :, :] = hk[0, :, :] * 2.0
         hk[1, :, :] = hk[1, :, :] * 2.0
 
         upw = flopy.modflow.mfupw.ModflowUpw(self.mf, laytyp=laytyp, layavg=0, chani=1.0, layvka=0, laywet=laywet,
                                              hdry=-1e+30, iphdry=0, hk=hk, hani=1.0, vka=hk, ss=ss,
-                                             sy=sy, vkcb=0.0, noparcheck=False, ipakcb = 55)
+                                             sy=sy, vkcb=0.0, noparcheck=False, ipakcb=55)
         # add package to steady state
         upws = flopy.modflow.mfupw.ModflowUpw(self.mfs, laytyp=laytyp, layavg=0, chani=1.0, layvka=0, laywet=laywet,
-                                             hdry=-1e+30, iphdry=0, hk=hk, hani=1.0, vka=hk, vkcb=0.0, noparcheck=False, ipakcb = 55)
+                                              hdry=-1e+30, iphdry=0, hk=hk, hani=1.0, vka=hk, vkcb=0.0,
+                                              noparcheck=False, ipakcb=55)
         pass
 
     def remove_field_num(self, a, i):
@@ -194,15 +195,13 @@ class Gw_model(object):
             stream_widths.append([seg_id, up, dn])
         self.stream_widths = np.array(stream_widths)
 
-
     def sfr2_package(self):
 
         from flopy.utils.optionblock import OptionBlock
 
         options = OptionBlock('', flopy.modflow.ModflowSfr2, block=True)
-        options.reachinput = True # False
+        options.reachinput = True  # False
         options.tabfiles = True
-
 
         # read flow accumulation file
         flo_acc = self.config.get('SFR', 'str_flow_acc')
@@ -225,34 +224,34 @@ class Gw_model(object):
         reach_data = pd.DataFrame(columns=reach_data_labels, dtype='float')
 
         # Reach location
-        reach_data['k'] = 0   # layer number-- Notice that layer numbers are zero-based
+        reach_data['k'] = 0  # layer number-- Notice that layer numbers are zero-based
         reach_data['i'] = streams_data['HRU_ROW'].values - 1  # row number
         reach_data['j'] = streams_data['HRU_COL'].values - 1  # column number
 
-        for index, rech in reach_data.iterrows(): # get layer
+        for index, rech in reach_data.iterrows():  # get layer
             thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]
-            if sum(thk)==0:
+            if sum(thk) == 0:
                 raise ValueError("Stream in inactive zone")
             for kk, val in enumerate(thk):
                 if val > 0:
-                    #reach_data.set_value(index, 'k', kk)
-                    reach_data.at[index,'k'] = kk
+                    # reach_data.set_value(index, 'k', kk)
+                    reach_data.at[index, 'k'] = kk
                     break
             pass
 
         # IDs
         reach_data['iseg'] = streams_data['ISEG'].values  # Segment ID number
         reach_data['ireach'] = streams_data['IREACH'].values  # Reach ID number
-        #reach_data['ireach'][reach_data['ireach'] < 1] = 1
-        reach_data.loc[reach_data['ireach'] < 1, 'ireach' ] = 1 # the newly added segments (div and spillways) has
+        # reach_data['ireach'][reach_data['ireach'] < 1] = 1
+        reach_data.loc[reach_data['ireach'] < 1, 'ireach'] = 1  # the newly added segments (div and spillways) has
         # ireach =0
 
         # Stream topography
         reach_data['rchlen'] = streams_data['RCHLEN'].values  # reach length
-        reach_data.loc[reach_data['rchlen']==0, 'rchlen'] = 300.0
+        reach_data.loc[reach_data['rchlen'] == 0, 'rchlen'] = 300.0
         reach_data['strtop'] = streams_data[
                                    'DEM_ADJ'].values - 1.0  # Streambed elevation is assumed 1 meter below ground surface.
-        reach_data['slope'] = streams_data['DEM_SLP_P'].values #/ 100.0  # Slope #todo: divid by 100 is not correct!!
+        reach_data['slope'] = streams_data['DEM_SLP_P'].values  # / 100.0  # Slope #todo: divid by 100 is not correct!!
 
         # Streambed information
         reach_data['strthick'] = 0.5  # streambed thickness - meter
@@ -323,7 +322,6 @@ class Gw_model(object):
             n_segments = len(segment_data['nseg'].unique())
             n_reaches = len(reach_data)
 
-
         # The Segments information can be changed with time
         dataset_5 = {}
         nper = self.mf.dis.nper
@@ -363,7 +361,6 @@ class Gw_model(object):
         segment_data_ss, reach_data_ss = self.Steady_state_SFR_changes(segment_data.copy(), reach_data.copy(),
                                                                        average_inflows)
 
-
         reach_data = reach_data.to_records(index=False)
         segment_data = segment_data.to_records(index=False)
         segment_data = {0: segment_data}
@@ -378,7 +375,7 @@ class Gw_model(object):
                                         channel_geometry_data=channel_geometry_data,
                                         channel_flow_data=channel_flow_data,
                                         dataset_5=dataset_5, options=options)
-        #self.mf.write_input()
+        # self.mf.write_input()
 
         if True:
             segment_data_ss = self.compute_ag_diversions2(segment_data_ss)
@@ -401,18 +398,83 @@ class Gw_model(object):
 
 
 
+    def add_rubber_dam_sfr(self, segment_data, reach_data):
 
-    def add_rubber_dam_sfr(segment_data, reach_data):
+        # ---- Grab variables from config file --------------------------------------------
 
-            # Change iupseg and outseg for segments affected by lake 12
-            change_iupseg_outseg()
+        seg_id = self.config.get('SFR', 'seg_id_under_rubber_dam')
+        seg_id = seg_id.split(',')
+        seg_id = [int(ss) for ss in seg_id]
 
-            # Set streambed conductivities to 0 for all reaches affected by lake 12
-            change_streambed_K()
+        new_outseg = self.config.get('SFR', 'new_outseg_under_rubber_dam')
+        new_outseg = new_outseg.split(',')
+        new_outseg = [int(ss) for ss in new_outseg]
 
-            # Add two outflow segments for the rubber dam
+        new_iupseg = self.config.get('SFR', 'new_iupseg_under_rubber_dam')
+        new_iupseg = new_iupseg.split(',')
+        new_iupseg = [int(ss) for ss in new_iupseg]
 
-            pass
+        # ---- Function to change iupseg and outseg --------------------------------------------
+
+        # Define function
+        def change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg):
+
+            # loop through segments and replace values
+            for i in range(len(seg_id)):
+                # identify index of segment to be changed
+                seg_idx = segment_data[segment_data['nseg'] == seg_id[i]].index
+
+                # change iupseg
+                segment_data.iupseg[seg_idx] = new_iupseg[i]
+
+                # change outseg
+                segment_data.outseg[seg_idx] = new_outseg[i]
+
+            return segment_data
+
+        # Run function
+        segment_data = change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg)
+
+
+
+        # ---- Function to set streambed conductivities to 0 for all reaches affected by lake 12 -------------------
+
+        # NOTE: assuming for now that all reaches in the segments listed in seg_id should be changed
+
+        # Define function
+        def change_streambed_K(reach_data, seg_id):
+
+            # loop through segments and replace all values in their reaches
+            for i in range(len(seg_id)):
+                # identify indices of reaches to be changed
+                seg_idx = reach_data[reach_data['iseg'] == seg_id[i]].index
+
+                # change streambed conductivities for these reaches
+                reach_data.strhc1[seg_idx] = 0
+
+            return reach_data
+
+        # Run function
+        reach_data = change_streambed_K(reach_data, seg_id)
+
+
+
+        # ---- Function to add two ouflow segmnents for the rubber dam --------------------------------------------
+
+        # Define function
+        def add_rubber_dam_outflow_seg(segment_data, reach_data):
+
+            #
+
+            return segment_data, reach_data
+
+
+        # Run function
+        segment_data, reach_data = add_rubber_dam_outflow_seg(segment_data, reach_data)
+
+        # return tables
+        return segment_data, reach_data
+
 
 
 
@@ -425,7 +487,7 @@ class Gw_model(object):
 
         # Create options block
         options = OptionBlock('', flopy.modflow.ModflowSfr2, block=True)
-        options.reachinput = True # False
+        options.reachinput = True  # False
         options.tabfiles = True
 
         # Read flow accumulation file
@@ -440,9 +502,7 @@ class Gw_model(object):
         streams_data = streams_data.sort_values(by='HRU_ID')
         streams_data['flow_accum'] = sfr_with_floacc['grid_code'].values
 
-
-
-        #---- Reach data -------------------------------------------------------------------------
+        # ---- Reach data -------------------------------------------------------------------------
 
         # NOTE: The reach data will be saved in a Pandas dataframe, which will make it simpler to handle the tabular data.
 
@@ -454,35 +514,35 @@ class Gw_model(object):
         reach_data = pd.DataFrame(columns=reach_data_labels, dtype='float')
 
         # Reach location
-        reach_data['k'] = 0   # layer number-- Notice that layer numbers are zero-based
+        reach_data['k'] = 0  # layer number-- Notice that layer numbers are zero-based
         reach_data['i'] = streams_data['HRU_ROW'].values - 1  # row number
         reach_data['j'] = streams_data['HRU_COL'].values - 1  # column number
 
         # Assign layers IDs after making sure stream cells are in active zone
-        for index, rech in reach_data.iterrows(): # get layer
+        for index, rech in reach_data.iterrows():  # get layer
             thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]
-            if sum(thk)==0:
+            if sum(thk) == 0:
                 raise ValueError("Stream in inactive zone")
             for kk, val in enumerate(thk):
                 if val > 0:
-                    #reach_data.set_value(index, 'k', kk)
-                    reach_data.at[index,'k'] = kk
+                    # reach_data.set_value(index, 'k', kk)
+                    reach_data.at[index, 'k'] = kk
                     break
             pass
 
         # Reach IDs
         reach_data['iseg'] = streams_data['ISEG'].values  # Segment ID number
         reach_data['ireach'] = streams_data['IREACH'].values  # Reach ID number
-        #reach_data['ireach'][reach_data['ireach'] < 1] = 1
-        reach_data.loc[reach_data['ireach'] < 1, 'ireach' ] = 1 # the newly added segments (div and spillways) has
+        # reach_data['ireach'][reach_data['ireach'] < 1] = 1
+        reach_data.loc[reach_data['ireach'] < 1, 'ireach'] = 1  # the newly added segments (div and spillways) has
         # ireach =0
 
         # Stream topography
         reach_data['rchlen'] = streams_data['RCHLEN'].values  # reach length
-        reach_data.loc[reach_data['rchlen']==0, 'rchlen'] = 300.0
+        reach_data.loc[reach_data['rchlen'] == 0, 'rchlen'] = 300.0
         reach_data['strtop'] = streams_data[
                                    'DEM_ADJ'].values - 1.0  # Streambed elevation is assumed 1 meter below ground surface.
-        reach_data['slope'] = streams_data['DEM_SLP_P'].values #/ 100.0  # Slope #todo: divid by 100 is not correct!!
+        reach_data['slope'] = streams_data['DEM_SLP_P'].values  # / 100.0  # Slope #todo: divid by 100 is not correct!!
 
         # Streambed information
         reach_data['strthick'] = 0.5  # streambed thickness - meter
@@ -498,8 +558,7 @@ class Gw_model(object):
         # calculate stream slope
         reach_data = self.calculate_stream_slope(reach_data)
 
-
-        #---- Segment data -------------------------------------------------------------------------
+        # ---- Segment data -------------------------------------------------------------------------
 
         # Segment data table field names
         seg_data_labels = ['nseg', 'icalc', 'outseg', 'iupseg', 'iprior',
@@ -532,9 +591,7 @@ class Gw_model(object):
         segment_data['width2'] = unique_segments['Width'].values  # Downstream width
         segment_data['roughch'] = float(self.config.get('SFR', 'mannings_roughness'))
 
-
-
-        #---- Assign options in the first line of SFR package ------------------------------------------------------
+        # ---- Assign options in the first line of SFR package ------------------------------------------------------
 
         nsfrpar = 0  # number of parameters
         nparseg = 0
@@ -550,8 +607,7 @@ class Gw_model(object):
         numtim = 2  # used when irtflg > 0, number of sub time steps to route streamflow
         weight = 0.75  # used when irtflg > 0,A real number equal to the time weighting factor used to calculate the change in channel storage.
 
-
-        #---- Add ag diversions ---------------------------------------------------------------------
+        # ---- Add ag diversions ---------------------------------------------------------------------
 
         if True:
             # todo: from now on we must slice hru_df and assign to reach_data
@@ -566,8 +622,7 @@ class Gw_model(object):
             n_segments = len(segment_data['nseg'].unique())
             n_reaches = len(reach_data)
 
-
-        #---- Create sfr dataset 5 ------------------------------------------------------------------
+        # ---- Create sfr dataset 5 ------------------------------------------------------------------
 
         # NOTE: the Segments information can be changed with time (i.e. by stress period)
 
@@ -580,8 +635,7 @@ class Gw_model(object):
                 tss_par = -1  # the negative sign indicates that segment data from previous time step will be used
             dataset_5[i] = [tss_par, 0, 0]
 
-
-        #---- Create sfr datasets 6e and 6d ------------------------------------------------------------------
+        # ---- Create sfr datasets 6e and 6d ------------------------------------------------------------------
 
         # channel flow data
         channel_flow_data = {}  # for 6e - flow table [flow1 flow2; depth1, depth2, width1, width2]
@@ -598,44 +652,33 @@ class Gw_model(object):
             vall = len(channel_flow_data[0][iseg][0])
             segment_data.loc[segment_data['nseg'] == iseg, 'nstrpts'] = vall
 
-
-        #---- Assign lake gates and spillways ------------------------------------------------------------------
+        # ---- Assign lake gates and spillways ------------------------------------------------------------------
 
         segment_data, reach_data, channel_flow_data = self.gates_calc(segment_data,
                                                                       reach_data, channel_flow_data)
 
         segment_data, reach_data = self.spillway_calc(segment_data, reach_data)
 
-
-
-        #---- Tabfiles ------------------------------------------------------------------
+        # ---- Tabfiles ------------------------------------------------------------------
 
         tabfiles = True
         tabfiles_dict = {}
         tabfiles_dict, average_inflows = self.compute_sfr_inflow()
 
-
-
-        #---- Slope correction ------------------------------------------------------------------
+        # ---- Slope correction ------------------------------------------------------------------
 
         reach_data.slope[reach_data.slope <= 0] = 0.02
 
+        # ---- Incorporate rubber dam ------------------------------------------------------------------
 
+        segment_data, reach_data = self.add_rubber_dam_sfr(segment_data, reach_data)
 
-        #---- Incorporate rubber dam ------------------------------------------------------------------
-
-        #segment_data, reach_data = self.add_rubber_dam_sfr(segment_data, reach_data)
-
-
-
-
-        #---- Make changes for steady state model ------------------------------------------------------------------
+        # ---- Make changes for steady state model ------------------------------------------------------------------
 
         segment_data_ss, reach_data_ss = self.Steady_state_SFR_changes(segment_data.copy(), reach_data.copy(),
                                                                        average_inflows)
 
-
-        #---- Write transient and steady state sfr packages ------------------------------------------------------------------
+        # ---- Write transient and steady state sfr packages ------------------------------------------------------------------
 
         # Prepare to write transient sfr package
         reach_data = reach_data.to_records(index=False)
@@ -653,7 +696,7 @@ class Gw_model(object):
                                         channel_geometry_data=channel_geometry_data,
                                         channel_flow_data=channel_flow_data,
                                         dataset_5=dataset_5, options=options)
-        #self.mf.write_input()
+        # self.mf.write_input()
 
         # Compute ag diversions for steady state sfr package
         if True:
@@ -677,11 +720,7 @@ class Gw_model(object):
                                          dataset_5=dataset_5, options=options)
 
 
-
-
-
-
-    def add_pods_from_state_board(self, segment_data , reach_data):
+    def add_pods_from_state_board(self, segment_data, reach_data):
         """
         This function adds the PODS that were sent to us from state board, so they have no diversions
         :param segment_data:
@@ -697,16 +736,15 @@ class Gw_model(object):
         # find the closest stream to this pod
         uniq_seg = []
         for irec, rec in poddf.iterrows():
-            pod_row = rec['HRU_ROW']-1
-            pod_col = rec['HRU_COL']-1
+            pod_row = rec['HRU_ROW'] - 1
+            pod_col = rec['HRU_COL'] - 1
 
             delrow = reach_data['i'].values - pod_row
             delcol = reach_data['j'].values - pod_col
-            distt = np.power(delrow**2.0+delcol**2.0, 0.5)
+            distt = np.power(delrow ** 2.0 + delcol ** 2.0, 0.5)
             locc = np.argmin(distt)
             close_seg = reach_data['iseg'].values[locc]
             uniq_seg.append(close_seg)
-
 
         curr_seg_no = max_seg_no
         for seg in uniq_seg:
@@ -795,7 +833,7 @@ class Gw_model(object):
         return reach_data, segment_data
 
 
-    def add_ag_full_diversions_segs(self, segment_data , reach_data ):
+    def add_ag_full_diversions_segs(self, segment_data, reach_data):
         """ Add new diversion segments for ag water diversion"""
 
         max_seg_no = segment_data['nseg'].max()
@@ -809,36 +847,36 @@ class Gw_model(object):
             if np.any(segment_data['iupseg'].values == seg):
                 # if there is a diversion seg that already exist, skip
                 continue
-            curr_seg_ifo = segment_data[segment_data['nseg']==seg]
-            if (curr_seg_ifo['outseg'].values[0] == 0) and (curr_seg_ifo['iupseg'].values[0]!=0):
+            curr_seg_ifo = segment_data[segment_data['nseg'] == seg]
+            if (curr_seg_ifo['outseg'].values[0] == 0) and (curr_seg_ifo['iupseg'].values[0] != 0):
                 continue
 
             curr_seg_no = curr_seg_no + 1
-            new_row_idex = curr_seg_no-1
-            segment_data.loc[new_row_idex] = segment_data.loc[0].values # use default falues, and in next lines change
+            new_row_idex = curr_seg_no - 1
+            segment_data.loc[new_row_idex] = segment_data.loc[0].values  # use default falues, and in next lines change
             segment_data.at[new_row_idex, 'nseg'] = curr_seg_no
-            segment_data.at[new_row_idex,'icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
+            segment_data.at[new_row_idex, 'icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
             segment_data.at[new_row_idex, 'outseg'] = 0
-            segment_data.at[new_row_idex,'iupseg'] = seg
-            segment_data.at[new_row_idex,'width1'] = 10.0 # Upstream width
-            segment_data.at[new_row_idex,'width2'] = 10.0  # Downstream width
+            segment_data.at[new_row_idex, 'iupseg'] = seg
+            segment_data.at[new_row_idex, 'width1'] = 10.0  # Upstream width
+            segment_data.at[new_row_idex, 'width2'] = 10.0  # Downstream width
             segment_data.at[new_row_idex, 'roughch'] = float(self.config.get('SFR', 'mannings_roughness'))
 
             # reach data
             mask_reach = reach_data['iseg'] == seg
-            curr_rech_info =  reach_data[mask_reach]
+            curr_rech_info = reach_data[mask_reach]
             dn_reach = np.max(curr_rech_info['ireach'].values)
-            ii = curr_rech_info.loc[curr_rech_info['ireach']==dn_reach, 'i'].values[0]
+            ii = curr_rech_info.loc[curr_rech_info['ireach'] == dn_reach, 'i'].values[0]
             jj = curr_rech_info.loc[curr_rech_info['ireach'] == dn_reach, 'j'].values[0]
 
-            near_cells = [(ii-1, jj),
-                          (ii+1, jj),
-                          (ii, jj-1),
-                          (ii, jj+1),
-                          (ii-1, jj+1),
-                          (ii-1, jj-1),
-                          (ii+1, jj+1),
-                          (ii+1, jj-1)]
+            near_cells = [(ii - 1, jj),
+                          (ii + 1, jj),
+                          (ii, jj - 1),
+                          (ii, jj + 1),
+                          (ii - 1, jj + 1),
+                          (ii - 1, jj - 1),
+                          (ii + 1, jj + 1),
+                          (ii + 1, jj - 1)]
             rr_cc = list(zip(reach_data['i'], reach_data['j']))
             for pp in near_cells:
                 found = 0
@@ -848,12 +886,11 @@ class Gw_model(object):
             if found == 0:
                 raise ValueError("New stream is not found")
 
-
             irech = len(reach_data)
             reach_data.loc[irech] = reach_data.loc[0].values
             reach_data.at[irech, 'k'] = 0  # layer number-- Notice that layer numbers are zero-based
             reach_data.at[irech, 'i'] = pp[0]  # row number
-            reach_data.at[irech, 'j'] = pp[1] # column number
+            reach_data.at[irech, 'j'] = pp[1]  # column number
             try:
                 thk = self.mf.dis.thickness.array[:, int(pp[0]), int(pp[1])]
             except:
@@ -871,26 +908,24 @@ class Gw_model(object):
             reach_data.at[irech, 'ireach'] = 1  # Reach ID number
 
             # Stream topography
-            reach_data.at[irech,'rchlen'] = 300.0 # reach length
+            reach_data.at[irech, 'rchlen'] = 300.0  # reach length
             row_mask = self.hru_param['HRU_ROW'] == pp[0] + 1
             col_mask = self.hru_param['HRU_COL'] == pp[1] + 1
             cell_info = self.hru_param[(row_mask & col_mask)]
             reach_data.at[irech, 'strtop'] = cell_info['DEM_ADJ'].values[0] - 1.0  # Streambed elevation is assumed 1
             # meter
             # below ground surface.
-            reach_data.at[irech,'slope'] = cell_info['DEM_SLP_P'].values[0] / 100.0  # Slope
+            reach_data.at[irech, 'slope'] = cell_info['DEM_SLP_P'].values[0] / 100.0  # Slope
 
             # Streambed information
-            reach_data.at[irech,'strthick'] = 0.5  # streambed thickness - meter
+            reach_data.at[irech, 'strthick'] = 0.5  # streambed thickness - meter
             reach_data.at[irech, 'strhc1'] = 0.0  # conductivity of the stream bed
 
             # Unsaturated Zone properties
-            reach_data.at[irech,'thts'] = 0.31  # saturated porosity
-            reach_data.at[irech,'thti'] = 0.131  # initial water content
-            reach_data.at[irech,'eps'] = 3.5  # Brooks-Corey exponent
-            reach_data.at[irech,'uhc'] = 0.1  # conductivity of the unsaturated zone
-
-
+            reach_data.at[irech, 'thts'] = 0.31  # saturated porosity
+            reach_data.at[irech, 'thti'] = 0.131  # initial water content
+            reach_data.at[irech, 'eps'] = 3.5  # Brooks-Corey exponent
+            reach_data.at[irech, 'uhc'] = 0.1  # conductivity of the unsaturated zone
 
         return reach_data, segment_data
 
@@ -923,8 +958,7 @@ class Gw_model(object):
 
             np.save('sfr_topo.npy', sfr_topo)
         else:
-            sfr_topo = np.load('sfr_topo.npy', allow_pickle = True).all()
-
+            sfr_topo = np.load('sfr_topo.npy', allow_pickle=True).all()
 
         # Now that the topology of the sfr is computed, let us
         # make sure that each gage has unique hrus
@@ -946,7 +980,7 @@ class Gw_model(object):
             tot_demand = 0
             for crop in crop_water_requirements.keys():
                 w_demand_per_acre = crop_water_requirements[crop]
-                cropmask = curr_fields['Crop2014']==crop
+                cropmask = curr_fields['Crop2014'] == crop
                 area = curr_fields[cropmask]['Shape_Area'].sum()
                 area_in_acre = area * m2_to_acre
                 annual_deman_acre = w_demand_per_acre * area_in_acre
@@ -956,8 +990,8 @@ class Gw_model(object):
             mask = segment_data_ss['nseg'] == gage
             segment_data_ss.loc[mask, 'flow'] = tot_demand
 
-
         return segment_data_ss
+
 
     def compute_ag_diversions(self, segment_data_ss):
         ag_farm = self.config.get('SFR', 'ag_farms_file')
@@ -968,11 +1002,11 @@ class Gw_model(object):
         crop_water_requirements['Apples'] = 1.5
         crop_water_requirements['Pears'] = 1.5
 
-        crops_to_include = ['Apples', 'Grapes', 'Pears', 'Mixed Pasture'] # 98% of crops
+        crops_to_include = ['Apples', 'Grapes', 'Pears', 'Mixed Pasture']  # 98% of crops
         for i, div_row in farms_df.iterrows():
             curr_seg = div_row['iseg']
             if curr_seg == 434:
-                continue # this is the outlet, no diversion
+                continue  # this is the outlet, no diversion
             flow = 0.0
             m2_to_acre = 0.000247105
             ac_ft_per_year_to_m3_per_day = 3.3794
@@ -992,8 +1026,6 @@ class Gw_model(object):
                 segment_data_ss.loc[filter, 'flow'] = flow
 
         return segment_data_ss
-
-
 
 
     def Steady_state_SFR_changes(self, segment_data, reach_data, average_inflows):
@@ -1026,6 +1058,7 @@ class Gw_model(object):
 
         return segment_data, reach_data
 
+
     def spillway_calc(self, segment_data, reach_data):
         """
 
@@ -1049,25 +1082,23 @@ class Gw_model(object):
                 print("Error")
             upstage = lake_df[lake_df['Lake _ID'] == lake_id]['Stage up'].values
             dnstage = lake_df[lake_df['Lake _ID'] == lake_id]['Down'].values
-            lake_stage = 0.5 * (upstage+dnstage)
+            lake_stage = 0.5 * (upstage + dnstage)
 
             segment_data.loc[locc, 'icalc'] = 1
             segment_data.loc[locc, 'width1'] = 10
             segment_data.loc[locc, 'width2'] = 10
 
-
-
             # elevation is like outseg elevation
             dnseg = segment_data[segment_data['nseg'] == sspil]['outseg'].values[0]
             dn = segment_data[segment_data['nseg'] == dnseg]
             reach_dn = reach_data[(reach_data['iseg'] == dnseg) & (reach_data['ireach'] == 1)]
-            spillway_elevation = 0.5* (reach_dn['strtop'].values[0] + upstage)
+            spillway_elevation = 0.5 * (reach_dn['strtop'].values[0] + upstage)
             locc2 = reach_data['iseg'] == sspil
 
             reach_data.loc[locc2, 'rchlen'] = 400
             if reach_dn['strtop'].values[0] > spillway_elevation:
                 xxxx = 1
-            if spillway_elevation < (dnstage+2.0):
+            if spillway_elevation < (dnstage + 2.0):
                 spillway_elevation = upstage - 2.0
             reach_data.loc[locc2, 'strtop'] = spillway_elevation
             reach_data.loc[locc2, 'slope'] = 0.1
@@ -1075,6 +1106,7 @@ class Gw_model(object):
             reach_data.loc[locc2, 'strhc1'] = 0.0
 
         return segment_data, reach_data
+
 
     def gates_calc(self, segment_data, reach_data, channel_flow_data):
         """
@@ -1110,7 +1142,7 @@ class Gw_model(object):
             reach_data.loc[locc2, 'rchlen'] = reach_dn['rchlen'].values[0]
 
             # get the segment elevation
-            if lake_id > 2: # for small reservoir reach is 2 m above lakebed
+            if lake_id > 2:  # for small reservoir reach is 2 m above lakebed
                 gate_elev = (lake_stage - 2.0)
             else:
                 gate_elev = (lake_stage - 2.0)
@@ -1120,31 +1152,31 @@ class Gw_model(object):
             lake_bottom = self.mf.dis.botm.array[locc_id]
 
             # condition 1
-            if reach_dn['strtop'].values[0]> gate_elev:
+            if reach_dn['strtop'].values[0] > gate_elev:
                 print("Error, gate segment is below downstream next downstream segment")
 
             rch_length = 50.0
             slope = reach_dn['slope'].values[0]
-            min_elevation = gate_elev-0.5 * rch_length * slope
+            min_elevation = gate_elev - 0.5 * rch_length * slope
 
             # find which layer this elevation correpond to
             rrow = int(reach_data.loc[locc2, 'i'].values[0])
             rcol = int(reach_data.loc[locc2, 'j'].values[0])
-            topp = self.mf.dis.top.array[rrow,rcol]
-            elevs = [topp] + self.mf.dis.botm.array[:, rrow,rcol].tolist()
+            topp = self.mf.dis.top.array[rrow, rcol]
+            elevs = [topp] + self.mf.dis.botm.array[:, rrow, rcol].tolist()
 
-            for k in range(len(elevs)-1):
-                if min_elevation>= elevs[k]:
+            for k in range(len(elevs) - 1):
+                if min_elevation >= elevs[k]:
                     break
-                if elevs[k]> min_elevation and elevs[k+1]<= min_elevation:
+                if elevs[k] > min_elevation and elevs[k + 1] <= min_elevation:
                     break
             if lake_id > 2:
                 reach_data.loc[locc2, 'k'] = k
 
-            if k == self.mf.nlay-1:
-                if elevs[-1]>gate_elev:
+            if k == self.mf.nlay - 1:
+                if elevs[-1] > gate_elev:
                     botm = self.mf.dis.botm.array
-                    botm[-1,rrow,rcol] = gate_elev - 2.0
+                    botm[-1, rrow, rcol] = gate_elev - 2.0
                     self.mf.dis.botm = botm
 
             # -----
@@ -1160,6 +1192,7 @@ class Gw_model(object):
         cdf_2 = {}
         cdf_2[0] = cfd
         return segment_data, reach_data, cdf_2
+
 
     def compute_sfr_inflow(self):
         """
@@ -1201,8 +1234,8 @@ class Gw_model(object):
             tabfiles_dict[iseg] = {'numval': numval, 'inuit': iunit}
         return tabfiles_dict, average_inflows
 
-    def sfr_cross_sections(self, reach_data, segment_data):
 
+    def sfr_cross_sections(self, reach_data, segment_data):
         def strictly_increasing(L):
             return all(x < y for x, y in zip(L, L[1:]))
 
@@ -1249,6 +1282,7 @@ class Gw_model(object):
         ## rectangular sections
         return reach_data, segment_data, channel_flow_data
 
+
     def calculate_stream_slope(self, reach_data):
         min_slope = float(self.config.get('SFR', 'min_slope'))
         segs = reach_data['iseg'].unique()
@@ -1263,6 +1297,7 @@ class Gw_model(object):
             reach_data.loc[(reach_data['iseg'] == iseg), ['slope']] = slp
         return reach_data
 
+
     def cal_stream_width(self, streams_data, flow_acc_file):
         max_width = float(self.config.get('SFR', 'max_width'))
         min_width = float(self.config.get('SFR', 'min_width'))
@@ -1274,8 +1309,8 @@ class Gw_model(object):
             streams_data.to_file('stream_width.shp')
         return streams_data
 
-    def uzf_package(self):
 
+    def uzf_package(self):
         # option block
         from flopy.utils.optionblock import OptionBlock
         uzfstr = "specifythti\nspecifysurfk\nseepsurfk\n"
@@ -1293,7 +1328,7 @@ class Gw_model(object):
         nuzgag = 1  # equal to the number of cells (one per vertical column) that will be specified for printing
         unit_num = -1 * self.mf.next_ext_unit()
         unit_nums = -1 * self.mfs.next_ext_unit()
-        uzgage_tr = {unit_num:[]}
+        uzgage_tr = {unit_num: []}
         uzgage_ss = {unit_nums: []}
 
         surfdep = 1.0  # The average height of undulations, D (Figure 1 in UZF documentation), in the land surface altitude
@@ -1313,7 +1348,7 @@ class Gw_model(object):
             mask = iuzfbnd == (k + 1)
             vks[mask] = kh_layer[mask]
 
-        vks = vks * 0.0003 # Manual vks value (Rich)
+        vks = vks * 0.0003  # Manual vks value (Rich)
         surfk = vks  # same zone [for Steady state only]
         eps = 4.0
         thts = self.hru_param['MOIST_MAX'].values.reshape(n_row, n_col)
@@ -1329,7 +1364,7 @@ class Gw_model(object):
             field_name = 'PPT_' + str(ii).zfill(2)
             annual_rain = annual_rain + self.hru_param[field_name].values.reshape(n_row, n_col)
         finf = 0.55 * (annual_rain / 365.25) / 1000.0  # convert units from mm/year to m/day
-        finf = finf * self.mf.bas6.ibound.array[2,:,:]
+        finf = finf * self.mf.bas6.ibound.array[2, :, :]
         options = OptionBlock('', flopy.modflow.ModflowUzf1, block=True)
         options.specifythti = False
         options.seepsurfk = True
@@ -1343,7 +1378,7 @@ class Gw_model(object):
         uzf = flopy.modflow.ModflowUzf1(self.mf, nuztop=nuztop, iuzfopt=iuzfopt, irunflg=irunflg, ietflg=ietflg,
                                         ipakcb=ipakcb, iuzfcb2=0, ntrail2=ntrail2, nsets=nsets, specifythti=
                                         specifythti, seepsurfk=seepsurfk, rejectsurfk=rejectsurfk,
-                                        specifysurfk=specifysurfk,nuzgag = nuzgag, uzgag =  uzgage_tr,
+                                        specifysurfk=specifysurfk, nuzgag=nuzgag, uzgag=uzgage_tr,
                                         surfdep=surfdep, iuzfbnd=iuzfbnd, irunbnd=irunbnd, vks=vks,
                                         eps=4.0, thts=thts, thti=thti, surfk=surfk, finf=finf, pet=pet,
                                         extdp=extdp,
@@ -1352,11 +1387,12 @@ class Gw_model(object):
         uzfs = flopy.modflow.ModflowUzf1(self.mfs, nuztop=nuztop, iuzfopt=iuzfopt, irunflg=irunflg, ietflg=ietflg,
                                          ipakcb=ipakcb, iuzfcb2=0, ntrail2=ntrail2, nsets=nsets, specifythti=
                                          specifythti, seepsurfk=seepsurfk, rejectsurfk=rejectsurfk,
-                                         specifysurfk=specifysurfk, nuzgag= nuzgag, uzgag = uzgage_ss,
+                                         specifysurfk=specifysurfk, nuzgag=nuzgag, uzgag=uzgage_ss,
                                          surfdep=surfdep, iuzfbnd=iuzfbnd, irunbnd=irunbnd, vks=vks,
                                          eps=4.0, thts=thts, thti=thti, surfk=surfk, finf=finf, pet=pet,
                                          extdp=extdp,
                                          extwc=extwc, options=options)
+
 
     def rch_package(self):
         annual_rain = 0.0
@@ -1381,6 +1417,7 @@ class Gw_model(object):
 
         pass
 
+
     def oc_package(self):
         # Add OC package to the MODFLOW model
         options = ['PRINT HEAD', 'PRINT DRAWDOWN', 'PRINT BUDGET',
@@ -1401,6 +1438,7 @@ class Gw_model(object):
         spds = {}
         spds[(0, 0)] = [options[3], options[2], options[5]]
         oc = flopy.modflow.ModflowOc(self.mfs, stress_period_data=spds, cboufm='(20i5)')
+
 
     def lak_package(self):
         self.generate_bathymetry_files()
@@ -1425,11 +1463,11 @@ class Gw_model(object):
             lake_botm = []
             lake_top = []
             for k in range(self.mf.nlay):
-                curr_lak_layer = self.Lake_array[k,:,:]
+                curr_lak_layer = self.Lake_array[k, :, :]
                 id_loc = curr_lak_layer == lake_id
                 if not np.any(id_loc):
                     continue
-                if k ==0:
+                if k == 0:
                     top2d = self.mf.dis.top.array
                     tops = max(top2d[id_loc])
                     botm2d = self.mf.dis.botm.array[k, :, :]
@@ -1460,8 +1498,6 @@ class Gw_model(object):
         bdlknc = 0.1 + np.zeros_like(self.Lake_array)
         bdlknc[lakarr == 11] = 0
 
-
-
         # ------------- Record [7 and 8] --------------------
         # no sublacks
 
@@ -1470,7 +1506,7 @@ class Gw_model(object):
         flux_data = {}
         flux = []
         for id in range(nlakes):
-            if id == 7: # lake #8 is fussy
+            if id == 7:  # lake #8 is fussy
                 flux.append([0.0, 0.0, 0.0, 0.0])
             else:
                 flux.append([0.0, 0.025, 0.0, 0.0])  ##PRCPLK EVAPLK RNF WTHDRW [SSMN] [SSMX]
@@ -1491,8 +1527,8 @@ class Gw_model(object):
                                               unitnumber=None,
                                               filenames=None, options=options)
 
-    def generate_bathymetry_files(self):
 
+    def generate_bathymetry_files(self):
         """
 
         :return:        """
@@ -1506,7 +1542,7 @@ class Gw_model(object):
         nlakes = self.hru_param['LAKE_ID'].max()
         for lake_id in range(1, nlakes + 1, 1):
             name_root = elev_range[elev_range['Lake _ID'] == lake_id]['FileName'].values[0]
-            #name_root = "LAKE_ID_" + str(lake_id) + ".dat"
+            # name_root = "LAKE_ID_" + str(lake_id) + ".dat"
             fn = os.path.join(self.mf.model_ws, name_root)
             parent_dir = os.path.abspath(os.path.join(self.mf.model_ws, os.pardir))
             wss = os.path.join(parent_dir, 'ss')
@@ -1563,10 +1599,8 @@ class Gw_model(object):
         self.lake_elev_range = lake_elev_range
         self.bathy_files_units = bathy_files_units
 
+
     def well_package(self):
-
-
-
         # Read flow rates files
         flow_rate_file = self.config.get('Wells', 'flowrate')  # acre_ft/month
         well_hru_file = self.config.get('Wells', 'wellhru')
@@ -1683,8 +1717,8 @@ class Gw_model(object):
         wel = flopy.modflow.mfwel.ModflowWel(self.mf, stress_period_data=well_dict)
         ccc = 1
 
-    def well_package2(self):
 
+    def well_package2(self):
         from flopy.utils.optionblock import OptionBlock
 
         options = OptionBlock('', flopy.modflow.ModflowWel, block=True)
@@ -1708,11 +1742,11 @@ class Gw_model(object):
             dat['Col'] = dat['Col'].values - 1
             well_dict[s_p] = dat.values[:, 1:].tolist()
 
-        wel = flopy.modflow.mfwel.ModflowWel(self.mf, ipakcb=55, stress_period_data=well_dict, options = options)
+        wel = flopy.modflow.mfwel.ModflowWel(self.mf, ipakcb=55, stress_period_data=well_dict, options=options)
 
-        #--------------------------
+        # --------------------------
         # Steady state
-        #--------------------------
+        # --------------------------
         well_dict_ss = {}
         dat = well_df.groupby(['OBJECTID']).mean()
         dat = dat[['Layer', 'Row', 'Col', 'Flow_Rate']]
@@ -1720,14 +1754,15 @@ class Gw_model(object):
         dat['Layer'] = dat['Layer'].values - 1
         dat['Row'] = dat['Row'].values - 1
         dat['Col'] = dat['Col'].values - 1
-        well_dict_ss[0] = dat.values[:,1:].tolist()
+        well_dict_ss[0] = dat.values[:, 1:].tolist()
         options.iunitramp = self.mfs.next_ext_unit()
         self.mfs.external_fnames.append('pumping_reduction.wel.out')
         self.mfs.external_units.append(options.iunitramp)
         self.mfs.external_binflag.append(0)
-        wels = flopy.modflow.mfwel.ModflowWel(self.mfs, ipakcb=55, stress_period_data=well_dict_ss, options = options)
+        wels = flopy.modflow.mfwel.ModflowWel(self.mfs, ipakcb=55, stress_period_data=well_dict_ss, options=options)
 
         pass
+
 
     def correct_sfr2(self):
         if True:  # not needed any more
@@ -1746,6 +1781,7 @@ class Gw_model(object):
             for line in content2:
                 ssfr.write(line)
             ssfr.close()
+
 
     def hfb_package(self):
         hfb_shp = self.config.get('Geo_Framework', 'hfb_file')
@@ -1781,6 +1817,7 @@ class Gw_model(object):
         pass
         pass
 
+
     def hob_package(self):
         Build_HOB_FLG = int(self.config.get('HOB', 'Build_hob'))
         if Build_HOB_FLG:
@@ -1795,7 +1832,7 @@ class Gw_model(object):
             counter = -1
             all_info = []
             for ii, well in enumerate(well_ids):
-                curr_well = hob_df[hob_df['well_ID']==well]
+                curr_well = hob_df[hob_df['well_ID'] == well]
                 curr_well = curr_well.copy()
                 curr_well = curr_well[curr_well['wl_elev_ft'] != -9999]
                 if curr_well.empty:
@@ -1811,32 +1848,32 @@ class Gw_model(object):
                 coff = (xo - xc) / 300.0
 
                 # coordinates
-                c_row = int(curr_well['HRU_ROW'].values[0]-1)
-                c_col = int(curr_well['HRU_COL'].values[0]-1)
+                c_row = int(curr_well['HRU_ROW'].values[0] - 1)
+                c_col = int(curr_well['HRU_COL'].values[0] - 1)
 
                 # assume that per_top and pef_botm are depths not elevations
-                perf_top  = curr_well['top_ft'].values[0] * 0.3048
-                perf_botm =  curr_well['bot_ft'].values[0] * 0.3048
+                perf_top = curr_well['top_ft'].values[0] * 0.3048
+                perf_botm = curr_well['bot_ft'].values[0] * 0.3048
                 if perf_botm > 0 or perf_top > 0:
-                    if perf_botm > 0 and perf_top >0:
-                        well_depth = 0.5*(perf_top + perf_botm)
+                    if perf_botm > 0 and perf_top > 0:
+                        well_depth = 0.5 * (perf_top + perf_botm)
                     else:
                         well_depth = perf_top + perf_botm
                 else:
-                    well_depth = 0.0 # no information
+                    well_depth = 0.0  # no information
 
                 top1 = self.mf.dis.top.array[c_row, c_col]
                 curr_depth = top1 - well_depth
                 bot2 = self.mf.dis.botm[:, c_row, c_col]
                 elev = np.hstack((top1, bot2))
-                ibound = self.mf.bas6.ibound.array[:,c_row, c_col]
+                ibound = self.mf.bas6.ibound.array[:, c_row, c_col]
                 if sum(ibound) == 0:
                     continue
                 if well_depth == 0:
                     # no data about depth is available, assign the well to the top active layer
                     for kk, ib in enumerate(ibound):
                         nly_n = kk
-                        if ib>0:
+                        if ib > 0:
                             break
                 else:
                     # assign depth a
@@ -1848,11 +1885,9 @@ class Gw_model(object):
                         else:
                             nly_n = ie
 
-
                 # get observation time
                 hds = curr_well['wl_elev_ft'].values * 0.3048
                 dates = curr_well.WL_Date.values
-
 
                 sim_start_date = datetime.datetime(year=1989, month=12, day=31)
                 sim_end_date = datetime.datetime(year=2015, month=12, day=31)
@@ -1861,7 +1896,7 @@ class Gw_model(object):
                 days = days.astype('timedelta64[D]')
                 days = days / np.timedelta64(1, 'D')
 
-                time_mask = np.logical_and(days > 0, days<End_time)
+                time_mask = np.logical_and(days > 0, days < End_time)
                 hds = hds[time_mask]
                 days = days[time_mask]
 
@@ -1873,17 +1908,18 @@ class Gw_model(object):
                 counter = counter + 1
                 obsname = 'HO_' + str(counter)
                 print(obsname)
-                cc_well_info = [obsname, well, len(hds), np.min(hds), np.max(hds), np.mean(hds), np.std(hds), np.median(hds), elev[0], elev[-1], nly_n, c_row, c_col ]
+                cc_well_info = [obsname, well, len(hds), np.min(hds), np.max(hds), np.mean(hds), np.std(hds),
+                                np.median(hds), elev[0], elev[-1], nly_n, c_row, c_col]
                 all_info.append(cc_well_info)
                 obs_tr = flopy.modflow.HeadObservation(self.mf, obsname=obsname, layer=nly_n, row=c_row,
-                                                     column=c_col, roff=roff, coff=coff, itt=1,
-                                                     time_series_data=tim_ser_data)
+                                                       column=c_col, roff=roff, coff=coff, itt=1,
+                                                       time_series_data=tim_ser_data)
 
                 # steady state
-                tim_ser_data2 = [[0.0 ,np.mean(hds)]]
+                tim_ser_data2 = [[0.0, np.mean(hds)]]
                 obs_ss = flopy.modflow.HeadObservation(self.mf, obsname=obsname, layer=nly_n, row=c_row,
-                                                     column=c_col, roff=roff, coff=coff, itt=1,
-                                                     time_series_data=tim_ser_data2)
+                                                       column=c_col, roff=roff, coff=coff, itt=1,
+                                                       time_series_data=tim_ser_data2)
                 hoblist.append(obs_tr)
                 hoblist_ss.append(obs_ss)
 
@@ -1898,16 +1934,16 @@ class Gw_model(object):
             hoblist = all_hobs['tr']
             hoblist_ss = all_hobs['ss']
 
-
-        hob_tr = flopy.modflow.ModflowHob(self.mf, hobdry=-9999., obs_data=hoblist, iuhobsv = self.mf.next_ext_unit())
-        hob_ss = flopy.modflow.ModflowHob(self.mfs, hobdry=-9999., obs_data=hoblist_ss, iuhobsv =
+        hob_tr = flopy.modflow.ModflowHob(self.mf, hobdry=-9999., obs_data=hoblist, iuhobsv=self.mf.next_ext_unit())
+        hob_ss = flopy.modflow.ModflowHob(self.mfs, hobdry=-9999., obs_data=hoblist_ss, iuhobsv=
         self.mfs.next_ext_unit())
         if Build_HOB_FLG:
             obs_info = pd.DataFrame(all_info, columns=['obsname', 'well_id', 'num_meas', 'min', 'max', 'mean', 'std',
-                                            'median', 'grid_top_elev', 'grid_bot_elev', 'layer', 'row', 'col'])
+                                                       'median', 'grid_top_elev', 'grid_bot_elev', 'layer', 'row', 'col'])
             obs_info.to_csv('rr_obs_info.csv')
 
         pass
+
 
     def gage_package(self):
         gage_file = self.config.get('SFR', 'gage_file')
@@ -1928,7 +1964,7 @@ class Gw_model(object):
         # for mendo lak
         unit = self.mf.next_ext_unit()
         unit2 = self.mfs.next_ext_unit()
-        gauge = [-1, -1*unit, 3]
+        gauge = [-1, -1 * unit, 3]
         gage_data.append(gauge)
         files.append("mendo_lake_bdg.lak.out")
 
@@ -1939,14 +1975,14 @@ class Gw_model(object):
         gage_data.append(gauge)
         files.append("sonoma_lake_bdg.lak.out")
 
-        num_gages = gage_df.values.shape[0] + 2 # two for the two lakes
+        num_gages = gage_df.values.shape[0] + 2  # two for the two lakes
         gage = flopy.modflow.ModflowGage(self.mf, numgage=num_gages, gage_data=gage_data, files=files)
         gages = flopy.modflow.ModflowGage(self.mfs, numgage=num_gages, gage_data=gage_data, files=files)
 
         pass
 
-    def get_all_upstream_segs(self, seg):
 
+    def get_all_upstream_segs(self, seg):
         sfr = self.hru_param[self.hru_param['ISEG'] > 0]
         curr_seg = seg
         wait_list = []
@@ -1977,6 +2013,7 @@ class Gw_model(object):
 
         return np.unique(up_seg_for_this_div).tolist()
 
+
     def get_next_up(self, sfr, iseg):
         upseg = sfr[sfr['OUTSEG'] == iseg]['ISEG']
         upseg = upseg.unique().tolist()
@@ -1995,11 +2032,12 @@ class Gw_model(object):
 
         return upseg
 
+
     def ghb_package(self):
         ghb_hru_file = self.config.get('GHB', 'hru_ghb_file')
         ghb_df = geopandas.read_file(ghb_hru_file)
         groups = ghb_df.groupby('ghh_id')
-        cond = 40000 # like Santa Rosa model
+        cond = 40000  # like Santa Rosa model
         ghb_data = []
         for ghb_section in groups:
             for icell, cell in ghb_section[1].iterrows():
@@ -2013,17 +2051,19 @@ class Gw_model(object):
                 for lay, ib in enumerate(ib_ghb):
                     if ib == 0:
                         continue
-                    botm = self.mf.dis.botm.array[lay, row,col]
-                    if (head - botm) < 2.0 :
+                    botm = self.mf.dis.botm.array[lay, row, col]
+                    if (head - botm) < 2.0:
                         head = botm + 2.0
-                    ghb_data.append([lay, row, col,head,cond])
+                    ghb_data.append([lay, row, col, head, cond])
         ghb_stress_per = {}
         ghb_stress_per[0] = ghb_data
         ipakcb = 55
-        ghb = flopy.modflow.mfghb.ModflowGhb(self.mf, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None, no_print=False,
-                                       options=None, extension='ghb')
-        ghbs = flopy.modflow.mfghb.ModflowGhb(self.mfs, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None,
+        ghb = flopy.modflow.mfghb.ModflowGhb(self.mf, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None,
                                              no_print=False,
                                              options=None, extension='ghb')
-        pass
+        ghbs = flopy.modflow.mfghb.ModflowGhb(self.mfs, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None,
+                                              no_print=False,
+                                              options=None, extension='ghb')
+    pass
+
 
