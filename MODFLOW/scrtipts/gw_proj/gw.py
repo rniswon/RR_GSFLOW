@@ -477,8 +477,7 @@ class Gw_model(object):
 
         # ---- Function to add two ouflow segments for the rubber dam --------------------------------------------
 
-        # TODO: fill in default values in place of -999 below
-        # TODO: fill in values from hru_shp_sfr file in place of -999 in config file
+        # TODO: double check with Ayman the values I've assigned below
 
         # Define function
         def add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id, gate_iseg, spill_iseg):
@@ -486,11 +485,11 @@ class Gw_model(object):
             # fill in segment data for rubber dam gate and spillway
             gate_seg = {
                 'nseg': gate_iseg[rubber_dam_lake_id-1],
-                'icalc': -999,  # either 1 or 4, need to read about what this means in sfr manual
+                'icalc': 1,
                 'outseg': self.config.get('SFR', 'rubber_dam_outseg_gate'),
                 'iupseg': self.config.get('SFR', 'rubber_dam_iupseg_gate'),
                 'iprior': 0,
-                'nstrpts': -999,    # either 0, 40, or 41, need to read about what this means in sfr manual
+                'nstrpts': 0,
                 'flow': 0,
                 'runoff': 0,
                 'etsw': 0,
@@ -499,16 +498,27 @@ class Gw_model(object):
                 'roughbk': 0,
                 'cdpth': 0,
                 'fdpth': 0,
-                'awdth': 0
+                'awdth': 0,
+                'bwdth': 0,
+                'hcond1': 0,
+                'thickm1': 0,
+                'elevup': 0,
+                'width1': 142,  # set equal to width of segment 408
+                'depth1': 0,
+                'hcond2': 0,
+                'thickm2': 0,
+                'elevdn': 0,
+                'width2': 142,  # set equal to width1
+                'depth2': 0
             }
 
             spill_seg = {
                 'nseg': spill_iseg[rubber_dam_lake_id-1],
-                'icalc': -999,   # either 1 or 4, need to read about what this means in sfr manual
+                'icalc': 1,
                 'outseg': self.config.get('SFR', 'rubber_dam_outseg_spill'),
                 'iupseg': self.config.get('SFR', 'rubber_dam_iupseg_spill'),
                 'iprior': 0,
-                'nstrpts': -999,   # either 0, 40, or 41, need to read about what this means in sfr manual
+                'nstrpts': 0,
                 'flow': 0,
                 'runoff': 0,
                 'etsw': 0,
@@ -517,38 +527,57 @@ class Gw_model(object):
                 'roughbk': 0,
                 'cdpth': 0,
                 'fdpth': 0,
-                'awdth': 0
+                'awdth': 0,
+                'bwdth': 0,
+                'hcond1': 0,
+                'thickm1': 0,
+                'elevup': 0,
+                'width1': 142,  # set equal to width of segment 408
+                'depth1': 0,
+                'hcond2': 0,
+                'thickm2': 0,
+                'elevdn': 0,
+                'width2': 142,  # set equal to width1
+                'depth2': 0
             }
             segment_data = segment_data.append(gate_seg, ignore_index=True)
             segment_data = segment_data.append(spill_seg, ignore_index=True)
 
             # fill in reach data for rubber dam gate and spillway
-            gate_reach = {'node': -999, #?
-                          'k': -999,  # need to assign based on strtop?
+            gate_reach = {'node': np.nan,
+                          'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
                           'i': self.config.get('SFR', 'rubber_dam_hru_row_gate'),
                           'j': self.config.get('SFR', 'rubber_dam_hru_col_gate'),
                           'iseg': gate_iseg[rubber_dam_lake_id-1],
                           'ireach': 1,
-                          'rchlen': -999,  # need to assume a reasonable value based on cell size
-                          'strtop': -999, # need to get from deflated dam elevation
-                          'slope': -999,  # need to calculate?
+                          'rchlen': 363,  # set equal to mean of rchlen values
+                          'strtop': 27,  # elevation of deflated rubber dam - note that this is currently a higher elevation than the top of layer 1 in this cell (25.86).  should we change the top of layer 1 to 27 in this cell?
+                          'slope': 0.00003,  # set equal to value for segment 408, reach 14.  do I need to calculate based on strtop values of reaches upstream/downstream?
                           'strthick': 0.5,
                           'strhc1': 0,
                           'thts': 0.310,
-                          'thti': 0.131}
-            spill_reach = {'node': -999,  #?
-                          'k': -999,  # need to assign based on strtop?
+                          'thti': 0.131,
+                          'eps': 3.5,
+                          'uhc': 0.1,
+                          'reachID': np.nan,
+                          'outreach': np.nan}
+            spill_reach = {'node': np.nan,
+                          'k': 1,
                           'i': self.config.get('SFR', 'rubber_dam_hru_row_spill'),
                           'j': self.config.get('SFR', 'rubber_dam_hru_col_spill'),
                           'iseg': spill_iseg[rubber_dam_lake_id-1],
                           'ireach': 1,
-                          'rchlen': -999, # need to assume a reasonable value based on cell size
-                          'strtop': -999, # need to get from hru_shp_sfr
-                          'slope': -999, # need to calculate?
+                          'rchlen': 363,  # set equal to mean of rchlen values
+                          'strtop': 38,  # elevation of inflated rubber dam
+                          'slope': 0.00003,  # set equal to value for segment 408, reach 14.  do I need to calculate based on strtop values of reaches upstream/downstream?
                           'strthick': 0.5,
                           'strhc1': 0,
                           'thts': 0.310,
-                          'thti': 0.131}
+                          'thti': 0.131,
+                           'eps': 3.5,
+                           'uhc': 0.1,
+                           'reachID': np.nan,
+                           'outreach': np.nan}
             reach_data = reach_data.append(gate_reach, ignore_index=True)
             reach_data = reach_data.append(spill_reach, ignore_index=True)
 

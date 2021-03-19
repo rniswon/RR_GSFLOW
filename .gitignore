@@ -11,3 +11,8 @@ modflow_calibration/ss_calibration/.idea/
 modflow_calibration/.idea/
 modflow_calibration/ss_calibration/.idea/workspace.xml
 modflow_calibration/ss_calibration/slave_root/
+MODFLOW/init_files
+MODFLOW/other_files
+MODFLOW/model_files
+MODFLOW/bin
+*.lock
