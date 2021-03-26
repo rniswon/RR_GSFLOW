@@ -414,17 +414,20 @@ class Gw_model(object):
         new_iupseg = new_iupseg.split(',')
         new_iupseg = [int(ss) for ss in new_iupseg]
 
-        gate_iseg = self.config.get('SFR', 'gate_iseg')
+        gate_iseg = self.config.get('SFR', 'rubber_dam_gate_iseg')
         gate_iseg = gate_iseg.split(',')
         gate_iseg = [int(ss) for ss in gate_iseg]
 
-        spill_iseg = self.config.get('SFR', 'spill_iseg')
+        spill_iseg = self.config.get('SFR', 'rubber_dam_spill_iseg')
         spill_iseg = spill_iseg.split(',')
         spill_iseg = [int(ss) for ss in spill_iseg]
 
         rubber_dam_lake_id = self.config.get('SFR', 'rubber_dam_lake_id')
         rubber_dam_lake_id = rubber_dam_lake_id.split(',')
         rubber_dam_lake_id = [int(ss) for ss in rubber_dam_lake_id]
+
+        rubber_dam_lake = self.config.get('LAK', 'rubber_dam_lake')
+        rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
 
 
 
@@ -454,19 +457,24 @@ class Gw_model(object):
 
         # ---- Function to set streambed conductivities to 0 for all reaches affected by lake 12 -------------------
 
-        # NOTE: assuming for now that all reaches in the segments listed in seg_id should be changed
-
         # Define function
-        def change_streambed_K(reach_data, seg_id):
+        def change_streambed_K(reach_data, rubber_dam_lake):
+
+            # get segments and reaches to be changed
+            seg_id = rubber_dam_lake["ISEG"]
+            reach_id = rubber_dam_lake["IREACH"]
 
             # loop through segments and replace all values in their reaches
             for i in range(len(seg_id)):
 
-                # identify indices of reaches to be changed
-                seg_idx = reach_data[reach_data['iseg'] == seg_id[i]].index
+                # if it's a stream segment
+                if seg_id[i] > 0:
 
-                # change streambed conductivities for these reaches
-                reach_data.strhc1[seg_idx] = 0
+                    # identify index of reach to be changed
+                    reach_idx = reach_data[ (reach_data['iseg'] == seg_id[i]) & (reach_data['ireach'] == reach_id[i]) ].index
+
+                    # change streambed conductivity for this reach
+                    reach_data.strhc1[reach_idx] = 0
 
             return reach_data
 
@@ -484,17 +492,17 @@ class Gw_model(object):
 
             # fill in segment data for rubber dam gate and spillway
             gate_seg = {
-                'nseg': gate_iseg[rubber_dam_lake_id-1],
+                'nseg': gate_iseg,
                 'icalc': 1,
-                'outseg': self.config.get('SFR', 'rubber_dam_outseg_gate'),
-                'iupseg': self.config.get('SFR', 'rubber_dam_iupseg_gate'),
+                'outseg': self.config.get('SFR', 'rubber_dam_outseg_gate_spill'),
+                'iupseg': -1 * rubber_dam_lake_id,
                 'iprior': 0,
                 'nstrpts': 0,
                 'flow': 0,
                 'runoff': 0,
                 'etsw': 0,
                 'pptsw': 0,
-                'roughch': 0.04,
+                'roughch': 0.035,
                 'roughbk': 0,
                 'cdpth': 0,
                 'fdpth': 0,
@@ -503,27 +511,27 @@ class Gw_model(object):
                 'hcond1': 0,
                 'thickm1': 0,
                 'elevup': 0,
-                'width1': 142,  # set equal to width of segment 408
+                'width1': 10,
                 'depth1': 0,
                 'hcond2': 0,
                 'thickm2': 0,
                 'elevdn': 0,
-                'width2': 142,  # set equal to width1
+                'width2': 10,
                 'depth2': 0
             }
 
             spill_seg = {
-                'nseg': spill_iseg[rubber_dam_lake_id-1],
+                'nseg': spill_iseg,
                 'icalc': 1,
-                'outseg': self.config.get('SFR', 'rubber_dam_outseg_spill'),
-                'iupseg': self.config.get('SFR', 'rubber_dam_iupseg_spill'),
+                'outseg': self.config.get('SFR', 'rubber_dam_outseg_gate_spill'),
+                'iupseg': -1 * rubber_dam_lake_id,
                 'iprior': 0,
                 'nstrpts': 0,
                 'flow': 0,
                 'runoff': 0,
                 'etsw': 0,
                 'pptsw': 0,
-                'roughch': 0.04,
+                'roughch': 0.035,
                 'roughbk': 0,
                 'cdpth': 0,
                 'fdpth': 0,
@@ -532,12 +540,12 @@ class Gw_model(object):
                 'hcond1': 0,
                 'thickm1': 0,
                 'elevup': 0,
-                'width1': 142,  # set equal to width of segment 408
+                'width1': 10,
                 'depth1': 0,
                 'hcond2': 0,
                 'thickm2': 0,
                 'elevdn': 0,
-                'width2': 142,  # set equal to width1
+                'width2': 10,
                 'depth2': 0
             }
             segment_data = segment_data.append(gate_seg, ignore_index=True)
@@ -546,13 +554,13 @@ class Gw_model(object):
             # fill in reach data for rubber dam gate and spillway
             gate_reach = {'node': np.nan,
                           'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
-                          'i': self.config.get('SFR', 'rubber_dam_hru_row_gate'),
-                          'j': self.config.get('SFR', 'rubber_dam_hru_col_gate'),
-                          'iseg': gate_iseg[rubber_dam_lake_id-1],
+                          'i': int(self.config.get('SFR', 'rubber_dam_hru_row_gate')) - 1,  # subtracted 1 to be zero-based
+                          'j': int(self.config.get('SFR', 'rubber_dam_hru_col_gate')) - 1,  # subtracted 1 to be zero-based
+                          'iseg': gate_iseg,
                           'ireach': 1,
-                          'rchlen': 363,  # set equal to mean of rchlen values
-                          'strtop': 27,  # elevation of deflated rubber dam - note that this is currently a higher elevation than the top of layer 1 in this cell (25.86).  should we change the top of layer 1 to 27 in this cell?
-                          'slope': 0.00003,  # set equal to value for segment 408, reach 14.  do I need to calculate based on strtop values of reaches upstream/downstream?
+                          'rchlen': 400,  # set equal to mean of rchlen values
+                          'strtop': 27,  # TODO: change this
+                          'slope': 0.1,
                           'strthick': 0.5,
                           'strhc1': 0,
                           'thts': 0.310,
@@ -563,13 +571,13 @@ class Gw_model(object):
                           'outreach': np.nan}
             spill_reach = {'node': np.nan,
                           'k': 1,
-                          'i': self.config.get('SFR', 'rubber_dam_hru_row_spill'),
-                          'j': self.config.get('SFR', 'rubber_dam_hru_col_spill'),
-                          'iseg': spill_iseg[rubber_dam_lake_id-1],
+                          'i': int(self.config.get('SFR', 'rubber_dam_hru_row_spill')) - 1,  # subtracted 1 to be zero-based,
+                          'j': int(self.config.get('SFR', 'rubber_dam_hru_col_spill')) - 1,  # subtracted 1 to be zero-based,
+                          'iseg': spill_iseg,
                           'ireach': 1,
-                          'rchlen': 363,  # set equal to mean of rchlen values
-                          'strtop': 38,  # elevation of inflated rubber dam
-                          'slope': 0.00003,  # set equal to value for segment 408, reach 14.  do I need to calculate based on strtop values of reaches upstream/downstream?
+                          'rchlen': 400,
+                          'strtop': 38,  # TODO: change this
+                          'slope': 0.1,
                           'strthick': 0.5,
                           'strhc1': 0,
                           'thts': 0.310,
