@@ -622,6 +622,26 @@ class Gw_model(object):
         # Run function
         segment_data, reach_data = add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id, gate_iseg, spill_iseg)
 
+
+        # ---- Function to create gate and spillway tabfiles --------------------------------------------
+
+        def create_gate_spillway_tabfiles()
+
+            # read in dam water surface elevation data
+
+            # determine dates of dam inflation/deflation
+
+            # use pattern from data to extrapolate dam inflation/deflation dates to rest of model calibration period
+
+            # set values of gate and spillway tabfiles based on whether dam is inflated or deflated
+            # dam inflated --> spillway is 0 and gate is 1e-5
+            # dam deflated --> spillway is 1e-5 and gate is 0
+
+            # add other things to tabfile as needed - see Ayman's compute_sfr_inflows function
+
+            # export tabfiles for gate and spillway
+
+
         # return tables
         return segment_data, reach_data
 
