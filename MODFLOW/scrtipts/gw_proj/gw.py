@@ -488,11 +488,33 @@ class Gw_model(object):
         # Define function
         def add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id, gate_iseg, spill_iseg):
 
-            # get segment and reach data for rubber dam gate segment outseg segment
+            # get segment and reach data for rubber dam gate and spillway segment outseg segment
             gate_outseg = self.config.get('SFR', 'rubber_dam_outseg_gate_spill')
-            gate_outseg_segdata = segment_data[segment_data['nseg'] == gate_outseg]
-            gate_outseg_reachdata = reach_data[(reach_data['iseg'] == gate_outseg) & (reach_data['ireach'] == 1)]
+            gate_outseg_segdata = segment_data[segment_data['nseg'] == float(gate_outseg)]
+            gate_outseg_reachdata = reach_data[(reach_data['iseg'] == float(gate_outseg)) & (reach_data['ireach'] == 1)]
 
+            # set dam inflated and deflated elevations in meters
+            dam_inflated = 11.5824
+            dam_deflated = 8.2296
+
+            # calculate gate strtop and make sure it is higher than first reach of downstream segment
+            gate_slope = gate_outseg_reachdata['slope'].values[0]
+            gate_rchlen = gate_outseg_reachdata['rchlen'].values[0]
+            lake_bottom_buffer = 2
+            gate_strtop = (dam_deflated + lake_bottom_buffer) - gate_slope * (0.5 * gate_rchlen)
+            if gate_strtop < gate_outseg_reachdata['strtop']:
+                gate_strtop = gate_outseg_reachdata['strtop'] + 0.1
+
+            # calculate spillway strtop and make sure it is higher than first reach of downstream segment
+            # TODO: figure out what's wrong with the spillway strtop calculation - it's currently
+            #  giving a negative number. Probably need to either reduce slope or shorten reach length. Or
+            #  is actually probably because the elevations of the dam vs dem_adj are offset, so might
+            #  be fixed once that is fixed.
+            spillway_slope = 0.1
+            spillway_rchlen = 400
+            spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))
+            if spillway_strtop < gate_outseg_reachdata['strtop']:
+                spillway_strtop = gate_outseg_reachdata['strtop'] + 0.1
 
             # fill in segment data for rubber dam gate and spillway
             gate_seg = {
@@ -562,9 +584,9 @@ class Gw_model(object):
                           'j': int(self.config.get('SFR', 'rubber_dam_hru_col_gate')) - 1,  # subtracted 1 to be zero-based
                           'iseg': gate_iseg,
                           'ireach': 1,
-                          'rchlen': gate_outseg_reachdata['rchlen'].values[0],
-                          'strtop': 27,  # TODO: change this
-                          'slope': 0.1,
+                          'rchlen': gate_rchlen,
+                          'strtop': gate_strtop,
+                          'slope': gate_slope,
                           'strthick': 0.5,
                           'strhc1': 0,
                           'thts': 0.310,
@@ -579,9 +601,9 @@ class Gw_model(object):
                           'j': int(self.config.get('SFR', 'rubber_dam_hru_col_spill')) - 1,  # subtracted 1 to be zero-based,
                           'iseg': spill_iseg,
                           'ireach': 1,
-                          'rchlen': 400,
-                          'strtop': 38,  # TODO: change this
-                          'slope': 0.1,
+                          'rchlen': spillway_rchlen,
+                          'strtop': spillway_strtop,
+                          'slope': spillway_slope,
                           'strthick': 0.5,
                           'strhc1': 0,
                           'thts': 0.310,
