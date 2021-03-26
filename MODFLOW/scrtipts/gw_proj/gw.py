@@ -485,16 +485,20 @@ class Gw_model(object):
 
         # ---- Function to add two ouflow segments for the rubber dam --------------------------------------------
 
-        # TODO: double check with Ayman the values I've assigned below
-
         # Define function
         def add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id, gate_iseg, spill_iseg):
+
+            # get segment and reach data for rubber dam gate segment outseg segment
+            gate_outseg = self.config.get('SFR', 'rubber_dam_outseg_gate_spill')
+            gate_outseg_segdata = segment_data[segment_data['nseg'] == gate_outseg]
+            gate_outseg_reachdata = reach_data[(reach_data['iseg'] == gate_outseg) & (reach_data['ireach'] == 1)]
+
 
             # fill in segment data for rubber dam gate and spillway
             gate_seg = {
                 'nseg': gate_iseg,
                 'icalc': 1,
-                'outseg': self.config.get('SFR', 'rubber_dam_outseg_gate_spill'),
+                'outseg': gate_outseg,
                 'iupseg': -1 * rubber_dam_lake_id,
                 'iprior': 0,
                 'nstrpts': 0,
@@ -511,12 +515,12 @@ class Gw_model(object):
                 'hcond1': 0,
                 'thickm1': 0,
                 'elevup': 0,
-                'width1': 10,
+                'width1': gate_outseg_segdata['width1'].values[0],
                 'depth1': 0,
                 'hcond2': 0,
                 'thickm2': 0,
                 'elevdn': 0,
-                'width2': 10,
+                'width2': gate_outseg_segdata['width2'].values[0],
                 'depth2': 0
             }
 
@@ -558,7 +562,7 @@ class Gw_model(object):
                           'j': int(self.config.get('SFR', 'rubber_dam_hru_col_gate')) - 1,  # subtracted 1 to be zero-based
                           'iseg': gate_iseg,
                           'ireach': 1,
-                          'rchlen': 400,  # set equal to mean of rchlen values
+                          'rchlen': gate_outseg_reachdata['rchlen'].values[0],
                           'strtop': 27,  # TODO: change this
                           'slope': 0.1,
                           'strthick': 0.5,
