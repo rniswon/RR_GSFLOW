@@ -625,9 +625,25 @@ class Gw_model(object):
 
         # ---- Function to create gate and spillway tabfiles --------------------------------------------
 
-        def create_gate_spillway_tabfiles()
+        def create_gate_spillway_tabfiles():
 
             # read in dam water surface elevation data
+            file_name = self.config.get('SFR', 'rubber_dam_water_surface_elevation_file')
+            df = pd.read_excel(file_name, sheet_name='Data')
+
+            # set water surface elevations in winter months to 0
+            df.plot(x="date", y="wse_ft")
+            df['month'] = df['date'].dt.month
+            month_idx = df[ (df['month'] == 1) | (df['month'] == 2) | (df['month'] == 3) |
+                (df['month'] == 4) ].index
+            df.wse_ft[month_idx] = 0
+            df.plot(x="date", y="wse_ft")
+
+            # # set water surface elevations over 40 ft to 0
+            # idx = df[ df['wse_ft'] > 40 ].index
+            # df.wse_ft[idx] = 0
+            # df.plot(x="date", y="wse_ft")
+
 
             # determine dates of dam inflation/deflation
 
