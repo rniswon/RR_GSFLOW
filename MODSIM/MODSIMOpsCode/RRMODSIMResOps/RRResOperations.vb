@@ -43,7 +43,7 @@ Module RRResOperations
     Dim minNodesCollection As New Collection
     Dim accuracyFactor As Integer
     'West Fork
-    Dim westForkFlows, westForkMaxRelease As Link
+    Dim westForkFlows, westForkMaxRelease, hopelandGage As Link
     Private Sub OnInitialize()
         accuracyFactor = 10 ^ m_Model.accuracy
         LMendocino = m_Model.FindNode("LMendocino")
@@ -59,9 +59,11 @@ Module RRResOperations
         minNodesCollection.Add(m_MinNode, "CloverdaleOps")
         m_MinNode = m_Model.FindNode("HealdsburgOps")
         minNodesCollection.Add(m_MinNode, "HealdsburgOps")
+
         'West Fork Flow
         westForkFlows = m_Model.FindLink("WestForkFlow")
         westForkMaxRelease = m_Model.FindLink("WestForkReleaseMax")
+        hopelandGage = m_Model.FindLink("Hopland_Gage")
     End Sub
 
     Private Sub OnIterationTop()
@@ -124,11 +126,16 @@ Module RRResOperations
         Next
 
         'West Fork flow - Release Check
-        If westForkFlows.mlInfo.flow > 2500 * accuracyFactor And m_Model.mInfo.Iteration > 0 Then
-            ' 25 cfs in acre-feet per day
-            westForkMaxRelease.mlInfo.hi = 49.5867769 * accuracyFactor
-        Else
-            westForkMaxRelease.mlInfo.hi = 299999999999
+        If Not IsNothing(westForkFlows) And Not IsNothing(westForkMaxRelease) Then
+            'reservoir releases cannot exceed 25 cfs if flow in west fork are > 2500 cfs and flows at Hopland are > 8000 cfs
+            Dim maxFlow_cfs As Double = 2500 * 1.98347
+            'If (westForkFlows.mlInfo.flow > maxFlow_cfs * accuracyFactor And hopelandGage.mlInfo.flow > 8000 * 1.98347 * accuracyFactor) And m_Model.mInfo.Iteration > 0 Then
+            If (westForkFlows.mlInfo.flow > maxFlow_cfs * accuracyFactor) And m_Model.mInfo.Iteration > 0 Then
+                ' 25 cfs in acre-feet per day
+                westForkMaxRelease.mlInfo.hi = 49.5867769 * accuracyFactor
+            Else
+                westForkMaxRelease.mlInfo.hi = m_Model.defaultMaxCap
+            End If
         End If
     End Sub
 
