@@ -627,31 +627,86 @@ class Gw_model(object):
 
         def create_gate_spillway_tabfiles():
 
-            # read in dam water surface elevation data
-            file_name = self.config.get('SFR', 'rubber_dam_water_surface_elevation_file')
-            df = pd.read_excel(file_name, sheet_name='Data')
-
-            # set water surface elevations in winter months to 0
-            df.plot(x="date", y="wse_ft")
-            df['month'] = df['date'].dt.month
-            month_idx = df[ (df['month'] == 1) | (df['month'] == 2) | (df['month'] == 3) |
-                (df['month'] == 4) ].index
-            df.wse_ft[month_idx] = 0
-            df.plot(x="date", y="wse_ft")
-
-            # # set water surface elevations over 40 ft to 0
-            # idx = df[ df['wse_ft'] > 40 ].index
-            # df.wse_ft[idx] = 0
+            # # read in dam water surface elevation data
+            # file_name = self.config.get('SFR', 'rubber_dam_water_surface_elevation_file')
+            # df = pd.read_excel(file_name, sheet_name='Data')
             # df.plot(x="date", y="wse_ft")
 
+            # # set water surface elevations in winter months to 27 ft
+            # df['month'] = df['date'].dt.month
+            # month_idx = df[ (df['month'] == 1) | (df['month'] == 2) | (df['month'] == 3) |
+            #     (df['month'] == 4) ].index
+            # df.loc[month_idx, 'wse_ft'] = 27
+            # df.plot(x="date", y="wse_ft")
 
-            # determine dates of dam inflation/deflation
+            # # set water surface elevations over 40 ft to 27 ft
+            # idx = df[ df['wse_ft'] > 40 ].index
+            # df.loc[idx, 'wse_ft'] = 27
+            # df.plot(x="date", y="wse_ft")
+
+            # determine dates of dam inflation/deflation programmatically from data
+            # Method 1: identify first and last 38 ft water level for each year or water year - but this will
+            # catch the times when the dam is down too
+            # Method 2: smooth the time series and then take the derivative - but this will not be precise
+            # NOTE: not sure of the best way to do this to programmatically get precise dates of dam inflation/deflation
+            # so just extracted them manually for now since it's quick and this dataset is unlikely to change for now -
+            # could do it programmatically in the future if it turns out that precision doesn't matter that much
+
+            # determine dates of dam inflation/deflation manually from data
+            # NOTE: dam is probably inflated beyond 12/31/2020, but that is the end of the currently available data
+            # (and possibly the end of the model calibration period?)
+            # TODO: should specify inflated_dates and deflated_dates in a file that is read in via the config file
+            # so that they can easily be changed, if necessary
+            inflated_dates = ['2008-04-12', '2009-07-24', '2010-07-01', '2011-05-11',
+                              '2012-06-02', '2013-06-25', '2017-06-20', '2018-05-24',
+                              '2019-06-01', '2020-03-03']
+            deflated_dates = ['2008-12-23', '2009-12-18', '2010-12-14', '2012-01-20',
+                              '2012-11-27', '2014-02-20', '2018-01-07', '2019-01-04',
+                              '2019-12-16', '2020-12-31']
+            inflated_dates =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in inflated_dates]
+            deflated_dates =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in deflated_dates]
+
 
             # use pattern from data to extrapolate dam inflation/deflation dates to rest of model calibration period
+            # NOTE: inflation date varies from March-July and deflation date varies from December-February, for
+            # now just assuming that average inflation date is in mid-June and average deflation date is in mid-December
+            # in order to extrapolate to years with no data
+            # TODO: should place this assumption in the config file and read it in so that it can be changed easily
+            min_extrapolated_year = 1990
+            max_extrapolated_year = 2007
+            years_extrapolated = list(map(str, range(min_extrapolated_year, max_extrapolated_year + 1)))
+            inflated_dates_extrapolated = [year + '-06-15' for year in years_extrapolated]
+            deflated_dates_extrapolated = [year + '-12-15' for year in years_extrapolated]
+            inflated_dates_extrapolated =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in inflated_dates_extrapolated]
+            deflated_dates_extrapolated =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in deflated_dates_extrapolated]
+
+            # combine observed and extrapolated dates
+            inflated_dates = inflated_dates_extrapolated + inflated_dates
+            deflated_dates = deflated_dates_extrapolated + deflated_dates
 
             # set values of gate and spillway tabfiles based on whether dam is inflated or deflated
             # dam inflated --> spillway is 0 and gate is 1e-5
             # dam deflated --> spillway is 1e-5 and gate is 0
+            # create time series from 1990-01-01 to 2020-12-31
+            start_date = datetime.datetime.strptime("1990-01-01", "%Y-%m-%d")
+            end_date = datetime.datetime.strptime("2020-12-31", "%Y-%m-%d")
+            calib_dates = [start_date + datetime.timedelta(days=x) for x in range(0, (end_date - start_date).days+1)]
+            df = {'date': calib_dates,
+                  'dam_inflated': 0,
+                  'spillway_tab': 1e-5,     # set to the value it should have if dam is deflated
+                  'gate_tab': 0}            # set to the value it should have if dam is deflated
+            df = pd.DataFrame(df, columns = ['date', 'dam_inflated', 'spillway_tab', 'gate_tab'])
+
+
+            # loop through each value of inflated_dates and deflated_dates
+            for i in range(len(inflated_dates)):
+
+                # identify indices of rows with inflated dam
+                inflated_idx = df[ (df['date'] >= inflated_dates[i]) & (df['date'] <= deflated_dates[i]) ].index
+
+                # replace values for spillway and gate tabfiles
+                df.spillway_tab[inflated_idx] = 0
+                df.gate_tab[inflated_idx] = 1e-5
 
             # add other things to tabfile as needed - see Ayman's compute_sfr_inflows function
 
