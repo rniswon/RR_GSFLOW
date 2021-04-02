@@ -99,6 +99,9 @@ class Gw_model(object):
 
         print(" Done generating dis object .....")
 
+
+
+
     def bas_package(self, wt):
         """
 
@@ -130,22 +133,47 @@ class Gw_model(object):
         print("Done generating bas object ....")
 
 
+
+    def add_rubber_dam_bas(self, ibound):
+
+        # read in rubber dam lake shapefile
+        rubber_dam_lake = self.config.get('LAK', 'rubber_dam_lake')
+        rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
+
+        # get HRU row and column of rubber dam lake cells
+        hru_row = rubber_dam_lake["HRU_ROW"]
+        hru_col = rubber_dam_lake["HRU_COL"]
+
+        # set IBOUND = 0 in layer 1 for rubber dam lake cells
+        # TODO: double check that ibound should be indexed in this order: layer, row, column
+        # TODO: check that this is changing the values in the correct grid cells
+        for i in range(len(hru_row)):
+            ibound[0, hru_row[i]-1, hru_col[i]-1] = 0  # NOTE: have to subtract one to get 0-based indices of these rows and columns in ibound array
+
+        return ibound
+
+
+
     def bas_package_01(self, wt):
         """
 
         :param wt:
         :return:
         """
+
+        # ---- Set starting heads ------------------------------------------------------------------------
         if not (wt is None):
             strt = wt
         else:
             # no wt is used, then the initial wt will close to surface
             strt = self.mf.dis.top.array - 0.0
 
+        # ---- Create ibound array ------------------------------------------------------------------------
         thikness = self.mf.dis.thickness.array
         ibound = np.zeros_like(thikness)
         ibound[thikness > 0] = 1
 
+        # ---- Make sure that all active cells have non-zero thickness ----------------------------------
         # find hru_type = 1 but thickness is zero
         hru_type = self.hru_param['HRU_TYPE'].values
         hru_type = hru_type.reshape(self.nrows, self.ncols)
@@ -157,12 +185,14 @@ class Gw_model(object):
             ibound[k, :, :] = var_
 
         # ---- Incorporate rubber dam ------------------------------------------------------------------
-        self.add_rubber_dam_bas()
+        ibound = self.add_rubber_dam_bas(ibound)
 
-        # ---- Write transient and steady state BAS packages ------------------------------------------------------------------
+
+        # ---- Write transient and steady state BAS packages ------------------------------------------
         bas = flopy.modflow.ModflowBas(self.mf, ibound=ibound, strt=strt)
         bass = flopy.modflow.ModflowBas(self.mfs, ibound=ibound, strt=strt)
         print("Done generating bas object ....")
+
 
 
     def upw_package(self, geo_zones):
@@ -763,6 +793,7 @@ class Gw_model(object):
             model_ws_tr = os.path.join(model_ws_tr, 'tr')
 
             # export spillway tabfile
+            # TODO: figure out why this tabfile isn't writing out correctly
             fn = os.path.join(model_ws_tr, 'rubber_dam_spillway_outflow.dat')  # TODO: place file name in file referenced by config file
             fid = open(fn, 'w')
             for line in df:
@@ -783,12 +814,13 @@ class Gw_model(object):
             tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
 
             # export gate tabfile
+            # TODO: figure out why this tabfile isn't writing out correctly
             fn = os.path.join(model_ws_tr, 'rubber_dam_gate_outflow.dat')  # TODO: place file name in file referenced by config file
             fid = open(fn, 'w')
             for line in df:
                 fid.write(str(line[1]))
                 fid.write(" ")
-                fid.write(str(line[4]))
+                fid.write(str(line[4]))  # TODO: getting an "IndexError: string index out of range" here - need to fix
                 fid.write(" #")
                 fid.write(str(line[0]))
                 fid.write("\n")
