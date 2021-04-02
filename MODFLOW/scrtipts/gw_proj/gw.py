@@ -398,7 +398,7 @@ class Gw_model(object):
 
 
 
-    def add_rubber_dam_sfr(self, segment_data, reach_data):
+    def add_rubber_dam_sfr(self, segment_data, reach_data, tabfiles_dict, average_inflows):
 
         # ---- Grab variables from config file --------------------------------------------
 
@@ -415,16 +415,19 @@ class Gw_model(object):
         new_iupseg = [int(ss) for ss in new_iupseg]
 
         gate_iseg = self.config.get('SFR', 'rubber_dam_gate_iseg')
-        gate_iseg = gate_iseg.split(',')
-        gate_iseg = [int(ss) for ss in gate_iseg]
+        #gate_iseg = gate_iseg.split(',')
+        #gate_iseg = [int(ss) for ss in gate_iseg]
+        gate_iseg = int(gate_iseg)
 
         spill_iseg = self.config.get('SFR', 'rubber_dam_spill_iseg')
-        spill_iseg = spill_iseg.split(',')
-        spill_iseg = [int(ss) for ss in spill_iseg]
+        #spill_iseg = spill_iseg.split(',')
+        #spill_iseg = [int(ss) for ss in spill_iseg]
+        spill_iseg = int(spill_iseg)
 
         rubber_dam_lake_id = self.config.get('SFR', 'rubber_dam_lake_id')
-        rubber_dam_lake_id = rubber_dam_lake_id.split(',')
-        rubber_dam_lake_id = [int(ss) for ss in rubber_dam_lake_id]
+        #rubber_dam_lake_id = rubber_dam_lake_id.split(',')
+        #rubber_dam_lake_id = [int(ss) for ss in rubber_dam_lake_id]
+        rubber_dam_lake_id = int(rubber_dam_lake_id)
 
         rubber_dam_lake = self.config.get('LAK', 'rubber_dam_lake')
         rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
@@ -443,10 +446,12 @@ class Gw_model(object):
                 seg_idx = segment_data[segment_data['nseg'] == seg_id[i]].index
 
                 # change iupseg
-                segment_data.iupseg[seg_idx] = new_iupseg[i]
+                #segment_data.iupseg[seg_idx] = new_iupseg[i]
+                segment_data.loc[seg_idx, 'iupseg'] = new_iupseg[i]
 
                 # change outseg
-                segment_data.outseg[seg_idx] = new_outseg[i]
+                #segment_data.outseg[seg_idx] = new_outseg[i]
+                segment_data.loc[seg_idx, 'outseg'] = new_outseg[i]
 
             return segment_data
 
@@ -474,12 +479,13 @@ class Gw_model(object):
                     reach_idx = reach_data[ (reach_data['iseg'] == seg_id[i]) & (reach_data['ireach'] == reach_id[i]) ].index
 
                     # change streambed conductivity for this reach
-                    reach_data.strhc1[reach_idx] = 0
+                    #reach_data.strhc1[reach_idx] = 0
+                    reach_data.loc[reach_idx, 'strhc1'] = 0
 
             return reach_data
 
         # Run function
-        reach_data = change_streambed_K(reach_data, seg_id)
+        reach_data = change_streambed_K(reach_data, rubber_dam_lake)
 
 
 
@@ -502,8 +508,8 @@ class Gw_model(object):
             gate_rchlen = gate_outseg_reachdata['rchlen'].values[0]
             lake_bottom_buffer = 2
             gate_strtop = (dam_deflated + lake_bottom_buffer) - gate_slope * (0.5 * gate_rchlen)
-            if gate_strtop < gate_outseg_reachdata['strtop']:
-                gate_strtop = gate_outseg_reachdata['strtop'] + 0.1
+            if gate_strtop < gate_outseg_reachdata['strtop'].values[0]:
+                gate_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
 
             # calculate spillway strtop and make sure it is higher than first reach of downstream segment
             # TODO: figure out what's wrong with the spillway strtop calculation - it's currently
@@ -513,8 +519,8 @@ class Gw_model(object):
             spillway_slope = 0.1
             spillway_rchlen = 400
             spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))
-            if spillway_strtop < gate_outseg_reachdata['strtop']:
-                spillway_strtop = gate_outseg_reachdata['strtop'] + 0.1
+            if spillway_strtop < gate_outseg_reachdata['strtop'].values[0]:
+                spillway_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
 
             # fill in segment data for rubber dam gate and spillway
             gate_seg = {
@@ -625,7 +631,10 @@ class Gw_model(object):
 
         # ---- Function to create gate and spillway tabfiles --------------------------------------------
 
-        def create_gate_spillway_tabfiles():
+        def create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict, average_inflows):
+
+            # TODO: make this function cleaner by looping through separate spillway and gate data frames
+            #  to export tabfiles and average inflows
 
             # # read in dam water surface elevation data
             # file_name = self.config.get('SFR', 'rubber_dam_water_surface_elevation_file')
@@ -681,8 +690,8 @@ class Gw_model(object):
             deflated_dates_extrapolated =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in deflated_dates_extrapolated]
 
             # combine observed and extrapolated dates
-            inflated_dates = inflated_dates_extrapolated + inflated_dates
-            deflated_dates = deflated_dates_extrapolated + deflated_dates
+            inflated_dates = pd.to_datetime(inflated_dates_extrapolated + inflated_dates)
+            deflated_dates = pd.to_datetime(deflated_dates_extrapolated + deflated_dates)
 
             # set values of gate and spillway tabfiles based on whether dam is inflated or deflated
             # dam inflated --> spillway is 0 and gate is 1e-5
@@ -691,11 +700,13 @@ class Gw_model(object):
             start_date = datetime.datetime.strptime("1990-01-01", "%Y-%m-%d")
             end_date = datetime.datetime.strptime("2020-12-31", "%Y-%m-%d")
             calib_dates = [start_date + datetime.timedelta(days=x) for x in range(0, (end_date - start_date).days+1)]
-            df = {'date': calib_dates,
-                  'dam_inflated': 0,
-                  'spillway_tab': 1e-5,     # set to the value it should have if dam is deflated
-                  'gate_tab': 0}            # set to the value it should have if dam is deflated
-            df = pd.DataFrame(df, columns = ['date', 'dam_inflated', 'spillway_tab', 'gate_tab'])
+            df = {'date': pd.to_datetime(calib_dates),
+                  'sim_time': [x + 1 for x in list(range(len(calib_dates)))],
+                  'dam_elev': 27,           # set to the value it should have if dam is deflated
+                  'spillway_flow': 1e-5,     # set to the value it should have if dam is deflated
+                  'gate_flow': 0}            # set to the value it should have if dam is deflated
+            df = pd.DataFrame(df, columns = ['date', 'sim_time', 'dam_elev', 'spillway_flow', 'gate_flow'])
+
 
 
             # loop through each value of inflated_dates and deflated_dates
@@ -704,17 +715,66 @@ class Gw_model(object):
                 # identify indices of rows with inflated dam
                 inflated_idx = df[ (df['date'] >= inflated_dates[i]) & (df['date'] <= deflated_dates[i]) ].index
 
-                # replace values for spillway and gate tabfiles
-                df.spillway_tab[inflated_idx] = 0
-                df.gate_tab[inflated_idx] = 1e-5
+                # replace values for spillway and gate tabfiles along with dam elevation
+                df.loc[inflated_idx, 'dam_elev'] = 38
+                df.loc[inflated_idx, 'spillway_flow'] = 0
+                df.loc[inflated_idx, 'gate_flow'] = 1e-5
 
-            # add other things to tabfile as needed - see Ayman's compute_sfr_inflows function
+            # prepare to export tabfiles
+            #tabfiles_dict = {}
+            #average_inflows = {}
+            model_ws_tr = self.config.get('General_info', 'work_space')
+            model_ws_tr = os.path.join(model_ws_tr, 'tr')
 
-            # export tabfiles for gate and spillway
+            # export spillway tabfile
+            fn = os.path.join(model_ws_tr, 'rubber_dam_spillway_outflow.dat')  # TODO: place file name in file referenced by config file
+            fid = open(fn, 'w')
+            fid.write(str(df['sim_time']))
+            fid.write(" ")
+            fid.write(str(df['spillway_flow']))
+            fid.write(" #")
+            fid.write(str(df['date']))
+            fid.write("\n")
+            fid.close()
 
+            # create tabfiles dictionary entry for spillway
+            numval = len(df)
+            iunit = self.mf.next_ext_unit()
+            self.mf.external_units.append(iunit)
+            self.mf.external_fnames.append(os.path.basename(fn))
+            self.mf.external_binflag.append(0)
+            tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
 
-        # return tables
-        return segment_data, reach_data
+            # export gate tabfile
+            fn = os.path.join(model_ws_tr, 'rubber_dam_gate_outflow.dat')  # TODO: place file name in file referenced by config file
+            fid = open(fn, 'w')
+            fid.write(str(df['sim_time']))
+            fid.write(" ")
+            fid.write(str(df['gate_flow']))
+            fid.write(" #")
+            fid.write(str(df['date']))
+            fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for gate
+            numval = len(df)
+            iunit = self.mf.next_ext_unit()
+            self.mf.external_units.append(iunit)
+            self.mf.external_fnames.append(os.path.basename(fn))
+            self.mf.external_binflag.append(0)
+            tabfiles_dict[gate_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # set outflows for steady state model
+            # TODO: need to find out if we want the rubber dam to be inflated or deflated during the steady state model
+            #  for now going to assume we want it to be deflated
+            average_inflows[spill_iseg] = 1e-5
+            average_inflows[gate_iseg] = 0
+
+            return tabfiles_dict, average_inflows
+
+        # Run function
+        tabfiles_dict, average_inflows = create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict, average_inflows)
+
 
 
 
@@ -912,7 +972,8 @@ class Gw_model(object):
 
         # ---- Incorporate rubber dam ------------------------------------------------------------------
 
-        segment_data, reach_data = self.add_rubber_dam_sfr(segment_data, reach_data)
+        # TODO: fix the "TypeError: cannot unpack non-iterable NoneType object" that's happening here
+        segment_data, reach_data, tabfiles_dict, average_inflows = self.add_rubber_dam_sfr(segment_data, reach_data, tabfiles_dict, average_inflows)
 
         # ---- Make changes for steady state model ------------------------------------------------------------------
 
