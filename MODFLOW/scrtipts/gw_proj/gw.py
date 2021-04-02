@@ -129,6 +129,42 @@ class Gw_model(object):
         bass = flopy.modflow.ModflowBas(self.mfs, ibound=ibound, strt=strt)
         print("Done generating bas object ....")
 
+
+    def bas_package_01(self, wt):
+        """
+
+        :param wt:
+        :return:
+        """
+        if not (wt is None):
+            strt = wt
+        else:
+            # no wt is used, then the initial wt will close to surface
+            strt = self.mf.dis.top.array - 0.0
+
+        thikness = self.mf.dis.thickness.array
+        ibound = np.zeros_like(thikness)
+        ibound[thikness > 0] = 1
+
+        # find hru_type = 1 but thickness is zero
+        hru_type = self.hru_param['HRU_TYPE'].values
+        hru_type = hru_type.reshape(self.nrows, self.ncols)
+        tot_thick = thikness.sum(axis=0)
+        mask = np.logical_and(tot_thick > 0, hru_type == 0)
+        for k in range(ibound.shape[0]):
+            var_ = ibound[k, :, :].copy()
+            var_[mask] = 0
+            ibound[k, :, :] = var_
+
+        # ---- Incorporate rubber dam ------------------------------------------------------------------
+        self.add_rubber_dam_bas()
+
+        # ---- Write transient and steady state BAS packages ------------------------------------------------------------------
+        bas = flopy.modflow.ModflowBas(self.mf, ibound=ibound, strt=strt)
+        bass = flopy.modflow.ModflowBas(self.mfs, ibound=ibound, strt=strt)
+        print("Done generating bas object ....")
+
+
     def upw_package(self, geo_zones):
         """
 
@@ -729,12 +765,13 @@ class Gw_model(object):
             # export spillway tabfile
             fn = os.path.join(model_ws_tr, 'rubber_dam_spillway_outflow.dat')  # TODO: place file name in file referenced by config file
             fid = open(fn, 'w')
-            fid.write(str(df['sim_time']))
-            fid.write(" ")
-            fid.write(str(df['spillway_flow']))
-            fid.write(" #")
-            fid.write(str(df['date']))
-            fid.write("\n")
+            for line in df:
+                fid.write(str(line[1]))
+                fid.write(" ")
+                fid.write(str(line[3]))
+                fid.write(" #")
+                fid.write(str(line[0]))
+                fid.write("\n")
             fid.close()
 
             # create tabfiles dictionary entry for spillway
@@ -748,12 +785,13 @@ class Gw_model(object):
             # export gate tabfile
             fn = os.path.join(model_ws_tr, 'rubber_dam_gate_outflow.dat')  # TODO: place file name in file referenced by config file
             fid = open(fn, 'w')
-            fid.write(str(df['sim_time']))
-            fid.write(" ")
-            fid.write(str(df['gate_flow']))
-            fid.write(" #")
-            fid.write(str(df['date']))
-            fid.write("\n")
+            for line in df:
+                fid.write(str(line[1]))
+                fid.write(" ")
+                fid.write(str(line[4]))
+                fid.write(" #")
+                fid.write(str(line[0]))
+                fid.write("\n")
             fid.close()
 
             # create tabfiles dictionary entry for gate
