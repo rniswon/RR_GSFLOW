@@ -702,6 +702,9 @@ class Gw_model(object):
             # TODO: make this function cleaner by looping through separate spillway and gate data frames
             #  to export tabfiles and average inflows
 
+            # TODO: export a plot of the rubber dam inflation/deflation dates superimposed
+            #  on top of the full water surface elevation dataset
+
             # # read in dam water surface elevation data
             # file_name = self.config.get('SFR', 'rubber_dam_water_surface_elevation_file')
             # df = pd.read_excel(file_name, sheet_name='Data')
@@ -1812,13 +1815,32 @@ class Gw_model(object):
         oc = flopy.modflow.ModflowOc(self.mfs, stress_period_data=spds, cboufm='(20i5)')
 
 
-    def lak_package(self):
-        self.generate_bathymetry_files()
+    def rubber_dam_lak(self, nlakes):
 
-        options = ['TABLEINPUT']
+        # TODO: double check that all I need to do is include the rubber dam lake in nlakes
+        #  and that all the other code will work for the rubber dam as is
+
+        # add rubber dam lake
+        nlakes = nlakes + 1
+
+        return nlakes
+
+
+    def lak_package(self):
+
+        # generate bathymetry files
+        self.generate_bathymetry_files()
+        self.generate_bathymetry_files_rubber_dam()
+
         # ------------- Record [1] --------------------
+        options = ['TABLEINPUT']
         nlakes = self.hru_param['LAKE_ID'].max()
         ipakcb = 55  # this ILKCB
+
+        # ------------- Make changes for rubber dam --------------------
+        # TODO: check that this function should be self.function() rather than just function()
+        nlakes = self.rubber_dam_lak(nlakes)
+
 
         # ------------- Record [2] --------------------
         theta = -0.8  # negative is a flag to read nssitr and sscncr when it is transeint.
@@ -1883,6 +1905,9 @@ class Gw_model(object):
             else:
                 flux.append([0.0, 0.025, 0.0, 0.0])  ##PRCPLK EVAPLK RNF WTHDRW [SSMN] [SSMX]
         flux_data[0] = flux
+
+
+        # ------------- Create lake package --------------------
         lak = flopy.modflow.mflak.ModflowLak(self.mf, nlakes=nlakes, ipakcb=ipakcb, theta=theta, nssitr=nssitr,
                                              sscncr=sscncr,
                                              surfdep=surfdep, stages=stages, stage_range=stage_range, tab_files=tab_files,
@@ -1970,6 +1995,58 @@ class Gw_model(object):
         self.bathymetry_files = bathy_file_list
         self.lake_elev_range = lake_elev_range
         self.bathy_files_units = bathy_files_units
+
+
+
+    def generate_bathymetry_files_rubber_dam(self):
+
+        #TODO: make sure this function isn't writing over the bathymetry data for the other lakes
+
+        # create empty objects to store results
+        lake_elev_range = {}
+        bathy_files_units = []
+        bathy_file_list = []
+
+        # read in
+        # min_stage =
+        # max_stage =
+        # lake_id =
+
+        # prepare file path
+        name_root = 'rubber_dam_lake.dat'
+        fn = os.path.join(self.mf.model_ws, name_root)
+        parent_dir = os.path.abspath(os.path.join(self.mf.model_ws, os.pardir))
+        wss = os.path.join(parent_dir, 'ss')
+        fns = os.path.join(wss, name_root)
+
+        # assign lake dimensions
+        # TODO: assign all values in the config file, double check these values with Ayman after recording in powerpoint
+        #bed_elev =   # should be the DEM_ADJ value in each grid cell - but just want one value, right?
+        curr_lake = lake_id
+        normal_vol = vol
+        surface_area = surf_area
+        dam_height = max_stage
+
+        # calculate lake dimensions based on assumed lake geometry
+        # TODO: get info about lake geometry from Ayman and document calculations in powerpoint
+        #width =
+        #maxH =
+        #phi_angle =
+        water_elev = np.linspace(0, maxH, 151)
+        #areas =
+        #vols =
+        curr_bathy = np.array([water_elev + bed_elev, vols, areas]).T
+        top_elev = max_stage
+        lake_elev_range[lake_id] = [bed_elev, top_elev]
+
+        # save results
+        np.savetxt(fname=fn, X=curr_bathy, fmt='%6.2f')
+        np.savetxt(fname=fns, X=curr_bathy, fmt='%6.2f')
+        bathy_file_list.append(name_root)
+        self.bathymetry_files = bathy_file_list
+        self.lake_elev_range = lake_elev_range
+        self.bathy_files_units = bathy_files_units
+
 
 
     def well_package(self):

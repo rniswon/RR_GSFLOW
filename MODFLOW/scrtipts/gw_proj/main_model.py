@@ -46,7 +46,7 @@ Compute_Lake2.carve_lakes(gw)
 # generate boundary conditions
 
 
-# generate upw package
+# generate upw packag
 geo_zones = []
 gw.upw_package(geo_zones)
 
