@@ -734,7 +734,7 @@ class Gw_model(object):
             # NOTE: dam is probably inflated beyond 12/31/2020, but that is the end of the currently available data
             # (and possibly the end of the model calibration period?)
             # TODO: should specify inflated_dates and deflated_dates in a file that is read in via the config file
-            # so that they can easily be changed, if necessary
+            #  so that they can easily be changed, if necessary
             inflated_dates = ['2008-04-12', '2009-07-24', '2010-07-01', '2011-05-11',
                               '2012-06-02', '2013-06-25', '2017-06-20', '2018-05-24',
                               '2019-06-01', '2020-03-03']
@@ -796,15 +796,14 @@ class Gw_model(object):
             model_ws_tr = os.path.join(model_ws_tr, 'tr')
 
             # export spillway tabfile
-            # TODO: figure out why this tabfile isn't writing out correctly
             fn = os.path.join(model_ws_tr, 'rubber_dam_spillway_outflow.dat')  # TODO: place file name in file referenced by config file
             fid = open(fn, 'w')
-            for line in df:
-                fid.write(str(line[1]))
+            for i in range(len(df)):
+                fid.write(str(df.loc[i,'sim_time']))
                 fid.write(" ")
-                fid.write(str(line[3]))
+                fid.write(str(df.loc[i,'spillway_flow']))
                 fid.write(" #")
-                fid.write(str(line[0]))
+                fid.write(str(df.loc[i,'date']))
                 fid.write("\n")
             fid.close()
 
@@ -817,15 +816,14 @@ class Gw_model(object):
             tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
 
             # export gate tabfile
-            # TODO: figure out why this tabfile isn't writing out correctly
             fn = os.path.join(model_ws_tr, 'rubber_dam_gate_outflow.dat')  # TODO: place file name in file referenced by config file
             fid = open(fn, 'w')
-            for line in df:
-                fid.write(str(line[1]))
+            for i in range(len(df)):
+                fid.write(str(df.loc[i,'sim_time']))
                 fid.write(" ")
-                fid.write(str(line[4]))  # TODO: getting an "IndexError: string index out of range" here - need to fix
+                fid.write(str(df.loc[i,'gate_flow']))
                 fid.write(" #")
-                fid.write(str(line[0]))
+                fid.write(str(df.loc[i,'date']))
                 fid.write("\n")
             fid.close()
 
@@ -847,6 +845,8 @@ class Gw_model(object):
 
         # Run function
         tabfiles_dict, average_inflows = create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict, average_inflows)
+
+        return segment_data, reach_data, tabfiles_dict, average_inflows
 
 
 
