@@ -2007,10 +2007,25 @@ class Gw_model(object):
         bathy_files_units = []
         bathy_file_list = []
 
-        # read in
-        # min_stage =
-        # max_stage =
-        # lake_id =
+        # specify rubber dam lake stage-volume-area relationship
+        # TODO: specify all of these constants in the config file and read them in
+        # TODO: double-check these values with Ayman
+        lake_id = 12
+        stage_min = 8.2296
+        stage_max = 11.5824
+        height_max = stage_max - stage_min
+        height_water = np.linspace(0, height_max, 151)
+        width_trapezoid_top = 50
+        width_trapezoid_base = 40
+        length_channel = 2563
+        width_trapezoid_water_surface = ((height_water / height_max) * width_trapezoid_top) + (((height_max - height_water)/height_max) * width_trapezoid_base)
+        area_trapezoid = 0.5 * (width_trapezoid_base + width_trapezoid_water_surface) * height_water
+        volume_trapezoidal_channel = area_trapezoid * length_channel
+        stage_trapezoidal_channel = stage_min + height_water
+
+        # store lake bathymetry data
+        curr_bathy = np.array([stage_trapezoidal_channel, volume_trapezoidal_channel, area_trapezoid]).T
+        lake_elev_range[lake_id] = [stage_min, stage_max]
 
         # prepare file path
         name_root = 'rubber_dam_lake.dat'
@@ -2018,26 +2033,6 @@ class Gw_model(object):
         parent_dir = os.path.abspath(os.path.join(self.mf.model_ws, os.pardir))
         wss = os.path.join(parent_dir, 'ss')
         fns = os.path.join(wss, name_root)
-
-        # assign lake dimensions
-        # TODO: assign all values in the config file, double check these values with Ayman after recording in powerpoint
-        #bed_elev =   # should be the DEM_ADJ value in each grid cell - but just want one value, right?
-        curr_lake = lake_id
-        normal_vol = vol
-        surface_area = surf_area
-        dam_height = max_stage
-
-        # calculate lake dimensions based on assumed lake geometry
-        # TODO: get info about lake geometry from Ayman and document calculations in powerpoint
-        #width =
-        #maxH =
-        #phi_angle =
-        water_elev = np.linspace(0, maxH, 151)
-        #areas =
-        #vols =
-        curr_bathy = np.array([water_elev + bed_elev, vols, areas]).T
-        top_elev = max_stage
-        lake_elev_range[lake_id] = [bed_elev, top_elev]
 
         # save results
         np.savetxt(fname=fn, X=curr_bathy, fmt='%6.2f')
