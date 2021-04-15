@@ -554,6 +554,83 @@ class Gw_model(object):
         reach_data = change_streambed_K(reach_data, rubber_dam_lake)
 
 
+        # ---- Function to add an outflow segment to the nearby ponds from the rubber dam ------------------------------
+
+        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id):
+
+            # TODO: check whether the rubber dam pond outflow segment should be made similar to the gate or
+            #  spillway segments, for now making it different since it has no outseg from which to grab data
+
+            # read in
+            pond_outflow_iseg = int(self.config.get('RUBBER_DAM', 'pond_outflow_iseg'))
+            pond_outflow_width = float(self.config.get('RUBBER_DAM', 'pond_outflow_width'))
+
+            # calculate pond outflow strtop and slope
+            dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+            lake_bottom_buffer = 2
+            cell_size = 300
+            pond_outflow_strtop = (dam_deflated + lake_bottom_buffer) - 1
+            pond_outflow_slope = ((dam_deflated + lake_bottom_buffer) - (pond_outflow_strtop)) / (cell_size/2)
+
+
+            # fill in segment data for rubber dam gate and spillway
+            pond_outflow_seg = {
+                'nseg': pond_outflow_iseg,
+                'icalc': 1,
+                'outseg': 0,
+                'iupseg': -1 * rubber_dam_lake_id,
+                'iprior': 0,
+                'nstrpts': 0,
+                'flow': 0,
+                'runoff': 0,
+                'etsw': 0,
+                'pptsw': 0,
+                'roughch': 0.035,
+                'roughbk': 0,
+                'cdpth': 0,
+                'fdpth': 0,
+                'awdth': 0,
+                'bwdth': 0,
+                'hcond1': 0,
+                'thickm1': 0,
+                'elevup': 0,
+                'width1': pond_outflow_width,
+                'depth1': 0,
+                'hcond2': 0,
+                'thickm2': 0,
+                'elevdn': 0,
+                'width2': pond_outflow_width,
+                'depth2': 0
+            }
+            segment_data = segment_data.append(pond_outflow_seg, ignore_index=True)
+
+            # fill in reach data for rubber dam gate and spillway
+            pond_outflow_reach = {'node': np.nan,
+                          'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
+                          'i': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_row')) - 1, # subtracted 1 to be zero-based
+                          'j': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_col')) - 1, # subtracted 1 to be zero-based
+                          'iseg': pond_outflow_strtop,
+                          'ireach': 1,
+                          'rchlen': cell_size,
+                          'strtop': pond_outflow_iseg,
+                          'slope': pond_outflow_slope,
+                          'strthick': 0.5,
+                          'strhc1': 0,
+                          'thts': 0.310,
+                          'thti': 0.131,
+                          'eps': 3.5,
+                          'uhc': 0.1,
+                          'reachID': np.nan,
+                          'outreach': np.nan}
+            reach_data = reach_data.append(pond_outflow_reach, ignore_index=True)
+
+            # return
+            return segment_data, reach_data
+
+        # Run function
+        segment_data, reach_data = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id)
+
+
 
         # ---- Function to add two ouflow segments for the rubber dam --------------------------------------------
 
@@ -566,8 +643,8 @@ class Gw_model(object):
             gate_outseg_reachdata = reach_data[(reach_data['iseg'] == float(gate_outseg)) & (reach_data['ireach'] == 1)]
 
             # set dam inflated and deflated elevations in meters
-            dam_inflated = 11.5824
-            dam_deflated = 8.2296
+            dam_inflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
+            dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
 
             # calculate gate strtop and make sure it is higher than first reach of downstream segment
             gate_slope = gate_outseg_reachdata['slope'].values[0]
@@ -730,17 +807,10 @@ class Gw_model(object):
             # so just extracted them manually for now since it's quick and this dataset is unlikely to change for now -
             # could do it programmatically in the future if it turns out that precision doesn't matter that much
 
-            # determine dates of dam inflation/deflation manually from data
+            # read in dates of dam inflation/deflation
+            # NOTE: determined dates of dam inflation/deflation manually from data
             # NOTE: dam is probably inflated beyond 12/31/2020, but that is the end of the currently available data
             # (and possibly the end of the model calibration period?)
-            # TODO: should specify inflated_dates and deflated_dates in a file that is read in via the config file
-            #  so that they can easily be changed, if necessary
-            # inflated_dates = ['2008-04-12', '2009-07-24', '2010-07-01', '2011-05-11',
-            #                   '2012-06-02', '2013-06-25', '2017-06-20', '2018-05-24',
-            #                   '2019-06-01', '2020-03-03']
-            # deflated_dates = ['2008-12-23', '2009-12-18', '2010-12-14', '2012-01-20',
-            #                   '2012-11-27', '2014-02-20', '2018-01-07', '2019-01-04',
-            #                   '2019-12-16', '2020-12-31']
             inflated_dates_readin = self.config.get('RUBBER_DAM', 'inflated_dates')
             inflated_dates_readin = inflated_dates_readin.split(',')
             inflated_dates =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in inflated_dates_readin]
@@ -753,7 +823,6 @@ class Gw_model(object):
             # NOTE: inflation date varies from March-July and deflation date varies from December-February, for
             # now just assuming that average inflation date is in mid-June and average deflation date is in mid-December
             # in order to extrapolate to years with no data
-            # TODO: should place this assumption in the config file and read it in so that it can be changed easily
             average_inflated_date = self.config.get('RUBBER_DAM', 'average_inflated_date')
             average_deflated_date = self.config.get('RUBBER_DAM', 'average_deflated_date')
             min_extrapolated_year = 1990
@@ -803,7 +872,7 @@ class Gw_model(object):
 
             # export spillway tabfile
             rubber_dam_spillway_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile')
-            fn = os.path.join(model_ws_tr, rubber_dam_spillway_tabfile)  # TODO: place file name in file referenced by config file
+            fn = os.path.join(model_ws_tr, rubber_dam_spillway_tabfile)
             fid = open(fn, 'w')
             for i in range(len(df)):
                 fid.write(str(df.loc[i,'sim_time']))
@@ -824,7 +893,7 @@ class Gw_model(object):
 
             # export gate tabfile
             rubber_dam_gate_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_gate_tabfile')
-            fn = os.path.join(model_ws_tr, rubber_dam_gate_tabfile)     # TODO: place file name in config file
+            fn = os.path.join(model_ws_tr, rubber_dam_gate_tabfile)
             fid = open(fn, 'w')
             for i in range(len(df)):
                 fid.write(str(df.loc[i,'sim_time']))
@@ -2013,8 +2082,7 @@ class Gw_model(object):
         bathy_file_list = self.bathymetry_files
 
         # specify rubber dam lake stage-volume-area relationship
-        # TODO: specify all of these constants in the config file and read them in
-        # TODO: double-check these values with Ayman
+        # TODO: double-check these values (in config file) with Ayman
         lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
         stage_min = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
         stage_max = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
