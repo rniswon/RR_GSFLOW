@@ -735,14 +735,18 @@ class Gw_model(object):
             # (and possibly the end of the model calibration period?)
             # TODO: should specify inflated_dates and deflated_dates in a file that is read in via the config file
             #  so that they can easily be changed, if necessary
-            inflated_dates = ['2008-04-12', '2009-07-24', '2010-07-01', '2011-05-11',
-                              '2012-06-02', '2013-06-25', '2017-06-20', '2018-05-24',
-                              '2019-06-01', '2020-03-03']
-            deflated_dates = ['2008-12-23', '2009-12-18', '2010-12-14', '2012-01-20',
-                              '2012-11-27', '2014-02-20', '2018-01-07', '2019-01-04',
-                              '2019-12-16', '2020-12-31']
-            inflated_dates =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in inflated_dates]
-            deflated_dates =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in deflated_dates]
+            # inflated_dates = ['2008-04-12', '2009-07-24', '2010-07-01', '2011-05-11',
+            #                   '2012-06-02', '2013-06-25', '2017-06-20', '2018-05-24',
+            #                   '2019-06-01', '2020-03-03']
+            # deflated_dates = ['2008-12-23', '2009-12-18', '2010-12-14', '2012-01-20',
+            #                   '2012-11-27', '2014-02-20', '2018-01-07', '2019-01-04',
+            #                   '2019-12-16', '2020-12-31']
+            inflated_dates_readin = self.config.get('RUBBER_DAM', 'inflated_dates')
+            inflated_dates_readin = inflated_dates_readin.split(',')
+            inflated_dates =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in inflated_dates_readin]
+            deflated_dates_readin = self.config.get('RUBBER_DAM', 'deflated_dates')
+            deflated_dates_readin = deflated_dates_readin.split(',')
+            deflated_dates =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in deflated_dates_readin]
 
 
             # use pattern from data to extrapolate dam inflation/deflation dates to rest of model calibration period
@@ -750,11 +754,13 @@ class Gw_model(object):
             # now just assuming that average inflation date is in mid-June and average deflation date is in mid-December
             # in order to extrapolate to years with no data
             # TODO: should place this assumption in the config file and read it in so that it can be changed easily
+            average_inflated_date = self.config.get('RUBBER_DAM', 'average_inflated_date')
+            average_deflated_date = self.config.get('RUBBER_DAM', 'average_deflated_date')
             min_extrapolated_year = 1990
             max_extrapolated_year = 2007
             years_extrapolated = list(map(str, range(min_extrapolated_year, max_extrapolated_year + 1)))
-            inflated_dates_extrapolated = [year + '-06-15' for year in years_extrapolated]
-            deflated_dates_extrapolated = [year + '-12-15' for year in years_extrapolated]
+            inflated_dates_extrapolated = [year + average_inflated_date for year in years_extrapolated]
+            deflated_dates_extrapolated = [year + average_deflated_date for year in years_extrapolated]
             inflated_dates_extrapolated =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in inflated_dates_extrapolated]
             deflated_dates_extrapolated =[datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in deflated_dates_extrapolated]
 
@@ -796,7 +802,8 @@ class Gw_model(object):
             model_ws_tr = os.path.join(model_ws_tr, 'tr')
 
             # export spillway tabfile
-            fn = os.path.join(model_ws_tr, 'rubber_dam_spillway_outflow.dat')  # TODO: place file name in file referenced by config file
+            rubber_dam_spillway_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile')
+            fn = os.path.join(model_ws_tr, rubber_dam_spillway_tabfile)  # TODO: place file name in file referenced by config file
             fid = open(fn, 'w')
             for i in range(len(df)):
                 fid.write(str(df.loc[i,'sim_time']))
@@ -816,7 +823,8 @@ class Gw_model(object):
             tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
 
             # export gate tabfile
-            fn = os.path.join(model_ws_tr, 'rubber_dam_gate_outflow.dat')  # TODO: place file name in config file
+            rubber_dam_gate_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_gate_tabfile')
+            fn = os.path.join(model_ws_tr, rubber_dam_gate_tabfile)     # TODO: place file name in config file
             fid = open(fn, 'w')
             for i in range(len(df)):
                 fid.write(str(df.loc[i,'sim_time']))
@@ -2007,14 +2015,14 @@ class Gw_model(object):
         # specify rubber dam lake stage-volume-area relationship
         # TODO: specify all of these constants in the config file and read them in
         # TODO: double-check these values with Ayman
-        lake_id = 12
-        stage_min = 8.2296
-        stage_max = 11.5824
+        lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
+        stage_min = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+        stage_max = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
+        width_trapezoid_top = float(self.config.get('RUBBER_DAM', 'width_trapezoid_top'))
+        width_trapezoid_base = float(self.config.get('RUBBER_DAM', 'width_trapezoid_base'))
+        length_channel = float(self.config.get('RUBBER_DAM', 'length_channel'))
         height_max = stage_max - stage_min
         height_water = np.linspace(0, height_max, 151)
-        width_trapezoid_top = 50
-        width_trapezoid_base = 40
-        length_channel = 2563
         width_trapezoid_water_surface = ((height_water / height_max) * width_trapezoid_top) + (((height_max - height_water)/height_max) * width_trapezoid_base)
         area_trapezoid = 0.5 * (width_trapezoid_base + width_trapezoid_water_surface) * height_water
         volume_trapezoidal_channel = area_trapezoid * length_channel
@@ -2025,7 +2033,7 @@ class Gw_model(object):
         lake_elev_range[lake_id] = [stage_min, stage_max]
 
         # prepare file path
-        name_root = 'rubber_dam_lake.dat'
+        name_root = self.config.get('RUBBER_DAM', 'bathy_file_name_root')
         fn = os.path.join(self.mf.model_ws, name_root)
         parent_dir = os.path.abspath(os.path.join(self.mf.model_ws, os.pardir))
         wss = os.path.join(parent_dir, 'ss')
