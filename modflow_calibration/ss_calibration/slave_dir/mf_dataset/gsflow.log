@@ -15,7 +15,7 @@
               BASED ON MODFLOW-2005 Version 1.12.0 02/03/2017
                       SWR1 Version 1.04.0 09/15/2016
 
- Run start date and time (yyyy/mm/dd hh:mm:ss): 2020/05/08  9:19:06
+ Run start date and time (yyyy/mm/dd hh:mm:ss): 2019/12/27 12:19:18
 
 GSFLOW MODFLOW main            gsflow_modflow             2019-05-10
 ====================================================================
@@ -31,10 +31,10 @@ Using NAME file: .\rr_ss.nam
 Using Solver Package: NWT 
  Solving:  Stress period:     1    Time step:     1    Groundwater-Flow Eqn.
 
-Steady state simulation successful, used 411 iterations
+Steady state simulation successful, used 284 iterations
 
 
- Run end date and time (yyyy/mm/dd hh:mm:ss): 2020/05/08  9:19:48
- Elapsed run time: 42.710 Seconds
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2019/12/27 12:19:43
+ Elapsed run time: 25.858 Seconds
 
 Normal termination of simulation
