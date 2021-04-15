@@ -99,10 +99,6 @@ nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model
 
 
 # generate transient model
-# Getting this error here and need to figure out why:
-# line 561, in write_file
-#     t.append(self.iunit_tab[n])
-# IndexError: list index out of range
 gw.mf.write_input()
 
 # generate steady state model

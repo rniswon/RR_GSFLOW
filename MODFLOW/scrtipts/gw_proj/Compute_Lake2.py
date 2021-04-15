@@ -24,16 +24,16 @@ else:
 def carve_rubber_dam(config, grid, ibound, Lake_array):
 
     # read in rubber dam lake id
-    rubber_dam_lake_id = config.get('SFR', 'rubber_dam_lake_id')
+    rubber_dam_lake_id = config.get('RUBBER_DAM', 'rubber_dam_lake_id')
     rubber_dam_lake_id = int(rubber_dam_lake_id)
 
     # read in rubber dam lake shapefile
-    rubber_dam_lake = config.get('LAK', 'rubber_dam_lake')
+    rubber_dam_lake = config.get('RUBBER_DAM', 'rubber_dam_lake')
     rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
 
     # read in min and max rubber dam lake stages
-    min_stage = float(config.get('LAK', 'rubber_dam_min_lake_stage'))
-    max_stage = float(config.get('LAK', 'rubber_dam_max_lake_stage'))
+    min_stage = float(config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+    max_stage = float(config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
 
     # get row and column indices of rubber dam lake HRUs
     idx_row = rubber_dam_lake.HRU_ROW - 1

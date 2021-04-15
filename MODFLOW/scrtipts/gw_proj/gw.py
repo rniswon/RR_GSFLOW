@@ -137,7 +137,7 @@ class Gw_model(object):
     def add_rubber_dam_bas(self, ibound):
 
         # read in rubber dam lake shapefile
-        rubber_dam_lake = self.config.get('LAK', 'rubber_dam_lake')
+        rubber_dam_lake = self.config.get('RUBBER_DAM', 'rubber_dam_lake')
         rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
 
         # get HRU row and column of rubber dam lake cells
@@ -468,34 +468,34 @@ class Gw_model(object):
 
         # ---- Grab variables from config file --------------------------------------------
 
-        seg_id = self.config.get('SFR', 'seg_id_under_rubber_dam')
+        seg_id = self.config.get('RUBBER_DAM', 'seg_id_under_rubber_dam')
         seg_id = seg_id.split(',')
         seg_id = [int(ss) for ss in seg_id]
 
-        new_outseg = self.config.get('SFR', 'new_outseg_under_rubber_dam')
+        new_outseg = self.config.get('RUBBER_DAM', 'new_outseg_under_rubber_dam')
         new_outseg = new_outseg.split(',')
         new_outseg = [int(ss) for ss in new_outseg]
 
-        new_iupseg = self.config.get('SFR', 'new_iupseg_under_rubber_dam')
+        new_iupseg = self.config.get('RUBBER_DAM', 'new_iupseg_under_rubber_dam')
         new_iupseg = new_iupseg.split(',')
         new_iupseg = [int(ss) for ss in new_iupseg]
 
-        gate_iseg = self.config.get('SFR', 'rubber_dam_gate_iseg')
+        gate_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_gate_iseg')
         #gate_iseg = gate_iseg.split(',')
         #gate_iseg = [int(ss) for ss in gate_iseg]
         gate_iseg = int(gate_iseg)
 
-        spill_iseg = self.config.get('SFR', 'rubber_dam_spill_iseg')
+        spill_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_spill_iseg')
         #spill_iseg = spill_iseg.split(',')
         #spill_iseg = [int(ss) for ss in spill_iseg]
         spill_iseg = int(spill_iseg)
 
-        rubber_dam_lake_id = self.config.get('SFR', 'rubber_dam_lake_id')
+        rubber_dam_lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
         #rubber_dam_lake_id = rubber_dam_lake_id.split(',')
         #rubber_dam_lake_id = [int(ss) for ss in rubber_dam_lake_id]
         rubber_dam_lake_id = int(rubber_dam_lake_id)
 
-        rubber_dam_lake = self.config.get('LAK', 'rubber_dam_lake')
+        rubber_dam_lake = self.config.get('RUBBER_DAM', 'rubber_dam_lake')
         rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
 
 
@@ -561,7 +561,7 @@ class Gw_model(object):
         def add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id, gate_iseg, spill_iseg):
 
             # get segment and reach data for rubber dam gate and spillway segment outseg segment
-            gate_outseg = self.config.get('SFR', 'rubber_dam_outseg_gate_spill')
+            gate_outseg = self.config.get('RUBBER_DAM', 'rubber_dam_outseg_gate_spill')
             gate_outseg_segdata = segment_data[segment_data['nseg'] == float(gate_outseg)]
             gate_outseg_reachdata = reach_data[(reach_data['iseg'] == float(gate_outseg)) & (reach_data['ireach'] == 1)]
 
@@ -621,7 +621,7 @@ class Gw_model(object):
             spill_seg = {
                 'nseg': spill_iseg,
                 'icalc': 1,
-                'outseg': self.config.get('SFR', 'rubber_dam_outseg_gate_spill'),
+                'outseg': self.config.get('RUBBER_DAM', 'rubber_dam_outseg_gate_spill'),
                 'iupseg': -1 * rubber_dam_lake_id,
                 'iprior': 0,
                 'nstrpts': 0,
@@ -652,8 +652,8 @@ class Gw_model(object):
             # fill in reach data for rubber dam gate and spillway
             gate_reach = {'node': np.nan,
                           'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
-                          'i': int(self.config.get('SFR', 'rubber_dam_hru_row_gate')) - 1,  # subtracted 1 to be zero-based
-                          'j': int(self.config.get('SFR', 'rubber_dam_hru_col_gate')) - 1,  # subtracted 1 to be zero-based
+                          'i': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_row_gate')) - 1,  # subtracted 1 to be zero-based
+                          'j': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_col_gate')) - 1,  # subtracted 1 to be zero-based
                           'iseg': gate_iseg,
                           'ireach': 1,
                           'rchlen': gate_rchlen,
@@ -669,8 +669,8 @@ class Gw_model(object):
                           'outreach': np.nan}
             spill_reach = {'node': np.nan,
                           'k': 1,
-                          'i': int(self.config.get('SFR', 'rubber_dam_hru_row_spill')) - 1,  # subtracted 1 to be zero-based,
-                          'j': int(self.config.get('SFR', 'rubber_dam_hru_col_spill')) - 1,  # subtracted 1 to be zero-based,
+                          'i': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_row_spill')) - 1,  # subtracted 1 to be zero-based,
+                          'j': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_col_spill')) - 1,  # subtracted 1 to be zero-based,
                           'iseg': spill_iseg,
                           'ireach': 1,
                           'rchlen': spillway_rchlen,
@@ -706,7 +706,7 @@ class Gw_model(object):
             #  on top of the full water surface elevation dataset
 
             # # read in dam water surface elevation data
-            # file_name = self.config.get('SFR', 'rubber_dam_water_surface_elevation_file')
+            # file_name = self.config.get('RUBBER_DAM', 'rubber_dam_water_surface_elevation_file')
             # df = pd.read_excel(file_name, sheet_name='Data')
             # df.plot(x="date", y="wse_ft")
 
@@ -816,7 +816,7 @@ class Gw_model(object):
             tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
 
             # export gate tabfile
-            fn = os.path.join(model_ws_tr, 'rubber_dam_gate_outflow.dat')  # TODO: place file name in file referenced by config file
+            fn = os.path.join(model_ws_tr, 'rubber_dam_gate_outflow.dat')  # TODO: place file name in config file
             fid = open(fn, 'w')
             for i in range(len(df)):
                 fid.write(str(df.loc[i,'sim_time']))
@@ -1045,7 +1045,6 @@ class Gw_model(object):
 
         # ---- Incorporate rubber dam ------------------------------------------------------------------
 
-        # TODO: fix the "TypeError: cannot unpack non-iterable NoneType object" that's happening here
         segment_data, reach_data, tabfiles_dict, average_inflows = self.add_rubber_dam_sfr(segment_data, reach_data, tabfiles_dict, average_inflows)
 
         # ---- Make changes for steady state model ------------------------------------------------------------------
@@ -1815,7 +1814,7 @@ class Gw_model(object):
         oc = flopy.modflow.ModflowOc(self.mfs, stress_period_data=spds, cboufm='(20i5)')
 
 
-    def rubber_dam_lak(self, nlakes):
+    def add_rubber_dam_lak(self, nlakes):
 
         # TODO: double check that all I need to do is include the rubber dam lake in nlakes
         #  and that all the other code will work for the rubber dam as is
@@ -1839,7 +1838,7 @@ class Gw_model(object):
 
         # ------------- Make changes for rubber dam --------------------
         # TODO: check that this function should be self.function() rather than just function()
-        nlakes = self.rubber_dam_lak(nlakes)
+        nlakes = self.add_rubber_dam_lak(nlakes)
 
 
         # ------------- Record [2] --------------------
@@ -2000,12 +1999,10 @@ class Gw_model(object):
 
     def generate_bathymetry_files_rubber_dam(self):
 
-        #TODO: make sure this function isn't writing over the bathymetry data for the other lakes
-
         # create empty objects to store results
-        lake_elev_range = {}
-        bathy_files_units = []
-        bathy_file_list = []
+        lake_elev_range = self.lake_elev_range
+        bathy_files_units = self.bathy_files_units
+        bathy_file_list = self.bathymetry_files
 
         # specify rubber dam lake stage-volume-area relationship
         # TODO: specify all of these constants in the config file and read them in
