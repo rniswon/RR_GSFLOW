@@ -463,6 +463,105 @@ class Gw_model(object):
 
 
 
+    def strtop_correction(self, segment_data, reach_data):
+
+        # TODO: double check that this is working as expected
+
+        # read in table of lidar and dem_adj comparisons
+        sfr_lidar = self.config.get('SFR', 'sfr_lidar')
+        sfr_lidar = pd.read_csv(sfr_lidar)
+
+        # make changes to strtop
+        # note: don't raise the elevation of any segments
+        sfr_lidar_idx = sfr_lidar[(sfr_lidar['Stage_Elev'] < sfr_lidar['Mean_DEM_ADJ'])].index
+        for i in range(len(sfr_lidar_idx)):
+
+            # identify indices of reach to be changed
+            reach_idx = reach_data[ (reach_data['iseg'] == sfr_lidar.loc[sfr_lidar_idx[i], 'ISEG'] )].index
+
+            # for each reach in which lidar < mean_dem_adj, set strtop = strtop - abs(lidar - mean_dem_adj) - 1
+            # note: subtracting 1 m to account for water depth
+            reach_data.loc[reach_idx, 'strtop'] = reach_data.loc[reach_idx, 'strtop'] - abs(sfr_lidar.loc[sfr_lidar_idx[i], 'diff'])
+
+        # check to make sure that we still have continuously decreasing strtop values as we
+        # move downstream after these changes
+        problem_reaches = pd.DataFrame(columns = ['iseg', 'ireach', 'up_or_down', 'strtop_up', 'strtop_down', 'strtop_diff'])
+        problem_reaches_idx = 0
+        for i in range(len(segment_data)):
+
+            # for each iseg, store iupseg and outseg
+            this_iseg = segment_data.loc[i, 'nseg']
+            this_iupseg = segment_data.loc[i, 'iupseg']
+            this_outseg = segment_data.loc[i, 'outseg']
+
+            # for each iseg, grab the reach data for the iseg
+            df_iseg = reach_data.loc[ reach_data['iseg'] == this_iseg ].reset_index(drop=True)
+
+            # for each iseg, grab the reach data for its iupseg and store the strtop of the most downstream reach
+            if this_iupseg > 0:
+                df_iupseg = reach_data.loc[reach_data['iseg'] == this_iupseg].reset_index(drop=True)
+                iupseg_downstream_reach = df_iupseg[ df_iupseg['ireach'] == max(df_iupseg['ireach']) ].reset_index(drop=True)
+                iupseg_downstream_reach = iupseg_downstream_reach['strtop'][0]
+
+            # for each iseg, grab the reach data for its outseg and store the strtop of the most upstream reach
+            if this_outseg > 0:
+                df_outseg = reach_data.loc[reach_data['iseg'] == this_outseg].reset_index(drop=True)
+                outseg_upstream_reach = df_outseg[df_outseg['ireach'] == min(df_outseg['ireach'])].reset_index(drop=True)
+                outseg_upstream_reach = outseg_upstream_reach['strtop'][0]
+
+            # compare reach strtop values and store the iseg and ireach for any reaches that don't meet the criteria
+            for j in range(len(df_iseg)):
+
+                # compare with upstream reach
+                if j == 0 & int(this_iupseg) > 0:
+                    if df_iseg.loc[j,'strtop'] > iupseg_downstream_reach:
+                        strtop_up = iupseg_downstream_reach
+                        strtop_down = df_iseg.loc[j,'strtop']
+                        strtop_diff = strtop_up - strtop_down
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
+                        problem_reaches_idx = problem_reaches_idx + 1
+                elif j > 0:
+                    if df_iseg.loc[j,'strtop'] > df_iseg.loc[j-1,'strtop']:
+                        strtop_up = df_iseg.loc[j-1,'strtop']
+                        strtop_down = df_iseg.loc[j,'strtop']
+                        strtop_diff = strtop_up - strtop_down
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
+                        problem_reaches_idx = problem_reaches_idx + 1
+
+
+                # compare with downstream reach
+                # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition
+                if len(df_iseg) == 1 & int(this_outseg) > 0:
+                    if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
+                        strtop_up = df_iseg.loc[j,'strtop']
+                        strtop_down = outseg_upstream_reach
+                        strtop_diff = strtop_up - strtop_down
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                        problem_reaches_idx = problem_reaches_idx + 1
+                elif j == int(max(df_iseg['ireach']) -1) & int(this_outseg) > 0:
+                    if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
+                        strtop_up = df_iseg.loc[j,'strtop']
+                        strtop_down = outseg_upstream_reach
+                        strtop_diff = strtop_up - strtop_down
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                        problem_reaches_idx = problem_reaches_idx + 1
+                elif j < int(max(df_iseg['ireach']) - 1):
+                    if df_iseg.loc[j,'strtop'] < df_iseg.loc[j+1,'strtop']:
+                        strtop_up = df_iseg.loc[j,'strtop']
+                        strtop_down = df_iseg.loc[j+1,'strtop']
+                        strtop_diff = strtop_up - strtop_down
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[i, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                        problem_reaches_idx = problem_reaches_idx + 1
+
+
+        # export csv of problem_reaches
+        model_ws_tr = self.config.get('General_info', 'work_space')
+        file_name = os.path.join(model_ws_tr, 'problem_reaches.csv')
+        problem_reaches.to_csv(file_name)
+
+        return(reach_data)
+
+
 
     def add_rubber_dam_sfr(self, segment_data, reach_data, tabfiles_dict, average_inflows):
 
@@ -481,18 +580,12 @@ class Gw_model(object):
         new_iupseg = [int(ss) for ss in new_iupseg]
 
         gate_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_gate_iseg')
-        #gate_iseg = gate_iseg.split(',')
-        #gate_iseg = [int(ss) for ss in gate_iseg]
         gate_iseg = int(gate_iseg)
 
         spill_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_spill_iseg')
-        #spill_iseg = spill_iseg.split(',')
-        #spill_iseg = [int(ss) for ss in spill_iseg]
         spill_iseg = int(spill_iseg)
 
         rubber_dam_lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
-        #rubber_dam_lake_id = rubber_dam_lake_id.split(',')
-        #rubber_dam_lake_id = [int(ss) for ss in rubber_dam_lake_id]
         rubber_dam_lake_id = int(rubber_dam_lake_id)
 
         rubber_dam_lake = self.config.get('RUBBER_DAM', 'rubber_dam_lake')
@@ -503,7 +596,7 @@ class Gw_model(object):
         # ---- Function to change iupseg and outseg --------------------------------------------
 
         # Define function
-        def change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg):
+        def change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg, seg_id_fix_iupseg, new_iupseg_fix_iupseg):
 
             # loop through segments and replace values
             for i in range(len(seg_id)):
@@ -512,17 +605,19 @@ class Gw_model(object):
                 seg_idx = segment_data[segment_data['nseg'] == seg_id[i]].index
 
                 # change iupseg
-                #segment_data.iupseg[seg_idx] = new_iupseg[i]
                 segment_data.loc[seg_idx, 'iupseg'] = new_iupseg[i]
 
                 # change outseg
-                #segment_data.outseg[seg_idx] = new_outseg[i]
                 segment_data.loc[seg_idx, 'outseg'] = new_outseg[i]
+
+            # fix iupseg value for segment downstream of iseg 408 so that it receives water from iseg 408
+            seg_idx = segment_data[segment_data['nseg'] == seg_id_fix_iupseg].index
+            segment_data.loc[seg_idx, 'iupseg'] = new_iupseg_fix_iupseg
 
             return segment_data
 
         # Run function
-        segment_data = change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg)
+        segment_data = change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg, seg_id_fix_iupseg, new_iupseg_fix_iupseg)
 
 
 
@@ -573,7 +668,7 @@ class Gw_model(object):
             pond_outflow_slope = ((dam_deflated + lake_bottom_buffer) - (pond_outflow_strtop)) / (cell_size/2)
 
 
-            # fill in segment data for rubber dam gate and spillway
+            # fill in segment data for pond outflow
             pond_outflow_seg = {
                 'nseg': pond_outflow_iseg,
                 'icalc': 1,
@@ -604,7 +699,7 @@ class Gw_model(object):
             }
             segment_data = segment_data.append(pond_outflow_seg, ignore_index=True)
 
-            # fill in reach data for rubber dam gate and spillway
+            # fill in reach data for pond outflow
             pond_outflow_reach = {'node': np.nan,
                           'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
                           'i': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_row')) - 1, # subtracted 1 to be zero-based
@@ -1119,6 +1214,9 @@ class Gw_model(object):
         # ---- Slope correction ------------------------------------------------------------------
 
         reach_data.slope[reach_data.slope <= 0] = 0.02
+
+        # ---- Streambed elevation (strtop) correction ------------------------------------------------------------------
+        reach_data = self.strtop_correction(segment_data, reach_data)
 
         # ---- Incorporate rubber dam ------------------------------------------------------------------
 
