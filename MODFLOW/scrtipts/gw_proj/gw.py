@@ -530,7 +530,7 @@ class Gw_model(object):
 
 
                 # compare with downstream reach
-                # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition
+                # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition?
                 if len(df_iseg) == 1 & int(this_outseg) > 0:
                     if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
                         strtop_up = df_iseg.loc[j,'strtop']
