@@ -1,0 +1,57 @@
+TSID,Node,Month,Day,1,2,3,4
+1,East-West Jct_Ops,1,1,155,155,155,155
+1,East-West Jct_Ops,2,1,155,155,155,155
+1,East-West Jct_Ops,3,1,155,155,155,155
+1,East-West Jct_Ops,4,1,190,190,190,190
+1,East-West Jct_Ops,5,1,130,130,130,130
+1,East-West Jct_Ops,6,1,130,130,130,80
+1,East-West Jct_Ops,7,1,130,130,130,80
+1,East-West Jct_Ops,8,1,130,130,130,80
+1,East-West Jct_Ops,9,1,130,130,130,80
+1,East-West Jct_Ops,10,1,130,130,80,80
+1,East-West Jct_Ops,10,16,155,155,80,80
+1,East-West Jct_Ops,11,1,155,155,80,80
+1,East-West Jct_Ops,12,1,155,155,80,80
+1,Hopland_Ops,1,1,170,170,170,170
+1,Hopland_Ops,2,1,170,170,170,170
+1,Hopland_Ops,3,1,170,170,170,170
+1,Hopland_Ops,4,1,205,205,205,205
+1,Hopland_Ops,5,1,134,134,134,134
+1,Hopland_Ops,6,1,134,134,134,95
+1,Hopland_Ops,7,1,134,134,134,95
+1,Hopland_Ops,8,1,134,134,134,95
+1,Hopland_Ops,9,1,134,134,134,95
+1,Hopland_Ops,10,1,134,134,95,95
+1,Hopland_Ops,10,16,170,170,95,95
+1,Hopland_Ops,11,1,170,170,95,95
+1,Hopland_Ops,12,1,170,170,95,95
+1,Cloverdale_Ops,1,1,170,170,170,170
+1,Cloverdale_Ops,2,1,170,170,170,170
+1,Cloverdale_Ops,3,1,170,170,170,170
+1,Cloverdale_Ops,4,1,205,205,205,205
+1,Cloverdale_Ops,5,1,134,134,134,134
+1,Cloverdale_Ops,6,1,134,134,134,95
+1,Cloverdale_Ops,7,1,134,134,134,95
+1,Cloverdale_Ops,8,1,134,134,134,95
+1,Cloverdale_Ops,9,1,134,134,134,95
+1,Cloverdale_Ops,10,1,134,134,95,95
+1,Cloverdale_Ops,10,16,170,170,95,95
+1,Cloverdale_Ops,11,1,170,170,95,95
+1,Cloverdale_Ops,12,1,170,170,95,95
+1,Healdsburg_Ops,1,1,170,170,170,170
+1,Healdsburg_Ops,2,1,170,170,170,170
+1,Healdsburg_Ops,3,1,170,170,170,170
+1,Healdsburg_Ops,4,1,205,205,205,205
+1,Healdsburg_Ops,5,1,134,134,134,134
+1,Healdsburg_Ops,6,1,134,134,134,95
+1,Healdsburg_Ops,7,1,134,134,134,95
+1,Healdsburg_Ops,8,1,134,134,134,95
+1,Healdsburg_Ops,9,1,134,134,134,95
+1,Healdsburg_Ops,10,1,134,134,95,95
+1,Healdsburg_Ops,10,16,170,170,95,95
+1,Healdsburg_Ops,11,1,170,170,95,95
+1,Healdsburg_Ops,12,1,170,170,95,95
+2,East-West Jct_Ops,,,,80,30,
+2,Hopland_Ops,,,,95,45,
+2,Cloverdale_Ops,,,,95,45,
+2,Healdsburg_Ops,,,,95,45,
