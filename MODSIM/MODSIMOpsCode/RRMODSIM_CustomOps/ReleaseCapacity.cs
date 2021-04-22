@@ -48,7 +48,7 @@ namespace RTI.CWR.RRModel
         /// <param name="resNode">Reservoir node with average elevation to set the release capacity.</param>
         /// <param name="interpolate">result will be interpolated from the entries in the table.</param>
         /// <returns></returns>
-        public void SetReleaseCapacity(int CurrentModelTimeStepIndex, Node resNode, bool interpolate, long otherConstraint)
+        public void SetReleaseCapacity(int CurrentModelTimeStepIndex, Node resNode, bool interpolate)
         {
             //set the minimum flow value in all demands
             double avg_Elev = resNode.mnInfo.avg_elevation;
@@ -91,8 +91,9 @@ namespace RTI.CWR.RRModel
                     }
                 }
                 //Setting upper bound value in MODSIM array
-                m_link.mlInfo.hiVariable[CurrentModelTimeStepIndex, 0] = Math.Min((long)Math.Round(relCap1, 0),otherConstraint);
-                //Console.WriteLine($"Setting {node.name} to : {minFlow}");
+                //m_link.mlInfo.hiVariable[CurrentModelTimeStepIndex, 0] = (long)Math.Round(relCap1, 0);  // This is not used during the iterations!!!
+                m_link.mlInfo.hi = (long)Math.Round(relCap1, 0);
+                //Console.WriteLine($"    Setting {m_link.name} to : {relCap1} - elev: {avg_Elev} stor end: {resNode.mnInfo.stend}");
             }
         }
     }

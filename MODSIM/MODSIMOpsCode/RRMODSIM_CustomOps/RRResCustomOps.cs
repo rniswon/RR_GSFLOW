@@ -55,7 +55,7 @@ namespace RTI.CWR.RRModel
         private static Link pillsburyIndex;
         private static Link pillsburyStorage;
         private static Link westForkFlows;
-        private static Link westForkMaxRelease;
+        private static Link MendoContrlledRelease;
         private static Link hopelandGage;
         private static MinFlowCalculator LMendoMinFlow;
         private static int storageState=0;
@@ -76,7 +76,7 @@ namespace RTI.CWR.RRModel
 
             //West Fork Flow
             westForkFlows = m_Model.FindLink("WestForkFlow");
-            westForkMaxRelease = m_Model.FindLink("WestForkReleaseMax");
+            MendoContrlledRelease = m_Model.FindLink("Mendo_ControlledRelease");
             hopelandGage = m_Model.FindLink("Hopland_Gage");
         }
 
@@ -132,24 +132,26 @@ namespace RTI.CWR.RRModel
 
             }
 
-            //West Fork flow - Release Check
-            if ((westForkFlows != null) && (westForkMaxRelease != null))
+            if (m_Model.mInfo.Iteration > 1)
             {
-                //reservoir releases cannot exceed 25 cfs if flow in west fork are > 2500 cfs and flows at Hopland are > 8000 cfs
-                double maxFlow_cfs = 2500 * 1.98347;
-                //If (westForkFlows.mlInfo.flow > maxFlow_cfs * accuracyFactor And hopelandGage.mlInfo.flow > 8000 * 1.98347 * accuracyFactor) And m_Model.mInfo.Iteration > 0 Then
-                if ((westForkFlows.mlInfo.flow > maxFlow_cfs * m_Model.ScaleFactor) && (m_Model.mInfo.Iteration > 0))
+                //Mendocino Releases (Controlled and Uncontrolled)
+                LMendoRelease.SetReleaseCapacity(m_Model.mInfo.CurrentModelTimeStepIndex, LMendocino, interpolate: true);
+
+                //West Fork flow - Release Check and overwrite Mendo controlled releases
+                if ((westForkFlows != null))
                 {
-                    // 25 cfs in acre-feet per day
-                    westForkMaxRelease.mlInfo.hi = (long)Math.Round((49.5867769 * m_Model.ScaleFactor),0);
+                    //reservoir releases cannot exceed 25 cfs if flow in west fork are > 2500 cfs and flows at Hopland are > 8000 cfs
+                    double maxFlow_cfs = 2500 * 1.98347;
+                    //If (westForkFlows.mlInfo.flow > maxFlow_cfs * accuracyFactor And hopelandGage.mlInfo.flow > 8000 * 1.98347 * accuracyFactor) And m_Model.mInfo.Iteration > 0 Then
+                    if ((westForkFlows.mlInfo.flow > maxFlow_cfs * m_Model.ScaleFactor) && (m_Model.mInfo.Iteration > 0))
+                    {
+                        // 25 cfs in acre-feet per day
+                        if (MendoContrlledRelease != null)
+                            //MendoContrlledRelease.mlInfo.hi = (long)Math.Round((49.5867769 * m_Model.ScaleFactor), 0);
+                            MendoContrlledRelease.mlInfo.hiVariable[m_Model.mInfo.CurrentModelTimeStepIndex, 0] = (long)Math.Round((49.5867769 * m_Model.ScaleFactor), 0);
+                    }
                 }
-                else
-                    westForkMaxRelease.mlInfo.hi = m_Model.defaultMaxCap;
-
             }
-            //Mendocino Releases (Controlled and Uncontrolled)
-            //LMendoRelease.SetReleaseCapacity(m_Model.mInfo.CurrentModelTimeStepIndex, LMendocino, interpolate: true,);
-
         }
 
         private static void OnMessage(string message)
@@ -164,6 +166,8 @@ namespace RTI.CWR.RRModel
 
         private static void OnIterationBottom()
         {
+            //long a = MendoContrlledRelease.mlInfo.hi;
+            //MendoContrlledRelease.mlInfo.hi = MendoContrlledRelease.mlInfo.hiVariable[m_Model.mInfo.CurrentModelTimeStepIndex, 0];
         }
 
         private static void OnIterationConverge()
