@@ -579,17 +579,23 @@ class Gw_model(object):
         new_iupseg = new_iupseg.split(',')
         new_iupseg = [int(ss) for ss in new_iupseg]
 
-        gate_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_gate_iseg')
-        gate_iseg = int(gate_iseg)
+        # gate_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_gate_iseg')
+        # gate_iseg = int(gate_iseg)
 
-        spill_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_spill_iseg')
-        spill_iseg = int(spill_iseg)
+        # spill_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_spill_iseg')
+        # spill_iseg = int(spill_iseg)
 
         rubber_dam_lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
         rubber_dam_lake_id = int(rubber_dam_lake_id)
 
         rubber_dam_lake = self.config.get('RUBBER_DAM', 'rubber_dam_lake')
         rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
+
+        seg_id_fix_iupseg = self.config.get('RUBBER_DAM', 'seg_id_fix_iupseg')
+        seg_id_fix_iupseg = int(seg_id_fix_iupseg)
+
+        new_iupseg_fix_iupseg = self.config.get('RUBBER_DAM', 'new_iupseg_fix_iupseg')
+        new_iupseg_fix_iupseg = int(new_iupseg_fix_iupseg)
 
 
 
@@ -640,7 +646,6 @@ class Gw_model(object):
                     reach_idx = reach_data[ (reach_data['iseg'] == seg_id[i]) & (reach_data['ireach'] == reach_id[i]) ].index
 
                     # change streambed conductivity for this reach
-                    #reach_data.strhc1[reach_idx] = 0
                     reach_data.loc[reach_idx, 'strhc1'] = 0
 
             return reach_data
@@ -649,88 +654,18 @@ class Gw_model(object):
         reach_data = change_streambed_K(reach_data, rubber_dam_lake)
 
 
-        # ---- Function to add an outflow segment to the nearby ponds from the rubber dam ------------------------------
-
-        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id):
-
-            # TODO: check whether the rubber dam pond outflow segment should be made similar to the gate or
-            #  spillway segments, for now making it different since it has no outseg from which to grab data
-
-            # read in
-            pond_outflow_iseg = int(self.config.get('RUBBER_DAM', 'pond_outflow_iseg'))
-            pond_outflow_width = float(self.config.get('RUBBER_DAM', 'pond_outflow_width'))
-
-            # calculate pond outflow strtop and slope
-            dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
-            lake_bottom_buffer = 2
-            cell_size = 300
-            pond_outflow_strtop = (dam_deflated + lake_bottom_buffer) - 1
-            pond_outflow_slope = ((dam_deflated + lake_bottom_buffer) - (pond_outflow_strtop)) / (cell_size/2)
-
-
-            # fill in segment data for pond outflow
-            pond_outflow_seg = {
-                'nseg': pond_outflow_iseg,
-                'icalc': 1,
-                'outseg': 0,
-                'iupseg': -1 * rubber_dam_lake_id,
-                'iprior': 0,
-                'nstrpts': 0,
-                'flow': 0,
-                'runoff': 0,
-                'etsw': 0,
-                'pptsw': 0,
-                'roughch': 0.035,
-                'roughbk': 0,
-                'cdpth': 0,
-                'fdpth': 0,
-                'awdth': 0,
-                'bwdth': 0,
-                'hcond1': 0,
-                'thickm1': 0,
-                'elevup': 0,
-                'width1': pond_outflow_width,
-                'depth1': 0,
-                'hcond2': 0,
-                'thickm2': 0,
-                'elevdn': 0,
-                'width2': pond_outflow_width,
-                'depth2': 0
-            }
-            segment_data = segment_data.append(pond_outflow_seg, ignore_index=True)
-
-            # fill in reach data for pond outflow
-            pond_outflow_reach = {'node': np.nan,
-                          'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
-                          'i': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_row')) - 1, # subtracted 1 to be zero-based
-                          'j': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_col')) - 1, # subtracted 1 to be zero-based
-                          'iseg': pond_outflow_strtop,
-                          'ireach': 1,
-                          'rchlen': cell_size,
-                          'strtop': pond_outflow_iseg,
-                          'slope': pond_outflow_slope,
-                          'strthick': 0.5,
-                          'strhc1': 0,
-                          'thts': 0.310,
-                          'thti': 0.131,
-                          'eps': 3.5,
-                          'uhc': 0.1,
-                          'reachID': np.nan,
-                          'outreach': np.nan}
-            reach_data = reach_data.append(pond_outflow_reach, ignore_index=True)
-
-            # return
-            return segment_data, reach_data
-
-        # Run function
-        segment_data, reach_data = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id)
-
 
 
         # ---- Function to add two ouflow segments for the rubber dam --------------------------------------------
 
         # Define function
-        def add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id, gate_iseg, spill_iseg):
+        def add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id):
+
+            # set gate_iseg and spill_iseg
+            n_seg = len(segment_data)
+            gate_iseg = n_seg + 1
+            spill_iseg = gate_iseg + 1
+
 
             # get segment and reach data for rubber dam gate and spillway segment outseg segment
             gate_outseg = self.config.get('RUBBER_DAM', 'rubber_dam_outseg_gate_spill')
@@ -860,11 +795,11 @@ class Gw_model(object):
             reach_data = reach_data.append(spill_reach, ignore_index=True)
 
             # return
-            return segment_data, reach_data
+            return segment_data, reach_data, gate_iseg, spill_iseg
 
 
         # Run function
-        segment_data, reach_data = add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id, gate_iseg, spill_iseg)
+        segment_data, reach_data, gate_iseg, spill_iseg = add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id)
 
 
         # ---- Function to create gate and spillway tabfiles --------------------------------------------
@@ -1008,8 +943,6 @@ class Gw_model(object):
             tabfiles_dict[gate_iseg] = {'numval': numval, 'inuit': iunit}
 
             # set outflows for steady state model
-            # TODO: need to find out if we want the rubber dam to be inflated or deflated during the steady state model
-            #  for now going to assume we want it to be deflated
             average_inflows[spill_iseg] = 1e-5
             average_inflows[gate_iseg] = 0
 
@@ -1017,6 +950,88 @@ class Gw_model(object):
 
         # Run function
         tabfiles_dict, average_inflows = create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict, average_inflows)
+
+
+        # ---- Function to add an outflow segment to the nearby ponds from the rubber dam ------------------------------
+
+        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id):
+
+            # TODO: check whether the rubber dam pond outflow segment should be made similar to the gate or
+            #  spillway segments, for now making it different since it has no outseg from which to grab data
+
+            # set pond outflow iseg
+            n_seg = len(segment_data)
+            pond_outflow_iseg = n_seg + 1
+
+            # read in
+            #pond_outflow_iseg = int(self.config.get('RUBBER_DAM', 'pond_outflow_iseg'))
+            pond_outflow_width = float(self.config.get('RUBBER_DAM', 'pond_outflow_width'))
+
+            # calculate pond outflow strtop and slope
+            dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+            lake_bottom_buffer = 2
+            cell_size = 300
+            pond_outflow_strtop = (dam_deflated + lake_bottom_buffer) - 1
+            pond_outflow_slope = ((dam_deflated + lake_bottom_buffer) - (pond_outflow_strtop)) / (cell_size/2)
+
+
+            # fill in segment data for pond outflow
+            pond_outflow_seg = {
+                'nseg': pond_outflow_iseg,
+                'icalc': 1,
+                'outseg': 0,
+                'iupseg': -1 * rubber_dam_lake_id,
+                'iprior': 0,
+                'nstrpts': 0,
+                'flow': 0,
+                'runoff': 0,
+                'etsw': 0,
+                'pptsw': 0,
+                'roughch': 0.035,
+                'roughbk': 0,
+                'cdpth': 0,
+                'fdpth': 0,
+                'awdth': 0,
+                'bwdth': 0,
+                'hcond1': 0,
+                'thickm1': 0,
+                'elevup': 0,
+                'width1': pond_outflow_width,
+                'depth1': 0,
+                'hcond2': 0,
+                'thickm2': 0,
+                'elevdn': 0,
+                'width2': pond_outflow_width,
+                'depth2': 0
+            }
+            segment_data = segment_data.append(pond_outflow_seg, ignore_index=True)
+
+            # fill in reach data for pond outflow
+            pond_outflow_reach = {'node': np.nan,
+                          'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
+                          'i': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_row')) - 1, # subtracted 1 to be zero-based
+                          'j': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_col')) - 1, # subtracted 1 to be zero-based
+                          'iseg': pond_outflow_iseg,
+                          'ireach': 1,
+                          'rchlen': cell_size,
+                          'strtop': pond_outflow_strtop,
+                          'slope': pond_outflow_slope,
+                          'strthick': 0.5,
+                          'strhc1': 0,
+                          'thts': 0.310,
+                          'thti': 0.131,
+                          'eps': 3.5,
+                          'uhc': 0.1,
+                          'reachID': np.nan,
+                          'outreach': np.nan}
+            reach_data = reach_data.append(pond_outflow_reach, ignore_index=True)
+
+            # return
+            return segment_data, reach_data
+
+        # Run function
+        segment_data, reach_data = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id)
+
 
         return segment_data, reach_data, tabfiles_dict, average_inflows
 
@@ -1220,7 +1235,20 @@ class Gw_model(object):
 
         # ---- Incorporate rubber dam ------------------------------------------------------------------
 
+        # run functions to incorporate rubber dam
         segment_data, reach_data, tabfiles_dict, average_inflows = self.add_rubber_dam_sfr(segment_data, reach_data, tabfiles_dict, average_inflows)
+
+        # update sfr dataset 5
+        n_segments = len(segment_data['nseg'].unique())
+        n_reaches = len(reach_data)
+        dataset_5 = {}
+        nper = self.mf.dis.nper
+        for i in np.arange(nper):  # we have only two stress period
+            if i == 0:
+                tss_par = n_segments
+            else:
+                tss_par = -1  # the negative sign indicates that segment data from previous time step will be used
+            dataset_5[i] = [tss_par, 0, 0]
 
         # ---- Make changes for steady state model ------------------------------------------------------------------
 
@@ -2180,7 +2208,6 @@ class Gw_model(object):
         bathy_file_list = self.bathymetry_files
 
         # specify rubber dam lake stage-volume-area relationship
-        # TODO: double-check these values (in config file) with Ayman
         lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
         stage_min = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
         stage_max = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
