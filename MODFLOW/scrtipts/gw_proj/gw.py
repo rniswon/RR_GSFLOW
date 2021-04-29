@@ -509,6 +509,8 @@ class Gw_model(object):
                 df_outseg = reach_data.loc[reach_data['iseg'] == this_outseg].reset_index(drop=True)
                 outseg_upstream_reach = df_outseg[df_outseg['ireach'] == min(df_outseg['ireach'])].reset_index(drop=True)
                 outseg_upstream_reach = outseg_upstream_reach['strtop'][0]
+            elif this_outseg < 0:
+                outseg_upstream_reach = -9999
 
             # check whether this is a segment we've altered
             if this_iseg in sfr_lidar['ISEG']:
