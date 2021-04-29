@@ -481,27 +481,28 @@ class Gw_model(object):
 
             # for each reach in which lidar < mean_dem_adj, set strtop = strtop - abs(lidar - mean_dem_adj) - 1
             # note: subtracting 1 m to account for water depth
-            reach_data.loc[reach_idx, 'strtop'] = reach_data.loc[reach_idx, 'strtop'] - abs(sfr_lidar.loc[sfr_lidar_idx[i], 'diff'])
+            reach_data.loc[reach_idx, 'strtop'] = reach_data.loc[reach_idx, 'strtop'] - abs(sfr_lidar.loc[sfr_lidar_idx[i], 'diff']) - 1
 
         # check to make sure that we still have continuously decreasing strtop values as we
         # move downstream after these changes
-        problem_reaches = pd.DataFrame(columns = ['iseg', 'ireach', 'up_or_down', 'strtop_up', 'strtop_down', 'strtop_diff'])
+        #problem_reaches = pd.DataFrame(columns = ['iseg', 'ireach', 'up_or_down', 'strtop_up', 'strtop_down', 'strtop_diff'])
+        problem_reaches = pd.DataFrame(columns=['iseg', 'ireach', 'outseg', 'strtop_iseg', 'strtop_outseg', 'strtop_diff', 'iseg_strtop_lowered'])
         problem_reaches_idx = 0
         for i in range(len(segment_data)):
 
             # for each iseg, store iupseg and outseg
             this_iseg = segment_data.loc[i, 'nseg']
-            this_iupseg = segment_data.loc[i, 'iupseg']
+            #this_iupseg = segment_data.loc[i, 'iupseg']
             this_outseg = segment_data.loc[i, 'outseg']
 
             # for each iseg, grab the reach data for the iseg
             df_iseg = reach_data.loc[ reach_data['iseg'] == this_iseg ].reset_index(drop=True)
 
             # for each iseg, grab the reach data for its iupseg and store the strtop of the most downstream reach
-            if this_iupseg > 0:
-                df_iupseg = reach_data.loc[reach_data['iseg'] == this_iupseg].reset_index(drop=True)
-                iupseg_downstream_reach = df_iupseg[ df_iupseg['ireach'] == max(df_iupseg['ireach']) ].reset_index(drop=True)
-                iupseg_downstream_reach = iupseg_downstream_reach['strtop'][0]
+            # if this_iupseg > 0:
+            #     df_iupseg = reach_data.loc[reach_data['iseg'] == this_iupseg].reset_index(drop=True)
+            #     iupseg_downstream_reach = df_iupseg[ df_iupseg['ireach'] == max(df_iupseg['ireach']) ].reset_index(drop=True)
+            #     iupseg_downstream_reach = iupseg_downstream_reach['strtop'][0]
 
             # for each iseg, grab the reach data for its outseg and store the strtop of the most upstream reach
             if this_outseg > 0:
@@ -509,54 +510,87 @@ class Gw_model(object):
                 outseg_upstream_reach = df_outseg[df_outseg['ireach'] == min(df_outseg['ireach'])].reset_index(drop=True)
                 outseg_upstream_reach = outseg_upstream_reach['strtop'][0]
 
+            # check whether this is a segment we've altered
+            if this_iseg in sfr_lidar['ISEG']:
+                iseg_strtop_lowered_val = True
+            else:
+                iseg_strtop_lowered_val = False
+
             # compare reach strtop values and store the iseg and ireach for any reaches that don't meet the criteria
             for j in range(len(df_iseg)):
 
-                # compare with upstream reach
-                if j == 0 & int(this_iupseg) > 0:
-                    if df_iseg.loc[j,'strtop'] > iupseg_downstream_reach:
-                        strtop_up = iupseg_downstream_reach
-                        strtop_down = df_iseg.loc[j,'strtop']
-                        strtop_diff = strtop_up - strtop_down
-                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
-                        problem_reaches_idx = problem_reaches_idx + 1
-                elif j > 0:
-                    if df_iseg.loc[j,'strtop'] > df_iseg.loc[j-1,'strtop']:
-                        strtop_up = df_iseg.loc[j-1,'strtop']
-                        strtop_down = df_iseg.loc[j,'strtop']
-                        strtop_diff = strtop_up - strtop_down
-                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
-                        problem_reaches_idx = problem_reaches_idx + 1
+                # # compare with upstream reach
+                # if j == 0 & int(this_iupseg) > 0:
+                #     if df_iseg.loc[j,'strtop'] > iupseg_downstream_reach:
+                #         strtop_up = iupseg_downstream_reach
+                #         strtop_down = df_iseg.loc[j,'strtop']
+                #         strtop_diff = strtop_up - strtop_down
+                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
+                #         problem_reaches_idx = problem_reaches_idx + 1
+                # elif j > 0:
+                #     if df_iseg.loc[j,'strtop'] > df_iseg.loc[j-1,'strtop']:
+                #         strtop_up = df_iseg.loc[j-1,'strtop']
+                #         strtop_down = df_iseg.loc[j,'strtop']
+                #         strtop_diff = strtop_up - strtop_down
+                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
+                #         problem_reaches_idx = problem_reaches_idx + 1
 
+
+                # # compare with downstream reach
+                # # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition?
+                # if len(df_iseg) == 1 & int(this_outseg) > 0:
+                #     if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
+                #         strtop_up = df_iseg.loc[j,'strtop']
+                #         strtop_down = outseg_upstream_reach
+                #         strtop_diff = strtop_up - strtop_down
+                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                #         problem_reaches_idx = problem_reaches_idx + 1
+                # elif j == int(max(df_iseg['ireach']) -1) & int(this_outseg) > 0:
+                #     if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
+                #         strtop_up = df_iseg.loc[j,'strtop']
+                #         strtop_down = outseg_upstream_reach
+                #         strtop_diff = strtop_up - strtop_down
+                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                #         problem_reaches_idx = problem_reaches_idx + 1
+                # elif j < int(max(df_iseg['ireach']) - 1):
+                #     if df_iseg.loc[j,'strtop'] < df_iseg.loc[j+1,'strtop']:
+                #         strtop_up = df_iseg.loc[j,'strtop']
+                #         strtop_down = df_iseg.loc[j+1,'strtop']
+                #         strtop_diff = strtop_up - strtop_down
+                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[i, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                #         problem_reaches_idx = problem_reaches_idx + 1
 
                 # compare with downstream reach
                 # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition?
                 if len(df_iseg) == 1 & int(this_outseg) > 0:
-                    if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
-                        strtop_up = df_iseg.loc[j,'strtop']
-                        strtop_down = outseg_upstream_reach
-                        strtop_diff = strtop_up - strtop_down
-                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                    if df_iseg.loc[j, 'strtop'] < outseg_upstream_reach:
+                        strtop_iseg = df_iseg.loc[j, 'strtop']
+                        strtop_outseg = outseg_upstream_reach
+                        strtop_diff = strtop_iseg - strtop_outseg
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], this_outseg,
+                                                                    strtop_iseg, strtop_outseg, strtop_diff, iseg_strtop_lowered_val]
                         problem_reaches_idx = problem_reaches_idx + 1
-                elif j == int(max(df_iseg['ireach']) -1) & int(this_outseg) > 0:
-                    if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
-                        strtop_up = df_iseg.loc[j,'strtop']
-                        strtop_down = outseg_upstream_reach
-                        strtop_diff = strtop_up - strtop_down
-                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                elif j == int(max(df_iseg['ireach']) - 1) & int(this_outseg) > 0:
+                    if df_iseg.loc[j, 'strtop'] < outseg_upstream_reach:
+                        strtop_iseg = df_iseg.loc[j, 'strtop']
+                        strtop_outseg = outseg_upstream_reach
+                        strtop_diff = strtop_iseg - strtop_outseg
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], this_outseg,
+                                                                    strtop_iseg, strtop_outseg, strtop_diff, iseg_strtop_lowered_val]
                         problem_reaches_idx = problem_reaches_idx + 1
                 elif j < int(max(df_iseg['ireach']) - 1):
-                    if df_iseg.loc[j,'strtop'] < df_iseg.loc[j+1,'strtop']:
-                        strtop_up = df_iseg.loc[j,'strtop']
-                        strtop_down = df_iseg.loc[j+1,'strtop']
-                        strtop_diff = strtop_up - strtop_down
-                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[i, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
+                    if df_iseg.loc[j, 'strtop'] < df_iseg.loc[j + 1, 'strtop']:
+                        strtop_iseg = df_iseg.loc[j, 'strtop']
+                        strtop_outseg = df_iseg.loc[j + 1, 'strtop']
+                        strtop_diff = strtop_iseg - strtop_outseg
+                        problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[i, 'ireach'], this_outseg,
+                                                                    strtop_iseg, strtop_outseg, strtop_diff, iseg_strtop_lowered_val]
                         problem_reaches_idx = problem_reaches_idx + 1
 
 
         # export csv of problem_reaches
         model_ws_tr = self.config.get('General_info', 'work_space')
-        file_name = os.path.join(model_ws_tr, 'problem_reaches.csv')
+        file_name = os.path.join(model_ws_tr, 'other_files', 'test', 'problem_reaches.csv')
         problem_reaches.to_csv(file_name)
 
         return(reach_data)
@@ -591,18 +625,12 @@ class Gw_model(object):
         rubber_dam_lake = self.config.get('RUBBER_DAM', 'rubber_dam_lake')
         rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
 
-        seg_id_fix_iupseg = self.config.get('RUBBER_DAM', 'seg_id_fix_iupseg')
-        seg_id_fix_iupseg = int(seg_id_fix_iupseg)
-
-        new_iupseg_fix_iupseg = self.config.get('RUBBER_DAM', 'new_iupseg_fix_iupseg')
-        new_iupseg_fix_iupseg = int(new_iupseg_fix_iupseg)
-
 
 
         # ---- Function to change iupseg and outseg --------------------------------------------
 
         # Define function
-        def change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg, seg_id_fix_iupseg, new_iupseg_fix_iupseg):
+        def change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg):
 
             # loop through segments and replace values
             for i in range(len(seg_id)):
@@ -616,14 +644,10 @@ class Gw_model(object):
                 # change outseg
                 segment_data.loc[seg_idx, 'outseg'] = new_outseg[i]
 
-            # fix iupseg value for segment downstream of iseg 408 so that it receives water from iseg 408
-            seg_idx = segment_data[segment_data['nseg'] == seg_id_fix_iupseg].index
-            segment_data.loc[seg_idx, 'iupseg'] = new_iupseg_fix_iupseg
-
             return segment_data
 
         # Run function
-        segment_data = change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg, seg_id_fix_iupseg, new_iupseg_fix_iupseg)
+        segment_data = change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg)
 
 
 
