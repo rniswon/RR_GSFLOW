@@ -465,8 +465,6 @@ class Gw_model(object):
 
     def strtop_correction(self, segment_data, reach_data):
 
-        # TODO: double check that this is working as expected
-
         # read in table of lidar and dem_adj comparisons
         sfr_lidar = self.config.get('SFR', 'sfr_lidar')
         sfr_lidar = pd.read_csv(sfr_lidar)
@@ -485,24 +483,16 @@ class Gw_model(object):
 
         # check to make sure that we still have continuously decreasing strtop values as we
         # move downstream after these changes
-        #problem_reaches = pd.DataFrame(columns = ['iseg', 'ireach', 'up_or_down', 'strtop_up', 'strtop_down', 'strtop_diff'])
         problem_reaches = pd.DataFrame(columns=['iseg', 'ireach', 'outseg', 'strtop_iseg', 'strtop_outseg', 'strtop_diff', 'iseg_strtop_lowered'])
         problem_reaches_idx = 0
         for i in range(len(segment_data)):
 
             # for each iseg, store iupseg and outseg
             this_iseg = segment_data.loc[i, 'nseg']
-            #this_iupseg = segment_data.loc[i, 'iupseg']
             this_outseg = segment_data.loc[i, 'outseg']
 
             # for each iseg, grab the reach data for the iseg
             df_iseg = reach_data.loc[ reach_data['iseg'] == this_iseg ].reset_index(drop=True)
-
-            # for each iseg, grab the reach data for its iupseg and store the strtop of the most downstream reach
-            # if this_iupseg > 0:
-            #     df_iupseg = reach_data.loc[reach_data['iseg'] == this_iupseg].reset_index(drop=True)
-            #     iupseg_downstream_reach = df_iupseg[ df_iupseg['ireach'] == max(df_iupseg['ireach']) ].reset_index(drop=True)
-            #     iupseg_downstream_reach = iupseg_downstream_reach['strtop'][0]
 
             # for each iseg, grab the reach data for its outseg and store the strtop of the most upstream reach
             if this_outseg > 0:
@@ -520,47 +510,6 @@ class Gw_model(object):
 
             # compare reach strtop values and store the iseg and ireach for any reaches that don't meet the criteria
             for j in range(len(df_iseg)):
-
-                # # compare with upstream reach
-                # if j == 0 & int(this_iupseg) > 0:
-                #     if df_iseg.loc[j,'strtop'] > iupseg_downstream_reach:
-                #         strtop_up = iupseg_downstream_reach
-                #         strtop_down = df_iseg.loc[j,'strtop']
-                #         strtop_diff = strtop_up - strtop_down
-                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
-                #         problem_reaches_idx = problem_reaches_idx + 1
-                # elif j > 0:
-                #     if df_iseg.loc[j,'strtop'] > df_iseg.loc[j-1,'strtop']:
-                #         strtop_up = df_iseg.loc[j-1,'strtop']
-                #         strtop_down = df_iseg.loc[j,'strtop']
-                #         strtop_diff = strtop_up - strtop_down
-                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'upstream', strtop_up, strtop_down, strtop_diff]
-                #         problem_reaches_idx = problem_reaches_idx + 1
-
-
-                # # compare with downstream reach
-                # # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition?
-                # if len(df_iseg) == 1 & int(this_outseg) > 0:
-                #     if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
-                #         strtop_up = df_iseg.loc[j,'strtop']
-                #         strtop_down = outseg_upstream_reach
-                #         strtop_diff = strtop_up - strtop_down
-                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
-                #         problem_reaches_idx = problem_reaches_idx + 1
-                # elif j == int(max(df_iseg['ireach']) -1) & int(this_outseg) > 0:
-                #     if df_iseg.loc[j,'strtop'] < outseg_upstream_reach:
-                #         strtop_up = df_iseg.loc[j,'strtop']
-                #         strtop_down = outseg_upstream_reach
-                #         strtop_diff = strtop_up - strtop_down
-                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
-                #         problem_reaches_idx = problem_reaches_idx + 1
-                # elif j < int(max(df_iseg['ireach']) - 1):
-                #     if df_iseg.loc[j,'strtop'] < df_iseg.loc[j+1,'strtop']:
-                #         strtop_up = df_iseg.loc[j,'strtop']
-                #         strtop_down = df_iseg.loc[j+1,'strtop']
-                #         strtop_diff = strtop_up - strtop_down
-                #         problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[i, 'ireach'], 'downstream', strtop_up, strtop_down, strtop_diff]
-                #         problem_reaches_idx = problem_reaches_idx + 1
 
                 # compare with downstream reach
                 # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition?
@@ -614,12 +563,6 @@ class Gw_model(object):
         new_iupseg = self.config.get('RUBBER_DAM', 'new_iupseg_under_rubber_dam')
         new_iupseg = new_iupseg.split(',')
         new_iupseg = [int(ss) for ss in new_iupseg]
-
-        # gate_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_gate_iseg')
-        # gate_iseg = int(gate_iseg)
-
-        # spill_iseg = self.config.get('RUBBER_DAM', 'rubber_dam_spill_iseg')
-        # spill_iseg = int(spill_iseg)
 
         rubber_dam_lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
         rubber_dam_lake_id = int(rubber_dam_lake_id)
@@ -711,10 +654,6 @@ class Gw_model(object):
                 gate_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
 
             # calculate spillway strtop and make sure it is higher than first reach of downstream segment
-            # TODO: figure out what's wrong with the spillway strtop calculation - it's currently
-            #  giving a negative number. Probably need to either reduce slope or shorten reach length. Or
-            #  is actually probably because the elevations of the dam vs dem_adj are offset, so might
-            #  be fixed once that is fixed.
             spillway_slope = 0.1
             spillway_rchlen = 400
             spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))
@@ -1252,9 +1191,6 @@ class Gw_model(object):
         tabfiles_dict = {}
         tabfiles_dict, average_inflows = self.compute_sfr_inflow()
 
-        # ---- Slope correction ------------------------------------------------------------------
-
-        reach_data.slope[reach_data.slope <= 0] = 0.02
 
         # ---- Streambed elevation (strtop) correction ------------------------------------------------------------------
         reach_data = self.strtop_correction(segment_data, reach_data)
@@ -1275,6 +1211,16 @@ class Gw_model(object):
             else:
                 tss_par = -1  # the negative sign indicates that segment data from previous time step will be used
             dataset_5[i] = [tss_par, 0, 0]
+
+
+        # ---- Slope correction ------------------------------------------------------------------
+
+        # TODO: ask Ayman - do we want this slope correction to use min_slope to match up with the slope correction
+        #  in the calculate_stream_slope() function? --> I'm assuming yes and changing it for now
+        min_slope = float(self.config.get('SFR', 'min_slope'))
+        #reach_data.slope[reach_data.slope <= 0] = 0.02
+        reach_data.slope[reach_data.slope <= 0] = min_slope
+
 
         # ---- Make changes for steady state model ------------------------------------------------------------------
 
