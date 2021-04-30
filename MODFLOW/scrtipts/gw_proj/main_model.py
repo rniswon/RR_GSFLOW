@@ -34,8 +34,8 @@ hds1 = flopy.utils.HeadFile(fn)
 wt = hds1.get_data(kstpkper = (0,0))
 wt[wt>2000] = 235
 #wt = None
-#gw.bas_package(wt)
-gw.bas_package_01(wt)
+gw.bas_package(wt)
+#gw.bas_package_01(wt)
 
 # ghb
 gw.ghb_package()

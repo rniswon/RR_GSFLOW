@@ -50,33 +50,12 @@ def carve_rubber_dam(config, grid, ibound, Lake_array):
     thikness_of_top_active_layer = elevs[top_active_layer] - elevs[top_active_layer + 1]
 
     # adjust elevations in dis file to account for rubber dam lake
-    # TODO: figure out exactly why these changes are made to the elevations and determine whether
-    #  they make sense to implement for the rubber dam
-    # TODO: consider whether I need to loop through each individual grid cell in the rubber dam in the code
-    #  below (and remove all the .all() functions I added) - I think that's necessary
-    # TODO: will need to double-check that this makes sense once fix the RR DEM elevations
     for i in range(len(idx_row)):
 
-        if k > 0:
-            diff = elevs[k,i] - min_stage
-            if diff > 0:
-                elevs[k:,i] = elevs[k:,i] - diff
-            else:
-                if min_stage > elevs[0,i]:
-                    elevs[0,i] = max_stage
-                    elevs[1,i] = min_stage
-                else:
-                    elevs[k,i] = elevs[k,i] - diff
-        else:
-            diff = elevs[k + 1,i] - min_stage
-            if diff > 0:
-                elevs[k + 1:,i] = elevs[k + 1:,i] - diff
-            else:
-                if min_stage > elevs[0,i]:
-                    elevs[0,i] = max_stage
-                    elevs[1,i] = min_stage
-                else:
-                    elevs[k + 1,i] = elevs[k + 1,i] - diff
+        # set elevation of bottom of layer 1 equal to elevation of top of layer 1 so that layer 1 has a thickness of 0
+        if k == 0:
+            elevs[k + 1, i] = elevs[k, i]
+            elevs[k + 2, i] = elevs[k + 2, i] + thikness_of_top_active_layer[i]
 
     # adjust ibound and lake arrays to account for rubber dam lake
     if top_active_layer == 0:
