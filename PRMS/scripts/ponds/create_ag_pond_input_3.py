@@ -38,20 +38,20 @@ ag_pond_RO_perv_frac = [0.0] * nhru
 ag_pond_RO_imperv_frac = [0.0] * nhru
 
 # substitute parameter values for HRUs with ag ponds - set values
-# TODO: check with John that these indices should be x+1 since Python is 0-based
+# TODO: check with John whether these indices should be x-1 instead of x since Python is 0-based
 for x in HRU_list:
-    ag_pond_area_frac[x+1] = 0.25
-    ag_pond_depth[x+1] = 132.0
-    ag_pond_RO_perv_frac[x+1] = 0.2
-    ag_pond_RO_imperv_frac[x+1] = 0.2
+    ag_pond_area_frac[x-1] = 0.25
+    ag_pond_depth[x-1] = 132.0
+    ag_pond_RO_perv_frac[x-1] = 0.2
+    ag_pond_RO_imperv_frac[x-1] = 0.2
 
 
 # substitute parameter values for HRUs of ponds near rubber dam - set values
 for x in HRU_ponds_near_rubber_dam:
-    ag_pond_area_frac[x+1] = 0.8633     # calculated as total area of ponds (from LIDAR) divided by total area of the three grid cells
-    ag_pond_depth[x+1] = 208            # calculated from LIDAR
-    ag_pond_RO_perv_frac[x+1] = 0.2
-    ag_pond_RO_imperv_frac[x+1] = 0.2
+    ag_pond_area_frac[x-1] = 0.8633     # calculated as total area of ponds (from LIDAR) divided by total area of the three grid cells
+    ag_pond_depth[x-1] = 208            # calculated from LIDAR
+    ag_pond_RO_perv_frac[x-1] = 0.2
+    ag_pond_RO_imperv_frac[x-1] = 0.2
 
 # write output to a paramter file
 fid = open(output_file, 'w')
