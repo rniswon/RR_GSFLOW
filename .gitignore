@@ -16,3 +16,5 @@ MODFLOW/other_files
 MODFLOW/model_files
 MODFLOW/bin
 *.lock
+PRMS/scripts/ponds/output
+PRMS/scripts/ponds/input
