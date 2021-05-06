@@ -469,6 +469,11 @@ class Gw_model(object):
         sfr_lidar = self.config.get('SFR', 'sfr_lidar')
         sfr_lidar = pd.read_csv(sfr_lidar)
 
+        # read in dis elevations
+        grid_file = self.config.get('DIS', 'grid_file')
+        grid_info = np.load(grid_file, allow_pickle=True).all()
+        grid = grid_info['grid']
+
         # make changes to strtop
         # note: don't raise the elevation of any segments
         sfr_lidar_idx = sfr_lidar[(sfr_lidar['Stage_Elev'] < sfr_lidar['Mean_DEM_ADJ'])].index
@@ -480,6 +485,23 @@ class Gw_model(object):
             # for each reach in which lidar < mean_dem_adj, set strtop = strtop - abs(lidar - mean_dem_adj) - 1
             # note: subtracting 1 m to account for water depth
             reach_data.loc[reach_idx, 'strtop'] = reach_data.loc[reach_idx, 'strtop'] - abs(sfr_lidar.loc[sfr_lidar_idx[i], 'diff']) - 1
+
+            # change layer, if necessary
+            strtop = reach_data.loc[reach_idx, 'strtop'].values[0]
+            hru_row = int(reach_data.loc[reach_idx, 'i'].values[0])
+            hru_col = int(reach_data.loc[reach_idx, 'j'].values[0])
+            current_layer = int(reach_data.loc[reach_idx, 'k'].values[0])
+            elevs = grid[:, hru_row, hru_col]
+            if strtop > elevs[1]:
+                new_layer = 0
+            elif strtop <= elevs[1] & strtop > elevs[2]:
+                new_layer = 1
+            elif strtop <= elevs[2] & strtop > elevs[3]:
+                new_layer = 2
+            reach_data.loc[reach_idx, 'k'] = new_layer
+
+
+
 
         # check to make sure that we still have continuously decreasing strtop values as we
         # move downstream after these changes
