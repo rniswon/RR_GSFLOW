@@ -52,14 +52,17 @@ namespace RTI.CWR.RRModel
         }
 
         private static Node LMendocino;
+        private static Node LSonoma;
         private static Link pillsburyIndex;
         private static Link pillsburyStorage;
         private static Link westForkFlows;
         private static Link MendoContrlledRelease;
         private static Link hopelandGage;
         private static MinFlowCalculator LMendoMinFlow;
+        private static MinFlowCalculator SonomaMinFlow;
         private static int storageState=0;
         private static ReleaseCapacity LMendoRelease;
+        private static ReleaseCapacity LSonoRelease;
 
         private static void OnInitialize()
         {
@@ -67,12 +70,17 @@ namespace RTI.CWR.RRModel
             //min release clases
             LMendoMinFlow = new MinFlowCalculator(dataDBPath, "Mendo_MinFlow_1610QTUCP", ref m_Model);
             LMendocino = m_Model.FindNode("LMendocino");
+            LSonoma = m_Model.FindNode("LSonoma");
             pillsburyIndex = m_Model.FindLink("PillsburyIndex");
             pillsburyStorage = m_Model.FindLink("PillsburyStorage");
+            //  L.Sonoma min flow releases 
+            SonomaMinFlow = new MinFlowCalculator(dataDBPath, "Sonoma_MinFlow_1610QTUCP", ref m_Model);
 
             //Mendocino Releases (controlled and uncontrolled)
             LMendoRelease = new ReleaseCapacity(dataDBPath, "MendocinoReleases", ref m_Model);
 
+            //L.Sonoma Releases (controlled and uncontrolled)
+            LSonoRelease = new ReleaseCapacity(dataDBPath, "SonomaReleases", ref m_Model);
 
             //West Fork Flow
             westForkFlows = m_Model.FindLink("WestForkFlow");
@@ -115,12 +123,11 @@ namespace RTI.CWR.RRModel
                 //}
 
                 //Set operation flows -
-                storageState = LMendoMinFlow.GetStorageState(m_Model, LMendocino.mnInfo.start, pillsburyStorage.mlInfo.flow);
-
-
+                
                 int YearTypeFlag = (int)(pillsburyIndex.mlInfo.flow / m_Model.ScaleFactor);
                 if (YearTypeFlag == 1 || YearTypeFlag == 4)
                 {
+                    storageState = LMendoMinFlow.GetStorageState(m_Model, LMendocino.mnInfo.start, pillsburyStorage.mlInfo.flow);
                     LMendoMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, storageState.ToString());
                 }
                 else if (YearTypeFlag == 2 || YearTypeFlag == 3)
@@ -128,7 +135,12 @@ namespace RTI.CWR.RRModel
                     // Min flow table uses columns 2 and 3 to store the values per node.
                     LMendoMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, YearTypeFlag.ToString());
                 else
+                    // ETS: Is this ever reached?
+                    // Yes, the first iteration YearTypeFlag ==0 
                     LMendoMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, "1");
+
+                // L.Sonoma min flows are only a function of the YearTypeFlag.
+                SonomaMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, YearTypeFlag.ToString());
 
             }
 
@@ -151,6 +163,10 @@ namespace RTI.CWR.RRModel
                             MendoContrlledRelease.mlInfo.hiVariable[m_Model.mInfo.CurrentModelTimeStepIndex, 0] = (long)Math.Round((49.5867769 * m_Model.ScaleFactor), 0);
                     }
                 }
+
+                //Lake Sonoma Releases (Controlled and Uncontrolled)
+                LSonoRelease.SetReleaseCapacity(m_Model.mInfo.CurrentModelTimeStepIndex, LSonoma, interpolate: true);
+
             }
         }
 

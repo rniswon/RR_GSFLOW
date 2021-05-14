@@ -31,10 +31,20 @@ namespace RTI.CWR.RRModel
             }
         }
 
+        /// <summary>
+        /// Retrieves the minimum flow for the TSID = 1, which is a function of the storage state and changes during the year (is a date function)
+        /// The table accepts any combination of month, day and repeates the value in the monht until a new one is found.  
+        /// Flow values are converted to ac-ft per day (hardcoded).
+        /// </summary>
+        /// <param name="CurrentModelTimeStepIndex"></param>
+        /// <param name="thisDate"></param>
+        /// <param name="stateCol"></param>
+        /// <returns></returns>
         public long AssignMinFlowsToNodes(int CurrentModelTimeStepIndex, DateTime thisDate, string stateCol)
         {
             //set the minimum flow value in all demands
             long minFlow = 0;
+            if (int.Parse(stateCol) == 0) return minFlow;
             foreach (string key in minNodesCollection.Keys)
             {
                 Node node = minNodesCollection[key];
@@ -57,6 +67,12 @@ namespace RTI.CWR.RRModel
             return minFlow;
         }
 
+        /// <summary>
+        /// This fuction retrieves the minimum flow for the TSID = 2.
+        /// </summary>
+        /// <param name="CurrentModelTimeStepIndex"></param>
+        /// <param name="stateCol">This is the year type number. Only populated for 2 and 3 in the Mendocino implementation.</param>
+        /// <returns></returns>
         public long AssignMinFlowsToNodes(int CurrentModelTimeStepIndex, string stateCol)
         {
             //set the minimum flow value in all demands

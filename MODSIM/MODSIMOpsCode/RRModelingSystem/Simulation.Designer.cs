@@ -62,7 +62,7 @@
             this.groupBox1.Controls.Add(this.treeView1);
             this.groupBox1.Location = new System.Drawing.Point(6, 48);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(285, 132);
+            this.groupBox1.Size = new System.Drawing.Size(421, 132);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Timeseries Dataset ";
@@ -73,7 +73,7 @@
             this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(3, 16);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(279, 113);
+            this.treeView1.Size = new System.Drawing.Size(415, 113);
             this.treeView1.TabIndex = 0;
             // 
             // groupBox3
@@ -90,7 +90,7 @@
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Location = new System.Drawing.Point(3, 9);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(505, 119);
+            this.groupBox3.Size = new System.Drawing.Size(542, 119);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Output Data Import";
@@ -98,7 +98,7 @@
             // buttonBrowseModsimFile
             // 
             this.buttonBrowseModsimFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonBrowseModsimFile.Location = new System.Drawing.Point(467, 16);
+            this.buttonBrowseModsimFile.Location = new System.Drawing.Point(504, 16);
             this.buttonBrowseModsimFile.Name = "buttonBrowseModsimFile";
             this.buttonBrowseModsimFile.Size = new System.Drawing.Size(29, 22);
             this.buttonBrowseModsimFile.TabIndex = 8;
@@ -119,7 +119,7 @@
             // buttonImportTS
             // 
             this.buttonImportTS.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonImportTS.Location = new System.Drawing.Point(393, 92);
+            this.buttonImportTS.Location = new System.Drawing.Point(430, 92);
             this.buttonImportTS.Name = "buttonImportTS";
             this.buttonImportTS.Size = new System.Drawing.Size(103, 23);
             this.buttonImportTS.TabIndex = 6;
@@ -142,7 +142,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFeatureContains.Location = new System.Drawing.Point(107, 42);
             this.txtFeatureContains.Name = "txtFeatureContains";
-            this.txtFeatureContains.Size = new System.Drawing.Size(389, 20);
+            this.txtFeatureContains.Size = new System.Drawing.Size(426, 20);
             this.txtFeatureContains.TabIndex = 3;
             // 
             // label2
@@ -160,7 +160,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Location = new System.Drawing.Point(107, 17);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(360, 20);
+            this.textBox1.Size = new System.Drawing.Size(397, 20);
             this.textBox1.TabIndex = 1;
             this.textBox1.Text = "C:\\Users\\anuragsrivastav\\Desktop\\RRGeoMODSIM_v7PRMSOUTPUT.mdb";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
@@ -180,7 +180,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox1.Location = new System.Drawing.Point(3, 334);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(505, 140);
+            this.richTextBox1.Size = new System.Drawing.Size(542, 140);
             this.richTextBox1.TabIndex = 3;
             this.richTextBox1.Text = "";
             // 
@@ -191,7 +191,7 @@
             this.toolStripProgressBar1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 477);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(513, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(550, 22);
             this.statusStrip1.TabIndex = 4;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -219,7 +219,7 @@
             this.groupBox2.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.groupBox2.Location = new System.Drawing.Point(3, 142);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(505, 186);
+            this.groupBox2.Size = new System.Drawing.Size(542, 186);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Simulation Options";
@@ -227,7 +227,7 @@
             // buttonBrowseProcessFile
             // 
             this.buttonBrowseProcessFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonBrowseProcessFile.Location = new System.Drawing.Point(470, 18);
+            this.buttonBrowseProcessFile.Location = new System.Drawing.Point(507, 18);
             this.buttonBrowseProcessFile.Name = "buttonBrowseProcessFile";
             this.buttonBrowseProcessFile.Size = new System.Drawing.Size(29, 22);
             this.buttonBrowseProcessFile.TabIndex = 11;
@@ -241,7 +241,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox2.Location = new System.Drawing.Point(109, 19);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(360, 20);
+            this.textBox2.Size = new System.Drawing.Size(397, 20);
             this.textBox2.TabIndex = 10;
             this.textBox2.Text = "C:\\Users\\anuragsrivastav\\Desktop\\RRGeoMODSIM_v7PRMSMSGSF.xy";
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
@@ -258,7 +258,7 @@
             // buttonProcessData
             // 
             this.buttonProcessData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonProcessData.Location = new System.Drawing.Point(396, 154);
+            this.buttonProcessData.Location = new System.Drawing.Point(433, 154);
             this.buttonProcessData.Name = "buttonProcessData";
             this.buttonProcessData.Size = new System.Drawing.Size(103, 23);
             this.buttonProcessData.TabIndex = 7;
@@ -275,7 +275,7 @@
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.groupBox3);
             this.Name = "Simulation";
-            this.Size = new System.Drawing.Size(513, 499);
+            this.Size = new System.Drawing.Size(550, 499);
             this.Load += new System.EventHandler(this.Simulation_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);

@@ -1,3 +1,13 @@
 MODSIM/ResSimMODSIM/RRMinFLowMODSIM/bin/
 MODSIM/ResSimMODSIM/RRMinFLowMODSIM/obj/
 PRMS/output/
+MODSIM/MODSIMOpsCode/.vs/
+/MODSIM/MODSIMOpsCode/packages/System.Data.SQLite.Core.1.0.111.0
+/MODSIM/MODSIMOpsCode/RRModelingSystem/bin
+/MODSIM/MODSIMOpsCode/RRModelingSystem/obj
+/MODSIM/MODSIMOpsCode/RRMODSIMResOps/bin
+/MODSIM/MODSIMOpsCode/RRMODSIMResOps/obj
+/MODSIM/MODSIMOpsCode/RRMODSIM_CustomOps/bin
+/MODSIM/MODSIMOpsCode/RRMODSIM_CustomOps/obj
+/MODSIM/MODSIMOpsCode/packages
+/MODSIM/MODSIMOpsCode/RRMODSIM_CustomOps/.vs/MODSIMForPS/v16

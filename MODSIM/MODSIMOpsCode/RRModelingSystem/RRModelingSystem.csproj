@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,33 +53,31 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="A2CM">
-      <HintPath>..\MODSIMLibs\A2CM.dll</HintPath>
+    <Reference Include="A2CM, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MODSIMLibraries\x86\A2CM.dll</HintPath>
     </Reference>
-    <Reference Include="Interop.ADOX">
-      <HintPath>..\MODSIMLibs\Interop.ADOX.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+    <Reference Include="libsim, Version=8.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MODSIMLibraries\x86\libsim.dll</HintPath>
     </Reference>
-    <Reference Include="libsim">
-      <HintPath>..\MODSIMLibs\libsim.dll</HintPath>
+    <Reference Include="ModelStatistics, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MODSIMLibraries\x86\ModelStatistics.dll</HintPath>
     </Reference>
-    <Reference Include="ModelStatistics">
-      <HintPath>..\MODSIMLibs\ModelStatistics.dll</HintPath>
+    <Reference Include="ModsimModel, Version=8.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MODSIMLibraries\x86\ModsimModel.dll</HintPath>
     </Reference>
-    <Reference Include="ModsimForms">
-      <HintPath>..\MODSIMLibs\ModsimForms.dll</HintPath>
-    </Reference>
-    <Reference Include="MODSIMGraphs">
-      <HintPath>..\MODSIMLibs\MODSIMGraphs.dll</HintPath>
-    </Reference>
-    <Reference Include="ModsimModel">
-      <HintPath>..\MODSIMLibs\ModsimModel.dll</HintPath>
-    </Reference>
-    <Reference Include="NetworkUtils">
-      <HintPath>..\MODSIMLibs\NetworkUtils.dll</HintPath>
+    <Reference Include="NetworkUtils, Version=8.4.5.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MODSIMLibraries\x86\NetworkUtils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.113.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\lib\net40\System.Data.SQLite.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -86,8 +86,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="XYFile">
-      <HintPath>..\MODSIMLibs\XYFile.dll</HintPath>
+    <Reference Include="XYFile, Version=8.4.5.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\MODSIMLibraries\x86\XYFile.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +106,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataProcessing.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DataProcessing.Designer.cs">
+      <DependentUpon>DataProcessing.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simulation.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -127,9 +134,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="DataProcessing.resx">
+      <DependentUpon>DataProcessing.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Simulation.resx">
       <DependentUpon>Simulation.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -143,7 +154,20 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RRMODSIM_CustomOps\MODSIM_RROps.csproj">
+      <Project>{6abb112f-a12c-4393-ad6d-2d45cc8c1bff}</Project>
+      <Name>MODSIM_RROps</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net40\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net40\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net40\Stub.System.Data.SQLite.Core.NetFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.113.3\build\net40\Stub.System.Data.SQLite.Core.NetFramework.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
