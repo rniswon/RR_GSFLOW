@@ -55,5 +55,18 @@ namespace RRModelingSystem
         {
             hasChanges = true;
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Filter = "SQLite Database File (*.sqlite)|*.sqlite|All files (*.*)|*.*";
+                dlg.RestoreDirectory = true;
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    textBoxOpsDB.Text = dlg.FileName;
+                }
+            }
+        }
     }
 }

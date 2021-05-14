@@ -19,7 +19,7 @@ namespace RRModelingSystem
         {
             InitializeComponent();
             //Initialize user controls
-            m_SimUserControl = new Simulation();
+            //m_SimUserControl = new Simulation();
             //m_DataProcessing = new DataProcessing();
             m_RRPreferences = new RRPreferences();
         }
@@ -45,13 +45,14 @@ namespace RRModelingSystem
                     m_DataProcessing.Dock = DockStyle.Fill;
                     break;
                 case "Simulation":
-                    m_SimUserControl.ProjectDB = m_RRPreferences.textBoxProjectDB.Text;//@"C:\Users\etrianasanchez\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database.mdb";
-
-                    //m_SimUserControl.ProjectDB = @"C:\Users\etriana\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database.mdb";
-                    //m_SimUserControl.ProjectDB = @"C:\Users\etrianasanchez\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database.mdb";
-                    //m_SimUserControl.ProjectDB = @"C:\Users\etrianasanchez\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\Modeling\MODSIM_GSFLOW\RRMS_Database PRMS.mdb";
-                    //m_SimUserControl.ProjectDB = @"C:\Users\anuragsrivastav\Desktop\RRMS_Database.mdb";
-
+                    if (m_SimUserControl == null || m_RRPreferences.hasChanges)
+                    {
+                        m_SimUserControl = new Simulation( m_RRPreferences.textBoxMODSIMFile.Text,m_RRPreferences.textBoxOpsDB.Text);
+                        m_SimUserControl.messageOut += ProcessMessage;
+                        ProcessMessage($"Active MODSIM File: {m_RRPreferences.textBoxMODSIMFile.Text}");
+                        ProcessMessage($"Active MODSIM Ops Database: {m_RRPreferences.textBoxOpsDB.Text}");
+                    }
+                   
                     splitContainer1.Panel2.Controls.Add(m_SimUserControl);
                     m_SimUserControl.Dock = DockStyle.Fill;
                     break;

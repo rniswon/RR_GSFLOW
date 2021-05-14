@@ -34,8 +34,12 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button2 = new System.Windows.Forms.Button();
             this.textBoxMODSIMFile = new System.Windows.Forms.TextBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.textBoxOpsDB = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -116,10 +120,49 @@
     "cuments\\GITSharedFiles\\MODSIM\\BaseOperations\\ResSim_TS_v7.xy";
             this.textBoxMODSIMFile.TextChanged += new System.EventHandler(this.textBoxMODSIMFile_TextChanged);
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.button3);
+            this.groupBox3.Controls.Add(this.textBoxOpsDB);
+            this.groupBox3.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.groupBox3.Location = new System.Drawing.Point(13, 178);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(546, 69);
+            this.groupBox3.TabIndex = 2;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "MODSIM Operations Support Database";
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button3.Location = new System.Drawing.Point(482, 20);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(58, 23);
+            this.button3.TabIndex = 1;
+            this.button3.Text = "Browse";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // textBoxOpsDB
+            // 
+            this.textBoxOpsDB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxOpsDB.Location = new System.Drawing.Point(6, 20);
+            this.textBoxOpsDB.Multiline = true;
+            this.textBoxOpsDB.Name = "textBoxOpsDB";
+            this.textBoxOpsDB.Size = new System.Drawing.Size(469, 43);
+            this.textBoxOpsDB.TabIndex = 0;
+            this.textBoxOpsDB.Text = "C:\\Users\\etriana\\Research Triangle Institute\\USGS Russian River MODSIM Model - Do" +
+    "cuments\\GITSharedFiles\\MODSIM\\BaseOperations\\RROpsModeling.sqlite";
+            // 
             // RRPreferences
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "RRPreferences";
@@ -128,6 +171,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -140,5 +185,8 @@
         private System.Windows.Forms.Button button2;
         public System.Windows.Forms.TextBox textBoxProjectDB;
         public System.Windows.Forms.TextBox textBoxMODSIMFile;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Button button3;
+        public System.Windows.Forms.TextBox textBoxOpsDB;
     }
 }
