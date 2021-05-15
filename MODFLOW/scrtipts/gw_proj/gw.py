@@ -678,14 +678,16 @@ class Gw_model(object):
 
             # calculate gate strtop and make sure it is higher than first reach of downstream segment
             gate_slope = gate_outseg_reachdata['slope'].values[0]
-            gate_rchlen = gate_outseg_reachdata['rchlen'].values[0]
+            #gate_rchlen = gate_outseg_reachdata['rchlen'].values[0]
+            gate_rchlen = 400
             lake_bottom_buffer = 2
             gate_strtop = (dam_deflated + lake_bottom_buffer) - gate_slope * (0.5 * gate_rchlen)
             if gate_strtop < gate_outseg_reachdata['strtop'].values[0]:
                 gate_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
 
             # calculate spillway strtop and make sure it is higher than first reach of downstream segment
-            spillway_slope = 0.1
+            #spillway_slope = 0.1
+            spillway_slope = gate_outseg_reachdata['slope'].values[0]
             spillway_rchlen = 400
             spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))
             if spillway_strtop < gate_outseg_reachdata['strtop'].values[0]:
@@ -2010,6 +2012,7 @@ class Gw_model(object):
 
         return nlakes
 
+
     def lak_package(self):
 
         # generate bathymetry files
@@ -2036,6 +2039,9 @@ class Gw_model(object):
         # ------------- Record [3] --------------------
         stages = []  # The initial stage of each lake at the beginning of the run
         stage_range = []  # this is needed only for SS simulation.
+        rubber_dam_lake_id = int(self.config.get('RUBBER_DAM', 'rubber_dam_lake_id'))
+        rubber_dam_stage_min = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+        rubber_dam_stage_max = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
         for lake_id in range(1, nlakes + 1, 1):
             lake_botm = []
             lake_top = []
@@ -2058,10 +2064,15 @@ class Gw_model(object):
                     lake_botm.append(botms)
                     lake_top.append(tops)
 
-            stage_range.append((min(lake_botm), max(lake_top)))
+            # update stage range
+            if lake_id == rubber_dam_lake_id:
+                stage_range.append((rubber_dam_stage_min, rubber_dam_stage_max))
+            else:
+                stage_range.append((min(lake_botm), max(lake_top)))
             ini_stage = (min(lake_botm) + max(lake_top)) * 0.5
             ini_stage = min(lake_botm)
             stages.append(ini_stage)
+
 
         tab_files = self.bathymetry_files  # TODO: Check if it is possible for flopy to choose unit numbers
         tab_units = None

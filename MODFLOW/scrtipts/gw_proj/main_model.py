@@ -103,6 +103,7 @@ gw.mf.write_input()
 
 # generate steady state model
 gw.mfs.write_input()
-xx = 1
+
+
 
 
