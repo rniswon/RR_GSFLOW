@@ -224,18 +224,28 @@ namespace RRModelingSystem
                 DataTable featuresdt = m_DBUtils.GetTableFromDB(cmdtxt, "FeaturesDT");//ExecuteCommand(cmdtxt);
                 foreach (DataRow fr in featuresdt.Rows)
                 {
-                    //cmdtxt = $"Select TSDate AS [Date], ROUND(TSValue * {modsim.ScaleFactor},0) AS HS0 From Timeseries Where FeatureID={fr["FeatureID"]} AND TSTypeID={sr["TSType"]} AND TSDate>='{startdate}' ORDER BY [TSDate];";
-                    cmdtxt = "SELECT [Date],max(HS0) AS HS0" +
-                            " FROM(" +
-                           $"     SELECT TSDate AS [Date], ROUND(TSValue * {modsim.ScaleFactor}, 0) AS HS0" +
-                            "     FROM Timeseries" +
-                            $"    WHERE FeatureID={fr["FeatureID"]} AND TSTypeID={sr["TSType"]} AND TSDate>='{startdate.ToString("yyyy-MM-dd")}'" +
-                            " UNION" +
-                            $"    SELECT '{startdate.ToString("yyyy-MM-dd")}', 0" +
-                            "   )" +
-                            " GROUP BY[Date] ORDER BY[Date]; ";
-                    DataTable tsdt = m_DBUtils.GetTableFromDB(cmdtxt, "tseries");//ExecuteCommand(cmdtxt);
-
+                    DataTable tsdt;
+                    if (radioButtonLoadTS.Checked)
+                    {
+                        //cmdtxt = $"Select TSDate AS [Date], ROUND(TSValue * {modsim.ScaleFactor},0) AS HS0 From Timeseries Where FeatureID={fr["FeatureID"]} AND TSTypeID={sr["TSType"]} AND TSDate>='{startdate}' ORDER BY [TSDate];";
+                        cmdtxt = "SELECT [Date],max(HS0) AS HS0" +
+                                " FROM(" +
+                               $"     SELECT TSDate AS [Date], ROUND(TSValue * {modsim.ScaleFactor}, 0) AS HS0" +
+                                "     FROM Timeseries" +
+                                $"    WHERE FeatureID={fr["FeatureID"]} AND TSTypeID={sr["TSType"]} AND TSDate>='{startdate.ToString("yyyy-MM-dd")}'" +
+                                " UNION" +
+                                $"    SELECT '{startdate.ToString("yyyy-MM-dd")}', 0" +
+                                "   )" +
+                                " GROUP BY[Date] ORDER BY[Date]; ";
+                        tsdt = m_DBUtils.GetTableFromDB(cmdtxt, "tseries");//ExecuteCommand(cmdtxt);
+                    }
+                    else
+                    {
+                        tsdt = new DataTable();
+                        tsdt.Columns.Add("Date", typeof(DateTime));
+                        tsdt.Columns.Add("HS0", typeof(int));
+                        tsdt.Rows.Add(new object[] { startdate.ToString("yyyy-MM-dd"), 0 });
+                    }
                     if (tsdt != null)
                     {
                         // apply accuracy factor
@@ -389,6 +399,28 @@ namespace RRModelingSystem
             //this.Refresh();
         }
 
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            LoadFeaturesAndTSTypes();
+        }
 
+        private void LoadFeaturesAndTSTypes()
+        {
+            string cmdtxt = $"SELECT TSTypes.TSTypeID,MOD_Name,MODSIMTSType"+
+                            " FROM ScenariosTSSet"+
+                            " JOIN TSTypes ON ScenariosTSSet.TSType = TSTypes.TSTypeID"+
+                            " JOIN("+
+                            "        SELECT Timeseries.FeatureID, TSTypeID, MOD_Name"+
+                            "        FROM Timeseries"+
+                            "        JOIN Features ON Features.FeatureID = Timeseries.FeatureID"+
+                            "        GROUP BY Timeseries.FeatureID"+
+                            "    ) as f"+
+                            "    ON f.TSTypeID = ScenariosTSSet.TSType"+
+                            $" WHERE ScenariosTSSet.Scenario =  {treeView1.SelectedNode.Name}";
+            DataTable dt = m_DBUtils.GetTableFromDB(cmdtxt, "FeatTSType");//ExecuteCommand(cmdtxt);
+
+            // add to colllection
+            dataGridView1.DataSource = dt;
+        }
     }
 }

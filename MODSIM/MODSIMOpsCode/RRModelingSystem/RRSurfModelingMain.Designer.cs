@@ -55,14 +55,16 @@
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.treeView1);
             this.splitContainer1.Panel1.Controls.Add(this.menuStrip1);
-            this.splitContainer1.Size = new System.Drawing.Size(643, 278);
-            this.splitContainer1.SplitterDistance = 213;
+            this.splitContainer1.Size = new System.Drawing.Size(857, 342);
+            this.splitContainer1.SplitterDistance = 164;
+            this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
             // treeView1
@@ -70,6 +72,7 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(0, 30);
+            this.treeView1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.treeView1.Name = "treeView1";
             treeNode1.Name = "Node0";
             treeNode1.Text = "Preferences";
@@ -84,7 +87,7 @@
             treeNode2,
             treeNode3,
             treeNode4});
-            this.treeView1.Size = new System.Drawing.Size(213, 248);
+            this.treeView1.Size = new System.Drawing.Size(164, 312);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
@@ -96,8 +99,8 @@
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(213, 30);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(164, 30);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -125,6 +128,7 @@
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -136,16 +140,18 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.richTextBoxMsgs);
             this.splitContainer2.Panel2.Controls.Add(this.label1);
-            this.splitContainer2.Size = new System.Drawing.Size(643, 433);
-            this.splitContainer2.SplitterDistance = 278;
+            this.splitContainer2.Size = new System.Drawing.Size(857, 533);
+            this.splitContainer2.SplitterDistance = 342;
+            this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 1;
             // 
             // richTextBoxMsgs
             // 
             this.richTextBoxMsgs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBoxMsgs.Location = new System.Drawing.Point(0, 15);
+            this.richTextBoxMsgs.Location = new System.Drawing.Point(0, 17);
+            this.richTextBoxMsgs.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.richTextBoxMsgs.Name = "richTextBoxMsgs";
-            this.richTextBoxMsgs.Size = new System.Drawing.Size(643, 136);
+            this.richTextBoxMsgs.Size = new System.Drawing.Size(857, 169);
             this.richTextBoxMsgs.TabIndex = 0;
             this.richTextBoxMsgs.Text = "";
             // 
@@ -154,18 +160,20 @@
             this.label1.AutoSize = true;
             this.label1.Dock = System.Windows.Forms.DockStyle.Top;
             this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(31, 15);
+            this.label1.Size = new System.Drawing.Size(36, 17);
             this.label1.TabIndex = 1;
             this.label1.Text = "Log:";
             // 
             // RRSurfModelingMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(643, 433);
+            this.ClientSize = new System.Drawing.Size(857, 533);
             this.Controls.Add(this.splitContainer2);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "RRSurfModelingMain";
             this.Text = "Russian River SW-GW Modeling Interface";
             this.splitContainer1.Panel1.ResumeLayout(false);

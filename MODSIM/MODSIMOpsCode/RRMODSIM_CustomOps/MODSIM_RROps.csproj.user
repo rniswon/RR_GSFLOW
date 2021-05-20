@@ -7,7 +7,7 @@
     <StartArguments>"C:\Users\etrianasanchez\Documents\LocalRepos\SIIP-MODSIM\MODSIM\5-bus_BaseV3.xy"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <StartArguments>"ResSim_TS_v7.xy" "C:\Users\etriana\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\GITSharedFiles\MODSIM\BaseOperations\RROpsModeling.sqlite"</StartArguments>
+    <StartArguments>"ResSim_TS_v8TSb.xy" "C:\Users\etriana\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\GITSharedFiles\MODSIM\BaseOperations\RROpsModeling.sqlite"</StartArguments>
     <StartWorkingDirectory>C:\Users\etriana\Research Triangle Institute\USGS Russian River MODSIM Model - Documents\GITSharedFiles\MODSIM\BaseOperations\</StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">

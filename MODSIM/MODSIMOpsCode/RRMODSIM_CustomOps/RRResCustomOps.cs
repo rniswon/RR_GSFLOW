@@ -16,8 +16,6 @@ namespace RTI.CWR.RRModel
     {
         public static Model m_Model = new Model();
         private static string fileName;
-
-        private static Dictionary<string, double[]> modelFactors;
         private static string dataDBPath;
 
         static void Main(string[] args)
@@ -26,6 +24,7 @@ namespace RTI.CWR.RRModel
             m_Model.Init += OnInitialize;
             m_Model.IterBottom += OnIterationBottom;
             m_Model.IterTop += OnIterationTop;
+            m_Model.BackRoutIterTop += OnBRIterationTop;
             m_Model.Converged += OnIterationConverge;
             m_Model.End += OnFinished;
             m_Model.OnMessage += OnMessage;
@@ -44,7 +43,12 @@ namespace RTI.CWR.RRModel
                     
             Console.ReadKey();
         }
-        
+
+        private static void OnBRIterationTop(Model miBackRout, double[,] regRoutCoef)
+        {
+            throw new NotImplementedException();
+        }
+
         private static int AccuracyConversion(long value)
         {
             int newValue = (int)(value/m_Model.ScaleFactor);
@@ -66,7 +70,6 @@ namespace RTI.CWR.RRModel
 
         private static void OnInitialize()
         {
-            InitilizeVariables();
             //min release clases
             LMendoMinFlow = new MinFlowCalculator(dataDBPath, "Mendo_MinFlow_1610QTUCP", ref m_Model);
             LMendocino = m_Model.FindNode("LMendocino");
@@ -85,30 +88,10 @@ namespace RTI.CWR.RRModel
             //West Fork Flow
             westForkFlows = m_Model.FindLink("WestForkFlow");
             MendoContrlledRelease = m_Model.FindLink("Mendo_ControlledRelease");
-            hopelandGage = m_Model.FindLink("Hopland_Gage");
+            hopelandGage = m_Model.FindLink("Hoplande");
         }
 
-        private static void InitilizeVariables()
-        {
-            modelFactors = new Dictionary<string, double[]>();
-            //Monthly Loss factors
-            double[] lossFact = new double[12];
-            lossFact[0] = 0.1;
-            lossFact[1] = 0.2;
-            lossFact[2] = 0.3;
-            lossFact[3] = 0.4;
-            lossFact[4] = 0.5;
-            lossFact[5] = 0.6;
-            lossFact[6] = 0.7;
-            lossFact[7] = 0.8;
-            lossFact[8] = 0.8;
-            lossFact[9] = 0.8;
-            lossFact[10] = 0.8;
-            lossFact[11] = 0.8;
-            // The dictionary kwy corresponds to the link name in the MODSIM Network
-            modelFactors.Add("CLoss_Link", lossFact);
-        }
-
+       
         private static void OnIterationTop()
         {
 
@@ -128,7 +111,7 @@ namespace RTI.CWR.RRModel
                 if (YearTypeFlag == 1 || YearTypeFlag == 4)
                 {
                     storageState = LMendoMinFlow.GetStorageState(m_Model, LMendocino.mnInfo.start, pillsburyStorage.mlInfo.flow);
-                    LMendoMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, storageState.ToString());
+                    LMendoMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, storageState.ToString(),1);
                 }
                 else if (YearTypeFlag == 2 || YearTypeFlag == 3)
                     // YearTypeFlag: 2 & 3
@@ -137,10 +120,10 @@ namespace RTI.CWR.RRModel
                 else
                     // ETS: Is this ever reached?
                     // Yes, the first iteration YearTypeFlag ==0 
-                    LMendoMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, "1");
+                    LMendoMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, "1",1);
 
                 // L.Sonoma min flows are only a function of the YearTypeFlag.
-                SonomaMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, YearTypeFlag.ToString());
+                SonomaMinFlow.AssignMinFlowsToNodes(m_Model.mInfo.CurrentModelTimeStepIndex, thisDate, YearTypeFlag.ToString(),1);
 
             }
 

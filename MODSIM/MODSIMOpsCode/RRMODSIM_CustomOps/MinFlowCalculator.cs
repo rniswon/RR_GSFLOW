@@ -40,31 +40,36 @@ namespace RTI.CWR.RRModel
         /// <param name="thisDate"></param>
         /// <param name="stateCol"></param>
         /// <returns></returns>
-        public long AssignMinFlowsToNodes(int CurrentModelTimeStepIndex, DateTime thisDate, string stateCol)
+        public void AssignMinFlowsToNodes(int CurrentModelTimeStepIndex, DateTime thisDate, string stateCol, int lags)
         {
             //set the minimum flow value in all demands
-            long minFlow = 0;
-            if (int.Parse(stateCol) == 0) return minFlow;
-            foreach (string key in minNodesCollection.Keys)
+            //long minFlow = 0;
+            for (int i = 0; i < lags; i++)
             {
-                Node node = minNodesCollection[key];
-                DataRow[]  drs = dataTbl.Select($"Node = '{node.name}' AND Month = {thisDate.Month} AND [Day] = {thisDate.Day}");
-                if (drs.Length == 0) 
-                    drs = dataTbl.Select($"Node = '{node.name}' AND Month = {thisDate.Month} AND [Day]< {thisDate.Day}","Day DESC");
-                if (drs.Length >= 1)
+                if (int.Parse(stateCol) == 0) return;// minFlow;
+                foreach (string key in minNodesCollection.Keys)
                 {
-                    minFlow = long.Parse(drs[0][stateCol].ToString());
-                    //min flow value in CFS - needs to be converted to standard MODSIM english units [acre-ft]
-                    minFlow = (long)Math.Round(minFlow * accuracyFactor * 1.98347,0); // Includes the buffer min flow in the db table
-                    node.mnInfo.nodedemand[CurrentModelTimeStepIndex, 0] = minFlow;
-                    //Console.WriteLine($"Setting {node.name} to : {minFlow}");
-                }
-                else
-                {
-                    Console.WriteLine($"ERROR [setting minimum flows] Unexpected number of rows returned for node {node.name}. Calcuation skipped.");
+                    Node node = minNodesCollection[key];
+                    DateTime m_Date = thisDate.AddDays(i);
+                    DataRow[] drs = dataTbl.Select($"Node = '{node.name}' AND Month = {m_Date.Month} AND [Day] = {m_Date.Day}");
+                    if (drs.Length == 0)
+                        drs = dataTbl.Select($"Node = '{node.name}' AND Month = {m_Date.Month} AND [Day]< {m_Date.Day}", "Day DESC");
+                    if (drs.Length >= 1)
+                    {
+                        long minFlow = long.Parse(drs[0][stateCol].ToString());
+                        //min flow value in CFS - needs to be converted to standard MODSIM english units [acre-ft]
+                        minFlow = (long)Math.Round(minFlow * accuracyFactor * 1.98347, 0); // Includes the buffer min flow in the db table
+                        if(node.mnInfo.nodedemand.Length > CurrentModelTimeStepIndex + i) 
+                            node.mnInfo.nodedemand[CurrentModelTimeStepIndex+i, 0] = minFlow;
+                        //Console.WriteLine($"Setting {node.name} to : {minFlow}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"ERROR [setting minimum flows] Unexpected number of rows returned for node {node.name}. Calcuation skipped.");
+                    }
                 }
             }
-            return minFlow;
+            //return minFlow;
         }
 
         /// <summary>
@@ -122,7 +127,7 @@ namespace RTI.CWR.RRModel
             else
                 storageState = 1;
 
-            if (myDate >= new DateTime(myDate.Year, 10, 1) && LMendocinoStor < 30000)
+            if (myDate >= new DateTime(myDate.Year, 10, 1) && (LMendocinoStor / m_Model.ScaleFactor) < 30000)
                 storageState = 3;
 
             return storageState;
