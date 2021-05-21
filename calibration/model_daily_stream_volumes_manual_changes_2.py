@@ -20,7 +20,7 @@ prms.load_prms_project()
 
 # read in observation data and subbasin aggregation information from Excel workbook into Pandas dataframe
 # (use only when observation data has changed) **********************************************************
-if True:
+if False:
     observations = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='daily_local_flows')
     obs_mean_monthly = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='mean_monthly')
     obs_mean_annual = pd.read_excel('RR_local_flows_w_Austin.xlsx', sheet_name='mean_annual')

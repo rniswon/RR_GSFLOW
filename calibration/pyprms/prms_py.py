@@ -254,7 +254,7 @@ class Prms_base(prms_par):
         fn2 = '\\'.join(fparts)
         script_dir = os.getcwd()
         os.chdir(fn2)
-        exe = fn2 + r"\bin\gsflow_release.exe"
+        exe = fn2 + r"\bin\gsflow_2.1.0.exe"
         args = fn
 
 
