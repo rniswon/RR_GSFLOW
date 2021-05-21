@@ -1136,7 +1136,7 @@ class Gw_model(object):
             self.mfs.external_units.append(iunit)
             self.mfs.external_fnames.append(os.path.basename(fn))
             self.mfs.external_binflag.append(False)
-            tabfiles_dict_ss[gate_iseg] = {'numval': numval, 'inuit': iunit}
+            tabfiles_dict_ss[pond_outflow_iseg] = {'numval': numval, 'inuit': iunit}
 
             # return
             return segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss
