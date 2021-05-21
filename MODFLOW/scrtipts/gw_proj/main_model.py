@@ -97,12 +97,15 @@ nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model
                                      gw.mfs)
 
 
-
+# Possible Unit bug
+gw.mf.external_output = [False] * len(gw.mf.external_fnames)
+gw.mfs.external_output = [False] * len(gw.mfs.external_fnames)
 # generate transient model
 gw.mf.write_input()
 
 # generate steady state model
 gw.mfs.write_input()
+xx = 1
 
 
 

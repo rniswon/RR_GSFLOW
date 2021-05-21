@@ -743,12 +743,12 @@ class Gw_model(object):
                 'hcond1': 0,
                 'thickm1': 0,
                 'elevup': 0,
-                'width1': 10,
+                'width1': 50,
                 'depth1': 0,
                 'hcond2': 0,
                 'thickm2': 0,
                 'elevdn': 0,
-                'width2': 10,
+                'width2': 50,
                 'depth2': 0
             }
             segment_data = segment_data.append(gate_seg, ignore_index=True)
@@ -898,6 +898,8 @@ class Gw_model(object):
             # average_inflows = {}
             model_ws_tr = self.config.get('General_info', 'work_space')
             model_ws_tr = os.path.join(model_ws_tr, 'tr')
+            model_ws_ss = self.config.get('General_info', 'work_space')
+            model_ws_ss = os.path.join(model_ws_ss, 'ss')
 
             # export spillway tabfile
             rubber_dam_spillway_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile')
@@ -917,7 +919,7 @@ class Gw_model(object):
             iunit = self.mf.next_ext_unit()
             self.mf.external_units.append(iunit)
             self.mf.external_fnames.append(os.path.basename(fn))
-            self.mf.external_binflag.append(0)
+            self.mf.external_binflag.append(False)
             tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
 
             # export gate tabfile
@@ -938,22 +940,73 @@ class Gw_model(object):
             iunit = self.mf.next_ext_unit()
             self.mf.external_units.append(iunit)
             self.mf.external_fnames.append(os.path.basename(fn))
-            self.mf.external_binflag.append(0)
+            self.mf.external_binflag.append(False)
             tabfiles_dict[gate_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # create dictionary for steady state tabfiles
+            tabfiles_dict_ss = {}
+
+            # export spillway tabfile - steady state
+            rubber_dam_spillway_tabfile_ss = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile_ss')
+            rubber_dam_spillway_tabfile_ss_flow = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile_ss_flow')
+            fn = os.path.join(model_ws_ss, rubber_dam_spillway_tabfile_ss)
+            fid = open(fn, 'w')
+            fid.write(str(0))
+            fid.write(" ")
+            fid.write(rubber_dam_spillway_tabfile_ss_flow)
+            fid.write("\n")
+            fid.write(str(1))
+            fid.write(" ")
+            fid.write(rubber_dam_spillway_tabfile_ss_flow)
+            fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for spillway - steady state
+            numval = 2
+            iunit = self.mfs.next_ext_unit()
+            #iunit = 2001
+            self.mfs.external_units.append(iunit)
+            self.mfs.external_fnames.append(os.path.basename(fn))
+            self.mfs.external_binflag.append(False)
+            tabfiles_dict_ss[spill_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # export gate tabfile - steady state
+            rubber_dam_gate_tabfile_ss = self.config.get('RUBBER_DAM', 'rubber_dam_gate_tabfile_ss')
+            rubber_dam_gate_tabfile_ss_flow = self.config.get('RUBBER_DAM', 'rubber_dam_gate_tabfile_ss_flow')
+            fn = os.path.join(model_ws_ss, rubber_dam_gate_tabfile_ss)
+            fid = open(fn, 'w')
+            fid.write(str(0))
+            fid.write(" ")
+            fid.write(rubber_dam_gate_tabfile_ss_flow)
+            fid.write("\n")
+            fid.write(str(1))
+            fid.write(" ")
+            fid.write(rubber_dam_gate_tabfile_ss_flow)
+            fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for gate - steady state
+            numval = 2
+            iunit = self.mfs.next_ext_unit()
+            #iunit = 2002
+            self.mfs.external_units.append(iunit)
+            self.mfs.external_fnames.append(os.path.basename(fn))
+            self.mfs.external_binflag.append(False)
+            tabfiles_dict_ss[gate_iseg] = {'numval': numval, 'inuit': iunit}
 
             # set outflows for steady state model
             average_inflows[spill_iseg] = 1e-5
             average_inflows[gate_iseg] = 0
 
-            return tabfiles_dict, average_inflows
+            return tabfiles_dict, tabfiles_dict_ss, average_inflows
 
         # Run function
-        tabfiles_dict, average_inflows = create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict,
+        tabfiles_dict, tabfiles_dict_ss, average_inflows = create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict,
                                                                        average_inflows)
 
         # ---- Function to add an outflow segment to the nearby ponds from the rubber dam ------------------------------
 
-        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id):
+        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict_ss):
 
             # TODO: check whether the rubber dam pond outflow segment should be made similar to the gate or
             #  spillway segments, for now making it different since it has no outseg from which to grab data
@@ -1026,13 +1079,72 @@ class Gw_model(object):
                                   'outreach': np.nan}
             reach_data = reach_data.append(pond_outflow_reach, ignore_index=True)
 
+            # prepare to export tabfiles
+            model_ws_tr = self.config.get('General_info', 'work_space')
+            model_ws_tr = os.path.join(model_ws_tr, 'tr')
+            model_ws_ss = self.config.get('General_info', 'work_space')
+            model_ws_ss = os.path.join(model_ws_ss, 'ss')
+
+            # prepare data frame of transient pond outflow values
+            start_date = datetime.datetime.strptime("1990-01-01", "%Y-%m-%d")
+            end_date = datetime.datetime.strptime("2020-12-31", "%Y-%m-%d")
+            calib_dates = [start_date + datetime.timedelta(days=x) for x in range(0, (end_date - start_date).days + 1)]
+            df = {'date': pd.to_datetime(calib_dates),
+                  'sim_time': [x + 1 for x in list(range(len(calib_dates)))],
+                  'pond_flow': float(self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile_flow')) }
+            df = pd.DataFrame(df, columns=['date', 'sim_time', 'pond_flow'])
+
+            # make transient tabfile
+            rubber_dam_pond_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile')
+            fn = os.path.join(model_ws_tr, rubber_dam_pond_tabfile)
+            fid = open(fn, 'w')
+            for i in range(len(df)):
+                fid.write(str(df.loc[i, 'sim_time']))
+                fid.write(" ")
+                fid.write(str(df.loc[i, 'pond_flow']))
+                fid.write(" #")
+                fid.write(str(df.loc[i, 'date']))
+                fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for pond outflow - transient
+            numval = len(df)
+            iunit = self.mf.next_ext_unit()
+            self.mf.external_units.append(iunit)
+            self.mf.external_fnames.append(os.path.basename(fn))
+            self.mf.external_binflag.append(False)
+            tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # make steady state tabfile
+            rubber_dam_pond_tabfile_ss = self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile_ss')
+            rubber_dam_pond_tabfile_ss_flow = self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile_ss_flow')
+            fn = os.path.join(model_ws_ss, rubber_dam_pond_tabfile_ss)
+            fid = open(fn, 'w')
+            fid.write(str(0))
+            fid.write(" ")
+            fid.write(rubber_dam_pond_tabfile_ss_flow)
+            fid.write("\n")
+            fid.write(str(1))
+            fid.write(" ")
+            fid.write(rubber_dam_pond_tabfile_ss_flow)
+            fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for pond outflow - steady state
+            numval = 2
+            iunit = self.mfs.next_ext_unit()
+            self.mfs.external_units.append(iunit)
+            self.mfs.external_fnames.append(os.path.basename(fn))
+            self.mfs.external_binflag.append(False)
+            tabfiles_dict_ss[gate_iseg] = {'numval': numval, 'inuit': iunit}
+
             # return
-            return segment_data, reach_data
+            return segment_data, reach_data, tabfiles_dict_ss
 
         # Run function
-        segment_data, reach_data = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id)
+        segment_data, reach_data, tabfiles_dict_ss = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict_ss)
 
-        return segment_data, reach_data, tabfiles_dict, average_inflows
+        return segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss, average_inflows
 
     def sfr3_package(self):
 
@@ -1226,9 +1338,8 @@ class Gw_model(object):
         # ---- Incorporate rubber dam ------------------------------------------------------------------
 
         # run functions to incorporate rubber dam
-        segment_data, reach_data, tabfiles_dict, average_inflows = self.add_rubber_dam_sfr(segment_data, reach_data,
-                                                                                           tabfiles_dict,
-                                                                                           average_inflows)
+        segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss, average_inflows = self.add_rubber_dam_sfr(segment_data, reach_data,
+                                                                                           tabfiles_dict, average_inflows)
 
         # update sfr dataset 5
         n_segments = len(segment_data['nseg'].unique())
@@ -1283,15 +1394,25 @@ class Gw_model(object):
         reach_data_ss = reach_data_ss.to_records(index=False)
         segment_data_ss = segment_data_ss.to_records(index=False)
         segment_data_ss = {0: segment_data_ss}
-        options.tabfiles = False
+        #options.tabfiles = False
 
+        # # Write steady state sfr package
+        # sfrs = flopy.modflow.ModflowSfr2(self.mfs, nstrm=n_reaches, nss=n_segments, const=const, nsfrpar=nsfrpar,
+        #                                  nparseg=nparseg,
+        #                                  dleak=dleak, ipakcb=ipakcb, nstrail=nstrail, isuzn=isuzn, nsfrsets=nsfrsets,
+        #                                  istcb2=istcb2, reachinput=True, isfropt=isfropt, irtflg=irtflg,
+        #                                  reach_data=reach_data_ss, numtim=numtim, weight=weight,
+        #                                  segment_data=segment_data_ss,
+        #                                  channel_geometry_data=channel_geometry_data,
+        #                                  channel_flow_data=channel_flow_data,
+        #                                  dataset_5=dataset_5, options=options)
         # Write steady state sfr package
         sfrs = flopy.modflow.ModflowSfr2(self.mfs, nstrm=n_reaches, nss=n_segments, const=const, nsfrpar=nsfrpar,
                                          nparseg=nparseg,
                                          dleak=dleak, ipakcb=ipakcb, nstrail=nstrail, isuzn=isuzn, nsfrsets=nsfrsets,
                                          istcb2=istcb2, reachinput=True, isfropt=isfropt, irtflg=irtflg,
                                          reach_data=reach_data_ss, numtim=numtim, weight=weight,
-                                         segment_data=segment_data_ss,
+                                         segment_data=segment_data_ss, tabfiles=tabfiles, tabfiles_dict=tabfiles_dict_ss,
                                          channel_geometry_data=channel_geometry_data,
                                          channel_flow_data=channel_flow_data,
                                          dataset_5=dataset_5, options=options)
@@ -2198,7 +2319,7 @@ class Gw_model(object):
         bathy_file_list = self.bathymetry_files
 
         # specify rubber dam lake stage-volume-area relationship
-        lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
+        lake_id = int(self.config.get('RUBBER_DAM', 'rubber_dam_lake_id'))
         stage_min = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
         stage_max = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
         width_trapezoid_top = float(self.config.get('RUBBER_DAM', 'width_trapezoid_top'))
