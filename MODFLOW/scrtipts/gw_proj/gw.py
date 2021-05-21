@@ -1006,7 +1006,7 @@ class Gw_model(object):
 
         # ---- Function to add an outflow segment to the nearby ponds from the rubber dam ------------------------------
 
-        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict_ss):
+        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict, tabfiles_dict_ss):
 
             # TODO: check whether the rubber dam pond outflow segment should be made similar to the gate or
             #  spillway segments, for now making it different since it has no outseg from which to grab data
@@ -1113,7 +1113,7 @@ class Gw_model(object):
             self.mf.external_units.append(iunit)
             self.mf.external_fnames.append(os.path.basename(fn))
             self.mf.external_binflag.append(False)
-            tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
+            tabfiles_dict[pond_outflow_iseg] = {'numval': numval, 'inuit': iunit}
 
             # make steady state tabfile
             rubber_dam_pond_tabfile_ss = self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile_ss')
@@ -1139,10 +1139,10 @@ class Gw_model(object):
             tabfiles_dict_ss[gate_iseg] = {'numval': numval, 'inuit': iunit}
 
             # return
-            return segment_data, reach_data, tabfiles_dict_ss
+            return segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss
 
         # Run function
-        segment_data, reach_data, tabfiles_dict_ss = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict_ss)
+        segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict, tabfiles_dict_ss)
 
         return segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss, average_inflows
 
