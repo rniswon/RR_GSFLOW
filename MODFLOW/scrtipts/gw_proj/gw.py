@@ -3,10 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
+
 Use_Develop_FLOPY = True
 
 if Use_Develop_FLOPY:
-    fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
+    fpth = sys.path.insert(0, r"D:\Workspace\Codes\flopy_develop\flopy")
     sys.path.append(fpth)
     import flopy
 else:
@@ -117,14 +118,70 @@ class Gw_model(object):
         # find hru_type = 1 but thickness is zero
         hru_type = self.hru_param['HRU_TYPE'].values
         hru_type = hru_type.reshape(self.nrows, self.ncols)
-        tot_thick = thikness.sum(axis = 0)
+        tot_thick = thikness.sum(axis=0)
         mask = np.logical_and(tot_thick > 0, hru_type == 0)
         for k in range(ibound.shape[0]):
             var_ = ibound[k, :, :].copy()
             var_[mask] = 0
-            ibound[k,:,:] = var_
+            ibound[k, :, :] = var_
 
+        bas = flopy.modflow.ModflowBas(self.mf, ibound=ibound, strt=strt)
+        bass = flopy.modflow.ModflowBas(self.mfs, ibound=ibound, strt=strt)
+        print("Done generating bas object ....")
 
+    def add_rubber_dam_bas(self, ibound):
+
+        # read in rubber dam lake shapefile
+        rubber_dam_lake = self.config.get('RUBBER_DAM', 'rubber_dam_lake')
+        rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
+
+        # get HRU row and column of rubber dam lake cells
+        hru_row = rubber_dam_lake["HRU_ROW"]
+        hru_col = rubber_dam_lake["HRU_COL"]
+
+        # set IBOUND = 0 in layer 1 for rubber dam lake cells
+        # TODO: double check that ibound should be indexed in this order: layer, row, column
+        # TODO: check that this is changing the values in the correct grid cells
+        for i in range(len(hru_row)):
+            ibound[0, hru_row[i] - 1, hru_col[
+                i] - 1] = 0  # NOTE: have to subtract one to get 0-based indices of these rows and columns in ibound array
+
+        return ibound
+
+    def bas_package_01(self, wt):
+        """
+
+        :param wt:
+        :return:
+        """
+
+        # ---- Set starting heads ------------------------------------------------------------------------
+        if not (wt is None):
+            strt = wt
+        else:
+            # no wt is used, then the initial wt will close to surface
+            strt = self.mf.dis.top.array - 0.0
+
+        # ---- Create ibound array ------------------------------------------------------------------------
+        thikness = self.mf.dis.thickness.array
+        ibound = np.zeros_like(thikness)
+        ibound[thikness > 0] = 1
+
+        # ---- Make sure that all active cells have non-zero thickness ----------------------------------
+        # find hru_type = 1 but thickness is zero
+        hru_type = self.hru_param['HRU_TYPE'].values
+        hru_type = hru_type.reshape(self.nrows, self.ncols)
+        tot_thick = thikness.sum(axis=0)
+        mask = np.logical_and(tot_thick > 0, hru_type == 0)
+        for k in range(ibound.shape[0]):
+            var_ = ibound[k, :, :].copy()
+            var_[mask] = 0
+            ibound[k, :, :] = var_
+
+        # ---- Incorporate rubber dam ------------------------------------------------------------------
+        ibound = self.add_rubber_dam_bas(ibound)
+
+        # ---- Write transient and steady state BAS packages ------------------------------------------
         bas = flopy.modflow.ModflowBas(self.mf, ibound=ibound, strt=strt)
         bass = flopy.modflow.ModflowBas(self.mfs, ibound=ibound, strt=strt)
         print("Done generating bas object ....")
@@ -154,15 +211,16 @@ class Gw_model(object):
         laywet = np.zeros(self.nlayers)
 
         # Rich suggested increase hk by 2 for the first two layers
-        hk[0,:,:] =  hk[0,:,:] * 2.0
+        hk[0, :, :] = hk[0, :, :] * 2.0
         hk[1, :, :] = hk[1, :, :] * 2.0
 
         upw = flopy.modflow.mfupw.ModflowUpw(self.mf, laytyp=laytyp, layavg=0, chani=1.0, layvka=0, laywet=laywet,
                                              hdry=-1e+30, iphdry=0, hk=hk, hani=1.0, vka=hk, ss=ss,
-                                             sy=sy, vkcb=0.0, noparcheck=False, ipakcb = 55)
+                                             sy=sy, vkcb=0.0, noparcheck=False, ipakcb=55)
         # add package to steady state
         upws = flopy.modflow.mfupw.ModflowUpw(self.mfs, laytyp=laytyp, layavg=0, chani=1.0, layvka=0, laywet=laywet,
-                                             hdry=-1e+30, iphdry=0, hk=hk, hani=1.0, vka=hk, vkcb=0.0, noparcheck=False, ipakcb = 55)
+                                              hdry=-1e+30, iphdry=0, hk=hk, hani=1.0, vka=hk, vkcb=0.0,
+                                              noparcheck=False, ipakcb=55)
         pass
 
     def remove_field_num(self, a, i):
@@ -199,9 +257,8 @@ class Gw_model(object):
         from flopy.utils.optionblock import OptionBlock
 
         options = OptionBlock('', flopy.modflow.ModflowSfr2, block=True)
-        options.reachinput = True # False
+        options.reachinput = True  # False
         options.tabfiles = True
-
 
         # read flow accumulation file
         flo_acc = self.config.get('SFR', 'str_flow_acc')
@@ -219,36 +276,39 @@ class Gw_model(object):
         # Table fields name
         reach_data_labels = ['node', 'k', 'i', 'j', 'iseg', 'ireach', 'rchlen', 'strtop', 'slope',
                              'strthick', 'strhc1', 'thts', 'thti', 'eps', 'uhc', 'reachID', 'outreach']
+
         # Initialize an empty pandas dataframe
         reach_data = pd.DataFrame(columns=reach_data_labels, dtype='float')
 
         # Reach location
-        reach_data['k'] = 0   # layer number-- Notice that layer numbers are zero-based
+        reach_data['k'] = 0  # layer number-- Notice that layer numbers are zero-based
         reach_data['i'] = streams_data['HRU_ROW'].values - 1  # row number
         reach_data['j'] = streams_data['HRU_COL'].values - 1  # column number
 
-        for index, rech in reach_data.iterrows(): # get layer
+        for index, rech in reach_data.iterrows():  # get layer
             thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]
-            if sum(thk)==0:
+            if sum(thk) == 0:
                 raise ValueError("Stream in inactive zone")
             for kk, val in enumerate(thk):
                 if val > 0:
-                    #reach_data.set_value(index, 'k', kk)
-                    reach_data.at[index,'k'] = kk
+                    # reach_data.set_value(index, 'k', kk)
+                    reach_data.at[index, 'k'] = kk
                     break
             pass
+
         # IDs
         reach_data['iseg'] = streams_data['ISEG'].values  # Segment ID number
         reach_data['ireach'] = streams_data['IREACH'].values  # Reach ID number
-        #reach_data['ireach'][reach_data['ireach'] < 1] = 1
-        reach_data.loc[reach_data['ireach'] < 1, 'ireach' ] = 1 # the newly added segments (div and spillways) has
+        # reach_data['ireach'][reach_data['ireach'] < 1] = 1
+        reach_data.loc[reach_data['ireach'] < 1, 'ireach'] = 1  # the newly added segments (div and spillways) has
         # ireach =0
+
         # Stream topography
         reach_data['rchlen'] = streams_data['RCHLEN'].values  # reach length
-        reach_data.loc[reach_data['rchlen']==0, 'rchlen'] = 300.0
+        reach_data.loc[reach_data['rchlen'] == 0, 'rchlen'] = 300.0
         reach_data['strtop'] = streams_data[
                                    'DEM_ADJ'].values - 1.0  # Streambed elevation is assumed 1 meter below ground surface.
-        reach_data['slope'] = streams_data['DEM_SLP_P'].values #/ 100.0  # Slope #todo: divid by 100 is not correct!!
+        reach_data['slope'] = streams_data['DEM_SLP_P'].values  # / 100.0  # Slope #todo: divid by 100 is not correct!!
 
         # Streambed information
         reach_data['strthick'] = 0.5  # streambed thickness - meter
@@ -268,18 +328,21 @@ class Gw_model(object):
                            'cdpth', 'fdpth', 'awdth', 'bwdth', 'hcond1', 'thickm1',
                            'elevup', 'width1', 'depth1', 'hcond2', 'thickm2', 'elevdn',
                            'width2', 'depth2']
+
         # compute width based on flow accumulation
         streams_data = self.cal_stream_width(streams_data, flo_acc)
+
         # Use the stream data from the HRU shapefile
         unique_segments = streams_data.drop_duplicates(['ISEG'], keep='first')
         unique_segments = unique_segments.sort_values(by='ISEG')
 
         n_segments = len(unique_segments)
 
-        # initialize dataframe filled with zeros
+        # initialize segments dataframe filled with zeros
         zero_data = np.zeros((n_segments, len(seg_data_labels)))
         segment_data = pd.DataFrame(zero_data, columns=seg_data_labels, dtype='float')
 
+        # fill in segments data frame
         segment_data['nseg'] = unique_segments['ISEG'].values  # Segment ID
         segment_data['icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
         segment_data['outseg'] = unique_segments['OUTSEG'].values  # Downstream Segment
@@ -315,7 +378,6 @@ class Gw_model(object):
 
             n_segments = len(segment_data['nseg'].unique())
             n_reaches = len(reach_data)
-
 
         # The Segments information can be changed with time
         dataset_5 = {}
@@ -356,7 +418,6 @@ class Gw_model(object):
         segment_data_ss, reach_data_ss = self.Steady_state_SFR_changes(segment_data.copy(), reach_data.copy(),
                                                                        average_inflows)
 
-
         reach_data = reach_data.to_records(index=False)
         segment_data = segment_data.to_records(index=False)
         segment_data = {0: segment_data}
@@ -371,7 +432,7 @@ class Gw_model(object):
                                         channel_geometry_data=channel_geometry_data,
                                         channel_flow_data=channel_flow_data,
                                         dataset_5=dataset_5, options=options)
-        #self.mf.write_input()
+        # self.mf.write_input()
 
         if True:
             segment_data_ss = self.compute_ag_diversions2(segment_data_ss)
@@ -390,64 +451,765 @@ class Gw_model(object):
                                          channel_geometry_data=channel_geometry_data,
                                          channel_flow_data=channel_flow_data,
                                          dataset_5=dataset_5, options=options)
+
+    def strtop_correction(self, segment_data, reach_data):
+
+        # read in table of lidar and dem_adj comparisons
+        sfr_lidar = self.config.get('SFR', 'sfr_lidar')
+        sfr_lidar = pd.read_csv(sfr_lidar)
+
+        # read in dis elevations
+        # TODO: check whether this should be self.mf.dis.top and all the other layers in the same fashion - ask Ayman
+        grid = self.grid_3d
+
+        # identify segments and reaches that need to be changed
+        # note: don't raise the elevation of any segments
+        mask = (sfr_lidar['Stage_Elev'] < sfr_lidar['Mean_DEM_ADJ'])
+        sfr_lidar = sfr_lidar[mask]
+        k_i_j = reach_data[['k', 'i', 'j']]
+        k_i_j = k_i_j.astype(int)
+        k_i_j = k_i_j.values
+
+        # extract elevations of reaches that need to be changed and add to reach_data data frame
+        for lay in range(grid.shape[0]):
+            cell_sfr_botm = grid[lay, k_i_j[:, 1], k_i_j[:, 2]]
+            reach_data['elev_{}'.format(lay)] = cell_sfr_botm
+
+        # make changes to strtop
+        for irec, rec in sfr_lidar.iterrows():
+
+            # identify reaches to be changed
+            iseg_mask = reach_data['iseg'] == rec['ISEG']
+
+            # for each reach in which lidar < mean_dem_adj, set strtop = strtop - abs(lidar - mean_dem_adj) - 1
+            # note: subtracting 1 m to account for water depth
+            reach_data.loc[iseg_mask, 'strtop'] = reach_data.loc[iseg_mask, 'strtop'] - abs(rec['diff']) - 1.0
+
+        # compare strtop to dis elevation and change layer if necessary
+        for lay in range(self.mf.nlay):
+            top = 'elev_{}'.format(lay)
+            bot = 'elev_{}'.format(lay + 1)
+            mask_elev = (reach_data['strtop'] <= reach_data[top]) & (reach_data['strtop'] > reach_data[bot])
+            reach_data.loc[mask_elev, 'k'] = lay
+
+        # delete added columns
+        for lay in range(grid.shape[0]):
+            del(reach_data['elev_{}'.format(lay)])
+
+        # check to make sure that we still have continuously decreasing strtop values as we
+        # move downstream after these changes
+        # problem_reaches = pd.DataFrame(
+        #     columns=['iseg', 'ireach', 'outseg', 'strtop_iseg', 'strtop_outseg', 'strtop_diff', 'iseg_strtop_lowered'])
+        # problem_reaches_idx = 0
+        # for i in range(len(segment_data)):
+        #
+        #     # for each iseg, store iupseg and outseg
+        #     this_iseg = segment_data.loc[i, 'nseg']
+        #     this_outseg = segment_data.loc[i, 'outseg']
+        #
+        #     # for each iseg, grab the reach data for the iseg
+        #     df_iseg = reach_data.loc[reach_data['iseg'] == this_iseg].reset_index(drop=True)
+        #
+        #     # for each iseg, grab the reach data for its outseg and store the strtop of the most upstream reach
+        #     if this_outseg > 0:
+        #         df_outseg = reach_data.loc[reach_data['iseg'] == this_outseg].reset_index(drop=True)
+        #         outseg_upstream_reach = df_outseg[df_outseg['ireach'] == min(df_outseg['ireach'])].reset_index(
+        #             drop=True)
+        #         outseg_upstream_reach = outseg_upstream_reach['strtop'][0]
+        #     elif this_outseg < 0:
+        #         outseg_upstream_reach = -9999
+        #
+        #     # check whether this is a segment we've altered
+        #     if this_iseg in sfr_lidar['ISEG']:
+        #         iseg_strtop_lowered_val = True
+        #     else:
+        #         iseg_strtop_lowered_val = False
+        #
+        #     # compare reach strtop values and store the iseg and ireach for any reaches that don't meet the criteria
+        #     for j in range(len(df_iseg)):
+        #
+        #         # compare with downstream reach
+        #         # TODO: max won't work when a segment only has one value in it, so need to come up with a different condition?
+        #         if len(df_iseg) == 1 & int(this_outseg) > 0:
+        #             if df_iseg.loc[j, 'strtop'] < outseg_upstream_reach:
+        #                 strtop_iseg = df_iseg.loc[j, 'strtop']
+        #                 strtop_outseg = outseg_upstream_reach
+        #                 strtop_diff = strtop_iseg - strtop_outseg
+        #                 problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], this_outseg,
+        #                                                             strtop_iseg, strtop_outseg, strtop_diff,
+        #                                                             iseg_strtop_lowered_val]
+        #                 problem_reaches_idx = problem_reaches_idx + 1
+        #         elif j == int(max(df_iseg['ireach']) - 1) & int(this_outseg) > 0:
+        #             if df_iseg.loc[j, 'strtop'] < outseg_upstream_reach:
+        #                 strtop_iseg = df_iseg.loc[j, 'strtop']
+        #                 strtop_outseg = outseg_upstream_reach
+        #                 strtop_diff = strtop_iseg - strtop_outseg
+        #                 problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[j, 'ireach'], this_outseg,
+        #                                                             strtop_iseg, strtop_outseg, strtop_diff,
+        #                                                             iseg_strtop_lowered_val]
+        #                 problem_reaches_idx = problem_reaches_idx + 1
+        #         elif j < int(max(df_iseg['ireach']) - 1):
+        #             if df_iseg.loc[j, 'strtop'] < df_iseg.loc[j + 1, 'strtop']:
+        #                 strtop_iseg = df_iseg.loc[j, 'strtop']
+        #                 strtop_outseg = df_iseg.loc[j + 1, 'strtop']
+        #                 strtop_diff = strtop_iseg - strtop_outseg
+        #                 problem_reaches.loc[problem_reaches_idx] = [this_iseg, df_iseg.loc[i, 'ireach'], this_outseg,
+        #                                                             strtop_iseg, strtop_outseg, strtop_diff,
+        #                                                             iseg_strtop_lowered_val]
+        #                 problem_reaches_idx = problem_reaches_idx + 1
+        #
+        # # export csv of problem_reaches
+        # model_ws_tr = self.config.get('General_info', 'work_space')
+        # file_name = os.path.join(model_ws_tr, 'other_files', 'test', 'problem_reaches.csv')
+        # problem_reaches.to_csv(file_name)
+
+        return (reach_data)
+
+    def add_rubber_dam_sfr(self, segment_data, reach_data, tabfiles_dict, average_inflows):
+
+        # ---- Grab variables from config file --------------------------------------------
+
+        seg_id = self.config.get('RUBBER_DAM', 'seg_id_under_rubber_dam')
+        seg_id = seg_id.split(',')
+        seg_id = [int(ss) for ss in seg_id]
+
+        new_outseg = self.config.get('RUBBER_DAM', 'new_outseg_under_rubber_dam')
+        new_outseg = new_outseg.split(',')
+        new_outseg = [int(ss) for ss in new_outseg]
+
+        new_iupseg = self.config.get('RUBBER_DAM', 'new_iupseg_under_rubber_dam')
+        new_iupseg = new_iupseg.split(',')
+        new_iupseg = [int(ss) for ss in new_iupseg]
+
+        rubber_dam_lake_id = self.config.get('RUBBER_DAM', 'rubber_dam_lake_id')
+        rubber_dam_lake_id = int(rubber_dam_lake_id)
+
+        rubber_dam_lake = self.config.get('RUBBER_DAM', 'rubber_dam_lake')
+        rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
+
+        # ---- Set strtop equal to elevation of top of layer 1 in rubber dam lake grid cells --------------------------------------------
+
+        # get top of layer 1 elevations
+        grid = self.mf.dis.top
+
+        # identify rubber dam lake reach row and col
+        for irec, rec in rubber_dam_lake.iterrows():
+
+            if rec['ISEG'] > 0:
+
+                # identify rubber dam reach within reach_data
+                reach_mask = (reach_data['iseg'] == rec['ISEG']) & (reach_data['ireach'] == rec['IREACH'])
+
+                # get its top of layer 1 elevation
+                hru_row = rec['HRU_ROW']
+                hru_col = rec['HRU_COL']
+                elev_top_lay1 = grid[hru_row - 1, hru_col - 1]
+
+                # assign to strtop
+                reach_data.loc[reach_mask, 'strtop'] = elev_top_lay1
+
+
+
+        # ---- Function to change iupseg and outseg --------------------------------------------
+
+        # Define function
+        def change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg):
+
+            # loop through segments and replace values
+            for i in range(len(seg_id)):
+                # identify index of segment to be changed
+                seg_idx = segment_data[segment_data['nseg'] == seg_id[i]].index
+
+                # change iupseg
+                segment_data.loc[seg_idx, 'iupseg'] = new_iupseg[i]
+
+                # change outseg
+                segment_data.loc[seg_idx, 'outseg'] = new_outseg[i]
+
+            return segment_data
+
+        # Run function
+        segment_data = change_iupseg_outseg(segment_data, seg_id, new_outseg, new_iupseg)
+
+        # ---- Function to set streambed conductivities to 0 for all reaches affected by lake 12 -------------------
+
+        # Define function
+        def change_streambed_K(reach_data, rubber_dam_lake):
+
+            # get segments and reaches to be changed
+            seg_id = rubber_dam_lake["ISEG"]
+            reach_id = rubber_dam_lake["IREACH"]
+
+            # loop through segments and replace all values in their reaches
+            for i in range(len(seg_id)):
+
+                # if it's a stream segment
+                if seg_id[i] > 0:
+                    # identify index of reach to be changed
+                    reach_idx = reach_data[
+                        (reach_data['iseg'] == seg_id[i]) & (reach_data['ireach'] == reach_id[i])].index
+
+                    # change streambed conductivity for this reach
+                    reach_data.loc[reach_idx, 'strhc1'] = 0
+
+            return reach_data
+
+        # Run function
+        reach_data = change_streambed_K(reach_data, rubber_dam_lake)
+
+        # ---- Function to add two ouflow segments for the rubber dam --------------------------------------------
+
+        # Define function
+        def add_rubber_dam_gate_spillway(segment_data, reach_data, rubber_dam_lake_id):
+
+            # set gate_iseg and spill_iseg
+            n_seg = len(segment_data)
+            gate_iseg = n_seg + 1
+            spill_iseg = gate_iseg + 1
+
+            # get segment and reach data for rubber dam gate and spillway segment outseg segment
+            gate_outseg = self.config.get('RUBBER_DAM', 'rubber_dam_outseg_gate_spill')
+            gate_outseg_segdata = segment_data[segment_data['nseg'] == float(gate_outseg)]
+            gate_outseg_reachdata = reach_data[(reach_data['iseg'] == float(gate_outseg)) & (reach_data['ireach'] == 1)]
+
+            # set dam inflated and deflated elevations in meters
+            dam_inflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
+            dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+
+            # calculate gate strtop and make sure it is higher than first reach of downstream segment
+            gate_slope = gate_outseg_reachdata['slope'].values[0]
+            #gate_rchlen = gate_outseg_reachdata['rchlen'].values[0]
+            gate_rchlen = 400
+            lake_bottom_buffer = 2
+            gate_strtop = (dam_deflated + lake_bottom_buffer) - gate_slope * (0.5 * gate_rchlen)
+            if gate_strtop < gate_outseg_reachdata['strtop'].values[0]:
+                gate_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
+
+            # calculate spillway strtop and make sure it is higher than first reach of downstream segment
+            #spillway_slope = 0.1
+            spillway_slope = gate_outseg_reachdata['slope'].values[0]
+            spillway_rchlen = 400
+            spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))
+            if spillway_strtop < gate_outseg_reachdata['strtop'].values[0]:
+                spillway_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
+
+            # fill in segment data for rubber dam gate and spillway
+            gate_seg = {
+                'nseg': gate_iseg,
+                'icalc': 1,
+                'outseg': gate_outseg,
+                'iupseg': -1 * rubber_dam_lake_id,
+                'iprior': 0,
+                'nstrpts': 0,
+                'flow': 0,
+                'runoff': 0,
+                'etsw': 0,
+                'pptsw': 0,
+                'roughch': 0.035,
+                'roughbk': 0,
+                'cdpth': 0,
+                'fdpth': 0,
+                'awdth': 0,
+                'bwdth': 0,
+                'hcond1': 0,
+                'thickm1': 0,
+                'elevup': 0,
+                'width1': gate_outseg_segdata['width1'].values[0],
+                'depth1': 0,
+                'hcond2': 0,
+                'thickm2': 0,
+                'elevdn': 0,
+                'width2': gate_outseg_segdata['width2'].values[0],
+                'depth2': 0
+            }
+
+            spill_seg = {
+                'nseg': spill_iseg,
+                'icalc': 1,
+                'outseg': self.config.get('RUBBER_DAM', 'rubber_dam_outseg_gate_spill'),
+                'iupseg': -1 * rubber_dam_lake_id,
+                'iprior': 0,
+                'nstrpts': 0,
+                'flow': 0,
+                'runoff': 0,
+                'etsw': 0,
+                'pptsw': 0,
+                'roughch': 0.035,
+                'roughbk': 0,
+                'cdpth': 0,
+                'fdpth': 0,
+                'awdth': 0,
+                'bwdth': 0,
+                'hcond1': 0,
+                'thickm1': 0,
+                'elevup': 0,
+                'width1': 50,
+                'depth1': 0,
+                'hcond2': 0,
+                'thickm2': 0,
+                'elevdn': 0,
+                'width2': 50,
+                'depth2': 0
+            }
+            segment_data = segment_data.append(gate_seg, ignore_index=True)
+            segment_data = segment_data.append(spill_seg, ignore_index=True)
+
+            # fill in reach data for rubber dam gate and spillway
+            gate_reach = {'node': np.nan,
+                          'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
+                          'i': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_row_gate')) - 1,
+                          # subtracted 1 to be zero-based
+                          'j': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_col_gate')) - 1,
+                          # subtracted 1 to be zero-based
+                          'iseg': gate_iseg,
+                          'ireach': 1,
+                          'rchlen': gate_rchlen,
+                          'strtop': gate_strtop,
+                          'slope': gate_slope,
+                          'strthick': 0.5,
+                          'strhc1': 0,
+                          'thts': 0.310,
+                          'thti': 0.131,
+                          'eps': 3.5,
+                          'uhc': 0.1,
+                          'reachID': np.nan,
+                          'outreach': np.nan}
+            spill_reach = {'node': np.nan,
+                           'k': 1,
+                           'i': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_row_spill')) - 1,
+                           # subtracted 1 to be zero-based,
+                           'j': int(self.config.get('RUBBER_DAM', 'rubber_dam_hru_col_spill')) - 1,
+                           # subtracted 1 to be zero-based,
+                           'iseg': spill_iseg,
+                           'ireach': 1,
+                           'rchlen': spillway_rchlen,
+                           'strtop': spillway_strtop,
+                           'slope': spillway_slope,
+                           'strthick': 0.5,
+                           'strhc1': 0,
+                           'thts': 0.310,
+                           'thti': 0.131,
+                           'eps': 3.5,
+                           'uhc': 0.1,
+                           'reachID': np.nan,
+                           'outreach': np.nan}
+            reach_data = reach_data.append(gate_reach, ignore_index=True)
+            reach_data = reach_data.append(spill_reach, ignore_index=True)
+
+            # return
+            return segment_data, reach_data, gate_iseg, spill_iseg
+
+        # Run function
+        segment_data, reach_data, gate_iseg, spill_iseg = add_rubber_dam_gate_spillway(segment_data, reach_data,
+                                                                                       rubber_dam_lake_id)
+
+        # ---- Function to create gate and spillway tabfiles --------------------------------------------
+
+        def create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict, average_inflows):
+
+            # TODO: make this function cleaner by looping through separate spillway and gate data frames
+            #  to export tabfiles and average inflows
+
+            # TODO: export a plot of the rubber dam inflation/deflation dates superimposed
+            #  on top of the full water surface elevation dataset
+
+            # # read in dam water surface elevation data
+            # file_name = self.config.get('RUBBER_DAM', 'rubber_dam_water_surface_elevation_file')
+            # df = pd.read_excel(file_name, sheet_name='Data')
+            # df.plot(x="date", y="wse_ft")
+
+            # # set water surface elevations in winter months to 27 ft
+            # df['month'] = df['date'].dt.month
+            # month_idx = df[ (df['month'] == 1) | (df['month'] == 2) | (df['month'] == 3) |
+            #     (df['month'] == 4) ].index
+            # df.loc[month_idx, 'wse_ft'] = 27
+            # df.plot(x="date", y="wse_ft")
+
+            # # set water surface elevations over 40 ft to 27 ft
+            # idx = df[ df['wse_ft'] > 40 ].index
+            # df.loc[idx, 'wse_ft'] = 27
+            # df.plot(x="date", y="wse_ft")
+
+            # determine dates of dam inflation/deflation programmatically from data
+            # Method 1: identify first and last 38 ft water level for each year or water year - but this will
+            # catch the times when the dam is down too
+            # Method 2: smooth the time series and then take the derivative - but this will not be precise
+            # NOTE: not sure of the best way to do this to programmatically get precise dates of dam inflation/deflation
+            # so just extracted them manually for now since it's quick and this dataset is unlikely to change for now -
+            # could do it programmatically in the future if it turns out that precision doesn't matter that much
+
+            # read in dates of dam inflation/deflation
+            # NOTE: determined dates of dam inflation/deflation manually from data
+            # NOTE: dam is probably inflated beyond 12/31/2020, but that is the end of the currently available data
+            # (and possibly the end of the model calibration period?)
+            inflated_dates_readin = self.config.get('RUBBER_DAM', 'inflated_dates')
+            inflated_dates_readin = inflated_dates_readin.split(',')
+            inflated_dates = [datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in inflated_dates_readin]
+            deflated_dates_readin = self.config.get('RUBBER_DAM', 'deflated_dates')
+            deflated_dates_readin = deflated_dates_readin.split(',')
+            deflated_dates = [datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in deflated_dates_readin]
+
+            # use pattern from data to extrapolate dam inflation/deflation dates to rest of model calibration period
+            # NOTE: inflation date varies from March-July and deflation date varies from December-February, for
+            # now just assuming that average inflation date is in mid-June and average deflation date is in mid-December
+            # in order to extrapolate to years with no data
+            average_inflated_date = self.config.get('RUBBER_DAM', 'average_inflated_date')
+            average_deflated_date = self.config.get('RUBBER_DAM', 'average_deflated_date')
+            min_extrapolated_year = 1990
+            max_extrapolated_year = 2007
+            years_extrapolated = list(map(str, range(min_extrapolated_year, max_extrapolated_year + 1)))
+            inflated_dates_extrapolated = [year + average_inflated_date for year in years_extrapolated]
+            deflated_dates_extrapolated = [year + average_deflated_date for year in years_extrapolated]
+            inflated_dates_extrapolated = [datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in
+                                           inflated_dates_extrapolated]
+            deflated_dates_extrapolated = [datetime.datetime.strptime(date, '%Y-%m-%d').date() for date in
+                                           deflated_dates_extrapolated]
+
+            # combine observed and extrapolated dates
+            inflated_dates = pd.to_datetime(inflated_dates_extrapolated + inflated_dates)
+            deflated_dates = pd.to_datetime(deflated_dates_extrapolated + deflated_dates)
+
+            # set values of gate and spillway tabfiles based on whether dam is inflated or deflated
+            # dam inflated --> spillway is 0 and gate is 1e-5
+            # dam deflated --> spillway is 1e-5 and gate is 0
+            # create time series from 1990-01-01 to 2020-12-31
+            start_date = datetime.datetime.strptime("1990-01-01", "%Y-%m-%d")
+            end_date = datetime.datetime.strptime("2020-12-31", "%Y-%m-%d")
+            calib_dates = [start_date + datetime.timedelta(days=x) for x in range(0, (end_date - start_date).days + 1)]
+            df = {'date': pd.to_datetime(calib_dates),
+                  'sim_time': [x + 1 for x in list(range(len(calib_dates)))],
+                  'dam_elev': 27,  # set to the value it should have if dam is deflated
+                  'spillway_flow': 1e-5,  # set to the value it should have if dam is deflated
+                  'gate_flow': 0}  # set to the value it should have if dam is deflated
+            df = pd.DataFrame(df, columns=['date', 'sim_time', 'dam_elev', 'spillway_flow', 'gate_flow'])
+
+            # loop through each value of inflated_dates and deflated_dates
+            for i in range(len(inflated_dates)):
+                # identify indices of rows with inflated dam
+                inflated_idx = df[(df['date'] >= inflated_dates[i]) & (df['date'] <= deflated_dates[i])].index
+
+                # replace values for spillway and gate tabfiles along with dam elevation
+                df.loc[inflated_idx, 'dam_elev'] = 38
+                df.loc[inflated_idx, 'spillway_flow'] = 0
+                df.loc[inflated_idx, 'gate_flow'] = 1e-5
+
+            # prepare to export tabfiles
+            # tabfiles_dict = {}
+            # average_inflows = {}
+            model_ws_tr = self.config.get('General_info', 'work_space')
+            model_ws_tr = os.path.join(model_ws_tr, 'tr')
+            model_ws_ss = self.config.get('General_info', 'work_space')
+            model_ws_ss = os.path.join(model_ws_ss, 'ss')
+
+            # export spillway tabfile
+            rubber_dam_spillway_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile')
+            fn = os.path.join(model_ws_tr, rubber_dam_spillway_tabfile)
+            fid = open(fn, 'w')
+            for i in range(len(df)):
+                fid.write(str(df.loc[i, 'sim_time']))
+                fid.write(" ")
+                fid.write(str(df.loc[i, 'spillway_flow']))
+                fid.write(" #")
+                fid.write(str(df.loc[i, 'date']))
+                fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for spillway
+            numval = len(df)
+            iunit = self.mf.next_ext_unit()
+            self.mf.external_units.append(iunit)
+            self.mf.external_fnames.append(os.path.basename(fn))
+            self.mf.external_binflag.append(False)
+            tabfiles_dict[spill_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # export gate tabfile
+            rubber_dam_gate_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_gate_tabfile')
+            fn = os.path.join(model_ws_tr, rubber_dam_gate_tabfile)
+            fid = open(fn, 'w')
+            for i in range(len(df)):
+                fid.write(str(df.loc[i, 'sim_time']))
+                fid.write(" ")
+                fid.write(str(df.loc[i, 'gate_flow']))
+                fid.write(" #")
+                fid.write(str(df.loc[i, 'date']))
+                fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for gate
+            numval = len(df)
+            iunit = self.mf.next_ext_unit()
+            self.mf.external_units.append(iunit)
+            self.mf.external_fnames.append(os.path.basename(fn))
+            self.mf.external_binflag.append(False)
+            tabfiles_dict[gate_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # create dictionary for steady state tabfiles
+            tabfiles_dict_ss = {}
+
+            # export spillway tabfile - steady state
+            rubber_dam_spillway_tabfile_ss = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile_ss')
+            rubber_dam_spillway_tabfile_ss_flow = self.config.get('RUBBER_DAM', 'rubber_dam_spillway_tabfile_ss_flow')
+            fn = os.path.join(model_ws_ss, rubber_dam_spillway_tabfile_ss)
+            fid = open(fn, 'w')
+            fid.write(str(0))
+            fid.write(" ")
+            fid.write(rubber_dam_spillway_tabfile_ss_flow)
+            fid.write("\n")
+            fid.write(str(1))
+            fid.write(" ")
+            fid.write(rubber_dam_spillway_tabfile_ss_flow)
+            fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for spillway - steady state
+            numval = 2
+            iunit = self.mfs.next_ext_unit()
+            #iunit = 2001
+            self.mfs.external_units.append(iunit)
+            self.mfs.external_fnames.append(os.path.basename(fn))
+            self.mfs.external_binflag.append(False)
+            tabfiles_dict_ss[spill_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # export gate tabfile - steady state
+            rubber_dam_gate_tabfile_ss = self.config.get('RUBBER_DAM', 'rubber_dam_gate_tabfile_ss')
+            rubber_dam_gate_tabfile_ss_flow = self.config.get('RUBBER_DAM', 'rubber_dam_gate_tabfile_ss_flow')
+            fn = os.path.join(model_ws_ss, rubber_dam_gate_tabfile_ss)
+            fid = open(fn, 'w')
+            fid.write(str(0))
+            fid.write(" ")
+            fid.write(rubber_dam_gate_tabfile_ss_flow)
+            fid.write("\n")
+            fid.write(str(1))
+            fid.write(" ")
+            fid.write(rubber_dam_gate_tabfile_ss_flow)
+            fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for gate - steady state
+            numval = 2
+            iunit = self.mfs.next_ext_unit()
+            #iunit = 2002
+            self.mfs.external_units.append(iunit)
+            self.mfs.external_fnames.append(os.path.basename(fn))
+            self.mfs.external_binflag.append(False)
+            tabfiles_dict_ss[gate_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # set outflows for steady state model
+            average_inflows[spill_iseg] = 1e-5
+            average_inflows[gate_iseg] = 0
+
+            return tabfiles_dict, tabfiles_dict_ss, average_inflows
+
+        # Run function
+        tabfiles_dict, tabfiles_dict_ss, average_inflows = create_gate_spillway_tabfiles(spill_iseg, gate_iseg, tabfiles_dict,
+                                                                       average_inflows)
+
+        # ---- Function to add an outflow segment to the nearby ponds from the rubber dam ------------------------------
+
+        def add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict, tabfiles_dict_ss):
+
+            # TODO: check whether the rubber dam pond outflow segment should be made similar to the gate or
+            #  spillway segments, for now making it different since it has no outseg from which to grab data
+
+            # set pond outflow iseg
+            n_seg = len(segment_data)
+            pond_outflow_iseg = n_seg + 1
+
+            # read in
+            # pond_outflow_iseg = int(self.config.get('RUBBER_DAM', 'pond_outflow_iseg'))
+            pond_outflow_width = float(self.config.get('RUBBER_DAM', 'pond_outflow_width'))
+
+            # calculate pond outflow strtop and slope
+            dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+            lake_bottom_buffer = 2
+            cell_size = 300
+            pond_outflow_strtop = (dam_deflated + lake_bottom_buffer) - 1
+            pond_outflow_slope = ((dam_deflated + lake_bottom_buffer) - (pond_outflow_strtop)) / (cell_size / 2)
+
+            # fill in segment data for pond outflow
+            pond_outflow_seg = {
+                'nseg': pond_outflow_iseg,
+                'icalc': 1,
+                'outseg': 0,
+                'iupseg': -1 * rubber_dam_lake_id,
+                'iprior': 0,
+                'nstrpts': 0,
+                'flow': 0,
+                'runoff': 0,
+                'etsw': 0,
+                'pptsw': 0,
+                'roughch': 0.035,
+                'roughbk': 0,
+                'cdpth': 0,
+                'fdpth': 0,
+                'awdth': 0,
+                'bwdth': 0,
+                'hcond1': 0,
+                'thickm1': 0,
+                'elevup': 0,
+                'width1': pond_outflow_width,
+                'depth1': 0,
+                'hcond2': 0,
+                'thickm2': 0,
+                'elevdn': 0,
+                'width2': pond_outflow_width,
+                'depth2': 0
+            }
+            segment_data = segment_data.append(pond_outflow_seg, ignore_index=True)
+
+            # fill in reach data for pond outflow
+            pond_outflow_reach = {'node': np.nan,
+                                  'k': 1,  # assigned by comparing strtop to elevations of each layer from dis file
+                                  'i': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_row')) - 1,
+                                  # subtracted 1 to be zero-based
+                                  'j': int(self.config.get('RUBBER_DAM', 'pond_outflow_hru_col')) - 1,
+                                  # subtracted 1 to be zero-based
+                                  'iseg': pond_outflow_iseg,
+                                  'ireach': 1,
+                                  'rchlen': cell_size,
+                                  'strtop': pond_outflow_strtop,
+                                  'slope': pond_outflow_slope,
+                                  'strthick': 0.5,
+                                  'strhc1': 0,
+                                  'thts': 0.310,
+                                  'thti': 0.131,
+                                  'eps': 3.5,
+                                  'uhc': 0.1,
+                                  'reachID': np.nan,
+                                  'outreach': np.nan}
+            reach_data = reach_data.append(pond_outflow_reach, ignore_index=True)
+
+            # prepare to export tabfiles
+            model_ws_tr = self.config.get('General_info', 'work_space')
+            model_ws_tr = os.path.join(model_ws_tr, 'tr')
+            model_ws_ss = self.config.get('General_info', 'work_space')
+            model_ws_ss = os.path.join(model_ws_ss, 'ss')
+
+            # prepare data frame of transient pond outflow values
+            start_date = datetime.datetime.strptime("1990-01-01", "%Y-%m-%d")
+            end_date = datetime.datetime.strptime("2020-12-31", "%Y-%m-%d")
+            calib_dates = [start_date + datetime.timedelta(days=x) for x in range(0, (end_date - start_date).days + 1)]
+            df = {'date': pd.to_datetime(calib_dates),
+                  'sim_time': [x + 1 for x in list(range(len(calib_dates)))],
+                  'pond_flow': float(self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile_flow')) }
+            df = pd.DataFrame(df, columns=['date', 'sim_time', 'pond_flow'])
+
+            # make transient tabfile
+            rubber_dam_pond_tabfile = self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile')
+            fn = os.path.join(model_ws_tr, rubber_dam_pond_tabfile)
+            fid = open(fn, 'w')
+            for i in range(len(df)):
+                fid.write(str(df.loc[i, 'sim_time']))
+                fid.write(" ")
+                fid.write(str(df.loc[i, 'pond_flow']))
+                fid.write(" #")
+                fid.write(str(df.loc[i, 'date']))
+                fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for pond outflow - transient
+            numval = len(df)
+            iunit = self.mf.next_ext_unit()
+            self.mf.external_units.append(iunit)
+            self.mf.external_fnames.append(os.path.basename(fn))
+            self.mf.external_binflag.append(False)
+            tabfiles_dict[pond_outflow_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # make steady state tabfile
+            rubber_dam_pond_tabfile_ss = self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile_ss')
+            rubber_dam_pond_tabfile_ss_flow = self.config.get('RUBBER_DAM', 'rubber_dam_pond_tabfile_ss_flow')
+            fn = os.path.join(model_ws_ss, rubber_dam_pond_tabfile_ss)
+            fid = open(fn, 'w')
+            fid.write(str(0))
+            fid.write(" ")
+            fid.write(rubber_dam_pond_tabfile_ss_flow)
+            fid.write("\n")
+            fid.write(str(1))
+            fid.write(" ")
+            fid.write(rubber_dam_pond_tabfile_ss_flow)
+            fid.write("\n")
+            fid.close()
+
+            # create tabfiles dictionary entry for pond outflow - steady state
+            numval = 2
+            iunit = self.mfs.next_ext_unit()
+            self.mfs.external_units.append(iunit)
+            self.mfs.external_fnames.append(os.path.basename(fn))
+            self.mfs.external_binflag.append(False)
+            tabfiles_dict_ss[pond_outflow_iseg] = {'numval': numval, 'inuit': iunit}
+
+            # return
+            return segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss
+
+        # Run function
+        segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss = add_rubber_dam_outflow_to_ponds(segment_data, reach_data, rubber_dam_lake_id, tabfiles_dict, tabfiles_dict_ss)
+
+        return segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss, average_inflows
+
     def sfr3_package(self):
-        """
-        Change cross section ..
-        :return:
-        """
+
+        # Import
         from flopy.utils.optionblock import OptionBlock
 
+        # Create options block
         options = OptionBlock('', flopy.modflow.ModflowSfr2, block=True)
-        options.reachinput = True # False
+        options.reachinput = True  # False
         options.tabfiles = True
 
-
-        # read flow accumulation file
+        # Read flow accumulation file
         flo_acc = self.config.get('SFR', 'str_flow_acc')
         sfr_with_floacc = geopandas.read_file(flo_acc)  #
         sfr_with_floacc = sfr_with_floacc.sort_values(by='HRU_ID')
 
+        # Extract streams data from hru shapefile and add flow accumulation data to it
         hru_shp = self.hru_param
         mask = hru_shp['ISEG'] > 0
         streams_data = hru_shp[mask]  # a compact form is streams_data = hru_shp[hru_shp['ISEG'] > 0]
         streams_data = streams_data.sort_values(by='HRU_ID')
         streams_data['flow_accum'] = sfr_with_floacc['grid_code'].values
 
-        ## Reach Data
-        # The reach data will be saved in a Pandas dataframe, which will make it simpler to handle the tabular data.
-        # Table fields name
+        # ---- Reach data -------------------------------------------------------------------------
+
+        # NOTE: The reach data will be saved in a Pandas dataframe, which will make it simpler to handle the tabular data.
+
+        # Reach data table field names
         reach_data_labels = ['node', 'k', 'i', 'j', 'iseg', 'ireach', 'rchlen', 'strtop', 'slope',
                              'strthick', 'strhc1', 'thts', 'thti', 'eps', 'uhc', 'reachID', 'outreach']
+
         # Initialize an empty pandas dataframe
         reach_data = pd.DataFrame(columns=reach_data_labels, dtype='float')
 
         # Reach location
-        reach_data['k'] = 0   # layer number-- Notice that layer numbers are zero-based
+        reach_data['k'] = 0  # layer number-- Notice that layer numbers are zero-based
         reach_data['i'] = streams_data['HRU_ROW'].values - 1  # row number
         reach_data['j'] = streams_data['HRU_COL'].values - 1  # column number
 
-        for index, rech in reach_data.iterrows(): # get layer
+        # Assign layers IDs after making sure stream cells are in active zone
+        for index, rech in reach_data.iterrows():  # get layer
             thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]
-            if sum(thk)==0:
+            ibsfr = self.mf.bas6.ibound.array[:, int(rech['i']), int(rech['j'])]
+            if sum(thk) == 0:
                 raise ValueError("Stream in inactive zone")
             for kk, val in enumerate(thk):
-                if val > 0:
-                    #reach_data.set_value(index, 'k', kk)
-                    reach_data.at[index,'k'] = kk
+                if val > 0 and ibsfr[kk]>0:
+                    # reach_data.set_value(index, 'k', kk)
+                    reach_data.at[index, 'k'] = kk
                     break
             pass
-        # IDs
+
+        # Reach IDs
         reach_data['iseg'] = streams_data['ISEG'].values  # Segment ID number
         reach_data['ireach'] = streams_data['IREACH'].values  # Reach ID number
-        #reach_data['ireach'][reach_data['ireach'] < 1] = 1
-        reach_data.loc[reach_data['ireach'] < 1, 'ireach' ] = 1 # the newly added segments (div and spillways) has
+        # reach_data['ireach'][reach_data['ireach'] < 1] = 1
+        reach_data.loc[reach_data['ireach'] < 1, 'ireach'] = 1  # the newly added segments (div and spillways) has
         # ireach =0
+
         # Stream topography
         reach_data['rchlen'] = streams_data['RCHLEN'].values  # reach length
-        reach_data.loc[reach_data['rchlen']==0, 'rchlen'] = 300.0
+        reach_data.loc[reach_data['rchlen'] == 0, 'rchlen'] = 300.0
         reach_data['strtop'] = streams_data[
                                    'DEM_ADJ'].values - 1.0  # Streambed elevation is assumed 1 meter below ground surface.
-        reach_data['slope'] = streams_data['DEM_SLP_P'].values #/ 100.0  # Slope #todo: divid by 100 is not correct!!
+        reach_data['slope'] = streams_data['DEM_SLP_P'].values  # / 100.0  # Slope #todo: divid by 100 is not correct!!
 
         # Streambed information
         reach_data['strthick'] = 0.5  # streambed thickness - meter
@@ -460,25 +1222,33 @@ class Gw_model(object):
         reach_data['uhc'] = 0.1  # conductivity of the unsaturated zone
         n_reaches = len(reach_data)  # number of reaches
 
+        # calculate stream slope
         reach_data = self.calculate_stream_slope(reach_data)
 
+        # ---- Segment data -------------------------------------------------------------------------
+
+        # Segment data table field names
         seg_data_labels = ['nseg', 'icalc', 'outseg', 'iupseg', 'iprior',
                            'nstrpts', 'flow', 'runoff', 'etsw', 'pptsw', 'roughch', 'roughbk',
                            'cdpth', 'fdpth', 'awdth', 'bwdth', 'hcond1', 'thickm1',
                            'elevup', 'width1', 'depth1', 'hcond2', 'thickm2', 'elevdn',
                            'width2', 'depth2']
-        # compute width based on flow accumulation
+
+        # Compute width based on flow accumulation
         streams_data = self.cal_stream_width(streams_data, flo_acc)
-        # Use the stream data from the HRU shapefile
+
+        # Use the segment data from the HRU shapefile
         unique_segments = streams_data.drop_duplicates(['ISEG'], keep='first')
         unique_segments = unique_segments.sort_values(by='ISEG')
 
+        # Extract number of segments
         n_segments = len(unique_segments)
 
-        # initialize dataframe filled with zeros
+        # Initialize dataframe filled with zeros
         zero_data = np.zeros((n_segments, len(seg_data_labels)))
         segment_data = pd.DataFrame(zero_data, columns=seg_data_labels, dtype='float')
 
+        # Fill segments data frame
         segment_data['nseg'] = unique_segments['ISEG'].values  # Segment ID
         segment_data['icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
         segment_data['outseg'] = unique_segments['OUTSEG'].values  # Downstream Segment
@@ -487,7 +1257,9 @@ class Gw_model(object):
         segment_data['width1'] = unique_segments['Width'].values  # Upstream width
         segment_data['width2'] = unique_segments['Width'].values  # Downstream width
         segment_data['roughch'] = float(self.config.get('SFR', 'mannings_roughness'))
-        ## This the options in the first line in the SFR package
+
+        # ---- Assign options in the first line of SFR package ------------------------------------------------------
+
         nsfrpar = 0  # number of parameters
         nparseg = 0
         isfropt = 3  # uzf is simulated, k is read from uzf
@@ -502,6 +1274,8 @@ class Gw_model(object):
         numtim = 2  # used when irtflg > 0, number of sub time steps to route streamflow
         weight = 0.75  # used when irtflg > 0,A real number equal to the time weighting factor used to calculate the change in channel storage.
 
+        # ---- Add ag diversions ---------------------------------------------------------------------
+
         if True:
             # todo: from now on we must slice hru_df and assign to reach_data
             reach_data = reach_data.reset_index()
@@ -515,8 +1289,10 @@ class Gw_model(object):
             n_segments = len(segment_data['nseg'].unique())
             n_reaches = len(reach_data)
 
+        # ---- Create sfr dataset 5 ------------------------------------------------------------------
 
-        # The Segments information can be changed with time
+        # NOTE: the Segments information can be changed with time (i.e. by stress period)
+
         dataset_5 = {}
         nper = self.mf.dis.nper
         for i in np.arange(nper):  # we have only two stress period
@@ -525,6 +1301,8 @@ class Gw_model(object):
             else:
                 tss_par = -1  # the negative sign indicates that segment data from previous time step will be used
             dataset_5[i] = [tss_par, 0, 0]
+
+        # ---- Create sfr datasets 6e and 6d ------------------------------------------------------------------
 
         # channel flow data
         channel_flow_data = {}  # for 6e - flow table [flow1 flow2; depth1, depth2, width1, width2]
@@ -541,26 +1319,62 @@ class Gw_model(object):
             vall = len(channel_flow_data[0][iseg][0])
             segment_data.loc[segment_data['nseg'] == iseg, 'nstrpts'] = vall
 
+        # ---- Assign lake gates and spillways ------------------------------------------------------------------
+
         segment_data, reach_data, channel_flow_data = self.gates_calc(segment_data,
                                                                       reach_data, channel_flow_data)
 
         segment_data, reach_data = self.spillway_calc(segment_data, reach_data)
 
-        # Tabfiles
+        # ---- Tabfiles ------------------------------------------------------------------
+
         tabfiles = True
         tabfiles_dict = {}
         tabfiles_dict, average_inflows = self.compute_sfr_inflow()
 
-        reach_data.slope[reach_data.slope <= 0] = 0.02
+        # ---- Streambed elevation (strtop) correction ------------------------------------------------------------------
+        reach_data = self.strtop_correction(segment_data, reach_data)
+
+        # ---- Incorporate rubber dam ------------------------------------------------------------------
+
+        # run functions to incorporate rubber dam
+        segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss, average_inflows = self.add_rubber_dam_sfr(segment_data, reach_data,
+                                                                                           tabfiles_dict, average_inflows)
+
+        # update sfr dataset 5
+        n_segments = len(segment_data['nseg'].unique())
+        n_reaches = len(reach_data)
+        dataset_5 = {}
+        nper = self.mf.dis.nper
+        for i in np.arange(nper):  # we have only two stress period
+            if i == 0:
+                tss_par = n_segments
+            else:
+                tss_par = -1  # the negative sign indicates that segment data from previous time step will be used
+            dataset_5[i] = [tss_par, 0, 0]
+
+        # ---- Slope correction ------------------------------------------------------------------
+
+        # TODO: ask Ayman - do we want this slope correction to use min_slope to match up with the slope correction
+        #  in the calculate_stream_slope() function? --> I'm assuming yes and changing it for now
+        min_slope = float(self.config.get('SFR', 'min_slope'))
+        # reach_data.slope[reach_data.slope <= 0] = 0.02
+        reach_data.slope[reach_data.slope <= 0] = min_slope
+
+        # ---- Make changes for steady state model ------------------------------------------------------------------
+
         segment_data_ss, reach_data_ss = self.Steady_state_SFR_changes(segment_data.copy(), reach_data.copy(),
                                                                        average_inflows)
 
+        # ---- Write transient and steady state sfr packages ------------------------------------------------------------------
 
+        # Prepare to write transient sfr package
         reach_data = reach_data.to_records(index=False)
         segment_data = segment_data.to_records(index=False)
         segment_data = {0: segment_data}
         # you can change segments data for each stress period? segment_data = {0: segment_data0, 1: segment_data1 }
 
+        # Write transient SFR package
         sfr = flopy.modflow.ModflowSfr2(self.mf, nstrm=n_reaches, nss=n_segments, const=const, nsfrpar=nsfrpar,
                                         nparseg=nparseg,
                                         dleak=dleak, ipakcb=ipakcb, nstrail=nstrail, isuzn=isuzn, nsfrsets=nsfrsets,
@@ -570,26 +1384,40 @@ class Gw_model(object):
                                         channel_geometry_data=channel_geometry_data,
                                         channel_flow_data=channel_flow_data,
                                         dataset_5=dataset_5, options=options)
-        #self.mf.write_input()
+        # self.mf.write_input()
 
+        # Compute ag diversions for steady state sfr package
         if True:
             segment_data_ss = self.compute_ag_diversions2(segment_data_ss)
 
+        # Prepare to write steady state sfr package
         reach_data_ss = reach_data_ss.to_records(index=False)
         segment_data_ss = segment_data_ss.to_records(index=False)
         segment_data_ss = {0: segment_data_ss}
-        options.tabfiles = False
+        #options.tabfiles = False
 
+        # # Write steady state sfr package
+        # sfrs = flopy.modflow.ModflowSfr2(self.mfs, nstrm=n_reaches, nss=n_segments, const=const, nsfrpar=nsfrpar,
+        #                                  nparseg=nparseg,
+        #                                  dleak=dleak, ipakcb=ipakcb, nstrail=nstrail, isuzn=isuzn, nsfrsets=nsfrsets,
+        #                                  istcb2=istcb2, reachinput=True, isfropt=isfropt, irtflg=irtflg,
+        #                                  reach_data=reach_data_ss, numtim=numtim, weight=weight,
+        #                                  segment_data=segment_data_ss,
+        #                                  channel_geometry_data=channel_geometry_data,
+        #                                  channel_flow_data=channel_flow_data,
+        #                                  dataset_5=dataset_5, options=options)
+        # Write steady state sfr package
         sfrs = flopy.modflow.ModflowSfr2(self.mfs, nstrm=n_reaches, nss=n_segments, const=const, nsfrpar=nsfrpar,
                                          nparseg=nparseg,
                                          dleak=dleak, ipakcb=ipakcb, nstrail=nstrail, isuzn=isuzn, nsfrsets=nsfrsets,
                                          istcb2=istcb2, reachinput=True, isfropt=isfropt, irtflg=irtflg,
                                          reach_data=reach_data_ss, numtim=numtim, weight=weight,
-                                         segment_data=segment_data_ss,
+                                         segment_data=segment_data_ss, tabfiles=tabfiles, tabfiles_dict=tabfiles_dict_ss,
                                          channel_geometry_data=channel_geometry_data,
                                          channel_flow_data=channel_flow_data,
                                          dataset_5=dataset_5, options=options)
-    def add_pods_from_state_board(self, segment_data , reach_data):
+
+    def add_pods_from_state_board(self, segment_data, reach_data):
         """
         This function adds the PODS that were sent to us from state board, so they have no diversions
         :param segment_data:
@@ -605,16 +1433,15 @@ class Gw_model(object):
         # find the closest stream to this pod
         uniq_seg = []
         for irec, rec in poddf.iterrows():
-            pod_row = rec['HRU_ROW']-1
-            pod_col = rec['HRU_COL']-1
+            pod_row = rec['HRU_ROW'] - 1
+            pod_col = rec['HRU_COL'] - 1
 
             delrow = reach_data['i'].values - pod_row
             delcol = reach_data['j'].values - pod_col
-            distt = np.power(delrow**2.0+delcol**2.0, 0.5)
+            distt = np.power(delrow ** 2.0 + delcol ** 2.0, 0.5)
             locc = np.argmin(distt)
             close_seg = reach_data['iseg'].values[locc]
             uniq_seg.append(close_seg)
-
 
         curr_seg_no = max_seg_no
         for seg in uniq_seg:
@@ -702,8 +1529,7 @@ class Gw_model(object):
 
         return reach_data, segment_data
 
-
-    def add_ag_full_diversions_segs(self, segment_data , reach_data ):
+    def add_ag_full_diversions_segs(self, segment_data, reach_data):
         """ Add new diversion segments for ag water diversion"""
 
         max_seg_no = segment_data['nseg'].max()
@@ -717,36 +1543,36 @@ class Gw_model(object):
             if np.any(segment_data['iupseg'].values == seg):
                 # if there is a diversion seg that already exist, skip
                 continue
-            curr_seg_ifo = segment_data[segment_data['nseg']==seg]
-            if (curr_seg_ifo['outseg'].values[0] == 0) and (curr_seg_ifo['iupseg'].values[0]!=0):
+            curr_seg_ifo = segment_data[segment_data['nseg'] == seg]
+            if (curr_seg_ifo['outseg'].values[0] == 0) and (curr_seg_ifo['iupseg'].values[0] != 0):
                 continue
 
             curr_seg_no = curr_seg_no + 1
-            new_row_idex = curr_seg_no-1
-            segment_data.loc[new_row_idex] = segment_data.loc[0].values # use default falues, and in next lines change
+            new_row_idex = curr_seg_no - 1
+            segment_data.loc[new_row_idex] = segment_data.loc[0].values  # use default falues, and in next lines change
             segment_data.at[new_row_idex, 'nseg'] = curr_seg_no
-            segment_data.at[new_row_idex,'icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
+            segment_data.at[new_row_idex, 'icalc'] = 1  # Use Manning's Equation for a rectangular cross-section
             segment_data.at[new_row_idex, 'outseg'] = 0
-            segment_data.at[new_row_idex,'iupseg'] = seg
-            segment_data.at[new_row_idex,'width1'] = 10.0 # Upstream width
-            segment_data.at[new_row_idex,'width2'] = 10.0  # Downstream width
+            segment_data.at[new_row_idex, 'iupseg'] = seg
+            segment_data.at[new_row_idex, 'width1'] = 10.0  # Upstream width
+            segment_data.at[new_row_idex, 'width2'] = 10.0  # Downstream width
             segment_data.at[new_row_idex, 'roughch'] = float(self.config.get('SFR', 'mannings_roughness'))
 
             # reach data
             mask_reach = reach_data['iseg'] == seg
-            curr_rech_info =  reach_data[mask_reach]
+            curr_rech_info = reach_data[mask_reach]
             dn_reach = np.max(curr_rech_info['ireach'].values)
-            ii = curr_rech_info.loc[curr_rech_info['ireach']==dn_reach, 'i'].values[0]
+            ii = curr_rech_info.loc[curr_rech_info['ireach'] == dn_reach, 'i'].values[0]
             jj = curr_rech_info.loc[curr_rech_info['ireach'] == dn_reach, 'j'].values[0]
 
-            near_cells = [(ii-1, jj),
-                          (ii+1, jj),
-                          (ii, jj-1),
-                          (ii, jj+1),
-                          (ii-1, jj+1),
-                          (ii-1, jj-1),
-                          (ii+1, jj+1),
-                          (ii+1, jj-1)]
+            near_cells = [(ii - 1, jj),
+                          (ii + 1, jj),
+                          (ii, jj - 1),
+                          (ii, jj + 1),
+                          (ii - 1, jj + 1),
+                          (ii - 1, jj - 1),
+                          (ii + 1, jj + 1),
+                          (ii + 1, jj - 1)]
             rr_cc = list(zip(reach_data['i'], reach_data['j']))
             for pp in near_cells:
                 found = 0
@@ -756,12 +1582,11 @@ class Gw_model(object):
             if found == 0:
                 raise ValueError("New stream is not found")
 
-
             irech = len(reach_data)
             reach_data.loc[irech] = reach_data.loc[0].values
             reach_data.at[irech, 'k'] = 0  # layer number-- Notice that layer numbers are zero-based
             reach_data.at[irech, 'i'] = pp[0]  # row number
-            reach_data.at[irech, 'j'] = pp[1] # column number
+            reach_data.at[irech, 'j'] = pp[1]  # column number
             try:
                 thk = self.mf.dis.thickness.array[:, int(pp[0]), int(pp[1])]
             except:
@@ -779,29 +1604,26 @@ class Gw_model(object):
             reach_data.at[irech, 'ireach'] = 1  # Reach ID number
 
             # Stream topography
-            reach_data.at[irech,'rchlen'] = 300.0 # reach length
+            reach_data.at[irech, 'rchlen'] = 300.0  # reach length
             row_mask = self.hru_param['HRU_ROW'] == pp[0] + 1
             col_mask = self.hru_param['HRU_COL'] == pp[1] + 1
             cell_info = self.hru_param[(row_mask & col_mask)]
             reach_data.at[irech, 'strtop'] = cell_info['DEM_ADJ'].values[0] - 1.0  # Streambed elevation is assumed 1
             # meter
             # below ground surface.
-            reach_data.at[irech,'slope'] = cell_info['DEM_SLP_P'].values[0] / 100.0  # Slope
+            reach_data.at[irech, 'slope'] = cell_info['DEM_SLP_P'].values[0] / 100.0  # Slope
 
             # Streambed information
-            reach_data.at[irech,'strthick'] = 0.5  # streambed thickness - meter
+            reach_data.at[irech, 'strthick'] = 0.5  # streambed thickness - meter
             reach_data.at[irech, 'strhc1'] = 0.0  # conductivity of the stream bed
 
             # Unsaturated Zone properties
-            reach_data.at[irech,'thts'] = 0.31  # saturated porosity
-            reach_data.at[irech,'thti'] = 0.131  # initial water content
-            reach_data.at[irech,'eps'] = 3.5  # Brooks-Corey exponent
-            reach_data.at[irech,'uhc'] = 0.1  # conductivity of the unsaturated zone
-
-
+            reach_data.at[irech, 'thts'] = 0.31  # saturated porosity
+            reach_data.at[irech, 'thti'] = 0.131  # initial water content
+            reach_data.at[irech, 'eps'] = 3.5  # Brooks-Corey exponent
+            reach_data.at[irech, 'uhc'] = 0.1  # conductivity of the unsaturated zone
 
         return reach_data, segment_data
-
 
     def compute_ag_diversions2(self, segment_data_ss):
         """
@@ -831,8 +1653,7 @@ class Gw_model(object):
 
             np.save('sfr_topo.npy', sfr_topo)
         else:
-            sfr_topo = np.load('sfr_topo.npy', allow_pickle = True).all()
-
+            sfr_topo = np.load('sfr_topo.npy', allow_pickle=True).all()
 
         # Now that the topology of the sfr is computed, let us
         # make sure that each gage has unique hrus
@@ -854,7 +1675,7 @@ class Gw_model(object):
             tot_demand = 0
             for crop in crop_water_requirements.keys():
                 w_demand_per_acre = crop_water_requirements[crop]
-                cropmask = curr_fields['Crop2014']==crop
+                cropmask = curr_fields['Crop2014'] == crop
                 area = curr_fields[cropmask]['Shape_Area'].sum()
                 area_in_acre = area * m2_to_acre
                 annual_deman_acre = w_demand_per_acre * area_in_acre
@@ -863,7 +1684,6 @@ class Gw_model(object):
 
             mask = segment_data_ss['nseg'] == gage
             segment_data_ss.loc[mask, 'flow'] = tot_demand
-
 
         return segment_data_ss
 
@@ -876,11 +1696,11 @@ class Gw_model(object):
         crop_water_requirements['Apples'] = 1.5
         crop_water_requirements['Pears'] = 1.5
 
-        crops_to_include = ['Apples', 'Grapes', 'Pears', 'Mixed Pasture'] # 98% of crops
+        crops_to_include = ['Apples', 'Grapes', 'Pears', 'Mixed Pasture']  # 98% of crops
         for i, div_row in farms_df.iterrows():
             curr_seg = div_row['iseg']
             if curr_seg == 434:
-                continue # this is the outlet, no diversion
+                continue  # this is the outlet, no diversion
             flow = 0.0
             m2_to_acre = 0.000247105
             ac_ft_per_year_to_m3_per_day = 3.3794
@@ -900,9 +1720,6 @@ class Gw_model(object):
                 segment_data_ss.loc[filter, 'flow'] = flow
 
         return segment_data_ss
-
-
-
 
     def Steady_state_SFR_changes(self, segment_data, reach_data, average_inflows):
         """
@@ -957,25 +1774,23 @@ class Gw_model(object):
                 print("Error")
             upstage = lake_df[lake_df['Lake _ID'] == lake_id]['Stage up'].values
             dnstage = lake_df[lake_df['Lake _ID'] == lake_id]['Down'].values
-            lake_stage = 0.5 * (upstage+dnstage)
+            lake_stage = 0.5 * (upstage + dnstage)
 
             segment_data.loc[locc, 'icalc'] = 1
             segment_data.loc[locc, 'width1'] = 10
             segment_data.loc[locc, 'width2'] = 10
 
-
-
             # elevation is like outseg elevation
             dnseg = segment_data[segment_data['nseg'] == sspil]['outseg'].values[0]
             dn = segment_data[segment_data['nseg'] == dnseg]
             reach_dn = reach_data[(reach_data['iseg'] == dnseg) & (reach_data['ireach'] == 1)]
-            spillway_elevation = 0.5* (reach_dn['strtop'].values[0] + upstage)
+            spillway_elevation = 0.5 * (reach_dn['strtop'].values[0] + upstage)
             locc2 = reach_data['iseg'] == sspil
 
             reach_data.loc[locc2, 'rchlen'] = 400
             if reach_dn['strtop'].values[0] > spillway_elevation:
                 xxxx = 1
-            if spillway_elevation < (dnstage+2.0):
+            if spillway_elevation < (dnstage + 2.0):
                 spillway_elevation = upstage - 2.0
             reach_data.loc[locc2, 'strtop'] = spillway_elevation
             reach_data.loc[locc2, 'slope'] = 0.1
@@ -1018,7 +1833,7 @@ class Gw_model(object):
             reach_data.loc[locc2, 'rchlen'] = reach_dn['rchlen'].values[0]
 
             # get the segment elevation
-            if lake_id > 2: # for small reservoir reach is 2 m above lakebed
+            if lake_id > 2:  # for small reservoir reach is 2 m above lakebed
                 gate_elev = (lake_stage - 2.0)
             else:
                 gate_elev = (lake_stage - 2.0)
@@ -1028,31 +1843,31 @@ class Gw_model(object):
             lake_bottom = self.mf.dis.botm.array[locc_id]
 
             # condition 1
-            if reach_dn['strtop'].values[0]> gate_elev:
+            if reach_dn['strtop'].values[0] > gate_elev:
                 print("Error, gate segment is below downstream next downstream segment")
 
             rch_length = 50.0
             slope = reach_dn['slope'].values[0]
-            min_elevation = gate_elev-0.5 * rch_length * slope
+            min_elevation = gate_elev - 0.5 * rch_length * slope
 
             # find which layer this elevation correpond to
             rrow = int(reach_data.loc[locc2, 'i'].values[0])
             rcol = int(reach_data.loc[locc2, 'j'].values[0])
-            topp = self.mf.dis.top.array[rrow,rcol]
-            elevs = [topp] + self.mf.dis.botm.array[:, rrow,rcol].tolist()
+            topp = self.mf.dis.top.array[rrow, rcol]
+            elevs = [topp] + self.mf.dis.botm.array[:, rrow, rcol].tolist()
 
-            for k in range(len(elevs)-1):
-                if min_elevation>= elevs[k]:
+            for k in range(len(elevs) - 1):
+                if min_elevation >= elevs[k]:
                     break
-                if elevs[k]> min_elevation and elevs[k+1]<= min_elevation:
+                if elevs[k] > min_elevation and elevs[k + 1] <= min_elevation:
                     break
             if lake_id > 2:
                 reach_data.loc[locc2, 'k'] = k
 
-            if k == self.mf.nlay-1:
-                if elevs[-1]>gate_elev:
+            if k == self.mf.nlay - 1:
+                if elevs[-1] > gate_elev:
                     botm = self.mf.dis.botm.array
-                    botm[-1,rrow,rcol] = gate_elev - 2.0
+                    botm[-1, rrow, rcol] = gate_elev - 2.0
                     self.mf.dis.botm = botm
 
             # -----
@@ -1110,7 +1925,6 @@ class Gw_model(object):
         return tabfiles_dict, average_inflows
 
     def sfr_cross_sections(self, reach_data, segment_data):
-
         def strictly_increasing(L):
             return all(x < y for x, y in zip(L, L[1:]))
 
@@ -1183,7 +1997,6 @@ class Gw_model(object):
         return streams_data
 
     def uzf_package(self):
-
         # option block
         from flopy.utils.optionblock import OptionBlock
         uzfstr = "specifythti\nspecifysurfk\nseepsurfk\n"
@@ -1201,7 +2014,7 @@ class Gw_model(object):
         nuzgag = 1  # equal to the number of cells (one per vertical column) that will be specified for printing
         unit_num = -1 * self.mf.next_ext_unit()
         unit_nums = -1 * self.mfs.next_ext_unit()
-        uzgage_tr = {unit_num:[]}
+        uzgage_tr = {unit_num: []}
         uzgage_ss = {unit_nums: []}
 
         surfdep = 1.0  # The average height of undulations, D (Figure 1 in UZF documentation), in the land surface altitude
@@ -1221,7 +2034,7 @@ class Gw_model(object):
             mask = iuzfbnd == (k + 1)
             vks[mask] = kh_layer[mask]
 
-        vks = vks * 0.0003 # Manual vks value (Rich)
+        vks = vks * 0.0003  # Manual vks value (Rich)
         surfk = vks  # same zone [for Steady state only]
         eps = 4.0
         thts = self.hru_param['MOIST_MAX'].values.reshape(n_row, n_col)
@@ -1237,7 +2050,7 @@ class Gw_model(object):
             field_name = 'PPT_' + str(ii).zfill(2)
             annual_rain = annual_rain + self.hru_param[field_name].values.reshape(n_row, n_col)
         finf = 0.55 * (annual_rain / 365.25) / 1000.0  # convert units from mm/year to m/day
-        finf = finf * self.mf.bas6.ibound.array[2,:,:]
+        finf = finf * self.mf.bas6.ibound.array[2, :, :]
         options = OptionBlock('', flopy.modflow.ModflowUzf1, block=True)
         options.specifythti = False
         options.seepsurfk = True
@@ -1251,7 +2064,7 @@ class Gw_model(object):
         uzf = flopy.modflow.ModflowUzf1(self.mf, nuztop=nuztop, iuzfopt=iuzfopt, irunflg=irunflg, ietflg=ietflg,
                                         ipakcb=ipakcb, iuzfcb2=0, ntrail2=ntrail2, nsets=nsets, specifythti=
                                         specifythti, seepsurfk=seepsurfk, rejectsurfk=rejectsurfk,
-                                        specifysurfk=specifysurfk,nuzgag = nuzgag, uzgag =  uzgage_tr,
+                                        specifysurfk=specifysurfk, nuzgag=nuzgag, uzgag=uzgage_tr,
                                         surfdep=surfdep, iuzfbnd=iuzfbnd, irunbnd=irunbnd, vks=vks,
                                         eps=4.0, thts=thts, thti=thti, surfk=surfk, finf=finf, pet=pet,
                                         extdp=extdp,
@@ -1260,7 +2073,7 @@ class Gw_model(object):
         uzfs = flopy.modflow.ModflowUzf1(self.mfs, nuztop=nuztop, iuzfopt=iuzfopt, irunflg=irunflg, ietflg=ietflg,
                                          ipakcb=ipakcb, iuzfcb2=0, ntrail2=ntrail2, nsets=nsets, specifythti=
                                          specifythti, seepsurfk=seepsurfk, rejectsurfk=rejectsurfk,
-                                         specifysurfk=specifysurfk, nuzgag= nuzgag, uzgag = uzgage_ss,
+                                         specifysurfk=specifysurfk, nuzgag=nuzgag, uzgag=uzgage_ss,
                                          surfdep=surfdep, iuzfbnd=iuzfbnd, irunbnd=irunbnd, vks=vks,
                                          eps=4.0, thts=thts, thti=thti, surfk=surfk, finf=finf, pet=pet,
                                          extdp=extdp,
@@ -1310,13 +2123,31 @@ class Gw_model(object):
         spds[(0, 0)] = [options[3], options[2], options[5]]
         oc = flopy.modflow.ModflowOc(self.mfs, stress_period_data=spds, cboufm='(20i5)')
 
-    def lak_package(self):
-        self.generate_bathymetry_files()
+    def add_rubber_dam_lak(self, nlakes):
 
-        options = ['TABLEINPUT']
+        # TODO: double check that all I need to do is include the rubber dam lake in nlakes
+        #  and that all the other code will work for the rubber dam as is
+
+        # add rubber dam lake
+        nlakes = nlakes + 1
+
+        return nlakes
+
+
+    def lak_package(self):
+
+        # generate bathymetry files
+        self.generate_bathymetry_files()
+        self.generate_bathymetry_files_rubber_dam()
+
         # ------------- Record [1] --------------------
+        options = ['TABLEINPUT']
         nlakes = self.hru_param['LAKE_ID'].max()
         ipakcb = 55  # this ILKCB
+
+        # ------------- Make changes for rubber dam --------------------
+        # TODO: check that this function should be self.function() rather than just function()
+        nlakes = self.add_rubber_dam_lak(nlakes)
 
         # ------------- Record [2] --------------------
         theta = -0.8  # negative is a flag to read nssitr and sscncr when it is transeint.
@@ -1329,15 +2160,18 @@ class Gw_model(object):
         # ------------- Record [3] --------------------
         stages = []  # The initial stage of each lake at the beginning of the run
         stage_range = []  # this is needed only for SS simulation.
+        rubber_dam_lake_id = int(self.config.get('RUBBER_DAM', 'rubber_dam_lake_id'))
+        rubber_dam_stage_min = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+        rubber_dam_stage_max = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
         for lake_id in range(1, nlakes + 1, 1):
             lake_botm = []
             lake_top = []
             for k in range(self.mf.nlay):
-                curr_lak_layer = self.Lake_array[k,:,:]
+                curr_lak_layer = self.Lake_array[k, :, :]
                 id_loc = curr_lak_layer == lake_id
                 if not np.any(id_loc):
                     continue
-                if k ==0:
+                if k == 0:
                     top2d = self.mf.dis.top.array
                     tops = max(top2d[id_loc])
                     botm2d = self.mf.dis.botm.array[k, :, :]
@@ -1351,10 +2185,15 @@ class Gw_model(object):
                     lake_botm.append(botms)
                     lake_top.append(tops)
 
-            stage_range.append((min(lake_botm), max(lake_top)))
+            # update stage range
+            if lake_id == rubber_dam_lake_id:
+                stage_range.append((rubber_dam_stage_min, rubber_dam_stage_max))
+            else:
+                stage_range.append((min(lake_botm), max(lake_top)))
             ini_stage = (min(lake_botm) + max(lake_top)) * 0.5
             ini_stage = min(lake_botm)
             stages.append(ini_stage)
+
 
         tab_files = self.bathymetry_files  # TODO: Check if it is possible for flopy to choose unit numbers
         tab_units = None
@@ -1368,8 +2207,6 @@ class Gw_model(object):
         bdlknc = 0.1 + np.zeros_like(self.Lake_array)
         bdlknc[lakarr == 11] = 0
 
-
-
         # ------------- Record [7 and 8] --------------------
         # no sublacks
 
@@ -1378,14 +2215,17 @@ class Gw_model(object):
         flux_data = {}
         flux = []
         for id in range(nlakes):
-            if id == 7: # lake #8 is fussy
+            if id == 7:  # lake #8 is fussy
                 flux.append([0.0, 0.0, 0.0, 0.0])
             else:
                 flux.append([0.0, 0.025, 0.0, 0.0])  ##PRCPLK EVAPLK RNF WTHDRW [SSMN] [SSMX]
         flux_data[0] = flux
+
+        # ------------- Create lake package --------------------
         lak = flopy.modflow.mflak.ModflowLak(self.mf, nlakes=nlakes, ipakcb=ipakcb, theta=theta, nssitr=nssitr,
                                              sscncr=sscncr,
-                                             surfdep=surfdep, stages=stages, stage_range=stage_range, tab_files=tab_files,
+                                             surfdep=surfdep, stages=stages, stage_range=stage_range,
+                                             tab_files=tab_files,
                                              tab_units=tab_units, lakarr=lakarr,
                                              bdlknc=bdlknc, sill_data=None, flux_data=flux_data, extension='lak',
                                              unitnumber=None,
@@ -1393,14 +2233,14 @@ class Gw_model(object):
 
         laks = flopy.modflow.mflak.ModflowLak(self.mfs, nlakes=nlakes, ipakcb=ipakcb, theta=theta, nssitr=nssitr,
                                               sscncr=sscncr,
-                                              surfdep=surfdep, stages=stages, stage_range=stage_range, tab_files=tab_files,
+                                              surfdep=surfdep, stages=stages, stage_range=stage_range,
+                                              tab_files=tab_files,
                                               tab_units=tab_units, lakarr=lakarr,
                                               bdlknc=bdlknc, sill_data=None, flux_data=flux_data, extension='lak',
                                               unitnumber=None,
                                               filenames=None, options=options)
 
     def generate_bathymetry_files(self):
-
         """
 
         :return:        """
@@ -1414,7 +2254,7 @@ class Gw_model(object):
         nlakes = self.hru_param['LAKE_ID'].max()
         for lake_id in range(1, nlakes + 1, 1):
             name_root = elev_range[elev_range['Lake _ID'] == lake_id]['FileName'].values[0]
-            #name_root = "LAKE_ID_" + str(lake_id) + ".dat"
+            # name_root = "LAKE_ID_" + str(lake_id) + ".dat"
             fn = os.path.join(self.mf.model_ws, name_root)
             parent_dir = os.path.abspath(os.path.join(self.mf.model_ws, os.pardir))
             wss = os.path.join(parent_dir, 'ss')
@@ -1471,10 +2311,48 @@ class Gw_model(object):
         self.lake_elev_range = lake_elev_range
         self.bathy_files_units = bathy_files_units
 
+    def generate_bathymetry_files_rubber_dam(self):
+
+        # create empty objects to store results
+        lake_elev_range = self.lake_elev_range
+        bathy_files_units = self.bathy_files_units
+        bathy_file_list = self.bathymetry_files
+
+        # specify rubber dam lake stage-volume-area relationship
+        lake_id = int(self.config.get('RUBBER_DAM', 'rubber_dam_lake_id'))
+        stage_min = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+        stage_max = float(self.config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
+        width_trapezoid_top = float(self.config.get('RUBBER_DAM', 'width_trapezoid_top'))
+        width_trapezoid_base = float(self.config.get('RUBBER_DAM', 'width_trapezoid_base'))
+        length_channel = float(self.config.get('RUBBER_DAM', 'length_channel'))
+        height_max = stage_max - stage_min
+        height_water = np.linspace(0, height_max, 151)
+        width_trapezoid_water_surface = ((height_water / height_max) * width_trapezoid_top) + (
+                    ((height_max - height_water) / height_max) * width_trapezoid_base)
+        area_trapezoid = 0.5 * (width_trapezoid_base + width_trapezoid_water_surface) * height_water
+        volume_trapezoidal_channel = area_trapezoid * length_channel
+        stage_trapezoidal_channel = stage_min + height_water
+
+        # store lake bathymetry data
+        curr_bathy = np.array([stage_trapezoidal_channel, volume_trapezoidal_channel, area_trapezoid]).T
+        lake_elev_range[lake_id] = [stage_min, stage_max]
+
+        # prepare file path
+        name_root = self.config.get('RUBBER_DAM', 'bathy_file_name_root')
+        fn = os.path.join(self.mf.model_ws, name_root)
+        parent_dir = os.path.abspath(os.path.join(self.mf.model_ws, os.pardir))
+        wss = os.path.join(parent_dir, 'ss')
+        fns = os.path.join(wss, name_root)
+
+        # save results
+        np.savetxt(fname=fn, X=curr_bathy, fmt='%6.2f')
+        np.savetxt(fname=fns, X=curr_bathy, fmt='%6.2f')
+        bathy_file_list.append(name_root)
+        self.bathymetry_files = bathy_file_list
+        self.lake_elev_range = lake_elev_range
+        self.bathy_files_units = bathy_files_units
+
     def well_package(self):
-
-
-
         # Read flow rates files
         flow_rate_file = self.config.get('Wells', 'flowrate')  # acre_ft/month
         well_hru_file = self.config.get('Wells', 'wellhru')
@@ -1592,7 +2470,6 @@ class Gw_model(object):
         ccc = 1
 
     def well_package2(self):
-
         from flopy.utils.optionblock import OptionBlock
 
         options = OptionBlock('', flopy.modflow.ModflowWel, block=True)
@@ -1616,11 +2493,11 @@ class Gw_model(object):
             dat['Col'] = dat['Col'].values - 1
             well_dict[s_p] = dat.values[:, 1:].tolist()
 
-        wel = flopy.modflow.mfwel.ModflowWel(self.mf, ipakcb=55, stress_period_data=well_dict, options = options)
+        wel = flopy.modflow.mfwel.ModflowWel(self.mf, ipakcb=55, stress_period_data=well_dict, options=options)
 
-        #--------------------------
+        # --------------------------
         # Steady state
-        #--------------------------
+        # --------------------------
         well_dict_ss = {}
         dat = well_df.groupby(['OBJECTID']).mean()
         dat = dat[['Layer', 'Row', 'Col', 'Flow_Rate']]
@@ -1628,12 +2505,12 @@ class Gw_model(object):
         dat['Layer'] = dat['Layer'].values - 1
         dat['Row'] = dat['Row'].values - 1
         dat['Col'] = dat['Col'].values - 1
-        well_dict_ss[0] = dat.values[:,1:].tolist()
+        well_dict_ss[0] = dat.values[:, 1:].tolist()
         options.iunitramp = self.mfs.next_ext_unit()
         self.mfs.external_fnames.append('pumping_reduction.wel.out')
         self.mfs.external_units.append(options.iunitramp)
         self.mfs.external_binflag.append(0)
-        wels = flopy.modflow.mfwel.ModflowWel(self.mfs, ipakcb=55, stress_period_data=well_dict_ss, options = options)
+        wels = flopy.modflow.mfwel.ModflowWel(self.mfs, ipakcb=55, stress_period_data=well_dict_ss, options=options)
 
         pass
 
@@ -1703,7 +2580,7 @@ class Gw_model(object):
             counter = -1
             all_info = []
             for ii, well in enumerate(well_ids):
-                curr_well = hob_df[hob_df['well_ID']==well]
+                curr_well = hob_df[hob_df['well_ID'] == well]
                 curr_well = curr_well.copy()
                 curr_well = curr_well[curr_well['wl_elev_ft'] != -9999]
                 if curr_well.empty:
@@ -1719,32 +2596,32 @@ class Gw_model(object):
                 coff = (xo - xc) / 300.0
 
                 # coordinates
-                c_row = int(curr_well['HRU_ROW'].values[0]-1)
-                c_col = int(curr_well['HRU_COL'].values[0]-1)
+                c_row = int(curr_well['HRU_ROW'].values[0] - 1)
+                c_col = int(curr_well['HRU_COL'].values[0] - 1)
 
                 # assume that per_top and pef_botm are depths not elevations
-                perf_top  = curr_well['top_ft'].values[0] * 0.3048
-                perf_botm =  curr_well['bot_ft'].values[0] * 0.3048
+                perf_top = curr_well['top_ft'].values[0] * 0.3048
+                perf_botm = curr_well['bot_ft'].values[0] * 0.3048
                 if perf_botm > 0 or perf_top > 0:
-                    if perf_botm > 0 and perf_top >0:
-                        well_depth = 0.5*(perf_top + perf_botm)
+                    if perf_botm > 0 and perf_top > 0:
+                        well_depth = 0.5 * (perf_top + perf_botm)
                     else:
                         well_depth = perf_top + perf_botm
                 else:
-                    well_depth = 0.0 # no information
+                    well_depth = 0.0  # no information
 
                 top1 = self.mf.dis.top.array[c_row, c_col]
                 curr_depth = top1 - well_depth
                 bot2 = self.mf.dis.botm[:, c_row, c_col]
                 elev = np.hstack((top1, bot2))
-                ibound = self.mf.bas6.ibound.array[:,c_row, c_col]
+                ibound = self.mf.bas6.ibound.array[:, c_row, c_col]
                 if sum(ibound) == 0:
                     continue
                 if well_depth == 0:
                     # no data about depth is available, assign the well to the top active layer
                     for kk, ib in enumerate(ibound):
                         nly_n = kk
-                        if ib>0:
+                        if ib > 0:
                             break
                 else:
                     # assign depth a
@@ -1756,11 +2633,9 @@ class Gw_model(object):
                         else:
                             nly_n = ie
 
-
                 # get observation time
                 hds = curr_well['wl_elev_ft'].values * 0.3048
                 dates = curr_well.WL_Date.values
-
 
                 sim_start_date = datetime.datetime(year=1989, month=12, day=31)
                 sim_end_date = datetime.datetime(year=2015, month=12, day=31)
@@ -1769,7 +2644,7 @@ class Gw_model(object):
                 days = days.astype('timedelta64[D]')
                 days = days / np.timedelta64(1, 'D')
 
-                time_mask = np.logical_and(days > 0, days<End_time)
+                time_mask = np.logical_and(days > 0, days < End_time)
                 hds = hds[time_mask]
                 days = days[time_mask]
 
@@ -1781,17 +2656,18 @@ class Gw_model(object):
                 counter = counter + 1
                 obsname = 'HO_' + str(counter)
                 print(obsname)
-                cc_well_info = [obsname, well, len(hds), np.min(hds), np.max(hds), np.mean(hds), np.std(hds), np.median(hds), elev[0], elev[-1], nly_n, c_row, c_col ]
+                cc_well_info = [obsname, well, len(hds), np.min(hds), np.max(hds), np.mean(hds), np.std(hds),
+                                np.median(hds), elev[0], elev[-1], nly_n, c_row, c_col]
                 all_info.append(cc_well_info)
                 obs_tr = flopy.modflow.HeadObservation(self.mf, obsname=obsname, layer=nly_n, row=c_row,
-                                                     column=c_col, roff=roff, coff=coff, itt=1,
-                                                     time_series_data=tim_ser_data)
+                                                       column=c_col, roff=roff, coff=coff, itt=1,
+                                                       time_series_data=tim_ser_data)
 
                 # steady state
-                tim_ser_data2 = [[0.0 ,np.mean(hds)]]
+                tim_ser_data2 = [[0.0, np.mean(hds)]]
                 obs_ss = flopy.modflow.HeadObservation(self.mf, obsname=obsname, layer=nly_n, row=c_row,
-                                                     column=c_col, roff=roff, coff=coff, itt=1,
-                                                     time_series_data=tim_ser_data2)
+                                                       column=c_col, roff=roff, coff=coff, itt=1,
+                                                       time_series_data=tim_ser_data2)
                 hoblist.append(obs_tr)
                 hoblist_ss.append(obs_ss)
 
@@ -1806,13 +2682,13 @@ class Gw_model(object):
             hoblist = all_hobs['tr']
             hoblist_ss = all_hobs['ss']
 
-
-        hob_tr = flopy.modflow.ModflowHob(self.mf, hobdry=-9999., obs_data=hoblist, iuhobsv = self.mf.next_ext_unit())
-        hob_ss = flopy.modflow.ModflowHob(self.mfs, hobdry=-9999., obs_data=hoblist_ss, iuhobsv =
+        hob_tr = flopy.modflow.ModflowHob(self.mf, hobdry=-9999., obs_data=hoblist, iuhobsv=self.mf.next_ext_unit())
+        hob_ss = flopy.modflow.ModflowHob(self.mfs, hobdry=-9999., obs_data=hoblist_ss, iuhobsv=
         self.mfs.next_ext_unit())
         if Build_HOB_FLG:
             obs_info = pd.DataFrame(all_info, columns=['obsname', 'well_id', 'num_meas', 'min', 'max', 'mean', 'std',
-                                            'median', 'grid_top_elev', 'grid_bot_elev', 'layer', 'row', 'col'])
+                                                       'median', 'grid_top_elev', 'grid_bot_elev', 'layer', 'row',
+                                                       'col'])
             obs_info.to_csv('rr_obs_info.csv')
 
         pass
@@ -1836,7 +2712,7 @@ class Gw_model(object):
         # for mendo lak
         unit = self.mf.next_ext_unit()
         unit2 = self.mfs.next_ext_unit()
-        gauge = [-1, -1*unit, 3]
+        gauge = [-1, -1 * unit, 3]
         gage_data.append(gauge)
         files.append("mendo_lake_bdg.lak.out")
 
@@ -1847,14 +2723,13 @@ class Gw_model(object):
         gage_data.append(gauge)
         files.append("sonoma_lake_bdg.lak.out")
 
-        num_gages = gage_df.values.shape[0] + 2 # two for the two lakes
+        num_gages = gage_df.values.shape[0] + 2  # two for the two lakes
         gage = flopy.modflow.ModflowGage(self.mf, numgage=num_gages, gage_data=gage_data, files=files)
         gages = flopy.modflow.ModflowGage(self.mfs, numgage=num_gages, gage_data=gage_data, files=files)
 
         pass
 
     def get_all_upstream_segs(self, seg):
-
         sfr = self.hru_param[self.hru_param['ISEG'] > 0]
         curr_seg = seg
         wait_list = []
@@ -1907,7 +2782,7 @@ class Gw_model(object):
         ghb_hru_file = self.config.get('GHB', 'hru_ghb_file')
         ghb_df = geopandas.read_file(ghb_hru_file)
         groups = ghb_df.groupby('ghh_id')
-        cond = 40000 # like Santa Rosa model
+        cond = 40000  # like Santa Rosa model
         ghb_data = []
         for ghb_section in groups:
             for icell, cell in ghb_section[1].iterrows():
@@ -1921,17 +2796,18 @@ class Gw_model(object):
                 for lay, ib in enumerate(ib_ghb):
                     if ib == 0:
                         continue
-                    botm = self.mf.dis.botm.array[lay, row,col]
-                    if (head - botm) < 2.0 :
+                    botm = self.mf.dis.botm.array[lay, row, col]
+                    if (head - botm) < 2.0:
                         head = botm + 2.0
-                    ghb_data.append([lay, row, col,head,cond])
+                    ghb_data.append([lay, row, col, head, cond])
         ghb_stress_per = {}
         ghb_stress_per[0] = ghb_data
         ipakcb = 55
-        ghb = flopy.modflow.mfghb.ModflowGhb(self.mf, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None, no_print=False,
-                                       options=None, extension='ghb')
-        ghbs = flopy.modflow.mfghb.ModflowGhb(self.mfs, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None,
+        ghb = flopy.modflow.mfghb.ModflowGhb(self.mf, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None,
                                              no_print=False,
                                              options=None, extension='ghb')
-        pass
+        ghbs = flopy.modflow.mfghb.ModflowGhb(self.mfs, ipakcb=ipakcb, stress_period_data=ghb_stress_per, dtype=None,
+                                              no_print=False,
+                                              options=None, extension='ghb')
 
+    pass

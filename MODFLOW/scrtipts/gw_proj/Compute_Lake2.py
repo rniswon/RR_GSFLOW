@@ -21,8 +21,58 @@ else:
     import flopy
 
 
-def carve_rubber_dam():
+def carve_rubber_dam(config, grid, ibound, Lake_array):
+
+    # read in rubber dam lake id
+    rubber_dam_lake_id = config.get('RUBBER_DAM', 'rubber_dam_lake_id')
+    rubber_dam_lake_id = int(rubber_dam_lake_id)
+
+    # read in rubber dam lake shapefile
+    rubber_dam_lake = config.get('RUBBER_DAM', 'rubber_dam_lake')
+    rubber_dam_lake = geopandas.read_file(rubber_dam_lake)
+
+    # read in min and max rubber dam lake stages
+    min_stage = float(config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
+    max_stage = float(config.get('RUBBER_DAM', 'rubber_dam_max_lake_stage'))
+
+    # get row and column indices of rubber dam lake HRUs
+    idx_row = rubber_dam_lake.HRU_ROW - 1
+    idx_col = rubber_dam_lake.HRU_COL - 1
+    elevs = grid[:, idx_row, idx_col]
+    ibb = ibound[:, idx_row, idx_col]
+
+    # find top active layer and  determine thickness
+    # TODO: figure out what's wrong here
+    for k, ib in enumerate(ibb):
+        if ib.all() > 0:  # had to add .all() here to avoid getting an error because original code was written for lakes composed of just one grid cell
+            break
+    top_active_layer = k
+    thikness_of_top_active_layer = elevs[top_active_layer] - elevs[top_active_layer + 1]
+
+    # determine how much to lower elevations of grid cells in rubber dam lake, based on the most downstream grid cell of the rubber dam lake
+    elev_lower = min(elevs[0]) - min_stage
+    elevs[0,:] = elevs[0,:] - elev_lower
+
+    # adjust elevations in dis file to account for rubber dam lake
+    for i in range(len(idx_row)):
+
+        # set elevation of bottom of layer 1 equal to elevation of top of layer 1 so that layer 1 has a thickness of 0
+        if k == 0:
+            elevs[k + 1, i] = elevs[k, i]
+            elevs[k + 2, i] = elevs[k + 2, i] + thikness_of_top_active_layer[i]
+
+
+    # adjust ibound and lake arrays to account for rubber dam lake
+    if top_active_layer == 0:
+        ibound[0, idx_row, idx_col] = 0
+        Lake_array[0, idx_row, idx_col] = rubber_dam_lake_id
+    else:
+        ibound[0:top_active_layer, idx_row, idx_col] = 0
+        Lake_array[0:top_active_layer, idx_row, idx_col] = rubber_dam_lake_id
     pass
+    grid[:, idx_row, idx_col] = elevs
+
+
 
 
 def carve_lakes(gw):
@@ -209,8 +259,8 @@ def carve_lakes(gw):
         pass
         grid[:,i_row, i_col] = elevs
 
-    # make changes for the rubber
-    carve_rubber_dam()
+    # make changes for the rubber dam
+    carve_rubber_dam(config, grid, ibound, Lake_array)
 
     # update model dis and bas
     gw.mf.dis.top = grid[0, :, :]
