@@ -2,140 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="91807447-fe4f-434e-8c7a-78b465a30a8b" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/RR_GSFLOW.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.ghb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/TR/rubber_dam_gate_outflow.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/TR/rubber_dam_lake.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/TR/rubber_dam_pond_outflow.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/TR/rubber_dam_spillway_outflow.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Bevans_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Bradford_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/CoenC3_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Crawford_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Lolonis_bathy_dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Mallacomes_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Mark_West_inflow.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Mendo_Lake_release.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Meno_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Merlo_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Murray_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Potter_Valley_inflow.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Sonoma_Lake_release.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Sonoma_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/Towibalyla_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/nwt_mf.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.bas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.dis" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.gage" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.ghb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.hfb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.hob" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.lak" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.nam" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.nwt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.oc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.sfr" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.upw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.uzf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rr_tr.wel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rubber_dam_gate_outflow.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rubber_dam_lake.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/TR/rubber_dam_spillway_outflow.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Bevans_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Bradford_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/CoenC3_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Crawford_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Lolonis_bathy_dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Mallacomes_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Meno_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Merlo_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Murray_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Sonoma_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/Towibalyla_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/fort.1014" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.bas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.chk" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.dis" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.gage" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.ghb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.hfb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.hob" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.lak" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.nam" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.nwt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.oc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.sfr" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.upw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.uzf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rr_ss.wel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/archived_models/01_20210507/ss/rubber_dam_lake.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/rr_ss.chk" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/hob_shapefile.dbf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/hob_shapefile.prj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/hob_shapefile.shp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/hob_shapefile.shx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/max_lake_stage/hob_shapefile.dbf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/max_lake_stage/hob_shapefile.prj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/max_lake_stage/hob_shapefile.shp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/max_lake_stage/hob_shapefile.shx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/max_lake_stage/rr_ss.chk" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/rr_ss.chk" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/run_hob_resid_to_shapefile.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Bevans_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Bradford_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/CoenC3_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Crawford_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Lolonis_bathy_dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Mallacomes_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Meno_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Merlo_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Murray_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Sonoma_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/Towibalyla_bathy.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/fort.1014" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.bas" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.dis" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.gage" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.ghb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.hfb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.hob" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.lak" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.nam" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.nwt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.oc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.sfr" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.upw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.uzf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.wel" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rubber_dam_gate_outflow_ss.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rubber_dam_lake.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rubber_dam_pond_outflow_ss.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MODFLOW/ss/rubber_dam_spillway_outflow_ss.dat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/PRMS/scripts/ponds/create_ag_pond_input_3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/rr_ss.chk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/CoenC3_bathy.dat" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/CoenC3_bathy.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.bas" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.bas" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.dis" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.dis" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.gage" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.gage" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.hob" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.hob" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.lak" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.lak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.nam" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.nam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.sfr" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.sfr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.upw" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.upw" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.uzf" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.uzf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.wel" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.wel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Compute_Lake2.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Compute_Lake2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/gw.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/gw.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/rr_ss_config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/rr_ss_config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PRMS/input/ag_pond_HRUs.param" beforeDir="false" afterPath="$PROJECT_DIR$/PRMS/input/ag_pond_HRUs.param" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windows/gsflow.log" beforeDir="false" afterPath="$PROJECT_DIR$/windows/gsflow.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/windows/run.bat" beforeDir="false" afterPath="$PROJECT_DIR$/windows/run.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Main_gsflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Main_gsflow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/run_hob_resid_to_shapefile.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/run_hob_resid_to_shapefile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/gsflow.log" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/gsflow.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.bas" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.bas" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.chk" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.chk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.dis" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.dis" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.gage" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.gage" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.ghb" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.ghb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.hob" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.hob" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.lak" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.lak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nam" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nam" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nwt" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nwt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.upw" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.upw" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.wel" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.wel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/model_output.csv" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/model_output.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_forward_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_forward_model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,11 +53,11 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/run_hob_resid_to_shapefile.py" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RunManager">
-    <configuration name="main_model" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="run_hob_resid_to_shapefile" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="RR_GSFLOW" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -180,11 +65,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MODFLOW/scrtipts/plot_results/run_hob_resid_to_shapefile.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -195,7 +80,7 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main_model" />
+        <item itemvalue="Python.run_hob_resid_to_shapefile" />
       </list>
     </recent_temporary>
   </component>
@@ -224,6 +109,28 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_forward_model.py</url>
+          <line>100</line>
+          <option name="timeStamp" value="41" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/output_utils.py</url>
+          <line>35</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/output_utils.py</url>
+          <line>174</line>
+          <option name="timeStamp" value="44" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/output_utils.py</url>
+          <line>129</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
