@@ -1,0 +1,1 @@
+Default parameter values were used (values assigned by modflow input preparation code) 
