@@ -2231,6 +2231,28 @@ class Gw_model(object):
                                              unitnumber=None,
                                              filenames=None, options=options)
 
+        # Save steady state lake package
+        lake_data = {}
+        lake_data['nlakes'] = nlakes
+        lake_data['ipakcb'] = ipakcb
+        lake_data['theta'] = theta
+        lake_data['nssitr'] = nssitr
+        lake_data['sscncr'] = sscncr
+        lake_data['surfdep'] = surfdep
+        lake_data['stages'] = stages
+        lake_data['stage_range'] = stage_range
+        lake_data['tab_files'] = tab_files
+        lake_data['tab_units'] = tab_units
+        lake_data['lakarr'] = lakarr
+        lake_data['bdlknc'] = bdlknc
+        lake_data['sill_data'] = None
+        lake_data['flux_data'] = flux_data
+        lake_data['extension'] = 'lak'
+        lake_data['unitnumber'] = None
+        lake_data['filenames'] = None
+        lake_data['options'] = options
+        np.save(r"..\..\ss\lake_data.npy", lake_data)
+
         laks = flopy.modflow.mflak.ModflowLak(self.mfs, nlakes=nlakes, ipakcb=ipakcb, theta=theta, nssitr=nssitr,
                                               sscncr=sscncr,
                                               surfdep=surfdep, stages=stages, stage_range=stage_range,

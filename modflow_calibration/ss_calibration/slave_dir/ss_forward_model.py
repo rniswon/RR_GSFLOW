@@ -66,8 +66,10 @@ def run(input_file = None, real_no=-999, output_file = None):
                                         verbose = True, forgive = False)
 
     # Lake information
-    if False:
-        lak_utils.change_lak_ss(Sim)
+    # NOTE: Saalem changed this on 6/4/21 so that the lake parameters can be updated
+    # if False:
+    #     lak_utils.change_lak_ss(Sim)
+    lak_utils.change_lak_ss(Sim)
 
     # UPW information
     upw_utils.change_upw_ss(Sim)
@@ -81,7 +83,7 @@ def run(input_file = None, real_no=-999, output_file = None):
     # ----------------------------------------------
     # Run the model
     # ----------------------------------------------
-    #Sim.mf.lak.write_file()
+    Sim.mf.lak.write_file()  # Saalem uncommented this on 6/4/21 in order to make updates to the lake package
     Sim.mf.upw.write_file()
     Sim.mf.uzf.write_file()
     Sim.mf.sfr.write_file()
