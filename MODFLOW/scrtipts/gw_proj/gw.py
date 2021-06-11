@@ -2231,6 +2231,16 @@ class Gw_model(object):
                                              unitnumber=None,
                                              filenames=None, options=options)
 
+
+        laks = flopy.modflow.mflak.ModflowLak(self.mfs, nlakes=nlakes, ipakcb=ipakcb, theta=theta, nssitr=nssitr,
+                                              sscncr=sscncr,
+                                              surfdep=surfdep, stages=stages, stage_range=stage_range,
+                                              tab_files=tab_files,
+                                              tab_units=tab_units, lakarr=lakarr,
+                                              bdlknc=bdlknc, sill_data=None, flux_data=flux_data, extension='lak',
+                                              unitnumber=None,
+                                              filenames=None, options=options)
+
         # Save steady state lake package
         lake_data = {}
         lake_data['nlakes'] = nlakes
@@ -2251,16 +2261,10 @@ class Gw_model(object):
         lake_data['unitnumber'] = None
         lake_data['filenames'] = None
         lake_data['options'] = options
+        #lake_data['iunit_tab'] = laks.iunit_tab
         np.save(r"..\..\ss\lake_data.npy", lake_data)
 
-        laks = flopy.modflow.mflak.ModflowLak(self.mfs, nlakes=nlakes, ipakcb=ipakcb, theta=theta, nssitr=nssitr,
-                                              sscncr=sscncr,
-                                              surfdep=surfdep, stages=stages, stage_range=stage_range,
-                                              tab_files=tab_files,
-                                              tab_units=tab_units, lakarr=lakarr,
-                                              bdlknc=bdlknc, sill_data=None, flux_data=flux_data, extension='lak',
-                                              unitnumber=None,
-                                              filenames=None, options=options)
+
 
     def generate_bathymetry_files(self):
         """
@@ -2515,6 +2519,8 @@ class Gw_model(object):
             dat['Col'] = dat['Col'].values - 1
             well_dict[s_p] = dat.values[:, 1:].tolist()
 
+
+
         wel = flopy.modflow.mfwel.ModflowWel(self.mf, ipakcb=55, stress_period_data=well_dict, options=options)
 
         # --------------------------
@@ -2528,6 +2534,11 @@ class Gw_model(object):
         dat['Row'] = dat['Row'].values - 1
         dat['Col'] = dat['Col'].values - 1
         well_dict_ss[0] = dat.values[:, 1:].tolist()
+
+        # TODO: add the 3 additional wells here
+        # well_dict_ss - key: stress period, list of lists with layer, row, col, flow rate
+        well_dict_ss[0] = well_dict_ss[0].append([1,2,5, 3.333])
+
         options.iunitramp = self.mfs.next_ext_unit()
         self.mfs.external_fnames.append('pumping_reduction.wel.out')
         self.mfs.external_units.append(options.iunitramp)

@@ -27,14 +27,14 @@ rubber_dam_lake_shp = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\i
 
 # specify K zone ids file and layer of interest that contains rubber dam lake
 K_zone_ids =  r".\misc_files\K_zone_ids.dat"
-lake_layer = 1
+lake_layer = 0
 
 # specify desired changes to lakebed leakance
-lakebed_leakance_multipliers = [2,10,100,1000]
-lakebed_leakance_multiplier_chosen = 1
+lakebed_leakance_multipliers = [2,10,100,1000,10000]
+lakebed_leakance_multiplier_chosen = 10000
 
 # specify desired changes to vertical K
-Ks_multipliers = [2,10,100,1000]
+Ks_multipliers = [2,10,100,1000,10000]
 
 # specify modflow name file
 mfname = r"C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
@@ -87,7 +87,7 @@ if change_lakebed_leakance == 1 and change_Ks == 0:
 
         # read in hob output and save head residuals in table for well ids of interest
         hob_out = hob_util.hob_output_to_df(mfname)
-        hob_out.drop(['Basename'], axis=1)
+        hob_out = hob_out.drop(['Basename'], axis=1)
         hob_out['lkbd_lknc_mult'] = m
         hob_out['resid'] = hob_out['SIMULATED EQUIVALENT'] - hob_out['OBSERVED VALUE']
         hob_out = hob_out.reindex(columns=['lkbd_lknc_mult', 'OBSERVATION NAME', 'SIMULATED EQUIVALENT', 'OBSERVED VALUE', 'resid'])
@@ -172,7 +172,7 @@ if change_Ks == 1:
 
         # read in hob output and save head residuals in table for well ids of interest
         hob_out = hob_util.hob_output_to_df(mfname)
-        hob_out.drop(['Basename'], axis=1)
+        hob_out = hob_out.drop(['Basename'], axis=1)
         hob_out['lkbd_lknc_mult'] = lakebed_leakance_multiplier_chosen
         hob_out['ks_mult'] = m
         hob_out['resid'] = hob_out['SIMULATED EQUIVALENT'] - hob_out['OBSERVED VALUE']

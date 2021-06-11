@@ -5,7 +5,7 @@ DRAWDOWN PRINT FORMAT   0
 COMPACT BUDGET AUX
 
 period 1 step 1 
-  SAVE HEAD
-  PRINT BUDGET
-  SAVE BUDGET
+  save head
+  print budget
+  save budget
 

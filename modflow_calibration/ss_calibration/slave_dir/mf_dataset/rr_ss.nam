@@ -56,5 +56,4 @@ DATA            1041  EF_RUSSIAN_R_NR_UKIAH.go
 DATA            1042  EF_RUSSIAN_R_NR_CALPELLA.go
 DATA            1043  mendo_lake_bdg.lak.out
 DATA            1044  sonoma_lake_bdg.lak.out
-DATA			1045  rubber_dam_lake.lak.out
 DATA(BINARY)      51  rr_ss.hds REPLACE

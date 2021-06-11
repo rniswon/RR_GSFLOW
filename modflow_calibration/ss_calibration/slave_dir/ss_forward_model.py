@@ -83,6 +83,7 @@ def run(input_file = None, real_no=-999, output_file = None):
     # ----------------------------------------------
     # Run the model
     # ----------------------------------------------
+    #Sim.mf.write_input()
     Sim.mf.lak.write_file()  # Saalem uncommented this on 6/4/21 in order to make updates to the lake package
     Sim.mf.upw.write_file()
     Sim.mf.uzf.write_file()

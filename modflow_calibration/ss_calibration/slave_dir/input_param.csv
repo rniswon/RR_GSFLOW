@@ -1,7 +1,7 @@
 ,parnme,partrans,parval1,pargp,comments
 0,lak_cond_1,none,1.0,lak_cd,#
 1,lak_cond_2,none,1.0,lak_cd,#
-2,lak_cond_12,none,2.0,lak_cd,#
+2,lak_cond_12,none,10000.0,lak_cd,#
 3,sfr_k_1,none,0.100000009,sfr_ks,#
 4,sfr_k_2,none,0.100000009,sfr_ks,#
 5,sfr_k_3,none,0.092000008,sfr_ks,#

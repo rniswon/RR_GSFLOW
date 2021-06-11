@@ -6,6 +6,7 @@ import pandas as pd
 from collections.abc import Iterable
 import geopandas
 from param_utils import *
+import copy
 
 
 def add_lak_parameters_to_input_file(input_file = r"input_param.csv"):
@@ -45,7 +46,7 @@ def change_lak_ss(Sim):
     # nlakes = lake_info['nlakes']
 
     # read in steady state lake package data
-    lake_data = np.load("lake_data.npy", allow_pickle = 'TRUE')
+    lake_data = np.load(".\mf_dataset\lake_data.npy", allow_pickle = 'TRUE')
     lake_data = lake_data.all()
     nlakes = lake_data['nlakes']
     ipakcb = lake_data['ipakcb']
@@ -59,21 +60,32 @@ def change_lak_ss(Sim):
     tab_units = lake_data['tab_units']
     lakarr = lake_data['lakarr']
     bdlknc = lake_data['bdlknc']
-    #sill_data = lake_data['sill_data']
+    sill_data = lake_data['sill_data']
     flux_data = lake_data['flux_data']
     extension = lake_data['extension']
-    #unitnumber = lake_data['unitnumber']
-    #filenames = lake_data['filenames']
+    unitnumber = lake_data['unitnumber']
+    filenames = lake_data['filenames']
     options = lake_data['options']
+    iunit_tab = lake_data['iunit_tab']
+    external_fnames_save = copy.deepcopy(Sim.mf.external_fnames)
+    external_units_save = copy.deepcopy(Sim.mf.external_units)
     Sim.mf.remove_package("LAK")
+    tab_units = []
+    # Sim.mf._next_ext_unit = 2000
+    # for tab_f in tab_files:
+    #     tab_units.append(Sim.mf.next_ext_unit())
+
     Sim.mf.lak = flopy.modflow.mflak.ModflowLak(Sim.mf, nlakes= nlakes,  ipakcb=ipakcb, theta=theta, nssitr=nssitr,
                                           sscncr=sscncr,
                                           surfdep=surfdep, stages=stages, stage_range=stage_range,
                                           tab_files=tab_files,
                                           tab_units=tab_units, lakarr=lakarr,
-                                          bdlknc=bdlknc, sill_data=None, flux_data=flux_data, extension='lak',
-                                          unitnumber=None,
-                                          filenames=None, options=options)
+                                          bdlknc=bdlknc, sill_data=sill_data, flux_data=flux_data, extension=extension,
+                                          #unitnumber=unitnumber,
+                                          filenames=filenames, options=options)
+    Sim.mf.external_fnames = external_fnames_save
+    Sim.mf.external_units = external_units_save
+    Sim.mf.lak.iunit_tab = iunit_tab
 
     # Comment out because we're using the above
     #Sim.mf.lak = lak
