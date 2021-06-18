@@ -95,7 +95,7 @@ if change_lakebed_leakance == 1 and change_Ks == 0:
         hob_resid_compare = hob_resid_compare.append(hob_out, ignore_index=True)
 
         # read in rubber dam lake output and save lake stage in table for rubber dam lake
-        rubber_dam_lak = pd.read_csv(r'./mf_dataset/rubber_dam_lake.lak.out', skiprows=2, header=None, names = ["col"])
+        rubber_dam_lak = pd.read_csv(r'./mf_dataset/rubber_dam_lake_bdg.lak.out', skiprows=2, header=None, names = ["col"])
         rubber_dam_lak = rubber_dam_lak.col.str.split(expand=True)
         stage = rubber_dam_lak.iloc[1,1]
         rubber_dam_lak = pd.DataFrame({'lkbd_lknc_mult': [m], 'stage': [stage]},
@@ -182,7 +182,7 @@ if change_Ks == 1:
 
         # read in lake output and save lake stage in table for rubber dam lake
         # see if flopy has a function for reading in the lake file, or follow the hob read in code as a guide
-        rubber_dam_lak = pd.read_csv(r'./mf_dataset/rubber_dam_lake.lak.out', skiprows=2, header=None, names = ["col"])
+        rubber_dam_lak = pd.read_csv(r'./mf_dataset/rubber_dam_lake_bdg.lak.out', skiprows=2, header=None, names = ["col"])
         rubber_dam_lak = rubber_dam_lak.col.str.split(expand=True)
         stage = rubber_dam_lak.iloc[1,1]
         rubber_dam_lak = pd.DataFrame({'lkbd_lknc_mult': [lakebed_leakance_multiplier_chosen],'ks_mult': [m], 'stage': [stage]},

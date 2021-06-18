@@ -677,21 +677,23 @@ class Gw_model(object):
             dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
 
             # calculate gate strtop and make sure it is higher than first reach of downstream segment
-            gate_slope = gate_outseg_reachdata['slope'].values[0]
+            #gate_slope = gate_outseg_reachdata['slope'].values[0]
+            gate_slope = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_slope'))
             #gate_rchlen = gate_outseg_reachdata['rchlen'].values[0]
-            gate_rchlen = 400
-            lake_bottom_buffer = 2
+            gate_rchlen = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_rchlen'))
+            lake_bottom_buffer = 1
             gate_strtop = (dam_deflated + lake_bottom_buffer) - gate_slope * (0.5 * gate_rchlen)
-            if gate_strtop < gate_outseg_reachdata['strtop'].values[0]:
-                gate_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
+            # if gate_strtop < gate_outseg_reachdata['strtop'].values[0]:
+            #     gate_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
 
             # calculate spillway strtop and make sure it is higher than first reach of downstream segment
             #spillway_slope = 0.1
-            spillway_slope = gate_outseg_reachdata['slope'].values[0]
-            spillway_rchlen = 400
+            #spillway_slope = gate_outseg_reachdata['slope'].values[0]
+            spillway_slope = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_slope'))
+            spillway_rchlen = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_rchlen'))
             spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))
-            if spillway_strtop < gate_outseg_reachdata['strtop'].values[0]:
-                spillway_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
+            # if spillway_strtop < gate_outseg_reachdata['strtop'].values[0]:
+            #     spillway_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
 
             # fill in segment data for rubber dam gate and spillway
             gate_seg = {
@@ -714,12 +716,14 @@ class Gw_model(object):
                 'hcond1': 0,
                 'thickm1': 0,
                 'elevup': 0,
-                'width1': gate_outseg_segdata['width1'].values[0],
+                #'width1': gate_outseg_segdata['width1'].values[0],
+                'width1': float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_width')),
                 'depth1': 0,
                 'hcond2': 0,
                 'thickm2': 0,
                 'elevdn': 0,
-                'width2': gate_outseg_segdata['width2'].values[0],
+                #'width2': gate_outseg_segdata['width2'].values[0],
+                'width2': float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_width')),
                 'depth2': 0
             }
 
@@ -743,12 +747,14 @@ class Gw_model(object):
                 'hcond1': 0,
                 'thickm1': 0,
                 'elevup': 0,
-                'width1': 50,
+                #'width1': 50,
+                'width1': float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_width')),
                 'depth1': 0,
                 'hcond2': 0,
                 'thickm2': 0,
                 'elevdn': 0,
-                'width2': 50,
+                #'width2': 50,
+                'width2': float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_width')),
                 'depth2': 0
             }
             segment_data = segment_data.append(gate_seg, ignore_index=True)
@@ -1017,14 +1023,17 @@ class Gw_model(object):
 
             # read in
             # pond_outflow_iseg = int(self.config.get('RUBBER_DAM', 'pond_outflow_iseg'))
-            pond_outflow_width = float(self.config.get('RUBBER_DAM', 'pond_outflow_width'))
+            pond_outflow_width = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_width'))
+            pond_outflow_slope = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_slope'))
+            pond_outflow_rchlen = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_rchlen'))
 
             # calculate pond outflow strtop and slope
             dam_deflated = float(self.config.get('RUBBER_DAM', 'rubber_dam_min_lake_stage'))
-            lake_bottom_buffer = 2
-            cell_size = 300
-            pond_outflow_strtop = (dam_deflated + lake_bottom_buffer) - 1
-            pond_outflow_slope = ((dam_deflated + lake_bottom_buffer) - (pond_outflow_strtop)) / (cell_size / 2)
+            lake_bottom_buffer = 1
+            #cell_size = 300
+            #pond_outflow_strtop = (dam_deflated + lake_bottom_buffer) - 1
+            pond_outflow_strtop = (dam_deflated + lake_bottom_buffer) - pond_outflow_slope * (0.5 * pond_outflow_rchlen)
+            #pond_outflow_slope = ((dam_deflated + lake_bottom_buffer) - (pond_outflow_strtop)) / (cell_size / 2)
 
             # fill in segment data for pond outflow
             pond_outflow_seg = {
@@ -1066,7 +1075,7 @@ class Gw_model(object):
                                   # subtracted 1 to be zero-based
                                   'iseg': pond_outflow_iseg,
                                   'ireach': 1,
-                                  'rchlen': cell_size,
+                                  'rchlen': pond_outflow_rchlen,
                                   'strtop': pond_outflow_strtop,
                                   'slope': pond_outflow_slope,
                                   'strthick': 0.5,
@@ -2261,7 +2270,7 @@ class Gw_model(object):
         lake_data['unitnumber'] = None
         lake_data['filenames'] = None
         lake_data['options'] = options
-        #lake_data['iunit_tab'] = laks.iunit_tab
+        lake_data['iunit_tab'] = laks.iunit_tab
         np.save(r"..\..\ss\lake_data.npy", lake_data)
 
 
@@ -2495,6 +2504,37 @@ class Gw_model(object):
         wel = flopy.modflow.mfwel.ModflowWel(self.mf, stress_period_data=well_dict)
         ccc = 1
 
+
+    def add_wells_for_ponds_near_rubber_dam_ss(self, well_dict_ss):
+
+        # read in data
+        pond_01_row = float(self.config.get('RUBBER_DAM', 'pond_01_row'))
+        pond_01_col = float(self.config.get('RUBBER_DAM', 'pond_01_col'))
+        pond_02_row = float(self.config.get('RUBBER_DAM', 'pond_02_row'))
+        pond_02_col = float(self.config.get('RUBBER_DAM', 'pond_02_col'))
+        pond_03_row = float(self.config.get('RUBBER_DAM', 'pond_03_row'))
+        pond_03_col = float(self.config.get('RUBBER_DAM', 'pond_03_col'))
+        total_pond_area = float(self.config.get('RUBBER_DAM', 'total_pond_area'))  # m^2
+        pond_infiltration_rate = float(self.config.get('RUBBER_DAM', 'pond_infiltration_rate'))  # m/s
+        number_ponded_months = float(self.config.get('RUBBER_DAM', 'number_ponded_months'))  # m/s
+
+        # assign values
+        pond_layer = 1
+
+        # calculate flow rate per pond
+        flow_rate = ((total_pond_area * pond_infiltration_rate)/3) * 86400  # convert from m^3/s to m^3/day
+
+        # adjust flow rate to account for only having ponded water during part of the year
+        total_num_months = 12
+        flow_rate = flow_rate * (number_ponded_months/total_num_months)
+
+        # add the 3 additional wells here
+        well_dict_ss[0].append([pond_layer, pond_01_row, pond_01_col, flow_rate])
+        well_dict_ss[0].append([pond_layer, pond_02_row, pond_02_col, flow_rate])
+        well_dict_ss[0].append([pond_layer, pond_03_row, pond_03_col, flow_rate])
+
+        return well_dict_ss
+
     def well_package2(self):
         from flopy.utils.optionblock import OptionBlock
 
@@ -2520,7 +2560,6 @@ class Gw_model(object):
             well_dict[s_p] = dat.values[:, 1:].tolist()
 
 
-
         wel = flopy.modflow.mfwel.ModflowWel(self.mf, ipakcb=55, stress_period_data=well_dict, options=options)
 
         # --------------------------
@@ -2534,11 +2573,7 @@ class Gw_model(object):
         dat['Row'] = dat['Row'].values - 1
         dat['Col'] = dat['Col'].values - 1
         well_dict_ss[0] = dat.values[:, 1:].tolist()
-
-        # TODO: add the 3 additional wells here
-        # well_dict_ss - key: stress period, list of lists with layer, row, col, flow rate
-        well_dict_ss[0] = well_dict_ss[0].append([1,2,5, 3.333])
-
+        well_dict_ss = self.add_wells_for_ponds_near_rubber_dam_ss(well_dict_ss)  # adds wells for ponds near rubber dam
         options.iunitramp = self.mfs.next_ext_unit()
         self.mfs.external_fnames.append('pumping_reduction.wel.out')
         self.mfs.external_units.append(options.iunitramp)
@@ -2742,6 +2777,8 @@ class Gw_model(object):
             gauge = [seg, irch, unit, 1]
             gage_data.append(gauge)
             files.append(fname)
+
+        # TODO: ask Ayman - shouldn't we use unit2 instead of unit in gauge for all three lakes below for the steady state model?
         # for mendo lak
         unit = self.mf.next_ext_unit()
         unit2 = self.mfs.next_ext_unit()
@@ -2756,7 +2793,15 @@ class Gw_model(object):
         gage_data.append(gauge)
         files.append("sonoma_lake_bdg.lak.out")
 
-        num_gages = gage_df.values.shape[0] + 2  # two for the two lakes
+        # for rubber dam lake - Saalem added this on 6/17/21
+        unit = self.mf.next_ext_unit()
+        unit2 = self.mfs.next_ext_unit()
+        gauge = [-12, -1 * unit, 3]
+        gage_data.append(gauge)
+        files.append("rubber_dam_lake_bdg.lak.out")
+
+        #num_gages = gage_df.values.shape[0] + 2  # two for the two lakes
+        num_gages = gage_df.values.shape[0] + 3  # three for the three lakes
         gage = flopy.modflow.ModflowGage(self.mf, numgage=num_gages, gage_data=gage_data, files=files)
         gages = flopy.modflow.ModflowGage(self.mfs, numgage=num_gages, gage_data=gage_data, files=files)
 

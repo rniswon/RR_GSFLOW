@@ -76,7 +76,7 @@ gw.well_package2()
 
 # hob
 gw.hob_package()
-gw.gage_package()
+gw.gage_package() #TODO: unit number assignment for steady state model might be incorrect here
 
 # generate Control package
 gw.oc_package()
