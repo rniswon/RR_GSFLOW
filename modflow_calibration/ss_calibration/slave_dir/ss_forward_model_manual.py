@@ -73,24 +73,24 @@ def run(input_file = None, real_no=-999, output_file = None):
         # GHB iformation
     if False:
         ghb_utils.use_section_average_head(Sim)  # todo: REMOVE
-    ghb_utils.change_ghb_ss(Sim)
+        ghb_utils.change_ghb_ss(Sim)
 
-    # UPW information
-    upw_utils.change_upw_ss(Sim)
+        # UPW information
+        upw_utils.change_upw_ss(Sim)
 
-    # UZF information
-    uzf_utils.change_uzf_ss(Sim)
+        # UZF information
+        uzf_utils.change_uzf_ss(Sim)
 
-    # SFR information
-    sfr_utils.change_sfr_ss(Sim)
+        # SFR information
+        sfr_utils.change_sfr_ss(Sim)
 
     # ----------------------------------------------
     # Run the model
     # ----------------------------------------------
     #Sim.mf.lak.write_file()
-    Sim.mf.upw.write_file()
-    Sim.mf.uzf.write_file()
-    Sim.mf.sfr.write_file()
+    # Sim.mf.upw.write_file()
+    # Sim.mf.uzf.write_file()
+    # Sim.mf.sfr.write_file()
     base_folder = os.getcwd()
     print("change param....")
     os.chdir(r".\mf_dataset")

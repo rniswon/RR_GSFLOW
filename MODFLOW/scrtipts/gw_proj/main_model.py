@@ -18,7 +18,7 @@ from gw import Gw_model
 # from includes import Include
 import support
 import Compute_Lake2
-config_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\scrtipts\gw_proj\rr_ss_config.ini"
+config_file = r"rr_ss_config.ini"
 config = configparser.ConfigParser()
 config.read(config_file)
 
@@ -29,7 +29,7 @@ gw = Gw_model(config)
 gw.dis_package()
 
 # generate bas package
-fn = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\other_files\rr_ss_v4.hds"
+fn = r"..\..\other_files\rr_ss_v4.hds"
 hds1 = flopy.utils.HeadFile(fn)
 wt = hds1.get_data(kstpkper = (0,0))
 wt[wt>2000] = 235
