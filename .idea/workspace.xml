@@ -2,33 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="91807447-fe4f-434e-8c7a-78b465a30a8b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/RR_GSFLOW.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/RR_GSFLOW.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.gage" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.gage" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.nam" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.nam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.sfr" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/TR/rr_tr.sfr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/gw.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/gw.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/rr_ss_config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/rr_ss_config.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.gage" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.gage" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.nam" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.nam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.sfr" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.sfr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.wel" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/ss/rr_ss.wel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/input_param.csv" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/input_param.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.bas" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.bas" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.chk" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.chk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.dis" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.dis" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.hfb" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.hfb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nam" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nam" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nwt" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nwt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.oc" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.oc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.upw" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.upw" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.wel" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.wel" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rubber_dam_gate_outflow_ss.dat" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rubber_dam_gate_outflow_ss.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rubber_dam_pond_outflow_ss.dat" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rubber_dam_pond_outflow_ss.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rubber_dam_spillway_outflow_ss.dat" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rubber_dam_spillway_outflow_ss.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/multiple_ss_runs.py" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/multiple_ss_runs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/model_output.csv" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/model_output.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_manual.py" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_manual.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,10 +40,31 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/multiple_ss_runs.py" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main_model">
+    <configuration name="main_model" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RR_GSFLOW" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="multiple_ss_runs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="RR_GSFLOW" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -109,6 +109,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main_model" />
         <item itemvalue="Python.multiple_ss_runs" />
         <item itemvalue="Python.multiple_ss_runs" />
       </list>
@@ -154,6 +155,11 @@
           <url>file://$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/multiple_ss_runs.py</url>
           <line>85</line>
           <option name="timeStamp" value="125" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py</url>
+          <line>33</line>
+          <option name="timeStamp" value="127" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
