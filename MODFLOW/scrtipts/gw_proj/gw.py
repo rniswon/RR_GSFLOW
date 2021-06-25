@@ -2228,8 +2228,6 @@ class Gw_model(object):
                 stage_range.append((rubber_dam_stage_min, rubber_dam_stage_max))
             else:
                 stage_range.append((min(lake_botm), max(lake_top)))
-            #ini_stage = (min(lake_botm) + max(lake_top)) * 0.5
-            #ini_stage = min(lake_botm)
 
 
             # assign initial lake stages
@@ -2251,8 +2249,10 @@ class Gw_model(object):
                 stages.append(ini_stage)
 
             else:
-                ini_stage = min(lake_botm) + 1
+                # ini_stage = (min(lake_botm) + max(lake_top)) * 0.5
+                ini_stage = min(lake_botm) + 2.0  # initial elevation is 2.0 + min elev
                 stages.append(ini_stage)
+
 
 
         tab_files = self.bathymetry_files  # TODO: Check if it is possible for flopy to choose unit numbers
@@ -2381,8 +2381,8 @@ class Gw_model(object):
                 f = interpolate.interp1d(bathy['Stage'], bathy['Area'])
                 area = f(stage_elev).round(2)
                 stage_elev = stage_elev * 0.3048
-                vol = vol * 1233.48
-                area = area * 4046.86
+                vol = vol * 1233.48 #acre-ft to cubic meter
+                area = area * 4046.86 #acre-tom2
                 curr_bathy = np.array([stage_elev, vol, area]).T
 
             np.savetxt(fname=fn, X=curr_bathy, fmt='%6.2f')
