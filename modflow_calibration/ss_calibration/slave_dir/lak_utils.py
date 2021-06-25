@@ -39,12 +39,6 @@ def change_lak_ss(Sim):
     cc[0,:,:,:] = cond
     lak.bdlknc =  cc
 
-    # TODO make changes here
-    # nlakes=lak.nlakes
-    # lake_info = np.load("lake_data.npy", allow_pickle = 'TRUE')
-    # lake_info = lake_info.all()
-    # nlakes = lake_info['nlakes']
-
     # read in steady state lake package data
     lake_data = np.load(".\mf_dataset\lake_data.npy", allow_pickle = 'TRUE')
     lake_data = lake_data.all()

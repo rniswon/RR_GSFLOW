@@ -645,6 +645,7 @@ class Gw_model(object):
 
                 # if it's a stream segment
                 if seg_id[i] > 0:
+
                     # identify index of reach to be changed
                     reach_idx = reach_data[
                         (reach_data['iseg'] == seg_id[i]) & (reach_data['ireach'] == reach_id[i])].index
@@ -1155,6 +1156,27 @@ class Gw_model(object):
 
         return segment_data, reach_data, tabfiles_dict, tabfiles_dict_ss, average_inflows
 
+
+
+    def changes_during_steady_state_calibration(self, segment_data_ss, reach_data_ss):
+        # function to house all sfr package changes made manually during the steady state calibration
+
+        # identify segments and reaches to change spillway elevations
+        # NOTE: these are changes that Rich made during manual calibration of the steady state model
+        seg_vec = [449, 458, 462, 465, 467, 470]
+        reach_vec = [1, 1, 1, 1, 1, 1]
+        strtop_vec = [126.6, 300.327, 195.28, 142.92, 126.90523, 72.05775]
+
+        # change spillway elevations (strtop)
+        for seg, reach, strtop in zip(seg_vec, reach_vec, strtop_vec):
+
+            mask_reach = (reach_data_ss['iseg'] == seg) & (reach_data_ss['ireach'] == reach)
+            reach_data_ss.loc[mask_reach, 'strtop'] = strtop
+
+        return segment_data_ss, reach_data_ss
+
+
+
     def sfr3_package(self):
 
         # Import
@@ -1375,6 +1397,12 @@ class Gw_model(object):
         segment_data_ss, reach_data_ss = self.Steady_state_SFR_changes(segment_data.copy(), reach_data.copy(),
                                                                        average_inflows)
 
+
+        # ---- Changes during steady state calibration ------------------------------------------------------------------
+
+        segment_data_ss, reach_data_ss = self.changes_during_steady_state_calibration(segment_data_ss, reach_data_ss)
+
+
         # ---- Write transient and steady state sfr packages ------------------------------------------------------------------
 
         # Prepare to write transient sfr package
@@ -1425,6 +1453,7 @@ class Gw_model(object):
                                          channel_geometry_data=channel_geometry_data,
                                          channel_flow_data=channel_flow_data,
                                          dataset_5=dataset_5, options=options)
+
 
     def add_pods_from_state_board(self, segment_data, reach_data):
         """
@@ -2199,9 +2228,31 @@ class Gw_model(object):
                 stage_range.append((rubber_dam_stage_min, rubber_dam_stage_max))
             else:
                 stage_range.append((min(lake_botm), max(lake_top)))
-            ini_stage = (min(lake_botm) + max(lake_top)) * 0.5
-            ini_stage = min(lake_botm)
-            stages.append(ini_stage)
+            #ini_stage = (min(lake_botm) + max(lake_top)) * 0.5
+            #ini_stage = min(lake_botm)
+
+
+            # assign initial lake stages
+            # TODO: find out if 1995-2005 matches up with the time period for other steady state model inputs
+            res_stages_file = self.config.get('LAK', 'reservoir_stage_file')
+            res_stages = pd.read_excel(res_stages_file, sheet_name='stages', na_values = "--", parse_dates = ['date'], index_col=[0])
+            ft_to_meters = 0.3048
+            res_stages['lake_mendocino_stage_feet_NGVD29'] = res_stages['lake_mendocino_stage_feet_NGVD29'] * ft_to_meters
+            res_stages['lake_sonoma_stage_feet_NGVD29'] = res_stages['lake_sonoma_stage_feet_NGVD29'] * ft_to_meters
+            res_stages_ss = res_stages['1995-01-01':'2005-12-31']
+            mendo_reservoir_id = 1
+            sonoma_reservoir_id = 2
+            if lake_id == mendo_reservoir_id:
+                ini_stage = res_stages_ss['lake_mendocino_stage_feet_NGVD29'].mean()
+                stages.append(ini_stage)
+
+            elif lake_id == sonoma_reservoir_id:
+                ini_stage = res_stages_ss['lake_sonoma_stage_feet_NGVD29'].mean()
+                stages.append(ini_stage)
+
+            else:
+                ini_stage = min(lake_botm) + 1
+                stages.append(ini_stage)
 
 
         tab_files = self.bathymetry_files  # TODO: Check if it is possible for flopy to choose unit numbers
@@ -2227,7 +2278,8 @@ class Gw_model(object):
             if id == 7:  # lake #8 is fussy
                 flux.append([0.0, 0.0, 0.0, 0.0])
             else:
-                flux.append([0.0, 0.025, 0.0, 0.0])  ##PRCPLK EVAPLK RNF WTHDRW [SSMN] [SSMX]
+                #flux.append([0.0, 0.025, 0.0, 0.0])  ##PRCPLK EVAPLK RNF WTHDRW [SSMN] [SSMX]
+                flux.append([0.0, 0.0, 0.0, 0.0])  ##PRCPLK EVAPLK RNF WTHDRW [SSMN] [SSMX]
         flux_data[0] = flux
 
         # ------------- Create lake package --------------------

@@ -12,7 +12,7 @@ from gw_utils import hob_util
 
 # set flag for what should be changed
 change_lakebed_leakance = 1
-change_Ks = 0
+change_Ks = 1
 
 
 #---- specify constants -------------------------------------------------------
@@ -27,14 +27,18 @@ rubber_dam_lake_shp = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\i
 
 # specify K zone ids file and layer of interest that contains rubber dam lake
 K_zone_ids =  r".\misc_files\K_zone_ids.dat"
-lake_layer = 0
+lake_layer = 1
 
 # specify desired changes to lakebed leakance
-lakebed_leakance_multipliers = [2,10,100,1000,10000]
-lakebed_leakance_multiplier_chosen = 10000
+lakebed_leakance_multipliers = [1,2,10,100,1000]
+lakebed_leakance_multiplier_chosen = 1000
 
-# specify desired changes to vertical K
-Ks_multipliers = [2,10,100,1000,10000]
+# specify desired changes to horizontal and vertical K
+#hKs_multipliers = [1,2,10,100,1000]
+hKs_multipliers = [1000]
+#vKs_multipliers = [1,2,10,100,1000]
+vKs_multipliers = [1,2,10]
+
 
 # specify modflow name file
 mfname = r"C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
@@ -103,7 +107,7 @@ if change_lakebed_leakance == 1 and change_Ks == 0:
         lake_stage_compare = lake_stage_compare.append(rubber_dam_lak)
 
 
-        pass
+
 
     # export table of head residuals
     hob_resid_compare.to_csv(r'.\manual_calib_results\hob_resid_compare_lknc.csv')
@@ -115,14 +119,98 @@ if change_lakebed_leakance == 1 and change_Ks == 0:
 
 
 
-#---- change Ks and also possibly lakebed leakance, run model, store resid -------------------------------------------------------
+# #---- change horizontal Ks and also possibly lakebed leakance, run model, store resid -------------------------------------------------------
+#
+# hob_resid_compare = pd.DataFrame(columns=['lkbd_lknc_mult', 'ks_mult', 'OBSERVATION NAME', 'SIMULATED EQUIVALENT', 'OBSERVED VALUE', 'resid'])
+# lake_stage_compare = pd.DataFrame(columns = ['lkbd_lknc_mult', 'ks_mult', 'stage'])
+# if change_Ks == 1:
+#
+#     if change_lakebed_leakance == 1:
+#
+#         # read in input parameters and update
+#         df = pd.read_csv(input_param_file)
+#
+#         # identify row with rubber dam lake conductivity
+#         mask = df['parnme'] == "lak_cond_12"
+#
+#         # change lakebed leakance
+#         val = df.loc[mask, 'parval1']
+#         df.loc[mask, 'parval1'] = val * lakebed_leakance_multiplier_chosen
+#
+#         # export input params
+#         df.to_csv(r'input_param.csv')
+#
+#         pass
+#
+#
+#     # loop through vertical K multipliers
+#     for m in Ks_multipliers:
+#
+#         # identify K zones for well ids of interest (remember that python is 0-based)
+#         K_zone_list = []
+#         for row, col in zip(well_row, well_col):
+#             this_zone = str(int(K_zone_ids[lake_layer, row-1, col-1]))
+#             this_zone = "ks_" + this_zone
+#             K_zone_list.append(this_zone)
+#
+#         # get unique values
+#         K_zone_list = list(set(K_zone_list))
+#
+#         # read in input parameters and update
+#         df = pd.read_csv(input_param_file)
+#
+#         # identify row(s) with selected K zone
+#         #mask = df['parnme'].isin(K_zone_list[i])
+#
+#         # change vertical K
+#         for z in range(len(K_zone_list)):
+#             mask = df['parnme'] == z
+#             val = df.loc[mask, 'parval1']
+#             df.loc[mask, 'parval1'] = val * m
+#
+#         # export input params
+#         df.to_csv(r'input_param.csv')
+#
+#         # run model
+#         ss_forward_model.run(r'input_param.csv')
+#
+#         # read in hob output and save head residuals in table for well ids of interest
+#         hob_out = hob_util.hob_output_to_df(mfname)
+#         hob_out = hob_out.drop(['Basename'], axis=1)
+#         hob_out['lkbd_lknc_mult'] = lakebed_leakance_multiplier_chosen
+#         hob_out['ks_mult'] = m
+#         hob_out['resid'] = hob_out['SIMULATED EQUIVALENT'] - hob_out['OBSERVED VALUE']
+#         hob_out = hob_out.reindex(columns=['lkbd_lknc_mult', 'ks_mult', 'OBSERVATION NAME', 'SIMULATED EQUIVALENT', 'OBSERVED VALUE', 'resid'])
+#         hob_out = hob_out.loc[hob_out['OBSERVATION NAME'].isin(well_id)]
+#         hob_resid_compare = hob_resid_compare.append(hob_out, ignore_index=True)
+#
+#         # read in lake output and save lake stage in table for rubber dam lake
+#         # see if flopy has a function for reading in the lake file, or follow the hob read in code as a guide
+#         rubber_dam_lak = pd.read_csv(r'./mf_dataset/rubber_dam_lake_bdg.lak.out', skiprows=2, header=None, names = ["col"])
+#         rubber_dam_lak = rubber_dam_lak.col.str.split(expand=True)
+#         stage = rubber_dam_lak.iloc[1,1]
+#         rubber_dam_lak = pd.DataFrame({'lkbd_lknc_mult': [lakebed_leakance_multiplier_chosen],'ks_mult': [m], 'stage': [stage]},
+#                                       columns = ['lkbd_lknc_mult', 'ks_mult', 'stage'])
+#         lake_stage_compare = lake_stage_compare.append(rubber_dam_lak)
+#
+#         pass
+#
+#     # export table of head residuals
+#     hob_resid_compare.to_csv(r'./manual_calib_results/hob_resid_compare_lknc_ks.csv')
+#
+#     # export table of lake stages
+#     lake_stage_compare.to_csv(r'./manual_calib_results/lake_stage_compare_lknc_ks.csv')
+#
 
-hob_resid_compare = pd.DataFrame(columns=['lkbd_lknc_mult', 'ks_mult', 'OBSERVATION NAME', 'SIMULATED EQUIVALENT', 'OBSERVED VALUE', 'resid'])
-lake_stage_compare = pd.DataFrame(columns = ['lkbd_lknc_mult', 'ks_mult', 'stage'])
+
+
+# ---- change horizontal and vertical Ks and also possibly lakebed leakance, run model, store resid -------------------------------------------------------
+
+hob_resid_compare = pd.DataFrame(columns=['lkbd_lknc_mult', 'hks_mult', 'vks_mult', 'OBSERVATION NAME', 'SIMULATED EQUIVALENT', 'OBSERVED VALUE', 'resid'])
+lake_stage_compare = pd.DataFrame(columns=['lkbd_lknc_mult', 'hks_mult', 'vks_mult', 'stage'])
 if change_Ks == 1:
 
     if change_lakebed_leakance == 1:
-
         # read in input parameters and update
         df = pd.read_csv(input_param_file)
 
@@ -136,60 +224,72 @@ if change_Ks == 1:
         # export input params
         df.to_csv(r'input_param.csv')
 
-        pass
 
 
-    # loop through vertical K multipliers
-    for m in Ks_multipliers:
+    # loop through horizontal K multipliers
+    for hm in hKs_multipliers:
 
-        # identify K zones for well ids of interest (remember that python is 0-based)
-        K_zone_list = []
-        for row, col in zip(well_row, well_col):
-            this_zone = str(int(K_zone_ids[lake_layer, row-1, col-1]))
-            this_zone = "ks_" + this_zone
-            K_zone_list.append(this_zone)
+        # loop through vertical K multipliers
+        for vm in vKs_multipliers:
 
-        # get unique values
-        K_zone_list = list(set(K_zone_list))
+            # identify K zones for well ids of interest (remember that python is 0-based)
+            K_zone_list = []
+            for row, col in zip(well_row, well_col):
+                this_zone = str(int(K_zone_ids[lake_layer, row - 1, col - 1]))
+                this_zone = "ks_" + this_zone
+                K_zone_list.append(this_zone)
 
-        # read in input parameters and update
-        df = pd.read_csv(input_param_file)
+            # get unique values
+            K_zone_list = list(set(K_zone_list))
 
-        # identify row(s) with selected K zone
-        #mask = df['parnme'].isin(K_zone_list[i])
+            # read in input parameters and update
+            df = pd.read_csv(input_param_file)
 
-        # change vertical K
-        for z in range(len(K_zone_list)):
-            mask = df['parnme'] == z
+            # identify row(s) with selected K zone
+            # mask = df['parnme'].isin(K_zone_list[i])
+
+            # change horizontal K
+            for z in range(len(K_zone_list)):
+                mask = df['parnme'] == z
+                val = df.loc[mask, 'parval1']
+                df.loc[mask, 'parval1'] = val * hm
+
+            # change vertical K for the top two layers
+            mask = df['parnme'].isin(['vka_ratio_1', 'vka_ratio_2'])
             val = df.loc[mask, 'parval1']
-            df.loc[mask, 'parval1'] = val * m
+            df.loc[mask, 'parval1'] = val * vm
 
-        # export input params
-        df.to_csv(r'input_param.csv')
+            # export input params
+            df.to_csv(r'input_param.csv')
 
-        # run model
-        ss_forward_model.run(r'input_param.csv')
+            # run model
+            ss_forward_model.run(r'input_param.csv')
 
-        # read in hob output and save head residuals in table for well ids of interest
-        hob_out = hob_util.hob_output_to_df(mfname)
-        hob_out = hob_out.drop(['Basename'], axis=1)
-        hob_out['lkbd_lknc_mult'] = lakebed_leakance_multiplier_chosen
-        hob_out['ks_mult'] = m
-        hob_out['resid'] = hob_out['SIMULATED EQUIVALENT'] - hob_out['OBSERVED VALUE']
-        hob_out = hob_out.reindex(columns=['lkbd_lknc_mult', 'ks_mult', 'OBSERVATION NAME', 'SIMULATED EQUIVALENT', 'OBSERVED VALUE', 'resid'])
-        hob_out = hob_out.loc[hob_out['OBSERVATION NAME'].isin(well_id)]
-        hob_resid_compare = hob_resid_compare.append(hob_out, ignore_index=True)
+            # read in hob output and save head residuals in table for well ids of interest
+            hob_out = hob_util.hob_output_to_df(mfname)
+            hob_out = hob_out.drop(['Basename'], axis=1)
+            hob_out['lkbd_lknc_mult'] = lakebed_leakance_multiplier_chosen
+            hob_out['hks_mult'] = hm
+            hob_out['vks_mult'] = vm
+            hob_out['resid'] = hob_out['SIMULATED EQUIVALENT'] - hob_out['OBSERVED VALUE']
+            hob_out = hob_out.reindex(
+                columns=['lkbd_lknc_mult', 'hks_mult', 'vks_mult', 'OBSERVATION NAME', 'SIMULATED EQUIVALENT', 'OBSERVED VALUE',
+                         'resid'])
+            hob_out = hob_out.loc[hob_out['OBSERVATION NAME'].isin(well_id)]
+            hob_resid_compare = hob_resid_compare.append(hob_out, ignore_index=True)
 
-        # read in lake output and save lake stage in table for rubber dam lake
-        # see if flopy has a function for reading in the lake file, or follow the hob read in code as a guide
-        rubber_dam_lak = pd.read_csv(r'./mf_dataset/rubber_dam_lake_bdg.lak.out', skiprows=2, header=None, names = ["col"])
-        rubber_dam_lak = rubber_dam_lak.col.str.split(expand=True)
-        stage = rubber_dam_lak.iloc[1,1]
-        rubber_dam_lak = pd.DataFrame({'lkbd_lknc_mult': [lakebed_leakance_multiplier_chosen],'ks_mult': [m], 'stage': [stage]},
-                                      columns = ['lkbd_lknc_mult', 'ks_mult', 'stage'])
-        lake_stage_compare = lake_stage_compare.append(rubber_dam_lak)
+            # read in lake output and save lake stage in table for rubber dam lake
+            # see if flopy has a function for reading in the lake file, or follow the hob read in code as a guide
+            rubber_dam_lak = pd.read_csv(r'./mf_dataset/rubber_dam_lake_bdg.lak.out', skiprows=2, header=None,
+                                         names=["col"])
+            rubber_dam_lak = rubber_dam_lak.col.str.split(expand=True)
+            stage = rubber_dam_lak.iloc[1, 1]
+            rubber_dam_lak = pd.DataFrame(
+                {'lkbd_lknc_mult': [lakebed_leakance_multiplier_chosen], 'hks_mult': [hm], 'vks_mult': [vm], 'stage': [stage]},
+                columns=['lkbd_lknc_mult', 'hks_mult', 'vks_mult', 'stage'])
+            lake_stage_compare = lake_stage_compare.append(rubber_dam_lak)
 
-        pass
+
 
     # export table of head residuals
     hob_resid_compare.to_csv(r'./manual_calib_results/hob_resid_compare_lknc_ks.csv')
