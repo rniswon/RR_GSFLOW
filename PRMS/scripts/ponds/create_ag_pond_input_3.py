@@ -38,7 +38,6 @@ ag_pond_RO_perv_frac = [0.0] * nhru
 ag_pond_RO_imperv_frac = [0.0] * nhru
 
 # substitute parameter values for HRUs with ag ponds - set values
-# TODO: check with John whether these indices should be x-1 instead of x since Python is 0-based
 for x in HRU_list:
     ag_pond_area_frac[x-1] = 0.25
     ag_pond_depth[x-1] = 132.0

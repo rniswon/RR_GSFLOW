@@ -37,7 +37,7 @@ lakebed_leakance_multiplier_chosen = 1000
 #hKs_multipliers = [1,2,10,100,1000]
 hKs_multipliers = [1000]
 #vKs_multipliers = [1,2,10,100,1000]
-vKs_multipliers = [1,2,10]
+vKs_multipliers = [1,2,10,100,1000]
 
 
 # specify modflow name file

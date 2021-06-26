@@ -406,6 +406,6 @@
 404,ks_231,none,2.97e-05,upw_ks,14180
 405,ks_232,none,0.000355282,upw_ks,14190
 406,ks_233,none,6.09e-05,upw_ks,14210
-407,vka_ratio_1,none,1.0,upw_vka,14210
-408,vka_ratio_2,none,1.0,upw_vka,14210
+407,vka_ratio_1,none,100.0,upw_vka,14210
+408,vka_ratio_2,none,100.0,upw_vka,14210
 409,vka_ratio_3,none,0.1,upw_vka,14210

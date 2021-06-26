@@ -692,7 +692,8 @@ class Gw_model(object):
             #spillway_slope = gate_outseg_reachdata['slope'].values[0]
             spillway_slope = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_slope'))
             spillway_rchlen = float(self.config.get('RUBBER_DAM', 'rubber_dam_all_outflow_rchlen'))
-            spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))
+            #spillway_strtop = dam_inflated - (spillway_slope * (0.5 * spillway_rchlen))  # if want spillway at inflated dam elevation
+            spillway_strtop = (dam_deflated + lake_bottom_buffer) - (spillway_slope * (0.5 * spillway_rchlen))  # if want spillway at deflated dam elevation + deadpool
             # if spillway_strtop < gate_outseg_reachdata['strtop'].values[0]:
             #     spillway_strtop = gate_outseg_reachdata['strtop'].values[0] + 0.1
 
