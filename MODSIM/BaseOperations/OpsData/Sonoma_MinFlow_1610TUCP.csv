@@ -1,0 +1,51 @@
+TSID,Node,Month,Day,1,2,3,4
+1,MinRelease,1,1,75,75,75,75
+1,MinRelease,2,1,75,75,75,75
+1,MinRelease,3,1,75,75,75,75
+1,MinRelease,4,1,75,25,25,75
+1,MinRelease,5,1,80,25,25,80
+1,MinRelease,6,1,80,25,25,80
+1,MinRelease,7,1,80,25,25,80
+1,MinRelease,8,1,80,25,25,80
+1,MinRelease,9,1,80,25,25,80
+1,MinRelease,10,1,80,25,25,80
+1,MinRelease,11,1,105,75,75,105
+1,MinRelease,12,1,105,75,75,105
+1,DryCreek_Ops,1,1,88,88,88,88
+1,DryCreek_Ops,2,1,88,88,88,88
+1,DryCreek_Ops,3,1,88,88,88,88
+1,DryCreek_Ops,4,1,88,38,38,88
+1,DryCreek_Ops,5,1,93,38,38,93
+1,DryCreek_Ops,6,1,93,38,38,93
+1,DryCreek_Ops,7,1,93,38,38,93
+1,DryCreek_Ops,8,1,93,38,38,93
+1,DryCreek_Ops,9,1,93,38,38,93
+1,DryCreek_Ops,10,1,93,38,38,93
+1,DryCreek_Ops,11,1,118,88,88,118
+1,DryCreek_Ops,12,1,118,88,88,118
+1,Dry Creek RR_Ops,1,1,159,119,69,159
+1,Dry Creek RR_Ops,2,1,159,119,69,159
+1,Dry Creek RR_Ops,3,1,159,119,69,159
+1,Dry Creek RR_Ops,4,1,159,119,69,159
+1,Dry Creek RR_Ops,5,1,84,84,69,84
+1,Dry Creek RR_Ops,6,1,84,84,69,84
+1,Dry Creek RR_Ops,7,1,84,84,69,84
+1,Dry Creek RR_Ops,8,1,84,84,69,84
+1,Dry Creek RR_Ops,9,1,84,84,69,84
+1,Dry Creek RR_Ops,10,1,84,84,69,84
+1,Dry Creek RR_Ops,10,16,159,119,69,159
+1,Dry Creek RR_Ops,11,1,159,119,69,159
+1,Dry Creek RR_Ops,12,1,159,119,69,159
+1,Ocean_Ops,1,1,159,119,69,159
+1,Ocean_Ops,2,1,159,119,69,159
+1,Ocean_Ops,3,1,159,119,69,159
+1,Ocean_Ops,4,1,159,119,69,159
+1,Ocean_Ops,5,1,84,84,69,84
+1,Ocean_Ops,6,1,84,84,69,84
+1,Ocean_Ops,7,1,84,84,69,84
+1,Ocean_Ops,8,1,84,84,69,84
+1,Ocean_Ops,9,1,84,84,69,84
+1,Ocean_Ops,10,1,84,84,69,84
+1,Ocean_Ops,10,16,159,119,69,159
+1,Ocean_Ops,11,1,159,119,69,159
+1,Ocean_Ops,12,1,159,119,69,159

@@ -1,0 +1,53 @@
+TSID,Node,Month,1,2,3,4
+1,East-West Jct_Ops,1,170,170,170,170
+1,East-West Jct_Ops,2,170,170,170,170
+1,East-West Jct_Ops,3,170,170,170,170
+1,East-West Jct_Ops,4,205,205,205,205
+1,East-West Jct_Ops,5,205,205,205,205
+1,East-West Jct_Ops,6,205,170,170,95
+1,East-West Jct_Ops,7,205,170,170,95
+1,East-West Jct_Ops,8,205,170,170,95
+1,East-West Jct_Ops,9,170,170,170,95
+1,East-West Jct_Ops,10,170,170,95,95
+1,East-West Jct_Ops,11,170,170,95,95
+1,East-West Jct_Ops,12,170,170,95,95
+1,Hopland_Ops,1,170,170,170,170
+1,Hopland_Ops,2,170,170,170,170
+1,Hopland_Ops,3,170,170,170,170
+1,Hopland_Ops,4,205,205,205,205
+1,Hopland_Ops,5,205,205,205,205
+1,Hopland_Ops,6,205,170,170,95
+1,Hopland_Ops,7,205,170,170,95
+1,Hopland_Ops,8,205,170,170,95
+1,Hopland_Ops,9,170,170,170,95
+1,Hopland_Ops,10,170,170,95,95
+1,Hopland_Ops,11,170,170,95,95
+1,Hopland_Ops,12,170,170,95,95
+1,Cloverdale_Ops,1,170,170,170,170
+1,Cloverdale_Ops,2,170,170,170,170
+1,Cloverdale_Ops,3,170,170,170,170
+1,Cloverdale_Ops,4,205,205,205,205
+1,Cloverdale_Ops,5,205,205,205,205
+1,Cloverdale_Ops,6,205,170,170,95
+1,Cloverdale_Ops,7,205,170,170,95
+1,Cloverdale_Ops,8,205,170,170,95
+1,Cloverdale_Ops,9,170,170,170,95
+1,Cloverdale_Ops,10,170,170,95,95
+1,Cloverdale_Ops,11,170,170,95,95
+1,Cloverdale_Ops,12,170,170,95,95
+1,Healdsburg_Ops,1,170,170,170,170
+1,Healdsburg_Ops,2,170,170,170,170
+1,Healdsburg_Ops,3,170,170,170,170
+1,Healdsburg_Ops,4,205,205,205,205
+1,Healdsburg_Ops,5,205,205,205,205
+1,Healdsburg_Ops,6,205,170,170,95
+1,Healdsburg_Ops,7,205,170,170,95
+1,Healdsburg_Ops,8,205,170,170,95
+1,Healdsburg_Ops,9,170,170,170,95
+1,Healdsburg_Ops,10,170,170,95,95
+1,Healdsburg_Ops,11,170,170,95,95
+1,Healdsburg_Ops,12,170,170,95,95
+2,East-West Jct_Ops,,,80,30,
+2,Hopland_Ops,,,95,45,
+2,Cloverdale_Ops,,,95,45,
+2,Healdsburg_Ops,,,95,45,
