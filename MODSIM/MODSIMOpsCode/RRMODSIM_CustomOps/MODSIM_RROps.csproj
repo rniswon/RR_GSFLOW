@@ -74,19 +74,19 @@
   <ItemGroup>
     <Reference Include="A2CM, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MODSIMLibraries\x86\A2CM.dll</HintPath>
+      <HintPath>..\MODSIMLibraries\$(Platform)\A2CM.dll</HintPath>
     </Reference>
     <Reference Include="libsim, Version=8.6.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MODSIMLibraries\x86\libsim.dll</HintPath>
+      <HintPath>..\MODSIMLibraries\$(Platform)\libsim.dll</HintPath>
     </Reference>
     <Reference Include="ModsimModel, Version=8.6.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MODSIMLibraries\x86\ModsimModel.dll</HintPath>
+      <HintPath>..\MODSIMLibraries\$(Platform)\ModsimModel.dll</HintPath>
     </Reference>
     <Reference Include="NetworkUtils, Version=8.4.5.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MODSIMLibraries\x86\NetworkUtils.dll</HintPath>
+      <HintPath>..\MODSIMLibraries\$(Platform)\NetworkUtils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -100,7 +100,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="XYFile, Version=8.4.5.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MODSIMLibraries\x86\XYFile.dll</HintPath>
+      <HintPath>..\MODSIMLibraries\$(Platform)\XYFile.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

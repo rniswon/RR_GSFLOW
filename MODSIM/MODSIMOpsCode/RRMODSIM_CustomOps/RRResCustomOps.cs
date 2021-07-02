@@ -88,7 +88,7 @@ namespace RTI.CWR.RRModel
             //West Fork Flow
             westForkFlows = m_Model.FindLink("WestForkFlow");
             MendoContrlledRelease = m_Model.FindLink("Mendo_ControlledRelease");
-            hopelandGage = m_Model.FindLink("Hoplande");
+            hopelandGage = m_Model.FindLink("Hopland");
         }
 
        
