@@ -1,25 +1,30 @@
 
 PANTHER master listening on socket:0.0.0.0:4075 (IPv4)
 running model 407 times
+07/09/21 08:58:52->waiting for agents to appear
 
-    waiting for slaves to appear...
-
-
-07/08/21 17:10:05->new connection from: IGSWCGWWLT6828.gs.doi.net:51132
-07/08/21 17:10:05->initializing new slave connection from: IGSWCGWWLT6828.gs.doi.net:51132; number of slaves: 1; working dir: C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0
-07/08/21 17:10:06->new slave ready: IGSWCGWWLT6828.gs.doi.net:51132
-07/08/21 17:10:06->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 0, concurrent runs = 1)
-07/08/21 17:11:37->Run 0 failed on slave:IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 0, concurrent = 1) 
-07/08/21 17:11:37->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 0, concurrent runs = 1)
-07/08/21 17:14:52->received corrupt message from slave: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0 - terminating slave
-07/08/21 17:14:52->closed connection to slave: IGSWCGWWLT6828.gs.doi.net:51132; number of slaves: 0
-07/08/21 17:15:31->new connection from: IGSWCGWWLT6828.gs.doi.net:51201
-07/08/21 17:15:31->initializing new slave connection from: IGSWCGWWLT6828.gs.doi.net:51201; number of slaves: 1; working dir: C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0
-07/08/21 17:15:32->new slave ready: IGSWCGWWLT6828.gs.doi.net:51201
-07/08/21 17:15:32->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 0, concurrent runs = 1)
-07/08/21 17:17:03->Run 0 failed on slave:IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 0, concurrent = 1) 
-07/08/21 17:17:03->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 0, concurrent runs = 1)
-07/08/21 17:18:33->Run 0 failed on slave:IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 0, concurrent = 1) 
-07/08/21 17:18:33->Sending run 1 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0  (group id = 2, run id = 1, concurrent runs = 1)
-07/08/21 17:18:42->received corrupt message from slave: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\worker_0 - terminating slave
-07/08/21 17:18:42->closed connection to slave: IGSWCGWWLT6828.gs.doi.net:51201; number of slaves: 0
+07/09/21 08:59:09->new connection from: IGSWCAWWLT3972.gs.doi.net:55540
+07/09/21 08:59:09->initializing new agent connection from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2):IGSWCAWWLT3972.gs.doi.net:55540, number of agents: 1
+07/09/21 08:59:14->new agent ready: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2):IGSWCAWWLT3972.gs.doi.net:55540
+07/09/21 08:59:14->Sending run 0 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:0, concurrent runs:1)
+07/09/21 08:59:33->run 0 received from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (run time:0.310167 min, avg run time:0.310167 min, group id:2, run id: 0 concurrent:1)
+07/09/21 08:59:33->run 0 processed
+07/09/21 08:59:33->Sending run 1 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:1, concurrent runs:1)
+07/09/21 08:59:38->run 1 received from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (run time:0.200417 min, avg run time:0.200417 min, group id:2, run id: 1 concurrent:1)
+07/09/21 08:59:38->run 1 processed
+07/09/21 08:59:38->Sending run 2 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:2, concurrent runs:1)
+07/09/21 08:59:43->run 2 received from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (run time:0.144517 min, avg run time:0.144517 min, group id:2, run id: 2 concurrent:1)
+07/09/21 08:59:43->run 2 processed
+07/09/21 08:59:43->Sending run 3 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:3, concurrent runs:1)
+07/09/21 08:59:48->run 3 received from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (run time:0.109183 min, avg run time:0.109183 min, group id:2, run id: 3 concurrent:1)
+07/09/21 08:59:48->run 3 processed
+07/09/21 08:59:48->Sending run 4 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:4, concurrent runs:1)
+07/09/21 08:59:52->run 4 received from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (run time:0.0906833 min, avg run time:0.0906833 min, group id:2, run id: 4 concurrent:1)
+07/09/21 08:59:52->run 4 processed
+07/09/21 08:59:52->Sending run 5 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:5, concurrent runs:1)
+07/09/21 08:59:58->run 5 received from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (run time:0.08975 min, avg run time:0.08975 min, group id:2, run id: 5 concurrent:1)
+07/09/21 08:59:58->run 5 processed
+07/09/21 08:59:58->Sending run 6 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:6, concurrent runs:1)
+07/09/21 09:00:03->run 6 received from: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (run time:0.0892833 min, avg run time:0.0892833 min, group id:2, run id: 6 concurrent:1)
+07/09/21 09:00:03->run 6 processed
+07/09/21 09:00:03->Sending run 7 to: IGSWCAWWLT3972.gs.doi.net$D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir - Copy (2)  (group id:2, run id:7, concurrent runs:1)

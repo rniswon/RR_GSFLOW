@@ -68,6 +68,7 @@ def generate_output_file_ss(Sim):
     df_obs = obs_utils.add_obs(df=df_obs, obsnams='pmpchg', simval=pmp_chg, obsval=0.0,
                                obsgnme='PmpCHG', weight=1.0, comments="# Total pump change")
     Sim.df_obs = df_obs
+    df_obs = df_obs[['simval', 'obsnme', 'obsval', 'weight', 'obgnme', 'comments']]
     df_obs.to_csv(Sim.output_file, index=None)
     pass
 
