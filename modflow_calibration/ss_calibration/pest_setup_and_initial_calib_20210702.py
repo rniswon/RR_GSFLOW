@@ -10,11 +10,11 @@ import sweep
 #self.parensemble._transform(inplace=True)
 
 # Set file names
-input_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\input_param_2020.csv"
-output_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\model_output.csv"
-zero_weight_gage_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\model_data\misc_files\gage_weights.csv"  # TODO: find out where this is
+input_file = r".\slave_dir\input_param_2020.csv"
+output_file = r".\slave_dir\model_output.csv"
+zero_weight_gage_file = r".\slave_dir\misc_files\gage_weights.csv"  # TODO: find out where this is
 #slave_root = r"C:\work\Russian_River\monte_carlo\slave_root" # TODO: find out where this should be - is it supposed to be the same as slave_dir?  or is it the folder containing slave_dir?
-slave_root = r"C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir"
+slave_root = r".\slave_dir"
 slave_dir = r"slave_dir"
 pstfname = 'ss_mf.pst'
 
@@ -37,6 +37,7 @@ obs_zero_weight = []
 input_par = pd.read_csv(input_file)
 output_obs = pd.read_csv(output_file)
 
+output_obs['obsnme'] = output_obs['obsnme'].str.lower()
 # Generate pst object from parnames and obsnames
 parnames = input_par['parnme'].values.tolist()
 obsnames = output_obs['obsnme'].values.tolist()
@@ -195,7 +196,7 @@ pst.model_input_data['model_file'] = [r'input_param.csv']
 pst.model_output_data = pd.DataFrame([[r'insfile.ins', 'model_output.csv']], columns = ['pest_file', 'model_file'])        # This is the workaround
 pst.model_command = "run_model.bat"
 fullname = os.path.join(r'.\slave_dir', pstfname)
-
+pst.pestpp_options['additional_ins_delimiters'] = ","
 # Write pest control file
 pst.write(new_filename = fullname)
 
@@ -219,3 +220,5 @@ os.chdir(base_folder)
 
 # Run PEST in parallel
 sweep.start_slaves(slave_dir,"pestpp",pstfname, 1, slave_root= slave_root, port=port, run_cmd='run_slave.bat')
+
+xx = 1

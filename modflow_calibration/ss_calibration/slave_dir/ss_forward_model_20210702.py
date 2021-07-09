@@ -15,6 +15,7 @@ import output_utils
 #from gsflow.utils.vtk import Gsflowvtk, Mfvtk
 import flopy
 import numpy as np
+import shutil
 
 
 # ----------------------------------------------
@@ -154,6 +155,7 @@ if __name__ == '__main__':
 
     print("Start model run....")
     run(input_file= 'input_param.csv')
+    #shutil.copyfile(r"model_output - Copy.csv", "model_output.csv")
     #run_simple_in_out('input_param.dat', 'model_output.dat', 'input_param.csv', 'model_output.csv')
     print("End model run....")
     pass
