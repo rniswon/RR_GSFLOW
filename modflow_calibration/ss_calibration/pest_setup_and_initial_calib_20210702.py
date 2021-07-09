@@ -2,9 +2,7 @@
 # Settings
 # -------------------------------------------------------------
 import sys, os
-#sys.path.insert(0,r"D:\codes\pyemu")
-sys.path.insert(0, r"C:\work\code\pyemu")
-import pyemu    # TODO: why is this underlined in red even though it seems to load without errors?
+import pyemu
 import pandas as pd
 import sweep
 
@@ -49,6 +47,50 @@ pst = pyemu.Pst.from_par_obs_names(par_names= parnames,
 # pyemu.utils.simple_tpl_from_pars(parnames, tplfilename = r".\slave_dir\tplfile.tpl")
 # pyemu.utils.simple_ins_from_obs2(obsnames, insfilename = r".\slave_dir\insfile.ins")
 
+# Generate tpl file
+def csv_to_tpl(csv_file, name_col, par_col, tpl_file ):
+    df = pd.read_csv(csv_file)
+    fidw = open(tpl_file, 'w')
+    fidw.write("ptf ~\n")
+    for i, col in enumerate(df.columns):
+        if i == 0:
+            csv_header = str(col)
+            continue
+        csv_header = csv_header + "," + str(col)
+    csv_header = csv_header + "\n"
+    fidw.write(csv_header)
+    line = ""
+    for irow, row in df.iterrows():
+        row[par_col] =  " ~   {0}    ~".format(row[name_col])
+        line = ",".join(row.astype(str).values.tolist()) + "\n"
+        fidw.write(line)
+    fidw.close()
+csv_to_tpl(csv_file = input_file, name_col = 'parnme', par_col = 'parval1',  tpl_file = r".\slave_dir\tplfile.tpl")
+
+# Generate ins file
+def csv_to_ins(csv_file, name_col, obs_col, ins_file):
+    df = pd.read_csv(csv_file)
+    part1 = "l1"
+    obs_is_last = False
+    for icol, col in enumerate(df.columns):
+        if col in [obs_col]:
+            if (icol + 1) == len(df.columns):
+                obs_is_last = True
+            break
+        part1 = part1 + " ~,~"
+    obs_names = df[name_col]
+    fidw = open(ins_file, 'w')
+    fidw.write("pif ~\n")
+    fidw.write("l1\n") # header
+    for irow, row in df.iterrows():
+        line = part1 + "   !{0}!    ~".format(row[name_col])
+        if not(obs_is_last):
+            line = line + ",~\n"
+        else:
+            line = line[:-2].strip() + "\n"
+        fidw.write(line)
+    fidw.close()
+csv_to_ins(csv_file = output_file, name_col = 'obsnme', obs_col = 'simval', ins_file = r".\slave_dir\insfile.ins")
 
 
 
@@ -90,7 +132,7 @@ for par in parnames:
         pst.parameter_data.loc[mask, 'parubnd'] = 1.0
 
     # Set parameter transformation and upper/lower bounds for SFR spillways
-    # TODO: consider addding rubber dam in here (but would first need to add it to input_params.csv)
+    # TODO: consider adding rubber dam in here (but would first need to add it to input_params.csv)
     if grpnm.values[0] == 'sfr_spil':
         pst.parameter_data.loc[mask, 'parlbnd'] = 100.0
         pst.parameter_data.loc[mask, 'parubnd'] = 220.0
@@ -146,10 +188,11 @@ for obs in obsnames:
 
 
 # Assign file names for PEST control file
-pst.input_files = [r"input_param.dat"]  # TODO: figure out why it can't set this attribute
-pst.output_files = [r"model_output.dat"]
-pst.template_files = [r'tplfile.tpl']
-pst.instruction_files =[r'insfile.ins']
+pst.model_input_data['pest_file'] = [r'tplfile.tpl']
+pst.model_input_data['model_file'] = [r'input_param.csv']
+# pst.model_output_data['pest_file'] = [r'insfile.ins']                # Implemented a work-around for a pyemu bug in which the model output data writes over the model input data
+# pst.model_output_data['model_file'] = [r'model_output.csv']          # Implemented a work-around for a pyemu bug in which the model output data writes over the model input data
+pst.model_output_data = pd.DataFrame([[r'insfile.ins', 'model_output.csv']], columns = ['pest_file', 'model_file'])        # This is the workaround
 pst.model_command = "run_model.bat"
 fullname = os.path.join(r'.\slave_dir', pstfname)
 
@@ -175,4 +218,4 @@ os.system(cmd)
 os.chdir(base_folder)
 
 # Run PEST in parallel
-sweep.start_slaves(slave_dir,"pestpp",pstfname, 15, slave_root= slave_root, port=port, run_cmd='run_slave.bat')
+sweep.start_slaves(slave_dir,"pestpp",pstfname, 1, slave_root= slave_root, port=port, run_cmd='run_slave.bat')

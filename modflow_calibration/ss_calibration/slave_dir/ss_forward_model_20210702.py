@@ -153,7 +153,7 @@ def run_simple_in_out(in_fn, out_fn, csv_in, csv_out):
 if __name__ == '__main__':
 
     print("Start model run....")
-    run(input_file= 'input_param_2020.csv')
+    run(input_file= 'input_param.csv')
     #run_simple_in_out('input_param.dat', 'model_output.dat', 'input_param.csv', 'model_output.csv')
     print("End model run....")
     pass

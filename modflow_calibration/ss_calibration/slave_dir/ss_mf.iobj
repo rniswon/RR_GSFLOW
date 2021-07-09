@@ -1,5 +1,1 @@
-iteration,model_runs_completed,total_phi,measurement_phi,regularization_phi,basflo,ggflo,heads,pmpchg
-0,0,1.28456e+06,1.28456e+06,0,1.18797e+06,1685.45,13756.9,81146.1
-1,703,954562,954562,0,861376,1579.68,13843.4,77763
-2,1407,954562,954562,0,861376,1579.68,13843.4,77763
-3,2109,946266,946266,0,850661,1913.94,13794.7,79896.2
+iteration,model_runs_completed,total_phi,measurement_phi,regularization_phi,heads,basflo,ggflo,pmpchg
