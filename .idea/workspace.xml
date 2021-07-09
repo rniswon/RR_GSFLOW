@@ -3,31 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="91807447-fe4f-434e-8c7a-78b465a30a8b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210702.py" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210702.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/input_param.csv" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/input_param.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/insfile.ins" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/insfile.ins" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/master_stderr.dat" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/master_stderr.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/model_output.csv" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/model_output.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/run_model.bat" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/run_model.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210702.py" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210702.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.iobj" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.iobj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.ipar" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.ipar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.isen" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.isen" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.parb" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.parb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.pfm" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.pfm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.pst" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.pst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rec" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rec" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rid" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rid" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rmr" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rmr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rnj" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rnj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rns" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rns" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rst" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.rst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.sen" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.sen" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.svd" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.svd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.upg.csv" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/ss_mf.upg.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/tplfile.tpl" beforeDir="false" afterPath="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/tplfile.tpl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
