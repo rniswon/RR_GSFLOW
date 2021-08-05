@@ -5,8 +5,8 @@ import pandas as pd
 from collections.abc import Iterable
 from param_utils import *
 
-def add_sfr_parameters_to_input_file():
-    df = pd.read_csv(r"input_param.csv", index_col=False)
+def add_sfr_parameters_to_input_file1(input_file = r"input_param.csv" ):
+    df = pd.read_csv(input_file, index_col=False)
     hru_shp = pd.read_csv(r".\misc_files\hru_shp.csv")
     df_sfr = hru_shp[hru_shp['ISEG']>0]
     del(hru_shp)
@@ -15,10 +15,18 @@ def add_sfr_parameters_to_input_file():
     sub_ids = np.sort(sub_ids)
     df = remove_group(df, 'sfr_ks')
     for id in sub_ids:
-        nm = "sfr_k" + str(id)
+        nm = "sfr_k_" + str(int(id))
         df = add_param(df, nm, 1.0, gpname='sfr_ks', trans='none', comments='#')
-    df.to_csv(r"input_param.csv", index=None)
+    df.to_csv(input_file, index=None)
     pass
+def add_sfr_parameters_to_input_file2(input_file = r"input_param.csv" ):
+    df = pd.read_csv(input_file, index_col=False)
+    spillway = [447, 449]
+    elev = [188.06, 157.19]
+    df = add_param(df, 'spill_447', 188.06, gpname='sfr_spil', trans='none', comments='#')
+    df = add_param(df, 'spill_449', 157.19, gpname='sfr_spil', trans='none', comments='#')
+    df.to_csv(input_file, index=None)
+
 
 def change_sfr_ss(Sim):
     sfr = Sim.mf.sfr
@@ -34,9 +42,10 @@ def change_sfr_ss(Sim):
     sub_ids = np.sort(sub_ids)
     reach_data = sfr.reach_data.copy()
     reach_data = pd.DataFrame.from_records(reach_data)
+    spillways = reach_data[reach_data['strhc1'] == 0.0]['iseg'].values
     for id in sub_ids:
         curr_sub = df_sfr[df_sfr['subbasin'] == id]
-        nm = "sfr_k" + str(id)
+        nm = "sfr_k_" + str(int(id))
         val = df.loc[df['parnme'] == nm, 'parval1']
         rows = curr_sub['HRU_ROW'].values-1
         cols = curr_sub['HRU_COL'].values-1
@@ -50,7 +59,13 @@ def change_sfr_ss(Sim):
                 par_filter.append(False)
         #par_filter = (reach_data['i'].isin(rows)) & (reach_data['j'].isin(cols))
         reach_data.loc[par_filter, 'strhc1'] = val.values[0]
+    reach_data.loc[reach_data['iseg'].isin(spillways), 'strhc1'] = 0
 
+    # spillway
+    for spill_seg in [447, 449]:
+        nm = 'spill_{}'.format(spill_seg)
+        val = df.loc[df['parnme'] == nm, 'parval1']
+        reach_data.loc[reach_data['iseg']==spill_seg, 'strtop'] = val.values[0]
     Sim.mf.sfr.reach_data = reach_data.to_records()
 
 def get_all_upstream_segs(Sim, seg):
@@ -107,5 +122,5 @@ def get_next_up(sfr, iseg):
 
 
 if __name__ == "__main__":
-    add_sfr_parameters_to_input_file()
+    #add_sfr_parameters_to_input_file2()
     pass

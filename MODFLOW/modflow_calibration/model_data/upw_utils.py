@@ -41,8 +41,8 @@ def load_txt_3d(fn):
 
 
 
-def add_upw_parameters_to_input_file():
-    df = pd.read_csv(r"input_param.csv", index_col=False)
+def add_upw_parameters_to_input_file(input_file = r"input_param.csv" ):
+    df = pd.read_csv(input_file, index_col=False)
 
     # add ks
     df = remove_group(df, 'upw_ks')
@@ -61,7 +61,7 @@ def add_upw_parameters_to_input_file():
         if zid == 0:
             continue
         znm = zone_nms[zone_id==zid][0]
-        nm = "ks_{}".format(zid)
+        nm = "ks_{}".format(int(zid))
         df = add_param(df, nm, 1.0, gpname='upw_ks', trans='none', comments=str(int(znm)))
 
     # add vka
@@ -71,10 +71,12 @@ def add_upw_parameters_to_input_file():
         df = add_param(df, nm, 0.1, gpname='upw_vka', trans='none', comments=str(int(znm)))
 
 
-    df.to_csv(r"input_param.csv", index=None)
+    df.to_csv(input_file, index=None)
 
 def generate_zone_files_from_shp():
     zones_file = r"D:\Workspace\projects\RussianRiver\Data\geology\RR19grid_ELY_v3_7_23.shp"
+    ibound_file = r"D:\Workspace\projects\RussianRiver\modflow_calibration\others\ibound.dat"
+    ibound = load_txt_3d(ibound_file)
     zone_df = geopandas.read_file(zones_file)
     zone_df['HRU_ID'] = zone_df['HRU_ID'].astype(int)
     zone_df = zone_df.sort_values(by=['HRU_ID'])
@@ -95,6 +97,7 @@ def generate_zone_files_from_shp():
         if i< 2:
             flg = np.remainder(zone, 10)
             zone[flg==0] = 0
+        zone = zone * ibound[i,:,:]
         zone_names[i,:,:] = zone.copy()
 
     print(" Total number of zones is {}".format(nzones))
@@ -109,11 +112,6 @@ def generate_zone_files_from_shp():
 
     save_txt_3d(r'.\misc_files\K_zone_ids.dat', zone_ids, fmt = '%d')
     save_txt_3d(r'.\misc_files\K_zone_names.dat', zone_names, fmt='%d')
-
-
-
-
-
 
 
 def remove_zones_with_small_pixcels(num = 5, zones = None):
@@ -208,7 +206,7 @@ def fill0s(a):
 
 def change_upw_ss(Sim):
     upw = Sim.mf.upw
-    df = pd.read_csv(r"input_param.csv", index_col=False)
+    df = pd.read_csv(Sim.input_file, index_col=False)
 
     # get upw data
     # ks
@@ -227,7 +225,6 @@ def change_upw_ss(Sim):
         ks[mask] = row['parval1']
 
     # change vka
-    ks = upw.hk.array.copy()
     df_vka = df[df['pargp'] == 'upw_vka']
 
     # loop over zones and apply changes
@@ -238,7 +235,8 @@ def change_upw_ss(Sim):
         vka[layer_id-1,:,:] = ks[layer_id-1, :,:] * row['parval1']
 
 
-
+    ks[ks<=1e-5] = 1e-5
+    vka[vka<=1e-5] = 1e-5
     Sim.mf.upw.hk = ks
     Sim.mf.upw.vka = vka
     print("UPW package is updated.")
@@ -249,7 +247,8 @@ def change_upw_ss(Sim):
 
 
 if __name__ == "__main__":
-    generate_zone_files_from_shp()
-    add_upw_parameters_to_input_file()
+    # allways make this inactive
+    #generate_zone_files_from_shp()
+    #add_upw_parameters_to_input_file()
 
     pass

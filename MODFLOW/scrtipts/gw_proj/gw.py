@@ -1294,7 +1294,8 @@ class Gw_model(object):
 
         nsfrpar = 0  # number of parameters
         nparseg = 0
-        isfropt = 3  # uzf is simulated, k is read from uzf
+        #isfropt = 3  # uzf is simulated, k is read from uzf
+        isfropt = 1  # no vertical unsaturated flow beneath streams
         const = 86400  # constant for manning's equation, units of ??
         dleak = 0.0001  # closure tolerance for stream stage computation
         ipakcb = 55  # flag for writing SFR output to cell-by-cell budget (on unit 55)
@@ -2561,18 +2562,19 @@ class Gw_model(object):
     def add_wells_for_ponds_near_rubber_dam_ss(self, well_dict_ss):
 
         # read in data
-        pond_01_row = float(self.config.get('RUBBER_DAM', 'pond_01_row'))
-        pond_01_col = float(self.config.get('RUBBER_DAM', 'pond_01_col'))
-        pond_02_row = float(self.config.get('RUBBER_DAM', 'pond_02_row'))
-        pond_02_col = float(self.config.get('RUBBER_DAM', 'pond_02_col'))
-        pond_03_row = float(self.config.get('RUBBER_DAM', 'pond_03_row'))
-        pond_03_col = float(self.config.get('RUBBER_DAM', 'pond_03_col'))
+        # NOTE: subtracting one from HRU row and column numbers to get 0-based values
+        pond_01_row = float(self.config.get('RUBBER_DAM', 'pond_01_row')) - 1
+        pond_01_col = float(self.config.get('RUBBER_DAM', 'pond_01_col')) - 1
+        pond_02_row = float(self.config.get('RUBBER_DAM', 'pond_02_row')) - 1
+        pond_02_col = float(self.config.get('RUBBER_DAM', 'pond_02_col')) - 1
+        pond_03_row = float(self.config.get('RUBBER_DAM', 'pond_03_row')) - 1
+        pond_03_col = float(self.config.get('RUBBER_DAM', 'pond_03_col')) - 1
         total_pond_area = float(self.config.get('RUBBER_DAM', 'total_pond_area'))  # m^2
         pond_infiltration_rate = float(self.config.get('RUBBER_DAM', 'pond_infiltration_rate'))  # m/s
         number_ponded_months = float(self.config.get('RUBBER_DAM', 'number_ponded_months'))  # m/s
 
         # assign values
-        pond_layer = 1
+        pond_layer = 0   # NOTE: this is layer 1, but using 0-based Python index
 
         # calculate flow rate per pond
         flow_rate = ((total_pond_area * pond_infiltration_rate)/3) * 86400  # convert from m^3/s to m^3/day

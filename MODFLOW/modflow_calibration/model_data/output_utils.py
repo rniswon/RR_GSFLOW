@@ -23,36 +23,51 @@ def generate_output_file_ss(Sim):
     for i, row in df_hob.iterrows():
         obs_nm = row['OBSERVATION NAME']
         sim_val = row['SIMULATED EQUIVALENT']
-        df_obs = obs_utils.add_obs(df = df_obs, obsnams = obs_nm, values = sim_val, obsgnme = 'HEADS',
+        obs_val = row['OBSERVED VALUE']
+        df_obs = obs_utils.add_obs(df = df_obs, obsnams = obs_nm, simval = sim_val,
+                                   obsval = obs_val, obsgnme = 'HEADS',
                           weight = 1.0, comments ='#')
 
     # gages
     # total gage flow
     gag_info = pd.read_csv(Sim.gage_file)
+    gage_measurments = pd.read_csv(Sim.gage_measurement_file)
     gage_out_df  = compute_ss_baseflow(Sim)
     for i, row in gage_out_df.iterrows():
         sim_val = row['flow']
+        if np.any(gage_measurments['gage'] == row['NWIS_ID']):
+            obs_val = gage_measurments.loc[gage_measurments['gage']== row['NWIS_ID'], 'average_flow (m3/day)'].values[0]
+        else:
+            obs_val = -999
+
+        obs_val = float(obs_val)
         ibasin = row['basin_id']
         obs_nm = 'gflo_{}'.format(int(ibasin))
-        gage_name = gag_info[gag_info['basin_id']==ibasin]['FileName']
-        df_obs = obs_utils.add_obs(df=df_obs, obsnams=obs_nm, values=sim_val, obsgnme='GgFlo',
-                                   weight=1.0, comments=gage_name.values[0])
+        gage_name = row['Name']
+        df_obs = obs_utils.add_obs(df=df_obs, obsnams=obs_nm, simval=sim_val, obsval = obs_val,  obsgnme='GgFlo',
+                                   weight=1.0, comments=gage_name)
 
     # baseflow flow
     gag_info = pd.read_csv(Sim.gage_file)
     gage_out_df = compute_ss_baseflow(Sim)
     for i, row in gage_out_df.iterrows():
         sim_val = row['baseflow']
+        if np.any(gage_measurments['gage'] == row['NWIS_ID']):
+            obs_val = gage_measurments.loc[gage_measurments['gage'] == row['NWIS_ID'], 'base_flow (m3/day)'].values[0]
+        else:
+            obs_val = -999
+        obs_val = float(obs_val)
         ibasin = row['basin_id']
         obs_nm = 'bsflo_{}'.format(int(ibasin))
-        gage_name = gag_info[gag_info['basin_id'] == ibasin]['FileName']
-        df_obs = obs_utils.add_obs(df=df_obs, obsnams=obs_nm, values=sim_val, obsgnme='Basflo',
-                                   weight=1.0, comments=gage_name.values[0])
+        gage_name = row['Name']
+
+        df_obs = obs_utils.add_obs(df=df_obs, obsnams=obs_nm, simval=sim_val, obsval=obs_val, obsgnme='Basflo',
+                                   weight=1.0, comments=gage_name)
 
     # change in pumping
     pmp_chg = read_pump_reduc_file(Sim)
-    df_obs = obs_utils.add_obs(df=df_obs, obsnams='pmpchg', values=pmp_chg, obsgnme='PmpCHG',
-                               weight=1.0, comments="# Total pump change")
+    df_obs = obs_utils.add_obs(df=df_obs, obsnams='pmpchg', simval=pmp_chg, obsval=0.0,
+                               obsgnme='PmpCHG', weight=1.0, comments="# Total pump change")
     Sim.df_obs = df_obs
     df_obs.to_csv(Sim.output_file, index=None)
     pass
@@ -72,7 +87,7 @@ def read_pump_reduc_file(Sim):
         ValueError("Error: Cannot find sfr output file.....")
 
     # get wel output
-    wel_out = os.path.join(Sim.mf.model_ws, file)
+    wel_out = os.path.join(file)
 
     fidr  = open(wel_out,'r')
     content = fidr.readlines()
@@ -99,6 +114,11 @@ def compute_ss_baseflow(Sim):
     :return:
     """
     mf = Sim.mf
+    gage_topography_file = "sfr_topo.dat"
+    write_topo_file = False
+    if write_topo_file:
+        fidw = open(gage_topography_file, 'w')
+
     hru_shp_file = Sim.hru_shp_file
     gage_file = Sim.gage_file
 
@@ -120,10 +140,12 @@ def compute_ss_baseflow(Sim):
     if hasattr(Sim, 'hru_df'):
         hru_df = Sim.hru_df
     else:
-        hru_df = pd.read_csv(hru_shp)
+        hru_df = pd.read_csv(Sim.hru_shp_file)
+        Sim.hru_df = hru_df
 
     hru_df = hru_df.sort_values(by=['HRU_ID'])
     gage_df = pd.read_csv(gage_file)
+
 
     # For each subbasin, compute baseflow and runoff
     sub_ids = hru_df['subbasin'].unique()
@@ -131,32 +153,53 @@ def compute_ss_baseflow(Sim):
     gage_output = []
     for igage, gage in gage_df.iterrows():
 
-        seg = gage['SEG']
-        rch = gage['REACH']
+        seg = gage['ISEG']
+        rch = gage['IREACH']
 
         # get output for current seg and rch as specified in gage file
         out_ = sfr_out[sfr_out['segment']== seg]
         out_ = out_[out_['reach']== rch]
 
         # get subbasin of the gage
-        ibasin = hru_df[(hru_df['ISEG']==seg) & (hru_df['IREACH']==rch)]['subbasin']
-        ibasin = ibasin.values[0]
+        ibasin = gage.subbasin
         basins.append(ibasin)
 
         # get all segments that exist in subbasin of the gage
         curr_df = hru_df[(hru_df['ISEG'] > 0) & (hru_df['subbasin'] == ibasin)]
+        if write_topo_file:
+            all_up_segs = sfr_utils.get_all_upstream_segs(Sim, seg)
+            fidw.write("{}: ".format(seg))
+            for ss_sg in all_up_segs:
+                fidw.write("{} ".format(ss_sg))
+            fidw.write("\n")
+        else:
+            fidr = open(gage_topography_file, 'r')
+            content = fidr.readlines()
+            for line in content:
+                line = line.strip()
+                if ":" in line:
+                    seg1, all_up_segs = line.split(":")
+                    if int(seg1) == seg:
+                        all_up_segs = all_up_segs.split()
+                        all_up_segs = [int(s) for s in all_up_segs]
+                        break
+            fidr.close()
+            xx = 1
 
-        all_up_segs = sfr_utils.get_all_upstream_segs(Sim, seg)
+
         curr_out = sfr_out[sfr_out['segment'].isin(all_up_segs)]
 
 
         outflow = out_['Qout'].values[0]
         runoff = curr_out['Qovr'].sum()
         baseflow = outflow - runoff
-        gage_nm = 'gage_' + str(int(ibasin))
-        gage_output.append([gage_nm, ibasin, outflow, runoff, baseflow])
+        gage_id = gage['Name']
+        gname = gage['Gage_Name']
+        gage_output.append([gname, gage_id, ibasin, outflow, runoff, baseflow])
 
-    gage_output = pd.DataFrame(gage_output, columns=['name', 'basin_id', 'flow', 'runoff', 'baseflow' ])
+    if write_topo_file:
+        fidw.close()
+    gage_output = pd.DataFrame(gage_output, columns=['Name', 'NWIS_ID', 'basin_id', 'flow', 'runoff', 'baseflow' ])
     gage_output = gage_output.sort_values(by=['basin_id'])
     return gage_output
 
@@ -192,7 +235,7 @@ if __name__ == "__main__":
         gage_file = r".\misc_files\gage_info.csv"
         compute_ss_baseflow(sfr_out_file, hru_shp, gage_file)
 
-    if True:
+    if False:
         name_file = r"D:\Workspace\projects\RussianRiver\modflow\model_files\Modflow\ss\rr_ss.nam"
         mf = flopy.modflow.Modflow.load(name_file, model_ws= os.path.dirname(name_file))
         #read_hob_out(mf)

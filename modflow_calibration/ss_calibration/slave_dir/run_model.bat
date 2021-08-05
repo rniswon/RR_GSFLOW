@@ -1,1 +1,0 @@
-D:\anaconda\envs\py36\python.exe ss_forward_model_20210702.py
