@@ -6,7 +6,7 @@ PRMS/output/
 *.hds
 *.go
 *.list
-idea/
+*/**/.idea/
 .idea/
 MODFLOW/modflow_calibration/ss_calibration/.idea/
 MODFLOW/modflow_calibration/.idea/
@@ -19,3 +19,5 @@ MODFLOW/bin
 *.lock
 PRMS/scripts/ponds/output
 PRMS/scripts/ponds/input
+MODFLOW/modflow_calibration/ss_calibration_20210722.zip
+MODFLOW/modflow_calibration/ss_calibration/cluster_prep
