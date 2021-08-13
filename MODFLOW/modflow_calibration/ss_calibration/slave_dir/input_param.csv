@@ -1,6 +1,7 @@
 parnme,partrans,parval1,pargp,comments
 lak_cond_1,none,1,lak_cd,#
 lak_cond_2,none,1,lak_cd,#
+lak_cond_12,none,1,lak_cd,#
 sfr_k_1,none,0.100004438,sfr_ks,#
 sfr_k_2,none,0.099996211,sfr_ks,#
 sfr_k_3,none,0.09200304,sfr_ks,#
@@ -172,6 +173,7 @@ finf_22,none,0.482803491,uzf_finf,#
 pet_1,none,9.50E-05,uzf_pet,#
 spill_447,none,185.0599847,sfr_spil,#
 spill_449,none,146.6000061,sfr_spil,#
+spill_688,none,8.2296,sfr_spil,#
 ks_1,none,1.018100679,upw_ks,111
 ks_2,none,0.031105015,upw_ks,121
 ks_3,none,0.716359401,upw_ks,131
@@ -408,3 +410,4 @@ ks_233,none,6.09E-05,upw_ks,14210
 vka_ratio_1,none,0.100394054,upw_vka,14210
 vka_ratio_2,none,0.100005992,upw_vka,14210
 vka_ratio_3,none,0.099992415,upw_vka,14210
+pond_recharge,none,1118.8694,well_rubber_dam,#

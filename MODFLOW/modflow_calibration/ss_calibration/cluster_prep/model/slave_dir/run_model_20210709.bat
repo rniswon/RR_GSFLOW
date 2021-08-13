@@ -1,1 +1,0 @@
-C:\Users\sadera\AppData\Local\Continuum\anaconda3\envs\py37\python.exe ss_forward_model_20210702.py

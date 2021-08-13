@@ -4,7 +4,6 @@ import flopy
 import numpy as np
 import pandas as pd
 from collections.abc import Iterable
-import geopandas
 from param_utils import *
 from scipy import ndimage
 import matplotlib.pyplot as plt
@@ -74,6 +73,7 @@ def add_upw_parameters_to_input_file(input_file = r"input_param.csv" ):
     df.to_csv(input_file, index=None)
 
 def generate_zone_files_from_shp():
+    import geopandas
     zones_file = r"D:\Workspace\projects\RussianRiver\Data\geology\RR19grid_ELY_v3_7_23.shp"
     fn = r".\mf_dataset\rr_ss.nam"
     mf = flopy.modflow.Modflow.load(os.path.basename(fn), model_ws=os.path.dirname(fn),

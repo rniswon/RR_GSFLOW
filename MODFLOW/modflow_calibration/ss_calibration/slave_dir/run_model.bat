@@ -20,7 +20,7 @@ rem Using call is required here, see: https://stackoverflow.com/questions/246781
 call %CONDAPATH%\Scripts\activate.bat %ENVPATH%
 
 rem Run a python script in that environment
-python ss_forward_model_20210702.py
+python ss_forward_model_20210813.py
 
 rem Deactivate the environment
 call conda deactivate

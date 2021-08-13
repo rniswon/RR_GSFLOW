@@ -11,7 +11,8 @@ import sweep
 
 # Set file names
 #input_file = r".\slave_dir\input_param_2020_20210722.csv"
-input_file = r".\slave_dir\input_param_20210722_01.csv"
+#input_file = r".\slave_dir\input_param_20210722_01.csv"
+input_file = r".\slave_dir\input_param_20210812.csv"
 #input_file = r".\slave_dir\input_param_20210729.csv"
 output_file = r".\slave_dir\model_output.csv"
 zero_weight_gage_file = r".\slave_dir\misc_files\gage_weights.csv"  # TODO: find out where this is

@@ -62,7 +62,8 @@ def change_sfr_ss(Sim):
     reach_data.loc[reach_data['iseg'].isin(spillways), 'strhc1'] = 0
 
     # spillway
-    for spill_seg in [447, 449]:
+    # NOTE: these spillway segments are hard-coded, will need to update this code if make changes to them in the future
+    for spill_seg in [447, 449, 688]:
         nm = 'spill_{}'.format(spill_seg)
         val = df.loc[df['parnme'] == nm, 'parval1']
         reach_data.loc[reach_data['iseg']==spill_seg, 'strtop'] = val.values[0]
