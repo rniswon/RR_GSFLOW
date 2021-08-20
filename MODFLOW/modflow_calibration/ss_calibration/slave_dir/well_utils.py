@@ -39,6 +39,20 @@ def change_well_ss(Sim):
             mask = (well_stress['k'] == layer) & (well_stress['i'] == row) & (well_stress['j'] == col) & (well_stress['flux']>0)
             well_stress.loc[mask, 'flux'] = param_row['parval1']
 
+    # add option block back in - because for some reason it isn't read in by flopy
+    # TODO: ask Josh - is there a way to make flopy read in the options block for the well package? if not, how should I update the options block?
+    # TODO: ask Josh - why is Sim.mf.next_ext_unit() providing a unit number that is already taken?
+    from flopy.utils.optionblock import OptionBlock
+    options = OptionBlock('', flopy.modflow.ModflowWel, block=True)
+    #options.specify = True # TODO: ask Josh - why aren't these next 3 lines working?
+    #options.phiramp = 0.1
+    #options.iunitramp = 1017  # TODO: change this to be automatic (Sim.mf.next_ext_unit()) once figure out how to make it generate the correct number automatically
+    Sim.mf.wel.specify = True
+    Sim.mf.wel.phiramp = 0.1
+    Sim.mf.wel.iunitramp = 1017  # TODO: change this to be automatic (Sim.mf.next_ext_unit()) once figure out how to make it generate the correct number automatically
+    Sim.mf.wel.options = options
+
+
     # update well package
     del(well_stress['per'])
     del(well_stress['node'])

@@ -118,6 +118,12 @@ for par in parnames:
     pst.parameter_data.loc[ mask, 'parval1'] = val.values[0]
     pst.parameter_data.loc[mask, 'pargp'] = grpnm.values[0]
 
+    # Set parameter transformation and upper/lower bounds for pond_recharge
+    if par == "pond_recharge":
+        pst.parameter_data.loc[mask, 'partrans'] = 'log'
+        pst.parameter_data.loc[mask, 'parlbnd'] = 1
+        pst.parameter_data.loc[mask, 'parubnd'] = 100000
+
     # Set parameter transformation and upper/lower bounds for lak_cond_12
     if par == "lak_cond_12":
         pst.parameter_data.loc[mask, 'partrans'] = 'log'

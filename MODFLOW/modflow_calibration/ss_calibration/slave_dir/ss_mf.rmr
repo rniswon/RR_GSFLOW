@@ -1,17 +1,17 @@
 
 PANTHER master listening on socket:0.0.0.0:4075 (IPv4)
 running model 1 times
-08/13/21 15:47:45->waiting for agents to appear
+08/19/21 16:07:44->waiting for agents to appear
 
-08/13/21 15:48:16->new connection from: IGSWCGWWLT6828.gs.doi.net:54411
-08/13/21 15:48:16->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir:IGSWCGWWLT6828.gs.doi.net:54411, number of agents: 1
-08/13/21 15:48:17->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir:IGSWCGWWLT6828.gs.doi.net:54411
-08/13/21 15:48:17->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir  (group id:2, run id:0, concurrent runs:1)
-08/13/21 15:48:48->Run 0 failed on agent:IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir  (group id: 2, run id: 0, concurrent: 1) , worker message:  thread processing instruction file raised an exception: InstructionFile error in file 'insfile.ins' : output file'model_output.csv' not found 
+08/19/21 16:08:09->new connection from: IGSWCGWWLT6828.gs.doi.net:52307
+08/19/21 16:08:09->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir:IGSWCGWWLT6828.gs.doi.net:52307, number of agents: 1
+08/19/21 16:08:10->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir:IGSWCGWWLT6828.gs.doi.net:52307
+08/19/21 16:08:10->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir  (group id:2, run id:0, concurrent runs:1)
+08/19/21 16:08:36->Run 0 failed on agent:IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0\slave_dir  (group id: 2, run id: 0, concurrent: 1) , worker message:  thread processing instruction file raised an exception: InstructionFile error in file 'insfile.ins' : output file'model_output.csv' not found 
 
 ---------------------
    0 runs complete :  1 runs failed
   failed run_ids and (attempts): 0(1)
 
-08/13/21 15:48:48->Started idle ping thread.
-08/13/21 15:48:48->Panther idle ping thread resumed.
+08/19/21 16:08:36->Started idle ping thread.
+08/19/21 16:08:36->Panther idle ping thread resumed.

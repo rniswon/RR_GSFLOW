@@ -14,13 +14,13 @@ pcf
 1
 * parameter groups
 upw_ks                 relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
-uzf_surfk              relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 uzf_vks                relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+uzf_surfk              relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 uzf_finf               relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 sfr_ks                 relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 upw_vka                relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
-lak_cd                 relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 sfr_spil               relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+lak_cd                 relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 well_rubber_dam        relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 uzf_pet                relative              1.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
 * parameter data
@@ -283,7 +283,7 @@ lak_cond_1            fixed                 factor                1.0000000000E+
 lak_cond_12           log                   factor                1.0000000000E+00      1.0000000000E-01      1.0000000000E+04      lak_cd                1.0000000000E+00      0.0000000000E+00      1          
 lak_cond_2            fixed                 factor                1.0000000000E+00      1.1000000000E-10      1.1000000000E+10      lak_cd                1.0000000000E+00      0.0000000000E+00      1          
 pet_1                 fixed                 factor                9.5000000000E-05      1.1000000000E-10      1.1000000000E+10      uzf_pet               1.0000000000E+00      0.0000000000E+00      1          
-pond_recharge         none                  factor                1.1188694000E+03      1.1000000000E+00      1.1000000000E+06      well_rubber_dam       1.0000000000E+00      0.0000000000E+00      1          
+pond_recharge         log                   factor                1.1188694000E+03      1.0000000000E+00      1.0000000000E+05      well_rubber_dam       1.0000000000E+00      0.0000000000E+00      1          
 sfr_k_1               log                   factor                1.0000443800E-01      1.0000000000E-05      5.0000000000E+02      sfr_ks                1.0000000000E+00      0.0000000000E+00      1          
 sfr_k_10              log                   factor                1.0000190300E-01      1.0000000000E-05      5.0000000000E+02      sfr_ks                1.0000000000E+00      0.0000000000E+00      1          
 sfr_k_11              log                   factor                1.0000059300E-01      1.0000000000E-05      5.0000000000E+02      sfr_ks                1.0000000000E+00      0.0000000000E+00      1          

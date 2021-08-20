@@ -213,13 +213,13 @@ Model interface files:-
 Parameter group information
 NAME            INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
 upw_ks                RELATIVE                     0.01                        0         SWITCH                        2
-uzf_surfk             RELATIVE                     0.01                        0         SWITCH                        2
 uzf_vks               RELATIVE                     0.01                        0         SWITCH                        2
+uzf_surfk             RELATIVE                     0.01                        0         SWITCH                        2
 uzf_finf              RELATIVE                     0.01                        0         SWITCH                        2
 sfr_ks                RELATIVE                     0.01                        0         SWITCH                        2
 upw_vka               RELATIVE                     0.01                        0         SWITCH                        2
-lak_cd                RELATIVE                     0.01                        0         SWITCH                        2
 sfr_spil              RELATIVE                     0.01                        0         SWITCH                        2
+lak_cd                RELATIVE                     0.01                        0         SWITCH                        2
 well_rubber_dam       RELATIVE                     0.01                        0         SWITCH                        2
 uzf_pet               RELATIVE                     0.01                        0         SWITCH                        2
 
@@ -486,7 +486,7 @@ lak_cond_1    fixed                   FACTOR              1        1.1e-10      
 lak_cond_12   log                     FACTOR              1            0.1          10000         lak_cd              1              0                   1
 lak_cond_2    fixed                   FACTOR              1        1.1e-10        1.1e+10         lak_cd              1              0                   1
 pet_1         fixed                   FACTOR        9.5e-05        1.1e-10        1.1e+10        uzf_pet              1              0                   1
-pond_recharge none                    FACTOR        1118.87            1.1        1.1e+06well_rubber_dam              1              0                   1
+pond_recharge log                     FACTOR        1118.87              1         100000well_rubber_dam              1              0                   1
 sfr_k_1       log                     FACTOR       0.100004          1e-05            500         sfr_ks              1              0                   1
 sfr_k_10      log                     FACTOR       0.100002          1e-05            500         sfr_ks              1              0                   1
 sfr_k_11      log                     FACTOR       0.100001          1e-05            500         sfr_ks              1              0                   1

@@ -11,7 +11,7 @@ import uzf_utils
 import sfr_utils
 import upw_utils
 import lak_utils
-import well_utils
+#import well_utils
 import output_utils
 #from gsflow.utils.vtk import Gsflowvtk, Mfvtk
 import flopy
@@ -93,7 +93,7 @@ def run(input_file = None, real_no=-999, output_file = None):
     sfr_utils.change_sfr_ss(Sim)
 
     # Well information
-    well_utils.change_well_ss(Sim)
+    #well_utils.change_well_ss(Sim)
 
 
     # ----------------------------------------------
@@ -104,7 +104,7 @@ def run(input_file = None, real_no=-999, output_file = None):
     Sim.mf.upw.write_file()
     Sim.mf.uzf.write_file()
     Sim.mf.sfr.write_file()
-    Sim.mf.wel.write_file()
+    #Sim.mf.wel.write_file()
     base_folder = os.getcwd()
     print("change param....")
     os.chdir(r".\mf_dataset")
