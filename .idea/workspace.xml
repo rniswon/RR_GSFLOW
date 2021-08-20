@@ -4,19 +4,20 @@
     <list default="true" id="91807447-fe4f-434e-8c7a-78b465a30a8b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/input_param.csv" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/input_param.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nwt" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.nwt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.sfr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.upw" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.upw" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.uzf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.wel" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/mf_dataset/rr_ss.wel" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/misc_files/gage_weights.csv" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/misc_files/gage_weights.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/model_output.csv" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/model_output.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210702.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210702.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210813.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210813.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.iobj" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.iobj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.ipar" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.ipar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.log" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.par" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.par" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.pst" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.pst" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rec" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rec" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rei" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rei" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rmr" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rmr" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rnj" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rnj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rnj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rns" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_mf.rst" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/well_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/well_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +51,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210813.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -61,7 +62,7 @@
       <recent name="C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.ss_forward_model_20210813">
+  <component name="RunManager" selected="Python.pest_setup_and_initial_calib_20210813">
     <configuration name="main_model" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="RR_GSFLOW" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -146,6 +147,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="pest_setup_and_initial_calib_20210813" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RR_GSFLOW" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="ss_forward_model_20210702 (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="RR_GSFLOW" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -167,37 +189,16 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="ss_forward_model_20210813" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="RR_GSFLOW" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210813.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.main_model" />
       <item itemvalue="Python.multiple_ss_runs" />
       <item itemvalue="Python.pest_setup_and_initial_calib_20210702" />
-      <item itemvalue="Python.ss_forward_model_20210813" />
+      <item itemvalue="Python.pest_setup_and_initial_calib_20210813" />
       <item itemvalue="Python.ss_forward_model_20210702 (1)" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.ss_forward_model_20210813" />
+        <item itemvalue="Python.pest_setup_and_initial_calib_20210813" />
         <item itemvalue="Python.ss_forward_model_20210702 (1)" />
         <item itemvalue="Python.pest_setup_and_initial_calib_20210702" />
         <item itemvalue="Python.main_model" />
@@ -278,16 +279,6 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py</url>
-          <line>220</line>
-          <option name="timeStamp" value="192" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py</url>
-          <line>242</line>
-          <option name="timeStamp" value="193" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py</url>
           <line>244</line>
           <option name="timeStamp" value="194" />
         </line-breakpoint>
@@ -308,13 +299,43 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/well_utils.py</url>
-          <line>64</line>
+          <line>61</line>
           <option name="timeStamp" value="199" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210813.py</url>
           <line>165</line>
           <option name="timeStamp" value="200" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/well_utils.py</url>
+          <line>53</line>
+          <option name="timeStamp" value="201" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/slave_dir/ss_forward_model_20210813.py</url>
+          <line>83</line>
+          <option name="timeStamp" value="202" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/AppData/Local/Continuum/anaconda3/envs/py37/Lib/site-packages/flopy/modflow/mfwel.py</url>
+          <line>447</line>
+          <option name="timeStamp" value="205" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py</url>
+          <line>233</line>
+          <option name="timeStamp" value="209" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py</url>
+          <line>242</line>
+          <option name="timeStamp" value="210" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/modflow_calibration/ss_calibration/pest_setup_and_initial_calib_20210813.py</url>
+          <line>220</line>
+          <option name="timeStamp" value="219" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

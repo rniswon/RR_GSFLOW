@@ -1,5 +1,5 @@
 time,elapsed_seconds,message
-16:07:44,4.29e-05,PEST++ performance logger started
-16:07:44,0.0008594,starting to process control file
-16:07:44,0.0055064,finished processing control file
-16:07:44,0.0112895,loading parcov
+14:42:23,4.68e-05,PEST++ performance logger started
+14:42:23,0.0009744,starting to process control file
+14:42:23,0.0053909,finished processing control file
+14:42:23,0.014038,loading parcov

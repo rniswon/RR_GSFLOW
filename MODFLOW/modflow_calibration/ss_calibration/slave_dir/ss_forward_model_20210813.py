@@ -75,7 +75,7 @@ def run(input_file = None, real_no=-999, output_file = None):
     # ----------------------------------------------
     # load the model
     Sim.mf = flopy.modflow.Modflow.load(os.path.basename(Sim.name_file), model_ws= os.path.dirname(Sim.name_file),
-                                        verbose = True, forgive = False)
+                                        verbose = True, forgive = False, version="mfnwt")
 
     # Lake information
     # NOTE: Saalem changed this on 6/4/21 so that the lake parameters can be updated

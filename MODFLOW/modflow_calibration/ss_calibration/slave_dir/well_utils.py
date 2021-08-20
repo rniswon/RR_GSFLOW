@@ -42,15 +42,12 @@ def change_well_ss(Sim):
     # add option block back in - because for some reason it isn't read in by flopy
     # TODO: ask Josh - is there a way to make flopy read in the options block for the well package? if not, how should I update the options block?
     # TODO: ask Josh - why is Sim.mf.next_ext_unit() providing a unit number that is already taken?
-    from flopy.utils.optionblock import OptionBlock
-    options = OptionBlock('', flopy.modflow.ModflowWel, block=True)
-    #options.specify = True # TODO: ask Josh - why aren't these next 3 lines working?
-    #options.phiramp = 0.1
-    #options.iunitramp = 1017  # TODO: change this to be automatic (Sim.mf.next_ext_unit()) once figure out how to make it generate the correct number automatically
-    Sim.mf.wel.specify = True
-    Sim.mf.wel.phiramp = 0.1
-    Sim.mf.wel.iunitramp = 1017  # TODO: change this to be automatic (Sim.mf.next_ext_unit()) once figure out how to make it generate the correct number automatically
-    Sim.mf.wel.options = options
+    # from flopy.utils.optionblock import OptionBlock
+    # options = OptionBlock('', flopy.modflow.ModflowWel, block=True)
+    # Sim.mf.wel.specify = True
+    # Sim.mf.wel.phiramp = 0.1
+    # Sim.mf.wel.iunitramp = 1017  # TODO: change this to be automatic (Sim.mf.next_ext_unit()) once figure out how to make it generate the correct number automatically
+    # Sim.mf.wel.options = options
 
 
     # update well package
