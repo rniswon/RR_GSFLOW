@@ -392,6 +392,7 @@ def main():
     )
 
     ag_dataset_wells = ag_dataset[ag_dataset['pod_type'] == 'WELL'].copy()
+    ag_dataset_wells = ag_dataset_wells[~ag_dataset_wells.wrow.isin([0,])]
     ag_well_list = generate_well_list(ag_dataset_wells)
     irrwell_dict, numirrwells, maxcellswell = generate_irrwell(
         mf.nper, ag_dataset_wells, crop_kc_df
