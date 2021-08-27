@@ -1,0 +1,315 @@
+starting model run...
+
+08/13/21 12:51:43 processing template files with 1 threads...
+thread 0 processed 1 template files
+08/13/21 12:51:43 done, took 0.006 seconds
+08/13/21 12:51:43 calling forward run command(s)
+
+D:\condor\execute\dir_34268\model\slave_dir>rem set PATH=C:\Users\sadera\AppData\Local\Continuum\anaconda3\envs\py37;C:\Users\sadera\AppData\Local\Continuum\anaconda3\envs\py37\Library\mingw-w64\bin;C:\Users\sadera\AppData\Local\Continuum\anaconda3\envs\py37\Library\usr\bin;C:\Users\sadera\AppData\Local\Continuum\anaconda3\envs\py37\Library\bin;C:\Users\sadera\AppData\Local\Continuum\anaconda3\envs\py37\Scripts;C:\Users\sadera\AppData\Local\Continuum\anaconda3\envs\py37\bin;C:\anaconda\condabin;C:\Oracle\product\11.2.0\client_1;C:\Oracle\product\11.2.0\client_1\bin;C:\ProgramData\Oracle\Java\javapath;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\Program Files (x86)\Google\Google Apps Sync;C:\Program Files (x86)\Google\Google Apps Migration;C:\ArcGIS\gbin;C:\Program Files\MIT\Kerberos\bin;C:\Program Files (x86)\MIT\Kerberos\bin;C:\Program Files\PuTTY;C:\Program Files\dotnet;C:\WINDOWS\System32\OpenSSH;C:\Users\aalzraiee\AppData\Local\Microsoft\WindowsApps;C:\Users\aalzraiee\AppData\Local\Programs\Git\cmd;C:\Users\aalzraiee\AppData\Local\GitHubDesktop\bin;D:\condor\execute\dir_34268\Miniconda3;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64_win\mpirt;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\ia32_win\mpirt;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64_win\compiler;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\ia32_win\compiler;C:\Python27amd64\;C:\Python27amd64\Scripts;C:\Program Files (x86)\Amazon Corretto\jdk1.8.0_242\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\condor\bin\;C:\Program Files (x86)\Microsoft SQL Server\Client SDK\ODBC\130\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files (x86)\Microsoft SQL Server\140\Tools\Binn\ManagementStudio\;C:\Program Files\Dell\SysMgt\iSM\shared\bin;C:\Program Files\Dell\SysMgt\iSM\ismeng\bin;C:\Program Files\Dell\SysMgt\iSM\ismmod\bin;C:\Program Files\Git\cmd;C:\Program Files\IDM Computer Solutions\UltraCompare;C:\Program Files\PuTTY\;C:\WINDOWS\System32\OpenSSH\;D:\condor\bin\;C:\Program Files\Microsoft VS Code\bin;C:\Users\igswcaww-condor$\AppData\Local\Microsoft\WindowsApps 
+
+D:\condor\execute\dir_34268\model\slave_dir\mf_dataset>.\gsflow_2.2.0\bin\gsflow.exe gsflow_modflow.control 
+
+                            MODFLOW-NWT-SWR1 
+  U.S. GEOLOGICAL SURVEY MODULAR FINITE-DIFFERENCE GROUNDWATER-FLOW MODEL
+                         WITH NEWTON FORMULATION
+                         Version 1.2.0 03/01/202
+              BASED ON MODFLOW-2005 Version 1.12.0 02/03/2017
+                      SWR1 Version 1.04.0 09/15/2016
+
+ Run start date and time (yyyy/mm/dd hh:mm:ss): 2021/08/13 12:51:52
+
+GSFLOW MODFLOW main             gsflow_modflow      2021-02-18
+====================================================================
+MODFLOW Packages
+====================================================================
+UZF-NWT Package                 gwf2uzf1_NWT        2020-12-28
+SFR-NWT Package                 gwf2sfr7_NWT        2020-09-30
+LAK-NWT Package                 gwf2lak7_NWT        2020-09-30
+  
+
+Steady state simulation successful, used 1713 iterations
+  
+
+ Run end date and time (yyyy/mm/dd hh:mm:ss): 2021/08/13 12:53:36
+ Elapsed run time: 1 Minutes, 43.492 Seconds
+
+ Normal termination of simulation
+
+Start model run....
+
+Creating new model with name: rr_ss
+--------------------------------------------------
+
+Parsing the namefile --> .\mf_dataset\rr_ss.nam
+
+--------------------------------------------------
+External unit dictionary:
+{2: filename:.\mf_dataset\rr_ss.list, filetype:LIST, 11: filename:.\mf_dataset\rr_ss.dis, filetype:DIS, 13: filename:.\mf_dataset\rr_ss.bas, filetype:BAS6, 23: filename:.\mf_dataset\rr_ss.ghb, filetype:GHB, 31: filename:.\mf_dataset\rr_ss.upw, filetype:UPW, 29: filename:.\mf_dataset\rr_ss.hfb, filetype:HFB6, 17: filename:.\mf_dataset\rr_ss.sfr, filetype:SFR, 19: filename:.\mf_dataset\rr_ss.uzf, filetype:UZF, 119: filename:.\mf_dataset\rr_ss.lak, filetype:LAK, 20: filename:.\mf_dataset\rr_ss.wel, filetype:WEL, 39: filename:.\mf_dataset\rr_ss.hob, filetype:HOB, 120: filename:.\mf_dataset\rr_ss.gage, filetype:GAGE, 14: filename:.\mf_dataset\rr_ss.oc, filetype:OC, 32: filename:.\mf_dataset\rr_ss.nwt, filetype:NWT, 1001: filename:.\mf_dataset\rubber_dam_spillway_outflow_ss.dat, filetype:DATA, 1002: filename:.\mf_dataset\rubber_dam_gate_outflow_ss.dat, filetype:DATA, 1003: filename:.\mf_dataset\rubber_dam_pond_outflow_ss.dat, filetype:DATA, 1005: filename:.\mf_dataset\Meno_bathy.dat, filetype:DATA, 1006: filename:.\mf_dataset\Sonoma_bathy.dat, filetype:DATA, 1007: filename:.\mf_dataset\Bevans_bathy.dat, filetype:DATA, 1008: filename:.\mf_dataset\Lolonis_bathy_dat, filetype:DATA, 1009: filename:.\mf_dataset\Crawford_bathy.dat, filetype:DATA, 1010: filename:.\mf_dataset\Bradford_bathy.dat, filetype:DATA, 1011: filename:.\mf_dataset\Merlo_bathy.dat, filetype:DATA, 1012: filename:.\mf_dataset\CoenC3_bathy.dat, filetype:DATA, 1013: filename:.\mf_dataset\Murray_bathy.dat, filetype:DATA, 1014: filename:.\mf_dataset\Mallacomes_bathy.dat, filetype:DATA, 1015: filename:.\mf_dataset\Towibalyla_bathy.dat, filetype:DATA, 1016: filename:.\mf_dataset\rubber_dam_lake.dat, filetype:DATA, 1017: filename:.\mf_dataset\pumping_reduction.wel.out, filetype:DATA, 55: filename:.\mf_dataset\rr_ss.cbc, filetype:DATA(BINARY), 81: filename:.\mf_dataset\rr_ss.sfr.out, filetype:DATA, 1004: filename:.\mf_dataset\rr_ss.uzf1004.out, filetype:DATA, 1018: filename:.\mf_dataset\rr_ss.hob.out, filetype:DATA, 1023: filename:.\mf_dataset\RUSSIAN_R_JOHNSONS_BEACH_GUERNEVILLE.go, filetype:DATA, 1024: filename:.\mf_dataset\AUSTIN_C_NR_CAZADERO.go, filetype:DATA, 1025: filename:.\mf_dataset\RUSSIAN_R_NR_GUERNEVILLE.go, filetype:DATA, 1026: filename:.\mf_dataset\RUSSIAN_R_NR_WINDSOR.go, filetype:DATA, 1027: filename:.\mf_dataset\DRY_C_NR_MOUTH_NR_HEALDSBURG.go, filetype:DATA, 1028: filename:.\mf_dataset\RUSSIAN_R_NR_HEALDSBURG.go, filetype:DATA, 1029: filename:.\mf_dataset\RUSSIAN_R_DIGGER_BEND_NR_HEALDSBURG.go, filetype:DATA, 1030: filename:.\mf_dataset\MAACAMA_C_NR_KELLOGG.go, filetype:DATA, 1031: filename:.\mf_dataset\DRY_C_BLW_LAMBERT_BR_NR_GEYSERVILLE.go, filetype:DATA, 1032: filename:.\mf_dataset\RUSSIAN_R_JIMTOWN.go, filetype:DATA, 1033: filename:.\mf_dataset\DRY_C_NR_GEYSERVILLE.go, filetype:DATA, 1034: filename:.\mf_dataset\RUSSIAN_R_GEYSERVILLE.go, filetype:DATA, 1035: filename:.\mf_dataset\BIG_SULPHUR_C_A_G_RESORT_NR_CLOVERDALE.go, filetype:DATA, 1036: filename:.\mf_dataset\BIG_SULPHUR_C_NR_CLOVERDALE.go, filetype:DATA, 1037: filename:.\mf_dataset\RUSSIAN_R_NR_CLOVERDALE.go, filetype:DATA, 1038: filename:.\mf_dataset\RUSSIAN_R_NR_HOPLAND.go, filetype:DATA, 1039: filename:.\mf_dataset\RUSSIAN_R_NR_TALMAG.go, filetype:DATA, 1040: filename:.\mf_dataset\RUSSIAN_R_NR_UKIAH.go, filetype:DATA, 1041: filename:.\mf_dataset\EF_RUSSIAN_R_NR_UKIAH.go, filetype:DATA, 1042: filename:.\mf_dataset\EF_RUSSIAN_R_NR_CALPELLA.go, filetype:DATA, 1043: filename:.\mf_dataset\mendo_lake_bdg.lak.out, filetype:DATA, 1044: filename:.\mf_dataset\sonoma_lake_bdg.lak.out, filetype:DATA, 1045: filename:.\mf_dataset\rubber_dam_lake_bdg.lak.out, filetype:DATA, 51: filename:.\mf_dataset\rr_ss.hds, filetype:DATA(BINARY)}
+--------------------------------------------------
+
+ModflowBas6 free format:True
+
+loading dis package file...
+   Loading dis package with:
+      3 layers, 411 rows, 253 columns, and 1 stress periods
+   loading laycbd...
+   loading delr...
+   loading delc...
+   loading top...
+   loading botm...
+      for 3 layers and 0 confining beds
+   loading stress period data...
+       for 1 stress periods
+adding Package:  DIS
+   DIS  package load...success
+   LIST package load...skipped
+loading bas6 package file...
+adding Package:  BAS6
+   BAS6 package load...success
+loading ghb package file...
+   loading <class 'flopy.modflow.mfghb.ModflowGhb'> for kper     1
+Adding rr_ss.cbc (unit=55) to the output list.
+adding Package:  GHB
+   GHB  package load...success
+loading upw package file...
+   loading ipakcb, HDRY, NPUPW, IPHDRY...
+   loading LAYTYP...
+   loading LAYAVG...
+   loading CHANI...
+   loading LAYVKA...
+   loading LAYWET...
+   loading hk layer   1...
+   loading vka layer   1...
+   loading hk layer   2...
+   loading vka layer   2...
+   loading hk layer   3...
+   loading vka layer   3...
+adding Package:  UPW
+   UPW  package load...success
+loading hfb6 package file...
+adding Package:  HFB6
+   HFB6 package load...success
+loading sfr2 package file...
+Adding rr_ss.sfr.out (unit=81) to the output list.
+adding Package:  SFR
+   SFR  package load...success
+loading uzf package file...
+   loading iuzfbnd array...
+   loading irunbnd array...
+   loading vks array...
+   loading surfk array...
+   loading eps array...
+   loading thts array...
+stress period 1:
+   loading finf array...
+   loading pet array...
+   loading extdp array...
+   loading extwc array...
+Adding rr_ss.uzf1004.out (unit=1004) to the output list.
+adding Package:  UZF
+   UZF  package load...success
+loading lak package file...
+   reading lak dataset 1a
+   reading lak dataset 1b
+   reading lak dataset 3
+   reading lak dataset 4 - for stress period 1
+   reading lak dataset 5 - for stress period 1
+   reading lak dataset 6 - for stress period 1
+   reading lak dataset 7 - for stress period 1
+   reading lak dataset 9 - for stress period 1
+adding Package:  LAK
+   LAK  package load...success
+loading wel package file...
+   loading <class 'flopy.modflow.mfwel.ModflowWel'> for kper     1
+adding Package:  WEL
+   WEL  package load...success
+loading hob package file...
+Adding rr_ss.hob.out (unit=1018) to the output list.
+adding Package:  HOB
+   HOB  package load...success
+loading gage package file...
+   reading gage dataset 1
+   reading gage dataset 2
+Adding RUSSIAN_R_JOHNSONS_BEACH_GUERNEVILLE.go (unit=1023) to the output list.
+Adding AUSTIN_C_NR_CAZADERO.go (unit=1024) to the output list.
+Adding RUSSIAN_R_NR_GUERNEVILLE.go (unit=1025) to the output list.
+Adding RUSSIAN_R_NR_WINDSOR.go (unit=1026) to the output list.
+Adding DRY_C_NR_MOUTH_NR_HEALDSBURG.go (unit=1027) to the output list.
+Adding RUSSIAN_R_NR_HEALDSBURG.go (unit=1028) to the output list.
+Adding RUSSIAN_R_DIGGER_BEND_NR_HEALDSBURG.go (unit=1029) to the output list.
+Adding MAACAMA_C_NR_KELLOGG.go (unit=1030) to the output list.
+Adding DRY_C_BLW_LAMBERT_BR_NR_GEYSERVILLE.go (unit=1031) to the output list.
+Adding RUSSIAN_R_JIMTOWN.go (unit=1032) to the output list.
+Adding DRY_C_NR_GEYSERVILLE.go (unit=1033) to the output list.
+Adding RUSSIAN_R_GEYSERVILLE.go (unit=1034) to the output list.
+Adding BIG_SULPHUR_C_A_G_RESORT_NR_CLOVERDALE.go (unit=1035) to the output list.
+Adding BIG_SULPHUR_C_NR_CLOVERDALE.go (unit=1036) to the output list.
+Adding RUSSIAN_R_NR_CLOVERDALE.go (unit=1037) to the output list.
+Adding RUSSIAN_R_NR_HOPLAND.go (unit=1038) to the output list.
+Adding RUSSIAN_R_NR_TALMAG.go (unit=1039) to the output list.
+Adding RUSSIAN_R_NR_UKIAH.go (unit=1040) to the output list.
+Adding EF_RUSSIAN_R_NR_UKIAH.go (unit=1041) to the output list.
+Adding EF_RUSSIAN_R_NR_CALPELLA.go (unit=1042) to the output list.
+Adding mendo_lake_bdg.lak.out (unit=1043) to the output list.
+Adding sonoma_lake_bdg.lak.out (unit=1044) to the output list.
+Adding rubber_dam_lake_bdg.lak.out (unit=1045) to the output list.
+adding Package:  GAGE
+   GAGE package load...success
+loading oc package file...
+Adding rr_ss.hds (unit=51) to the output list.
+adding Package:  OC
+   OC   package load...success
+loading nwt package file...
+adding Package:  NWT
+   NWT  package load...success
+   DATA package load...skipped
+      rubber_dam_spillway_outflow_ss.dat
+   DATA package load...skipped
+      rubber_dam_gate_outflow_ss.dat
+   DATA package load...skipped
+      rubber_dam_pond_outflow_ss.dat
+   DATA package load...skipped
+      Meno_bathy.dat
+   DATA package load...skipped
+      Sonoma_bathy.dat
+   DATA package load...skipped
+      Bevans_bathy.dat
+   DATA package load...skipped
+      Lolonis_bathy_dat
+   DATA package load...skipped
+      Crawford_bathy.dat
+   DATA package load...skipped
+      Bradford_bathy.dat
+   DATA package load...skipped
+      Merlo_bathy.dat
+   DATA package load...skipped
+      CoenC3_bathy.dat
+   DATA package load...skipped
+      Murray_bathy.dat
+   DATA package load...skipped
+      Mallacomes_bathy.dat
+   DATA package load...skipped
+      Towibalyla_bathy.dat
+   DATA package load...skipped
+      rubber_dam_lake.dat
+   DATA package load...skipped
+      pumping_reduction.wel.out
+   DATA(BINARY) package load...skipped
+      rr_ss.cbc
+   DATA package load...skipped
+      rr_ss.sfr.out
+   DATA package load...skipped
+      rr_ss.uzf1004.out
+   DATA package load...skipped
+      rr_ss.hob.out
+   DATA package load...skipped
+      RUSSIAN_R_JOHNSONS_BEACH_GUERNEVILLE.go
+   DATA package load...skipped
+      AUSTIN_C_NR_CAZADERO.go
+   DATA package load...skipped
+      RUSSIAN_R_NR_GUERNEVILLE.go
+   DATA package load...skipped
+      RUSSIAN_R_NR_WINDSOR.go
+   DATA package load...skipped
+      DRY_C_NR_MOUTH_NR_HEALDSBURG.go
+   DATA package load...skipped
+      RUSSIAN_R_NR_HEALDSBURG.go
+   DATA package load...skipped
+      RUSSIAN_R_DIGGER_BEND_NR_HEALDSBURG.go
+   DATA package load...skipped
+      MAACAMA_C_NR_KELLOGG.go
+   DATA package load...skipped
+      DRY_C_BLW_LAMBERT_BR_NR_GEYSERVILLE.go
+   DATA package load...skipped
+      RUSSIAN_R_JIMTOWN.go
+   DATA package load...skipped
+      DRY_C_NR_GEYSERVILLE.go
+   DATA package load...skipped
+      RUSSIAN_R_GEYSERVILLE.go
+   DATA package load...skipped
+      BIG_SULPHUR_C_A_G_RESORT_NR_CLOVERDALE.go
+   DATA package load...skipped
+      BIG_SULPHUR_C_NR_CLOVERDALE.go
+   DATA package load...skipped
+      RUSSIAN_R_NR_CLOVERDALE.go
+   DATA package load...skipped
+      RUSSIAN_R_NR_HOPLAND.go
+   DATA package load...skipped
+      RUSSIAN_R_NR_TALMAG.go
+   DATA package load...skipped
+      RUSSIAN_R_NR_UKIAH.go
+   DATA package load...skipped
+      EF_RUSSIAN_R_NR_UKIAH.go
+   DATA package load...skipped
+      EF_RUSSIAN_R_NR_CALPELLA.go
+   DATA package load...skipped
+      mendo_lake_bdg.lak.out
+   DATA package load...skipped
+      sonoma_lake_bdg.lak.out
+   DATA package load...skipped
+      rubber_dam_lake_bdg.lak.out
+   DATA(BINARY) package load...skipped
+      rr_ss.hds
+
+WARNING:
+    External file unit 0 does not exist in ext_unit_dict.
+
+   The following 13 packages were successfully loaded.
+      rr_ss.dis
+      rr_ss.bas
+      rr_ss.ghb
+      rr_ss.upw
+      rr_ss.hfb
+      rr_ss.sfr
+      rr_ss.uzf
+      rr_ss.lak
+      rr_ss.wel
+      rr_ss.hob
+      rr_ss.gage
+      rr_ss.oc
+      rr_ss.nwt
+   The following 1 packages were not loaded.
+      rr_ss.list
+
+rr_ss MODEL DATA VALIDATION SUMMARY:
+  15 Warnings:
+    1 instance of 
+    OC package: action(s) defined in OC stress_period_data ignored as they are not part the stress periods defined by DIS
+    14 instances of 
+    WEL package: BC in inactive cell
+  see .\mf_dataset\rr_ss.chk for details.
+
+removing Package:  ['LAK']
+adding Package:  LAK
+Lak package is updated
+UPW package is updated.
+UZF Package is updated
+
+UPW PACKAGE DATA VALIDATION:
+  No errors or warnings encountered.
+
+  Checks that passed:
+    zero or negative horizontal hydraulic conductivity values
+    zero or negative vertical hydraulic conductivity values
+    negative horizontal anisotropy values
+    horizontal hydraulic conductivity values below checker threshold of 1e-11
+    horizontal hydraulic conductivity values above checker threshold of 100000.0
+    vertical hydraulic conductivity values below checker threshold of 1e-11
+    vertical hydraulic conductivity values above checker threshold of 100000.0
+
+change param....
+finish model run
+End model run....
+08/13/21 12:53:37 foward run command(s) finished, took 114.746 seconds
+08/13/21 12:53:37 processing instruction files with 1 threads...
+thread 0 processed 1 instruction files
+08/13/21 12:53:37 done, took 0.001 seconds
+
+08/13/21 12:53:37->received finished signal from run thread 
+
+
+08/13/21 12:53:39->run complete, sending results to master (group id = 2, run id = 355)...run took: 115.911 seconds
+
+08/13/21 12:53:39->results of run_id 355sent successfully
+
+08/13/21 12:53:39->sending ready signal to master
