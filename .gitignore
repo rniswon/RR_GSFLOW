@@ -19,5 +19,9 @@ MODFLOW/bin
 *.lock
 PRMS/scripts/ponds/output
 PRMS/scripts/ponds/input
-MODFLOW/modflow_calibration/ss_calibration_20210722.zip
+GSFLOW/PRMS/scripts/ponds/output
+GSFLOW/PRMS/scripts/ponds/input
+GSFLOW/archive/2020/gsflow/modflow/rr_tr.awu
+GSFLOW/archive/20210903
+MODFLOW/archived_models/08_20210722/ss_calibration_20210722.zip
 MODFLOW/modflow_calibration/ss_calibration/cluster_prep
