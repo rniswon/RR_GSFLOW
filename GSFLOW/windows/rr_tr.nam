@@ -35,6 +35,7 @@ DATA            1019  ..\modflow\Towibalyla_bathy.dat
 DATA            1020  ..\modflow\rubber_dam_lake.dat
 DATA            1021  ..\modflow\pumping_reduction.out
 DATA(BINARY)      55  ..\modflow\rr_tr.cbc REPLACE
+DATA(BINARY)      60  ..\modflow\rr_ss.hds
 DATA              81  ..\modflow\rr_tr.sfr.out
 DATA            1008  ..\modflow\rr_tr.uzf1008.out
 DATA            1022  ..\modflow\rr_tr.hob.out
