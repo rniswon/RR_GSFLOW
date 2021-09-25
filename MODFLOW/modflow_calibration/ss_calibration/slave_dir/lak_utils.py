@@ -1,12 +1,29 @@
-import os, sys
+run_cluster = False
 
-import flopy
-import numpy as np
-import pandas as pd
-from collections.abc import Iterable
-import geopandas
-from param_utils import *
-import copy
+if run_cluster == True:
+    import os, sys
+
+    fpath = os.path.abspath(os.path.dirname(__file__))
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+
+    import flopy
+    import numpy as np
+    import pandas as pd
+    # from collections.abc import Iterable
+    # import geopandas
+    from param_utils import *
+    import copy
+
+else:
+    import os, sys
+    import flopy
+    import numpy as np
+    import pandas as pd
+    from collections.abc import Iterable
+    import geopandas
+    from param_utils import *
+    import copy
+
 
 
 def add_lak_parameters_to_input_file(input_file = r"input_param.csv"):

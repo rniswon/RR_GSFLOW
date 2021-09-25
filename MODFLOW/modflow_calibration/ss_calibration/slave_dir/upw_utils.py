@@ -1,13 +1,32 @@
-import os, sys
+run_cluster = False
 
-import flopy
-import numpy as np
-import pandas as pd
-from collections.abc import Iterable
-from param_utils import *
-from scipy import ndimage
-import matplotlib.pyplot as plt
-from scipy.signal import convolve2d
+if run_cluster == True:
+    import os, sys
+
+    fpath = os.path.abspath(os.path.dirname(__file__))
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+
+    import flopy
+    import numpy as np
+    import pandas as pd
+    # from collections.abc import Iterable
+    from param_utils import *
+    # from scipy import ndimage
+    # import matplotlib.pyplot as plt
+    from scipy.signal import convolve2d
+
+else:
+    import os, sys
+    import flopy
+    import numpy as np
+    import pandas as pd
+    from collections.abc import Iterable
+    from param_utils import *
+    from scipy import ndimage
+    import matplotlib.pyplot as plt
+    from scipy.signal import convolve2d
+
+
 
 def save_txt_3d(fn, arr, fmt ='%.18e'):
     with open(fn, 'w') as outfile:
