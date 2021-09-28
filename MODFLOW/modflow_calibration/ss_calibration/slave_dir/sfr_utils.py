@@ -1,9 +1,25 @@
-import os, sys
-import flopy
-import numpy as np
-import pandas as pd
-from collections.abc import Iterable
-from param_utils import *
+run_cluster = False
+
+if run_cluster == True:
+    import os, sys
+
+    fpath = os.path.abspath(os.path.dirname(__file__))
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+
+    # import flopy
+    import numpy as np
+    import pandas as pd
+    # from collections.abc import Iterable
+    from param_utils import *
+
+else:
+    import os, sys
+    import flopy
+    import numpy as np
+    import pandas as pd
+    from collections.abc import Iterable
+    from param_utils import *
+
 
 def add_sfr_parameters_to_input_file1(input_file = r"input_param.csv" ):
     df = pd.read_csv(input_file, index_col=False)

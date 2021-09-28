@@ -27,7 +27,8 @@ output_dir = r"..\results"
 # set model output file name
 model_output_file = "model_output.csv"
 
-
+# set modflow name file
+mf_name_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
 
 # read in files -----------------------------------------------------------------------####
 
@@ -38,78 +39,94 @@ model_output = pd.read_csv(file_path, na_values = -999)
 
 # plot base flow ------------------------------------------------------------------------------------####
 
-# TODO: add 1:1 line to plot and export (see get_gage_output.py for guide)
-
 # extract data
 base_flow = model_output.loc[model_output.obgnme == "Basflo"]
 
-# plot
+# plot and export
 plt.scatter(base_flow['obsval'], base_flow['simval'])
+plt.axhline(y = 0.114, color = 'r', linestyle = 'dashed')
 plt.title('Simulated vs. observed baseflow')
 plt.xlabel('Observed baseflow (m^3/day)')
 plt.ylabel('Simulated baseflow (m^3/day)')
 plt.grid(True)
-plt.show()
-
-
-# export
-
+file_name = os.path.join(output_dir, "plots", "baseflow.jpg")
+plt.savefig(file_name)
 
 
 
 # plot gage flow ------------------------------------------------------------------------------------####
 
-# TODO: add 1:1 line to plot and export (see get_gage_output.py for guide)
-
 # extract data
-gauge_flow = model_output.loc[model_output.obgnme == "GgFlo"]
+gage_flow = model_output.loc[model_output.obgnme == "GgFlo"]
 
-# plot
-plt.scatter(gauge_flow['obsval'], gauge_flow['simval'])
+# calculate min and max values for 1:1 line
+lmin = np.min(gage_flow['simval'])
+lmax = np.max(gage_flow['simval'])
+if lmin > np.min(gage_flow['obsval']):
+    lmin = np.min(gage_flow['obsval'])
+if lmax < np.max(gage_flow['obsval']):
+    lmax = np.max(gage_flow['obsval'])
+
+# plot and export
+plt.scatter(gage_flow['obsval'], gage_flow['simval'])
+plt.plot([lmin, lmax], [lmin, lmax], "r--")
 plt.title('Simulated vs. observed streamflow')
 plt.xlabel('Observed streamflow (m^3/day)')
 plt.ylabel('Simulated streamflow (m^3/day)')
 plt.grid(True)
-plt.show()
-
-# export
+file_name = os.path.join(output_dir, "plots", "gage_flow.jpg")
+plt.savefig(file_name)
 
 
 
 
 # plot groundwater heads ------------------------------------------------------------------------------------####
 
-# TODO: add 1:1 line to plot and export (see get_gage_output.py for guide)
-
 # extract data
 heads = model_output.loc[model_output.obgnme == "HEADS"]
 
-# plot
+# calculate min and max values for 1:1 line
+lmin = np.min(heads['simval'])
+lmax = np.max(heads['simval'])
+if lmin > np.min(heads['obsval']):
+    lmin = np.min(heads['obsval'])
+if lmax < np.max(heads['obsval']):
+    lmax = np.max(heads['obsval'])
+
+# plot and export
 plt.scatter(heads['obsval'], heads['simval'])
+plt.plot([lmin, lmax], [lmin, lmax], "r--")
 plt.title('Simulated vs. observed groundwater heads')
 plt.xlabel('Observed head (m)')
 plt.ylabel('Simulated head (m)')
 plt.grid(True)
-plt.show()
-
-# export
-
+file_name = os.path.join(output_dir, "plots", "gw_heads.jpg")
+plt.savefig(file_name)
 
 
 
 
 # map baseflow ------------------------------------------------------------------------------------####
 
+# extract data
+base_flow = model_output.loc[model_output.obgnme == "Basflo"]
+
+#need to use gageseg and gagereach from gage file or sfr file to extract coordinates (maybe via hru row and col)
+
 
 # map streamflow ------------------------------------------------------------------------------------####
+
+# extract data
+gage_flow = model_output.loc[model_output.obgnme == "GgFlo"]
+
+#need to use gageseg and gagereach from gage file or sfr file to extract coordinates (maybe via hru row and col)
+
 
 
 # map groundwater heads ------------------------------------------------------------------------------------####
 
 # create modflow object
-mfname = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\archived_models\06_20210528\ss\rr_ss.nam"
-#mfname = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\ss\rr_ss.nam"
-mf = flopy.modflow.Modflow.load(mfname, model_ws = os.path.dirname(mfname) ,   load_only=['DIS', 'BAS6'])
+mf = flopy.modflow.Modflow.load(mf_name_file, model_ws = os.path.dirname(mf_name_file) ,   load_only=['DIS', 'BAS6'])
 
 # set coordinate system offset of bottom left corner of model grid
 xoff = 465900
@@ -120,5 +137,6 @@ epsg = 26910
 mf.modelgrid.set_coord_info(xoff = xoff, yoff = yoff, epsg = epsg)
 
 # create shapefile
-hob_resid_to_shapefile.hob_resid_to_shapefile(mf)
+shapefile_path = os.path.join(output_dir, "gis", "gw_heads_shp.jpg")
+hob_resid_to_shapefile.hob_resid_to_shapefile(mf, shpname = shapefile_path)
 

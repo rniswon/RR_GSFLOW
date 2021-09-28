@@ -2,21 +2,41 @@
 # Setup
 # ----------------------------------------------
 
-import os, sys
-import pandas as pd
-#sys.path.insert(0, r"C:\work\Russian_River\py_pkgs" )
-sys.path.insert(0, r"C:\work\code")
+run_cluster = False
 
-import uzf_utils
-import sfr_utils
-import upw_utils
-import lak_utils
-import well_utils
-import output_utils
-#from gsflow.utils.vtk import Gsflowvtk, Mfvtk
-import flopy
-import numpy as np
-import shutil
+if run_cluster == True:
+    import os, sys
+    import pandas as pd
+
+    fpath = os.path.abspath(os.path.dirname(__file__))
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+
+    import uzf_utils
+    import sfr_utils
+    import upw_utils
+    import lak_utils
+    import well_utils
+    import output_utils
+    # from gsflow.utils.vtk import Gsflowvtk, Mfvtk
+    import flopy
+    import numpy as np
+    import shutil
+
+else:
+    import os, sys
+    import pandas as pd
+    #sys.path.insert(0, r"C:\work\Russian_River\py_pkgs" )
+    sys.path.insert(0, r"C:\work\code")
+    import uzf_utils
+    import sfr_utils
+    import upw_utils
+    import lak_utils
+    import well_utils
+    import output_utils
+    #from gsflow.utils.vtk import Gsflowvtk, Mfvtk
+    import flopy
+    import numpy as np
+    import shutil
 
 
 
@@ -161,7 +181,8 @@ def run_simple_in_out(in_fn, out_fn, csv_in, csv_out):
 if __name__ == '__main__':
 
     print("Start model run....")
-    run(input_file= 'input_param.csv')
+    #run(input_file= 'input_param.csv')
+    run(input_file= 'input_param_20210923.csv')
     #shutil.copyfile(r"model_output - Copy.csv", "model_output.csv")
     #run_simple_in_out('input_param.dat', 'model_output.dat', 'input_param.csv', 'model_output.csv')
     print("End model run....")

@@ -4,15 +4,28 @@
 More details to come...
 """
 
-import os, sys
+run_cluster = False
 
-import pandas as pd
-import numpy as np
+if run_cluster == True:
+    import os, sys
 
-import flopy
+    fpath = os.path.abspath(os.path.dirname(__file__))
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
 
-import sfr_utils
-import obs_utils
+    import pandas as pd
+    import numpy as np
+    import flopy
+    import sfr_utils
+    import obs_utils
+
+else:
+    import os, sys
+    import pandas as pd
+    import numpy as np
+    import flopy
+    import sfr_utils
+    import obs_utils
+
 
 def generate_output_file_ss(Sim):
 
