@@ -215,3 +215,64 @@ xx = 1
 # 11) In general, you must go through all your HRUs that are used for Ag and make sure they are parameterized to represent Ag (soil_type, veg_type,
 #    soil_moist_max, soil_rechr_max, pref_flow_den, percent_imperv, etc.).
 
+
+# veg_type should not bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop -----------------------------------------#
+# Qs:
+# 1) where are crop types stored?
+# 2) do we want soil_type to be non-zero for every grid cell in the model domain? or only irrigated grid cells
+gs.prms.parameters.get_values('hru_type')
+gs.prms.parameters.get_values('soil_type')
+
+
+
+# soil_moist_max is greater than daily max PET (>1inch) -------------------------------------------------------------------------------------#
+# Qs:
+# 1) how to estimate daily max PET?
+# 2) or just use > 1 inch?
+
+
+# pref_flow_den=0 for all HRUs that are irrigated -------------------------------------------------------------------------------------#
+# Q: how to determine which HRUs are irrigated?
+
+
+
+# Only one of these options (TRIGGER, ETDEMAND) can be used at a time ------------------------------------------------------------------------------------#
+# Q: what if neither is specified?
+
+
+
+# Check if the well has a very small thickness or very low conductivity -----------------------------------------------------------------#
+# If this true, the well not be able to deliver requested water.
+# If drawdown resulting from pumping cause the water table to go below cell bottom then this will cause convergence issues
+# Q: what counts as "very small thickness" or "very low conductivity"?
+
+
+
+# If water is supplied from a stream, make sure that the model produces flow that can satisfy the demand ------------------------------------#
+# Qs:
+# 1) how to check if water is supplied from a stream?
+# 2) would need to check that the simulated flow never falls below the demand during the entire modeling period, right?
+
+
+
+# In case you have information about deep percolation, use ssr2gw_rate and sat_threshold to impose these information ---------------------------#
+# Q: do we have information about deep percolation?
+
+
+
+# When cov_type = 1 (grass), ETa will be insensitive to applied irrigation. For now use  cov_type = 2 (shrubs). A Permanent solution is needed in PRMS  ---------------#
+# TODO: set all HRUs with cov_type = 1 to cov_type=2
+
+
+# As much as possible assign upper bounds to water demand that is consistent with local practices ---------------------------------------------------------#
+# Q: how to determine what local practices are? maybe take a look at irrigation data and identify max irrigation
+
+
+
+# Make sure that you used Kc values that are reasonable; and make sure that you multiplied kc by jh_coef and NOT jh_coef_hru in the parameter file -----------------------#
+# how to determine what is reasonable?
+
+
+# In general, you must go through all your HRUs that are used for Ag and make sure they are parameterized to represent Ag (soil_type, veg_type,
+#    soil_moist_max, soil_rechr_max, pref_flow_den, percent_imperv, etc.) ----------------------------------------------------------------------------------------------------#
+# Q: do we need to check other parameters than the ones listed here? do we have any data to guide these ag parameterizations?
