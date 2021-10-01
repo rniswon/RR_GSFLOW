@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="91807447-fe4f-434e-8c7a-78b465a30a8b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Model_Addtions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/RR_GSFLOW.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/RR_GSFLOW.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Main_gsflow.py" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Main_gsflow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/rr_ss_config.ini" beforeDir="false" afterPath="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/rr_ss_config.ini" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +50,7 @@
       <recent name="C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Main_gsflow">
+  <component name="RunManager" selected="Python.Model_Addtions">
     <configuration name="Main_gsflow" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="RR_GSFLOW" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -69,6 +72,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Model_Addtions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RR_GSFLOW" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Model_Addtions.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main_model" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="RR_GSFLOW" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -82,27 +106,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/main_model.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="multiple_ss_runs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="RR_GSFLOW" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/modflow_calibration/ss_calibration/slave_dir/multiple_ss_runs.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -176,18 +179,18 @@
     </configuration>
     <list>
       <item itemvalue="Python.main_model" />
-      <item itemvalue="Python.multiple_ss_runs" />
       <item itemvalue="Python.pest_setup_and_initial_calib_20210702" />
       <item itemvalue="Python.Main_gsflow" />
       <item itemvalue="Python.ss_forward_model_20210702 (1)" />
+      <item itemvalue="Python.Model_Addtions" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Model_Addtions" />
         <item itemvalue="Python.Main_gsflow" />
         <item itemvalue="Python.ss_forward_model_20210702 (1)" />
         <item itemvalue="Python.pest_setup_and_initial_calib_20210702" />
         <item itemvalue="Python.main_model" />
-        <item itemvalue="Python.multiple_ss_runs" />
       </list>
     </recent_temporary>
   </component>
@@ -311,6 +314,21 @@
           <url>file://$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Main_gsflow.py</url>
           <line>94</line>
           <option name="timeStamp" value="267" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Model_Addtions.py</url>
+          <line>72</line>
+          <option name="timeStamp" value="268" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Model_Addtions.py</url>
+          <line>66</line>
+          <option name="timeStamp" value="271" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/MODFLOW/scrtipts/gw_proj/Main_gsflow.py</url>
+          <line>19</line>
+          <option name="timeStamp" value="279" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
