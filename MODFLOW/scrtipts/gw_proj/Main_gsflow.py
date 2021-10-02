@@ -201,7 +201,7 @@ xx = 1
 # Correct PRMS HRUs for AG package
 # =================================
 
-# TODO to incorporate into ag package
+# TODO to incorporate ag package into GSFLOW
 # 1) veg_type should not bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop
 # 2) soil_moist_max is greater than daily max PET (>1inch)
 # 3) pref_flow_den=0 for all HRUs that are irrigated.
@@ -219,7 +219,7 @@ xx = 1
 # veg_type should not bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop -----------------------------------------#
 # Qs:
 # 1) where are crop types stored?
-# 2) do we want soil_type to be non-zero for every grid cell in the model domain? or only irrigated grid cells
+# 2) do we want soil_type to be non-zero for every grid cell in the model domain? or only agricultural grid cells?
 gs.prms.parameters.get_values('hru_type')
 gs.prms.parameters.get_values('soil_type')
 

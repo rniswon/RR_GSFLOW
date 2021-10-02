@@ -1,4 +1,4 @@
-# import packages
+# import packages ------------------------------------------------------------------------------------####
 import sys, os
 import flopy
 import matplotlib.pyplot as plt
@@ -43,12 +43,14 @@ model_output = pd.read_csv(file_path, na_values = -999)
 base_flow = model_output.loc[model_output.obgnme == "Basflo"]
 
 # plot and export
-plt.scatter(base_flow['obsval'], base_flow['simval'])
-plt.axhline(y = 0.114, color = 'r', linestyle = 'dashed')
-plt.title('Simulated vs. observed baseflow')
-plt.xlabel('Observed baseflow (m^3/day)')
-plt.ylabel('Simulated baseflow (m^3/day)')
-plt.grid(True)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(base_flow['obsval'], base_flow['simval'])
+ax.axhline(y = 0.114, color = 'r', linestyle = 'dashed')
+ax.set_title('Simulated vs. observed baseflow')
+ax.set_xlabel('Observed baseflow (m^3/day)')
+ax.set_ylabel('Simulated baseflow (m^3/day)')
+ax.grid(True)
 file_name = os.path.join(output_dir, "plots", "baseflow.jpg")
 plt.savefig(file_name)
 
@@ -68,12 +70,14 @@ if lmax < np.max(gage_flow['obsval']):
     lmax = np.max(gage_flow['obsval'])
 
 # plot and export
-plt.scatter(gage_flow['obsval'], gage_flow['simval'])
-plt.plot([lmin, lmax], [lmin, lmax], "r--")
-plt.title('Simulated vs. observed streamflow')
-plt.xlabel('Observed streamflow (m^3/day)')
-plt.ylabel('Simulated streamflow (m^3/day)')
-plt.grid(True)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(gage_flow['obsval'], gage_flow['simval'])
+ax.plot([lmin, lmax], [lmin, lmax], "r--")
+ax.set_title('Simulated vs. observed streamflow')
+ax.set_xlabel('Observed streamflow (m^3/day)')
+ax.set_ylabel('Simulated streamflow (m^3/day)')
+ax.grid(True)
 file_name = os.path.join(output_dir, "plots", "gage_flow.jpg")
 plt.savefig(file_name)
 
@@ -94,12 +98,14 @@ if lmax < np.max(heads['obsval']):
     lmax = np.max(heads['obsval'])
 
 # plot and export
-plt.scatter(heads['obsval'], heads['simval'])
-plt.plot([lmin, lmax], [lmin, lmax], "r--")
-plt.title('Simulated vs. observed groundwater heads')
-plt.xlabel('Observed head (m)')
-plt.ylabel('Simulated head (m)')
-plt.grid(True)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.scatter(heads['obsval'], heads['simval'])
+ax.plot([lmin, lmax], [lmin, lmax], "r--")
+ax.set_title('Simulated vs. observed groundwater heads')
+ax.set_xlabel('Observed head (m)')
+ax.set_ylabel('Simulated head (m)')
+ax.grid(True)
 file_name = os.path.join(output_dir, "plots", "gw_heads.jpg")
 plt.savefig(file_name)
 
@@ -137,6 +143,6 @@ epsg = 26910
 mf.modelgrid.set_coord_info(xoff = xoff, yoff = yoff, epsg = epsg)
 
 # create shapefile
-shapefile_path = os.path.join(output_dir, "gis", "gw_heads_shp.jpg")
+shapefile_path = os.path.join(output_dir, "gis", "gw_heads_shp.shp")
 hob_resid_to_shapefile.hob_resid_to_shapefile(mf, shpname = shapefile_path)
 

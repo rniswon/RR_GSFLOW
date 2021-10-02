@@ -1,0 +1,662 @@
+pcf
+* control data
+             restart          estimation
+       412       212        10         0         4
+         1         1              single               point
+   2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7
+   1.000000E+01   1.000000E+01   1.000000E-03
+   1.000000E-01
+        30   1.000000E-02         3         3   1.000000E-02         3
+         0         0         0
+* singular value decomposition
+         1
+  10000000    1.000000E-06
+1
+* parameter groups
+upw_ks                 relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+uzf_surfk              relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+uzf_vks                relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+uzf_finf               relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+sfr_ks                 relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+upw_vka                relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+sfr_spil               relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+lak_cd                 relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+well_rubber_dam        relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+uzf_pet                relative              3.0000000000E-02      0.0 switch                2.0000000000E+00      parabolic             1.0000000000E-05      5.0000000000E-01      smaller              
+* parameter data
+finf_1	fixed	factor	0.4830353	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_10	fixed	factor	0.472504655	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_11	fixed	factor	0.472504652	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_12	fixed	factor	0.472504652	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_13	fixed	factor	0.472504625	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_14	fixed	factor	0.483035302	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_15	fixed	factor	0.4830353	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_16	fixed	factor	0.4830353	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_17	fixed	factor	0.483035296	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_18	fixed	factor	0.4830353	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_19	fixed	factor	0.483035302	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_2	fixed	factor	0.483035299	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_20	fixed	factor	0.528461941	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_21	fixed	factor	0.483035301	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_22	fixed	factor	0.483035304	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_3	fixed	factor	0.483035305	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_4	fixed	factor	0.410580006	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_5	fixed	factor	0.410580006	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_6	fixed	factor	0.483035299	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_7	fixed	factor	0.472504653	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_8	fixed	factor	0.47250465	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+finf_9	fixed	factor	0.472504648	1.00E-02	1.00E+00	uzf_finf	1.00E+00	0.00E+00	1
+ks_1	log	factor	0.839352137	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_10	log	factor	1.766842754	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_100	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_101	log	factor	0.000843453	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_102	log	factor	7.96E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_103	log	factor	0.000437109	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_104	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_105	log	factor	1.01E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_106	log	factor	0.000145145	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_107	log	factor	0.000313224	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_108	log	factor	4.337813332	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_109	log	factor	6.88532	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_11	log	factor	0.321198501	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_110	log	factor	3.924000129	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_111	log	factor	4.82245	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_112	log	factor	3.138976167	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_113	log	factor	1.049746544	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_114	log	factor	7.758595749	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_115	log	factor	6.431828625	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_116	log	factor	0.397479628	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_117	log	factor	13.4111479	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_118	log	factor	2.036281746	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_119	log	factor	10.4554	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_12	log	factor	8.951545966	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_120	log	factor	0.159815	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_121	log	factor	2.149484448	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_122	log	factor	38.52285971	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_123	log	factor	11.19307702	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_124	log	factor	2.007218154	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_125	log	factor	493.3904266	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_126	log	factor	500	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_127	log	factor	1.938995405	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_128	log	factor	3.365607049	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_129	log	factor	5.99369	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_13	log	factor	1.700999149	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_130	log	factor	14.0457367	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_131	log	factor	0.000201211	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_132	log	factor	0.000200122	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_133	log	factor	0.000201965	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_134	log	factor	0.026293924	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_135	log	factor	0.00015872	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_136	log	factor	0.000291072	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_137	log	factor	0.00419591	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_138	log	factor	6.30815	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_139	log	factor	0.000228881	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_14	log	factor	4.539203707	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_140	log	factor	14.46260466	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_141	log	factor	0.000197843	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_142	log	factor	0.000199909	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_143	log	factor	0.001743408	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_144	log	factor	1.00993	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_145	log	factor	28.81367021	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_146	log	factor	5.73368	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_147	log	factor	4.04987	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_148	log	factor	5.96968354	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_149	log	factor	0.000264105	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_15	log	factor	2.704210034	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_150	log	factor	7.223028313	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_151	log	factor	6.006677808	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_152	log	factor	0.097992088	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_153	log	factor	37.57306386	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_154	log	factor	56.2815	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_155	log	factor	0.000195767	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_156	log	factor	0.185049149	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_157	log	factor	0.190869272	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_158	log	factor	0.624676583	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_159	log	factor	0.026789737	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_16	log	factor	497.836318	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_160	log	factor	1.033553013	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_161	log	factor	345.3725301	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_162	log	factor	0.186658306	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_163	log	factor	0.068775981	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_164	log	factor	0.05452894	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_165	log	factor	6.225097257	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_166	log	factor	0.015653531	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_167	log	factor	0.037865607	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_168	log	factor	0.122603259	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_169	log	factor	0.00026225	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_17	log	factor	1.66957	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_170	log	factor	0.002034045	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_171	log	factor	1.082731125	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_172	log	factor	0.019108866	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_173	log	factor	0.00799665	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_174	log	factor	5.84494	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_175	log	factor	0.125183815	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_176	log	factor	0.00451712	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_177	log	factor	1.108718842	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_178	log	factor	0.000200837	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_179	log	factor	2.044055409	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_18	log	factor	2.52779514	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_180	log	factor	1.91E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_181	log	factor	0.310298843	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_182	log	factor	4.853710825	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_183	log	factor	0.962805467	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_184	log	factor	0.000404692	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_185	log	factor	9.56E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_186	log	factor	9.83E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_187	log	factor	0.000109391	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_188	log	factor	0.000393869	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_189	log	factor	0.000112337	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_19	log	factor	44.72347965	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_190	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_191	log	factor	0.00010098	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_192	log	factor	0.000128707	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_193	log	factor	1.94E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_194	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_195	log	factor	0.000775653	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_196	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_197	log	factor	0.000131129	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_198	log	factor	0.000168949	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_199	log	factor	1.12E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_2	log	factor	0.030665408	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_20	log	factor	0.338965	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_200	log	factor	1.02E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_201	log	factor	1.10E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_202	log	factor	0.000101543	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_203	log	factor	0.000113782	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_204	log	factor	9.90E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_205	log	factor	0.00010407	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_206	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_207	log	factor	0.00010225	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_208	log	factor	1.39E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_209	log	factor	0.000294892	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_21	log	factor	0.665039649	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_210	log	factor	8.68E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_211	log	factor	8.82E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_212	log	factor	0.000102631	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_213	log	factor	9.57E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_214	log	factor	9.92E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_215	log	factor	9.82E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_216	log	factor	0.00010033	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_217	log	factor	9.59E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_218	log	factor	5.19E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_219	log	factor	0.000103893	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_22	log	factor	0.450572926	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_220	log	factor	9.25E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_221	log	factor	0.000133627	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_222	log	factor	0.00010885	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_223	log	factor	0.000116371	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_224	log	factor	9.99E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_225	log	factor	1.01E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_226	log	factor	0.000105966	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_227	log	factor	8.69E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_228	log	factor	8.85E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_229	log	factor	0.000426928	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_23	log	factor	250.356317	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_230	log	factor	1.01E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_231	log	factor	3.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_232	log	factor	0.00035429	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_233	log	factor	6.09E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_24	log	factor	0.049167361	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_25	log	factor	0.0871791	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_26	log	factor	500	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_27	log	factor	0.755135147	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_28	log	factor	0.394774	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_29	log	factor	3.252094689	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_3	log	factor	0.717011946	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_30	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_31	log	factor	2.63204327	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_32	log	factor	0.000199811	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_33	log	factor	0.098580808	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_34	log	factor	51.76807632	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_35	log	factor	0.000196396	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_36	log	factor	0.000603352	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_37	log	factor	0.00022562	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_38	log	factor	0.213344195	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_39	log	factor	0.000195852	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_4	log	factor	6.148569658	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_40	log	factor	0.64681941	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_41	log	factor	1.142899098	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_42	log	factor	2.257382771	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_43	log	factor	0.266585544	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_44	log	factor	0.487284005	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_45	log	factor	0.016033524	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_46	log	factor	1.61281522	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_47	log	factor	5.351017628	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_48	log	factor	8.400375877	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_49	log	factor	0.000206771	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_5	log	factor	44.7934	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_50	log	factor	2.942694115	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_51	log	factor	4.59E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_52	log	factor	0.034417502	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_53	log	factor	4.945830849	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_54	log	factor	0.0177407	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_55	log	factor	20.52747193	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_56	log	factor	72.88326533	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_57	log	factor	5.940082687	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_58	log	factor	0.309835	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_59	log	factor	0.006395419	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_6	log	factor	226.43401	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_60	log	factor	5.020048818	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_61	log	factor	0.028444993	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_62	log	factor	0.277704497	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_63	log	factor	10.57388258	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_64	log	factor	0.000617835	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_65	log	factor	0.00189247	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_66	log	factor	5.527146755	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_67	log	factor	8.814656214	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_68	log	factor	0.009271564	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_69	log	factor	0.73801506	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_7	log	factor	1.02E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_70	log	factor	3.7720758	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_71	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_72	log	factor	8.79E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_73	log	factor	0.000112794	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_74	log	factor	9.33E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_75	log	factor	1.42E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_76	log	factor	0.000191978	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_77	log	factor	0.000102285	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_78	log	factor	1.62E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_79	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_8	log	factor	1.00E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_80	log	factor	261.732	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_81	log	factor	9.04E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_82	log	factor	33.47493687	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_83	log	factor	6.574640837	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_84	log	factor	9.05E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_85	log	factor	1.29E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_86	log	factor	0.000132277	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_87	log	factor	500	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_88	log	factor	17.08287138	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_89	log	factor	8.02E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_9	log	factor	8.246873468	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_90	log	factor	4.48401	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_91	log	factor	14.46417745	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_92	log	factor	0.000114053	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_93	log	factor	0.041744135	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_94	log	factor	3.16E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_95	log	factor	0.00010002	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_96	log	factor	0.000172956	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_97	log	factor	5.52E-05	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_98	log	factor	0.0001146	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+ks_99	log	factor	0.000106566	1.00E-05	5.00E+02	upw_ks	1.00E+00	0.00E+00	1
+lak_cond_1	fixed	factor	1	1.10E-10	1.10E+10	lak_cd	1.00E+00	0.00E+00	1
+lak_cond_12	log	factor	0.994494733	1.00E-01	1.00E+04	lak_cd	1.00E+00	0.00E+00	1
+lak_cond_2	fixed	factor	1	1.10E-10	1.10E+10	lak_cd	1.00E+00	0.00E+00	1
+pet_1	fixed	factor	9.50E-05	1.10E-10	1.10E+10	uzf_pet	1.00E+00	0.00E+00	1
+pond_recharge	log	factor	11741.45639	1.00E+00	1.00E+05	well_rubber_dam	1.00E+00	0.00E+00	1
+sfr_k_1	log	factor	0.098633653	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_10	log	factor	0.0998063	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_11	log	factor	0.0997509	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_12	log	factor	0.1	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_13	log	factor	0.100008223	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_14	log	factor	0.0988562	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_15	log	factor	0.100155068	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_16	log	factor	0.0994543	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_17	log	factor	0.0985146	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_18	log	factor	0.102352291	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_19	log	factor	0.100052125	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_2	log	factor	0.0996263	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_20	log	factor	0.100065494	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_21	log	factor	0.100041186	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_22	log	factor	0.099049013	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_3	log	factor	0.091459624	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_4	log	factor	0.101275112	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_5	log	factor	0.0999964	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_6	log	factor	0.100462141	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_7	log	factor	0.099104118	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_8	log	factor	0.0999197	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+sfr_k_9	log	factor	0.10009332	1.00E-05	5.00E+02	sfr_ks	1.00E+00	0.00E+00	1
+spill_447	fixed	factor	185.0599976	1.00E+02	2.20E+02	sfr_spil	1.00E+00	0.00E+00	1
+spill_449	fixed	factor	146.6000061	1.00E+02	2.20E+02	sfr_spil	1.00E+00	0.00E+00	1
+spill_688	none	factor	8.230382489	8.23E+00	1.16E+01	sfr_spil	1.00E+00	0.00E+00	1
+surfk_1_1	log	factor	0.00025092	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_10	log	factor	0.000251324	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_11	log	factor	0.000251196	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_12	log	factor	0.000251219	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_13	log	factor	0.000251189	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_14	log	factor	0.00025121	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_15	log	factor	0.000251187	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_16	log	factor	0.000251183	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_17	log	factor	0.00025121	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_18	log	factor	0.000251263	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_19	log	factor	0.00025121	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_2	log	factor	0.000251166	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_21	log	factor	0.000251189	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_3	log	factor	0.00025121	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_4	log	factor	0.000398303	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_5	log	factor	0.000397969	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_6	log	factor	0.000251208	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_8	log	factor	0.000249806	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_1_9	log	factor	0.000251322	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_1	log	factor	0.000251375	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_10	log	factor	0.00025121	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_11	log	factor	0.000251195	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_12	log	factor	0.000251234	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_14	log	factor	0.000158489	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_15	log	factor	0.000158502	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_16	log	factor	0.000158502	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_17	log	factor	0.000158502	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_18	log	factor	0.000158368	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_19	log	factor	0.000158503	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_2	log	factor	0.000100012	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_20	log	factor	0.00063101	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_21	log	factor	0.000158503	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_22	log	factor	0.000158544	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_3	log	factor	0.000100008	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_4	log	factor	0.000251217	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_5	log	factor	0.000251499	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_6	log	factor	0.000158496	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_7	log	factor	0.000251189	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_8	log	factor	0.000251209	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_2_9	log	factor	0.000251188	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_1	log	factor	3.00E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_10	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_11	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_12	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_13	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_14	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_15	log	factor	3.07E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_16	log	factor	1.00E-07	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_17	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_18	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_19	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_2	log	factor	3.07E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_20	log	factor	1.15E-07	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_21	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_22	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_3	log	factor	3.07E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_4	log	factor	3.07E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_5	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_6	log	factor	1.00E-07	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_7	log	factor	3.07E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_8	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+surfk_3_9	log	factor	3.09E-08	1.00E-10	5.00E+02	uzf_surfk	1.00E+00	0.00E+00	1
+vka_ratio_1	none	factor	0.101135235	1.10E-10	1.10E+10	upw_vka	1.00E+00	0.00E+00	1
+vka_ratio_2	none	factor	0.100587943	1.10E-10	1.10E+10	upw_vka	1.00E+00	0.00E+00	1
+vka_ratio_3	none	factor	0.0999993	1.10E-10	1.10E+10	upw_vka	1.00E+00	0.00E+00	1
+vks_1_1	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_10	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_11	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_12	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_13	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_14	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_15	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_16	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_17	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_18	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_19	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_2	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_21	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_3	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_4	fixed	factor	0.000398107	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_5	fixed	factor	0.000398107	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_6	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_8	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_1_9	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_1	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_10	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_11	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_12	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_14	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_15	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_16	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_17	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_18	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_19	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_2	fixed	factor	0.0001	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_20	fixed	factor	0.000630957	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_21	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_22	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_3	fixed	factor	0.0001	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_4	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_5	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_6	fixed	factor	0.000158489	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_7	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_8	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_2_9	fixed	factor	0.000251189	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_1	fixed	factor	3.02E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_10	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_11	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_12	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_13	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_14	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_15	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_16	fixed	factor	1.00E-07	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_17	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_18	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_19	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_2	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_20	fixed	factor	1.15E-07	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_21	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_22	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_3	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_4	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_5	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_6	fixed	factor	1.00E-07	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_7	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_8	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1
+vks_3_9	fixed	factor	3.09E-08	1.00E-10	5.00E+02	uzf_vks	1.00E+00	0.00E+00	1         
+* observation groups
+Basflo               
+GgFlo                
+HEADS                
+PmpCHG               
+* observation data
+bsflo_1               1.1400000000E-01      4.7387910221E+01      Basflo               
+bsflo_10              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_11              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_12              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_13              1.1400000000E-01      4.7387910221E+01      Basflo               
+bsflo_14              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_15              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_16              1.1400000000E-01      4.7387910221E+01      Basflo               
+bsflo_17              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_18              1.1400000000E-01      4.7387910221E+01      Basflo               
+bsflo_19              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_2               1.1400000000E-01      4.7387910221E+01      Basflo               
+bsflo_20              -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_3               -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_4               -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_5               1.1400000000E-01      4.7387910221E+01      Basflo               
+bsflo_6               1.1400000000E-01      4.7387910221E+01      Basflo               
+bsflo_7               -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_8               -9.9900000000E+02     0.0000000000E+00      Basflo               
+bsflo_9               -9.9900000000E+02     0.0000000000E+00      Basflo               
+gflo_1                3.9559588410E+05      0.0000000000E+00      GgFlo                
+gflo_10               2.6881828180E+05      0.0000000000E+00      GgFlo                
+gflo_11               2.3471013090E+03      0.0000000000E+00      GgFlo                
+gflo_12               2.7243887210E+05      0.0000000000E+00      GgFlo                
+gflo_13               3.1200635500E+06      0.0000000000E+00      GgFlo                
+gflo_14               7.1584707840E+05      0.0000000000E+00      GgFlo                
+gflo_15               2.7001249670E+05      0.0000000000E+00      GgFlo                
+gflo_16               1.9204647630E+05      0.0000000000E+00      GgFlo                
+gflo_17               7.0927793360E+05      0.0000000000E+00      GgFlo                
+gflo_18               4.8994659320E+06      0.0000000000E+00      GgFlo                
+gflo_19               -9.9900000000E+02     0.0000000000E+00      GgFlo                
+gflo_2                6.3475683830E+05      0.0000000000E+00      GgFlo                
+gflo_20               3.7510172840E+05      0.0000000000E+00      GgFlo                
+gflo_3                6.7322280370E+05      0.0000000000E+00      GgFlo                
+gflo_4                8.8306169410E+05      0.0000000000E+00      GgFlo                
+gflo_5                1.4911505870E+06      0.0000000000E+00      GgFlo                
+gflo_6                2.0271110340E+06      0.0000000000E+00      GgFlo                
+gflo_7                1.0346136660E+05      0.0000000000E+00      GgFlo                
+gflo_8                6.9467942640E+04      0.0000000000E+00      GgFlo                
+gflo_9                2.5658163270E+05      0.0000000000E+00      GgFlo                
+ho_0                  6.0713100430E+01      1.0000000000E+00      HEADS                
+ho_1                  3.2151519780E+02      1.0000000000E+00      HEADS                
+ho_10                 4.8610500340E+01      1.0000000000E+00      HEADS                
+ho_100                1.9615400700E+02      1.0000000000E+00      HEADS                
+ho_101                1.6018150330E+02      1.0000000000E+00      HEADS                
+ho_102                1.6190060420E+02      1.0000000000E+00      HEADS                
+ho_103                1.7605250550E+02      1.0000000000E+00      HEADS                
+ho_104                1.6902679440E+02      1.0000000000E+00      HEADS                
+ho_105                1.6777110290E+02      1.0000000000E+00      HEADS                
+ho_106                1.6630349730E+02      1.0000000000E+00      HEADS                
+ho_107                1.6964990230E+02      1.0000000000E+00      HEADS                
+ho_108                1.7087240600E+02      1.0000000000E+00      HEADS                
+ho_109                1.7162069700E+02      1.0000000000E+00      HEADS                
+ho_11                 5.1313800810E+01      1.0000000000E+00      HEADS                
+ho_110                1.7051379390E+02      1.0000000000E+00      HEADS                
+ho_111                1.7123359680E+02      1.0000000000E+00      HEADS                
+ho_112                1.7166180420E+02      1.0000000000E+00      HEADS                
+ho_113                1.6860009770E+02      1.0000000000E+00      HEADS                
+ho_114                1.7188400270E+02      1.0000000000E+00      HEADS                
+ho_115                2.4859339900E+02      1.0000000000E+00      HEADS                
+ho_116                2.3755070500E+02      1.0000000000E+00      HEADS                
+ho_117                2.4539030460E+02      1.0000000000E+00      HEADS                
+ho_118                2.3365969850E+02      1.0000000000E+00      HEADS                
+ho_119                2.3938380430E+02      1.0000000000E+00      HEADS                
+ho_12                 2.6004400250E+01      1.0000000000E+00      HEADS                
+ho_120                2.5039559940E+02      1.0000000000E+00      HEADS                
+ho_121                2.3775010680E+02      1.0000000000E+00      HEADS                
+ho_122                3.1590390010E+02      1.0000000000E+00      HEADS                
+ho_123                2.6198168950E+02      1.0000000000E+00      HEADS                
+ho_124                2.6622531130E+02      1.0000000000E+00      HEADS                
+ho_125                2.7372229000E+02      1.0000000000E+00      HEADS                
+ho_126                2.3640899660E+02      1.0000000000E+00      HEADS                
+ho_127                2.2276829530E+02      1.0000000000E+00      HEADS                
+ho_128                1.8157699590E+02      1.0000000000E+00      HEADS                
+ho_129                2.4548440550E+02      1.0000000000E+00      HEADS                
+ho_13                 1.5508199690E+01      1.0000000000E+00      HEADS                
+ho_130                2.0223950200E+02      1.0000000000E+00      HEADS                
+ho_131                2.2900079350E+02      1.0000000000E+00      HEADS                
+ho_132                2.0931939700E+02      1.0000000000E+00      HEADS                
+ho_133                2.3966839600E+02      1.0000000000E+00      HEADS                
+ho_134                2.3943040470E+02      1.0000000000E+00      HEADS                
+ho_135                2.1278489690E+02      1.0000000000E+00      HEADS                
+ho_136                2.1619380190E+02      1.0000000000E+00      HEADS                
+ho_137                2.3584030150E+02      1.0000000000E+00      HEADS                
+ho_138                2.2104710390E+02      1.0000000000E+00      HEADS                
+ho_139                2.4023829650E+02      1.0000000000E+00      HEADS                
+ho_14                 3.8053979490E+02      1.0000000000E+00      HEADS                
+ho_140                2.3840849300E+02      1.0000000000E+00      HEADS                
+ho_141                2.4341200260E+02      1.0000000000E+00      HEADS                
+ho_142                2.1659089660E+02      1.0000000000E+00      HEADS                
+ho_143                2.4685749820E+02      1.0000000000E+00      HEADS                
+ho_144                2.1997979740E+02      1.0000000000E+00      HEADS                
+ho_145                2.3541929630E+02      1.0000000000E+00      HEADS                
+ho_146                2.6161441040E+02      1.0000000000E+00      HEADS                
+ho_147                2.5869018550E+02      1.0000000000E+00      HEADS                
+ho_148                2.2372779850E+02      1.0000000000E+00      HEADS                
+ho_149                2.1657719420E+02      1.0000000000E+00      HEADS                
+ho_15                 1.4057399750E+01      1.0000000000E+00      HEADS                
+ho_150                2.4827180480E+02      1.0000000000E+00      HEADS                
+ho_151                2.5071629330E+02      1.0000000000E+00      HEADS                
+ho_152                1.8968339540E+02      1.0000000000E+00      HEADS                
+ho_153                1.8406950380E+02      1.0000000000E+00      HEADS                
+ho_154                1.8004690550E+02      1.0000000000E+00      HEADS                
+ho_155                1.7778630070E+02      1.0000000000E+00      HEADS                
+ho_156                1.7756889340E+02      1.0000000000E+00      HEADS                
+ho_157                1.7736160280E+02      1.0000000000E+00      HEADS                
+ho_158                2.0125010680E+02      1.0000000000E+00      HEADS                
+ho_159                1.8711369320E+02      1.0000000000E+00      HEADS                
+ho_16                 6.0515201570E+01      1.0000000000E+00      HEADS                
+ho_160                1.9624949650E+02      1.0000000000E+00      HEADS                
+ho_161                2.9600201420E+02      1.0000000000E+00      HEADS                
+ho_162                2.1104400630E+02      1.0000000000E+00      HEADS                
+ho_163                2.1907040410E+02      1.0000000000E+00      HEADS                
+ho_164                2.1500950620E+02      1.0000000000E+00      HEADS                
+ho_165                2.3148590090E+02      1.0000000000E+00      HEADS                
+ho_166                2.2293569950E+02      1.0000000000E+00      HEADS                
+ho_167                2.7163061520E+02      1.0000000000E+00      HEADS                
+ho_168                2.7542590330E+02      1.0000000000E+00      HEADS                
+ho_169                2.9170779420E+02      1.0000000000E+00      HEADS                
+ho_17                 6.1166000370E+00      1.0000000000E+00      HEADS                
+ho_170                2.9121701050E+02      1.0000000000E+00      HEADS                
+ho_18                 3.8313400270E+01      1.0000000000E+00      HEADS                
+ho_19                 3.8800998690E+01      1.0000000000E+00      HEADS                
+ho_2                  9.2147499080E+01      1.0000000000E+00      HEADS                
+ho_20                 1.7394599910E+01      1.0000000000E+00      HEADS                
+ho_21                 2.7794700620E+01      1.0000000000E+00      HEADS                
+ho_22                 1.8714700700E+01      1.0000000000E+00      HEADS                
+ho_23                 5.3654999730E+00      1.0000000000E+00      HEADS                
+ho_24                 1.2701899530E+01      1.0000000000E+00      HEADS                
+ho_25                 1.2933799740E+01      1.0000000000E+00      HEADS                
+ho_26                 1.2055999760E+01      1.0000000000E+00      HEADS                
+ho_27                 1.6898500440E+01      1.0000000000E+00      HEADS                
+ho_28                 1.7490800860E+01      1.0000000000E+00      HEADS                
+ho_29                 1.7896400450E+01      1.0000000000E+00      HEADS                
+ho_3                  4.3852298740E+01      1.0000000000E+00      HEADS                
+ho_30                 2.0446699140E+01      1.0000000000E+00      HEADS                
+ho_31                 3.8525600430E+01      1.0000000000E+00      HEADS                
+ho_32                 1.2826000210E+01      1.0000000000E+00      HEADS                
+ho_33                 3.5315700530E+01      1.0000000000E+00      HEADS                
+ho_34                 4.4568099980E+01      1.0000000000E+00      HEADS                
+ho_35                 3.8023200990E+01      1.0000000000E+00      HEADS                
+ho_36                 4.7414999010E+00      1.0000000000E+00      HEADS                
+ho_37                 1.2469300270E+01      1.0000000000E+00      HEADS                
+ho_38                 1.3184179690E+02      1.0000000000E+00      HEADS                
+ho_39                 1.2517939760E+02      1.0000000000E+00      HEADS                
+ho_4                  1.1755000350E+00      1.0000000000E+00      HEADS                
+ho_40                 6.4102798460E+01      1.0000000000E+00      HEADS                
+ho_41                 5.8277801510E+01      1.0000000000E+00      HEADS                
+ho_42                 9.5899200440E+01      1.0000000000E+00      HEADS                
+ho_43                 4.4527000430E+01      1.0000000000E+00      HEADS                
+ho_44                 5.7997299190E+01      1.0000000000E+00      HEADS                
+ho_45                 5.2448501590E+01      1.0000000000E+00      HEADS                
+ho_46                 8.6345397950E+01      1.0000000000E+00      HEADS                
+ho_47                 1.0179329680E+02      1.0000000000E+00      HEADS                
+ho_48                 3.3727639770E+02      1.0000000000E+00      HEADS                
+ho_49                 5.2812698360E+01      1.0000000000E+00      HEADS                
+ho_5                  2.3805000780E+00      1.0000000000E+00      HEADS                
+ho_50                 5.3846801760E+01      1.0000000000E+00      HEADS                
+ho_51                 7.9176002500E+01      1.0000000000E+00      HEADS                
+ho_52                 8.3173797610E+01      1.0000000000E+00      HEADS                
+ho_53                 8.5943397520E+01      1.0000000000E+00      HEADS                
+ho_54                 5.2555400850E+01      1.0000000000E+00      HEADS                
+ho_55                 7.0512397770E+01      1.0000000000E+00      HEADS                
+ho_56                 4.9913398740E+01      1.0000000000E+00      HEADS                
+ho_57                 4.9634498600E+01      1.0000000000E+00      HEADS                
+ho_58                 4.3700199130E+01      1.0000000000E+00      HEADS                
+ho_59                 4.7038299560E+01      1.0000000000E+00      HEADS                
+ho_6                  6.0054698940E+01      1.0000000000E+00      HEADS                
+ho_60                 4.8792400360E+01      1.0000000000E+00      HEADS                
+ho_61                 4.9946998600E+01      1.0000000000E+00      HEADS                
+ho_62                 6.0305000310E+01      1.0000000000E+00      HEADS                
+ho_63                 5.8064800260E+01      1.0000000000E+00      HEADS                
+ho_64                 3.4296099850E+02      1.0000000000E+00      HEADS                
+ho_65                 1.4008610530E+02      1.0000000000E+00      HEADS                
+ho_66                 3.3610299680E+02      1.0000000000E+00      HEADS                
+ho_67                 1.4778210450E+02      1.0000000000E+00      HEADS                
+ho_68                 1.4923269650E+02      1.0000000000E+00      HEADS                
+ho_69                 1.4421189880E+02      1.0000000000E+00      HEADS                
+ho_7                  1.9030929570E+02      1.0000000000E+00      HEADS                
+ho_70                 1.4336560060E+02      1.0000000000E+00      HEADS                
+ho_71                 5.5365997310E+02      1.0000000000E+00      HEADS                
+ho_72                 2.3896319580E+02      1.0000000000E+00      HEADS                
+ho_73                 2.3405749510E+02      1.0000000000E+00      HEADS                
+ho_74                 2.1953829960E+02      1.0000000000E+00      HEADS                
+ho_75                 2.2083050540E+02      1.0000000000E+00      HEADS                
+ho_76                 2.5607409670E+02      1.0000000000E+00      HEADS                
+ho_77                 2.2942480470E+02      1.0000000000E+00      HEADS                
+ho_78                 2.3024800110E+02      1.0000000000E+00      HEADS                
+ho_79                 2.2652009580E+02      1.0000000000E+00      HEADS                
+ho_8                  4.2330600740E+01      1.0000000000E+00      HEADS                
+ho_80                 2.5818630980E+02      1.0000000000E+00      HEADS                
+ho_81                 2.2044960020E+02      1.0000000000E+00      HEADS                
+ho_82                 2.1759480290E+02      1.0000000000E+00      HEADS                
+ho_83                 2.0573699950E+02      1.0000000000E+00      HEADS                
+ho_84                 1.9904200740E+02      1.0000000000E+00      HEADS                
+ho_85                 2.0435380550E+02      1.0000000000E+00      HEADS                
+ho_86                 2.1951489260E+02      1.0000000000E+00      HEADS                
+ho_87                 2.3757690430E+02      1.0000000000E+00      HEADS                
+ho_88                 2.3242109680E+02      1.0000000000E+00      HEADS                
+ho_89                 2.3889169310E+02      1.0000000000E+00      HEADS                
+ho_9                  5.2021701810E+01      1.0000000000E+00      HEADS                
+ho_90                 1.8936000060E+02      1.0000000000E+00      HEADS                
+ho_91                 2.0019979860E+02      1.0000000000E+00      HEADS                
+ho_92                 1.9972779850E+02      1.0000000000E+00      HEADS                
+ho_93                 1.9618760680E+02      1.0000000000E+00      HEADS                
+ho_94                 1.8428210450E+02      1.0000000000E+00      HEADS                
+ho_95                 1.6555059810E+02      1.0000000000E+00      HEADS                
+ho_96                 1.1911579900E+02      1.0000000000E+00      HEADS                
+ho_97                 1.6182510380E+02      1.0000000000E+00      HEADS                
+ho_98                 1.5551350400E+02      1.0000000000E+00      HEADS                
+ho_99                 1.6274639890E+02      1.0000000000E+00      HEADS                
+pmpchg                0.0000000000E+00      0.0000000000E+00      PmpCHG               
+* model command line
+run_model.bat
+* model input/output
+tplfile.tpl input_param.csv
+insfile.ins model_output.csv
+++additional_ins_delimiters(,)
