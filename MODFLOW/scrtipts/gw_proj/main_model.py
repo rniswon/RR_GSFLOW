@@ -37,7 +37,7 @@ wt[wt>2000] = 235
 gw.bas_package(wt)
 #gw.bas_package_01(wt)
 
-# ghb
+# generate ghb package
 gw.ghb_package()
 
 # modify the grid to carve lakes
@@ -46,7 +46,7 @@ Compute_Lake2.carve_lakes(gw)
 # generate boundary conditions
 
 
-# generate upw packag
+# generate upw package
 geo_zones = []
 gw.upw_package(geo_zones)
 
@@ -58,7 +58,6 @@ gw.hfb_package()
 
 # generate sfr3 package
 gw.sfr3_package()
-
 
 # generate uzf package
 gw.uzf_package()
@@ -74,8 +73,10 @@ gw.lak_package()
 #gw.well_package()
 gw.well_package2()
 
-# hob
+# generate hob package
 gw.hob_package()
+
+# generate gage package
 gw.gage_package() #TODO: unit number assignment for steady state model might be incorrect here
 
 # generate Control package

@@ -111,7 +111,8 @@ class Gw_model(object):
             # no wt is used, then the initial wt will close to surface
             strt = self.mf.dis.top.array - 0.0
 
-        thikness = self.mf.dis.thickness.array
+        #thikness = self.mf.dis.thickness.array    # this doesn't work in updated version of flopy
+        thikness = self.mf.modelgrid.thick
         ibound = np.zeros_like(thikness)
         ibound[thikness > 0] = 1
 
@@ -163,7 +164,8 @@ class Gw_model(object):
             strt = self.mf.dis.top.array - 0.0
 
         # ---- Create ibound array ------------------------------------------------------------------------
-        thikness = self.mf.dis.thickness.array
+        #thikness = self.mf.dis.thickness.array   # this doesn't work with new version of flopy
+        thk = self.mf.modelgrid.thick
         ibound = np.zeros_like(thikness)
         ibound[thikness > 0] = 1
 
@@ -286,7 +288,8 @@ class Gw_model(object):
         reach_data['j'] = streams_data['HRU_COL'].values - 1  # column number
 
         for index, rech in reach_data.iterrows():  # get layer
-            thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]
+            #thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]  # this doesn't work with new version of flopy
+            thk = self.mf.modelgrid.thick[:, int(rech['i']), int(rech['j'])]
             if sum(thk) == 0:
                 raise ValueError("Stream in inactive zone")
             for kk, val in enumerate(thk):
@@ -1218,7 +1221,8 @@ class Gw_model(object):
 
         # Assign layers IDs after making sure stream cells are in active zone
         for index, rech in reach_data.iterrows():  # get layer
-            thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]
+            #thk = self.mf.dis.thickness.array[:, int(rech['i']), int(rech['j'])]   # this doesn't work in updated version of flopy
+            thk = self.mf.modelgrid.thick[:, int(rech['i']), int(rech['j'])]
             ibsfr = self.mf.bas6.ibound.array[:, int(rech['i']), int(rech['j'])]
             if sum(thk) == 0:
                 raise ValueError("Stream in inactive zone")
@@ -1532,7 +1536,8 @@ class Gw_model(object):
             reach_data.at[irech, 'i'] = pp[0]  # row number
             reach_data.at[irech, 'j'] = pp[1]  # column number
             try:
-                thk = self.mf.dis.thickness.array[:, int(pp[0]), int(pp[1])]
+                #thk = self.mf.dis.thickness.array[:, int(pp[0]), int(pp[1])]  # this doesn't work in updated version of flopy
+                thk = self.mf.modelgrid.thick[:, int(pp[0]), int(pp[1])]
             except:
                 xxx = 1
             if sum(thk) == 0:
@@ -1628,7 +1633,8 @@ class Gw_model(object):
             reach_data.at[irech, 'i'] = pp[0]  # row number
             reach_data.at[irech, 'j'] = pp[1]  # column number
             try:
-                thk = self.mf.dis.thickness.array[:, int(pp[0]), int(pp[1])]
+                #thk = self.mf.dis.thickness.array[:, int(pp[0]), int(pp[1])]  # this doesn't work in updated version of flopy
+                thk = self.mf.modelgrid[:, int(pp[0]), int(pp[1])]
             except:
                 xxx = 1
             if sum(thk) == 0:
