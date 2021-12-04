@@ -36,7 +36,7 @@ map_groundwater_head_contours_heatmap = 0
 input_dir = r"."
 
 # output file directory (i.e. plot directory)
-output_dir = r"..\results"
+output_dir = r"..\manual_calib_results"
 
 
 # set file names ------------------------------------------------------------------------------------####
@@ -171,8 +171,6 @@ if map_groundwater_head_resid == 1:
     # I've also altered it to calculate the residuals as sim - obs and to include the sim and obs values in the table
     def hob_resid_to_shapefile_loc(mf, stress_period=[0, -1], shpname='hob_shapefile.shp'):
 
-        #get_vertices = mf.modelgrid.get_cell_vertices
-
         # grab coordinate data for each grid cell
         coord_row = mf.modelgrid.get_ycellcenters_for_layer(0)
         coord_col = mf.modelgrid.get_xcellcenters_for_layer(0)
@@ -216,12 +214,6 @@ if map_groundwater_head_resid == 1:
             rec = [obs_, len(err), curr_hob_out['SIMULATED EQUIVALENT'].mean(), curr_hob_out['OBSERVED VALUE'].mean(), err.mean(), (err ** 2.0).mean() ** 0.5, (err.abs()).mean()]
             all_rec.append(rec)
 
-            # # #get geographic data and store in geoms
-            # rrow = curr_hob['row'].values[0] - 1
-            # coll = curr_hob['col'].values[0] - 1
-            # xy = get_vertices(rrow, coll)
-            # geoms.append(Point(xy[0][0], xy[0][1], 0))
-
             # grab coordinate data for each well
             row_idx = curr_hob['row'].values[0] - 1
             col_idx = curr_hob['col'].values[0] - 1
@@ -254,7 +246,7 @@ if map_groundwater_head_resid == 1:
 
     # create shapefile
     #shapefile_path = os.path.join(output_dir, "gis", "gw_heads_shp.shp")
-    shapefile_path = os.path.join(output_dir, "gis", "gw_resid.shp")
+    shapefile_path = os.path.join(output_dir, "gis", "gw_resid_20211203_00.shp")
     hob_resid_to_shapefile_loc(mf, shpname = shapefile_path)
     xx=1
 
