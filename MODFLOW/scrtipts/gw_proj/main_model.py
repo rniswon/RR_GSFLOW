@@ -57,7 +57,7 @@ gw.hfb_package()
 #gw.sfr2_package()
 
 # generate sfr3 package
-gw.sfr3_package()
+#gw.sfr3_package()
 
 # generate uzf package
 gw.uzf_package()
@@ -74,7 +74,9 @@ gw.lak_package()
 gw.well_package2()
 
 # generate hob package
-gw.hob_package()
+#gw.hob_package()
+gw.hob_package2()
+
 
 # generate gage package
 gw.gage_package() #TODO: unit number assignment for steady state model might be incorrect here

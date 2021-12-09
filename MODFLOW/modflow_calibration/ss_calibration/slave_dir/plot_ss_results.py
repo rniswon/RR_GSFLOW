@@ -18,9 +18,9 @@ from gw_utils import general_util
 
 # settings ----------------------------------------------------------------------------------------####
 
-plot_baseflows = 0
-plot_gage_flows = 0
-plot_groundwater_flows = 0
+plot_baseflows = 1
+plot_gage_flows = 1
+plot_groundwater_flows = 1
 map_baseflows = 0
 map_streamflows = 0
 map_groundwater_head_resid = 1
@@ -36,7 +36,7 @@ map_groundwater_head_contours_heatmap = 0
 input_dir = r"."
 
 # output file directory (i.e. plot directory)
-output_dir = r"..\manual_calib_results"
+output_dir = r"..\results"
 
 
 # set file names ------------------------------------------------------------------------------------####
@@ -246,7 +246,7 @@ if map_groundwater_head_resid == 1:
 
     # create shapefile
     #shapefile_path = os.path.join(output_dir, "gis", "gw_heads_shp.shp")
-    shapefile_path = os.path.join(output_dir, "gis", "gw_resid_20211203_00.shp")
+    shapefile_path = os.path.join(output_dir, "gis", "gw_resid_20211208.shp")
     hob_resid_to_shapefile_loc(mf, shpname = shapefile_path)
     xx=1
 

@@ -2822,6 +2822,142 @@ class Gw_model(object):
 
         pass
 
+    def hob_package2(self):
+        Build_HOB_FLG = int(self.config.get('HOB', 'Build_hob'))
+        if Build_HOB_FLG:
+            hob_file = self.config.get('HOB', 'hob_file')
+            hob_df = geopandas.read_file(hob_file)
+            hob_df = hob_df.dropna(subset=['WL_Date'])
+            hob_df['WL_Date'] = pd.to_datetime(hob_df['WL_Date'])
+            well_ids = hob_df['well_ID'].unique()
+
+            hoblist = []
+            hoblist_ss = []
+            counter = -1
+            all_info = []
+            for ii, well in enumerate(well_ids):
+                curr_well = hob_df[hob_df['well_ID'] == well]
+                curr_well = curr_well.copy()
+                curr_well = curr_well[curr_well['wl_elev_ft'] != -9999]
+                if curr_well.empty:
+                    continue
+                curr_well = curr_well.reset_index()
+
+                # get coordinates
+                xo = curr_well['POINT_X'].values[0]
+                yo = curr_well['POINT_Y'].values[0]
+                xc = curr_well['HRU_X'].values[0]
+                yc = curr_well['HRU_Y'].values[0]
+                roff = -(yo - yc) / 300.0
+                coff = (xo - xc) / 300.0
+
+                # coordinates
+                c_row = int(curr_well['HRU_ROW'].values[0] - 1)
+                c_col = int(curr_well['HRU_COL'].values[0] - 1)
+
+                # assume that per_top and pef_botm are depths not elevations
+                perf_top_ft = curr_well['top_ft'].values[0]
+                perf_botm_ft = curr_well['bot_ft'].values[0]
+                if perf_top_ft == -9999:
+                    perf_top_ft = np.nan
+                if perf_botm_ft == -9999:
+                    perf_botm_ft = np.nan
+                perf_top = perf_top_ft * 0.3048
+                perf_botm = perf_botm_ft * 0.3048
+                if perf_botm > 0 or perf_top > 0:
+                    if (perf_botm > 0 or np.isnan(perf_botm)) and perf_top > 0:
+                        well_depth = np.nanmean([perf_top, perf_botm])
+                    elif perf_botm > 0 and (perf_top > 0 or np.isnan(perf_top)):
+                        well_depth = np.nanmean([perf_top, perf_botm])
+                    else:
+                        well_depth = np.nansum([perf_top, perf_botm])
+                else:
+                    well_depth = 0.0  # no information
+
+                top1 = self.mf.dis.top.array[c_row, c_col]
+                curr_depth = top1 - well_depth
+                bot2 = self.mf.dis.botm[:, c_row, c_col]
+                elev = np.hstack((top1, bot2))
+                ibound = self.mf.bas6.ibound.array[:, c_row, c_col]
+                if sum(ibound) == 0:
+                    continue
+                if well_depth == 0:
+                    # no data about depth is available, assign the well to the top active layer
+                    for kk, ib in enumerate(ibound):
+                        nly_n = kk
+                        if ib > 0:
+                            break
+                else:
+                    # assign depth a
+                    for ie in np.arange(self.mf.nlay):  # [top,...., bot]
+                        if ie < self.mf.nlay - 1:
+                            if curr_depth <= elev[ie] and curr_depth > elev[ie + 1]:
+                                nly_n = ie
+                                break
+                        else:
+                            nly_n = ie
+
+                # get observation time
+                hds = curr_well['wl_elev_ft'].values * 0.3048
+                dates = curr_well.WL_Date.values
+
+                sim_start_date = datetime.datetime(year=1989, month=12, day=31)
+                sim_end_date = datetime.datetime(year=2015, month=12, day=31)
+                End_time = (sim_end_date - sim_start_date).days
+                days = dates - np.datetime64(sim_start_date)
+                days = days.astype('timedelta64[D]')
+                days = days / np.timedelta64(1, 'D')
+
+                time_mask = np.logical_and(days > 0, days < End_time)
+                hds = hds[time_mask]
+                days = days[time_mask]
+
+                if len(days) == 0:
+                    continue
+
+                tim_ser_data = np.vstack((days, hds))
+                tim_ser_data = tim_ser_data.transpose()
+                counter = counter + 1
+                obsname = 'HO_' + str(counter)
+                print(obsname)
+                cc_well_info = [obsname, well, len(hds), np.min(hds), np.max(hds), np.mean(hds), np.std(hds),
+                                np.median(hds), elev[0], elev[-1], nly_n, c_row, c_col]
+                all_info.append(cc_well_info)
+                obs_tr = flopy.modflow.HeadObservation(self.mf, obsname=obsname, layer=nly_n, row=c_row,
+                                                       column=c_col, roff=roff, coff=coff, itt=1,
+                                                       time_series_data=tim_ser_data)
+
+                # steady state
+                tim_ser_data2 = [[0.0, np.mean(hds)]]
+                obs_ss = flopy.modflow.HeadObservation(self.mf, obsname=obsname, layer=nly_n, row=c_row,
+                                                       column=c_col, roff=roff, coff=coff, itt=1,
+                                                       time_series_data=tim_ser_data2)
+                hoblist.append(obs_tr)
+                hoblist_ss.append(obs_ss)
+
+        if Build_HOB_FLG:
+            hobss = {}
+            hobss['ss'] = hoblist_ss
+            hobss['tr'] = hoblist
+            np.save('rr_hob.npy', hobss)
+        else:
+            all_hobs = np.load('rr_hob.npy', allow_pickle=True)
+            all_hobs = all_hobs.all()
+            hoblist = all_hobs['tr']
+            hoblist_ss = all_hobs['ss']
+
+        hob_tr = flopy.modflow.ModflowHob(self.mf, hobdry=-9999., obs_data=hoblist, iuhobsv=self.mf.next_ext_unit())
+        hob_ss = flopy.modflow.ModflowHob(self.mfs, hobdry=-9999., obs_data=hoblist_ss, iuhobsv=
+        self.mfs.next_ext_unit())
+        if Build_HOB_FLG:
+            obs_info = pd.DataFrame(all_info, columns=['obsname', 'well_id', 'num_meas', 'min', 'max', 'mean', 'std',
+                                                       'median', 'grid_top_elev', 'grid_bot_elev', 'layer', 'row',
+                                                       'col'])
+            obs_info.to_csv('rr_obs_info.csv')
+
+        pass
+
+
     def gage_package(self):
         gage_file = self.config.get('SFR', 'gage_file')
         gage_df = geopandas.read_file(gage_file)
