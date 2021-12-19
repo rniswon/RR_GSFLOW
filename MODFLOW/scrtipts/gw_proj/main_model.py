@@ -57,7 +57,7 @@ gw.hfb_package()
 #gw.sfr2_package()
 
 # generate sfr3 package
-#gw.sfr3_package()
+gw.sfr3_package()  #incorporating rubber dam
 
 # generate uzf package
 gw.uzf_package()
@@ -75,8 +75,8 @@ gw.well_package2()
 
 # generate hob package
 #gw.hob_package()
-gw.hob_package2()
-
+#gw.hob_package2()  # same as hob_package but fixing some well layer assignments, using actual land surface elevation for calculation of groundwater heads
+gw.hob_package3()  # same as hob_package2 but using model grid cell elevation as land surface elevation for calculation of groundwater heads
 
 # generate gage package
 gw.gage_package() #TODO: unit number assignment for steady state model might be incorrect here

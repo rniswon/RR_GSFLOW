@@ -18,13 +18,13 @@ from gw_utils import general_util
 
 # settings ----------------------------------------------------------------------------------------####
 
-plot_baseflows = 1
-plot_gage_flows = 1
-plot_groundwater_flows = 1
+plot_baseflows = 0
+plot_gage_flows = 0
+plot_groundwater_flows = 0
 map_baseflows = 0
 map_streamflows = 0
-map_groundwater_head_resid = 1
-map_groundwater_head_contours_heatmap = 0
+map_groundwater_head_resid = 0
+map_groundwater_head_contours_heatmap = 1
 
 
 
@@ -47,7 +47,8 @@ model_output_file = "model_output.csv"
 # set modflow name file
 mf_name_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
 
-
+# set run id to go in exported file names
+run_id = "20211208"
 
 # read in files -----------------------------------------------------------------------####
 
@@ -211,7 +212,7 @@ if map_groundwater_head_resid == 1:
             # store: obsnme, nobs, sim_mean, obs_mean, error_mean, mse, mae
             curr_hob_out = hobout_df[hobout_df['OBSERVATION NAME'].isin(curr_hob['name'].values)]
             err = curr_hob_out['SIMULATED EQUIVALENT'] - curr_hob_out['OBSERVED VALUE']
-            rec = [obs_, len(err), curr_hob_out['SIMULATED EQUIVALENT'].mean(), curr_hob_out['OBSERVED VALUE'].mean(), err.mean(), (err ** 2.0).mean() ** 0.5, (err.abs()).mean()]
+            rec = [obs_, len(err), curr_hob['layer'].values[0], curr_hob['row'].values[0], curr_hob['col'].values[0], curr_hob['roff'].values[0], curr_hob['coff'].values[0], curr_hob_out['SIMULATED EQUIVALENT'].mean(), curr_hob_out['OBSERVED VALUE'].mean(), err.mean(), (err ** 2.0).mean() ** 0.5, (err.abs()).mean()]
             all_rec.append(rec)
 
             # grab coordinate data for each well
@@ -228,7 +229,7 @@ if map_groundwater_head_resid == 1:
             geoms.append(Point(this_coord_col_actual, this_coord_row_actual))  # may need to add 0 as last argument, but default value of has_z=0 may not require it
 
         # write shapefile
-        all_rec = pd.DataFrame(all_rec, columns=['obsnme', 'nobs', 'sim_mean', 'obs_mean', 'error_mean', 'mse', 'mae'])
+        all_rec = pd.DataFrame(all_rec, columns=['obsnme', 'nobs', 'layer', 'row', 'col', 'roff', 'coff', 'sim_mean', 'obs_mean', 'error_mean', 'mse', 'mae'])
         all_rec = all_rec.to_records()
         epsg = mf.modelgrid.epsg
         recarray2shp(all_rec, geoms, shpname, epsg=epsg)
@@ -246,7 +247,8 @@ if map_groundwater_head_resid == 1:
 
     # create shapefile
     #shapefile_path = os.path.join(output_dir, "gis", "gw_heads_shp.shp")
-    shapefile_path = os.path.join(output_dir, "gis", "gw_resid_20211208.shp")
+    shp_file_name = "gw_resid_" + run_id + ".shp"
+    shapefile_path = os.path.join(output_dir, "gis", shp_file_name)
     hob_resid_to_shapefile_loc(mf, shpname = shapefile_path)
     xx=1
 
@@ -266,6 +268,59 @@ if map_groundwater_head_contours_heatmap == 1:
     head_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.hds"
     heads = flopy.utils.HeadFile(head_file)
 
+    # export contours of simulated heads for entire watershed
+    xll = 465900
+    yll = 4238400
+    epsg = 26910
+    mf.modelgrid.set_coord_info(xoff=xll, yoff=yll, epsg=epsg)
+    for i in np.arange(0,mf.nlay):
+        # head_array = np.array([heads.get_data(idx=0, mflay=0), heads.get_data(idx=0, mflay=1), heads.get_data(idx=0, mflay=2)])
+        # head_array[head_array > 5000] = -999.98999   # to deal with cells with giant (e.g. 1e30) simulated head values, setting them to masked value
+        pmv = flopy.plot.PlotMapView(model=mf)
+        contour_levels = np.arange(5, 550, 5)
+        #contours = pmv.contour_array(head_array, masked_values=[-999.98999], levels=contour_levels)
+        contours = pmv.contour_array(heads.get_data(idx=0, mflay=i), masked_values=[-999.98999], levels=contour_levels)
+        contour_file_name = "sim_head_contours_" + run_id + "_lyr" + str(i+1) + ".shp"
+        filename = os.path.join(output_dir, "gis", contour_file_name)
+        flopy.export.utils.export_contours(mf.modelgrid, filename, contours, fieldname = "contour")
+
+
+    # # export filled contours of simulated heads for entire watershed
+    # for i in np.arange(0,mf.nlay):
+    #     # head_array = np.array([heads.get_data(idx=0, mflay=0), heads.get_data(idx=0, mflay=1), heads.get_data(idx=0, mflay=2)])
+    #     # head_array[head_array > 5000] = -999.98999   # to deal with cells with giant (e.g. 1e30) simulated head values, setting them to masked value
+    #     pmv = flopy.plot.PlotMapView(model=mf)
+    #     contour_levels = np.arange(5, 550, 5)
+    #     #contours = pmv.contour_array(head_array, masked_values=[-999.98999], levels=contour_levels)
+    #     #contours = pmv.contour_array(heads.get_data(idx=0, mflay=i), masked_values=[-999.98999], levels=contour_levels)
+    #     contours_filled = plt.contourf(heads.get_data(idx=0, mflay=i), contour_levels)
+    #     contours_filled_file_name = "sim_head_contours_filled_" + run_id + "_lyr" + str(i+1) + ".shp"
+    #     filename = os.path.join(output_dir, "gis", contours_filled_file_name)
+    #     xll = 465900
+    #     yll = 4238400
+    #     epsg = 26910
+    #     mf.modelgrid.set_coord_info(xoff= xll, yoff= yll, epsg = epsg)
+    #     #flopy.export.utils.export_contourf(mf.modelgrid, filename, contours_filled, fieldname = "contour")
+    #     flopy.export.utils.export_contourf(filename, contours_filled, fieldname = "contour")
+    #     #flopy.export.utils.export_contourf(mf.modelgrid, filename, contours_filled)
+
+
+    # # export shapefile of simulated heads for entire watershed
+    # # heads_data = heads.get_alldata()
+    # # for ix, sp in enumerate(heads_data):
+    # #     array_dict = {f"head_{ix}": sp}
+    # array_dict = {"heads_0": heads.get_data(idx=0, mflay=0),
+    #               "heads_1": heads.get_data(idx=0, mflay=1),
+    #               "heads_2": heads.get_data(idx=0, mflay=2)}
+    # sim_head_file_name = "sim_heads_" + run_id + ".shp"
+    # filename = os.path.join(output_dir, "gis", sim_head_file_name)
+    # xll = 465900
+    # yll = 4238400
+    # mf.modelgrid.set_coord_info(xoff= xll, yoff= yll)
+    # flopy.export.shapefile_utils.write_grid_shapefile(filename, mf.modelgrid, array_dict, nan_val=-999.98999, epsg = 26910)
+
+    #------
+
     # # plot heatmap of heads of entire watershed for top layer
     # h0 = heads.get_data(idx=0, mflay=0)
     # pmv = flopy.plot.PlotMapView(model=mf)
@@ -277,14 +332,14 @@ if map_groundwater_head_contours_heatmap == 1:
     # plt.savefig(file_name)
 
 
-    # plot contours of heads of entire watershed for top layer
-    h2 = heads.get_data(idx=0, mflay=2)
-    pmv = flopy.plot.PlotMapView(model=mf)
-    pmv.contour_array(h2)
-    pmv.ax.set_title('Simulated groundwater heads: top MODFLOW layer')
-    # how to specify contour intervals and label contours?
-    file_name = os.path.join(output_dir, "plots", "heads_contours_RR.jpg")
-    plt.savefig(file_name)
+    # # plot contours of heads of entire watershed for top layer
+    # h0 = heads.get_data(idx=0, mflay=0)
+    # pmv = flopy.plot.PlotMapView(model=mf)
+    # pmv.contour_array(h0)
+    # pmv.ax.set_title('Simulated groundwater heads: top MODFLOW layer')
+    # # how to specify contour intervals and label contours?
+    # file_name = os.path.join(output_dir, "plots", "heads_contours_RR.jpg")
+    # plt.savefig(file_name)
 
 
     # # export raster of simulated heads for entire watershed (top layer)
@@ -304,30 +359,25 @@ if map_groundwater_head_contours_heatmap == 1:
     # dataset=None
 
 
-    # export shapefile of simulated heads for entire watershed
-    # heads_data = heads.get_alldata()
-    # for ix, sp in enumerate(heads_data):
-    #     array_dict = {f"head_{ix}": sp}
-    array_dict = {"heads_0": heads.get_data(idx=0, mflay=0),
-                  "heads_1": heads.get_data(idx=0, mflay=1),
-                  "heads_2": heads.get_data(idx=0, mflay=2)}
-    filename = os.path.join(output_dir, "gis", 'sim_heads.shp')
-    xll = 465900
-    yll = 4238400
-    mf.modelgrid.set_coord_info(xoff= xll, yoff= yll)
-    flopy.export.shapefile_utils.write_grid_shapefile(filename, mf.modelgrid, array_dict, nan_val=-999.98999, epsg = 26910)
-
-
     # # export contours of simulated heads for entire watershed
     # # why isn't this working?
     # array_dict = {"heads_0": heads.get_data(idx=0, mflay=0),
     #               "heads_1": heads.get_data(idx=0, mflay=1),
     #               "heads_2": heads.get_data(idx=0, mflay=2)}
-    # pmv = flopy.plot.PlotMapView(mf.modelgrid)
-    # contours = pmv.contour_array(array_dict["heads_2"], masked_values=[-999.98999])
+    # head_array = np.array([heads.get_data(idx=0, mflay=0), heads.get_data(idx=0, mflay=1), heads.get_data(idx=0, mflay=2)])
+    # head_array[head_array > 5000] = -999.98999
+    # #pmv = flopy.plot.PlotMapView(mf.modelgrid)
+    # pmv = flopy.plot.PlotMapView(model=mf)
+    # #contours = pmv.contour_array(array_dict["heads_0"], masked_values=[-999.98999])
+    # contours = pmv.contour_array(head_array, masked_values=[-999.98999])
     # filename = os.path.join(output_dir, "gis", 'sim_heads_contours.shp')
-    # mf.modelgrid.set_coord_info(xoff= xll, yoff= yll)
+    # xll = 465900
+    # yll = 4238400
+    # epsg = 26910
+    # mf.modelgrid.set_coord_info(xoff= xll, yoff= yll, epsg = epsg)
     # flopy.export.utils.export_contours(mf.modelgrid, filename, contours, fieldname = "contour_level")
+
+
 
 
 xx=1

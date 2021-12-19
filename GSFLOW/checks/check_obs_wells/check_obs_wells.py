@@ -15,8 +15,16 @@ from flopy.export.shapefile_utils import recarray2shp, shp2recarray
 
 # settings ------------------------------------------------------------------------------------####
 
+# choose which mf dataset
+#hob_land_elev_type = "hob_land_elev_actual"
+#hob_land_elev_type = "hob_land_elev_model"
+hob_land_elev_type = "hob_land_elev_mean"
+
+
 # input file directory (i.e. directory containing mf name file)
-input_dir = r"..\..\windows"
+#input_dir = r"..\..\windows"
+root_dir = r".\compare_land_surf_elev"
+input_dir = os.path.join(root_dir, hob_land_elev_type, "mf_dataset", "TR")
 
 # K zone input file
 K_zone_file = r".\input_data\K_zone_ids.dat"
@@ -24,10 +32,13 @@ K_zone_file = r".\input_data\K_zone_ids.dat"
 # subbasin input file
 subbasins_file = r".\input_data\hru_shp.csv"
 
-# output file directory (i.e. directory containing mf name file)
-output_dir_plots = r"..\..\checks\check_obs_wells\plots"
-output_dir_tables = r"..\..\checks\check_obs_wells\tables"
-output_dir_gis = r"..\..\checks\check_obs_wells\gis"
+# output file directory
+# output_dir_plots = r"..\..\checks\check_obs_wells\plots"
+# output_dir_tables = r"..\..\checks\check_obs_wells\tables"
+# output_dir_gis = r"..\..\checks\check_obs_wells\gis"
+output_dir_plots = os.path.join(root_dir, hob_land_elev_type, "plots")
+output_dir_tables = os.path.join(root_dir, hob_land_elev_type, "tables")
+output_dir_gis = os.path.join(root_dir, hob_land_elev_type, "gis")
 
 # set file names
 mf_name_file = os.path.join(input_dir, "rr_tr.nam")
@@ -41,10 +52,10 @@ epsg = 26910
 plot_wells_indiv = 0
 plot_wells_group = 0
 create_data_frame_with_dates = 0
-create_mean_water_level_shapefile = 0
-create_shapefile_of_layer_elev = 1
-create_shapefile_of_K_zones = 1
-create_shapefile_of_subbasins = 1
+create_mean_water_level_shapefile = 1
+create_shapefile_of_layer_elev = 0
+create_shapefile_of_K_zones = 0
+create_shapefile_of_subbasins = 0
 create_shapefile_of_ponds = 0
 create_shapefile_of_wells = 0
 
@@ -295,7 +306,7 @@ if create_mean_water_level_shapefile == 1:
 
         # store well location data
         # note: not subtracting one from row and column because already stored with internally adjusted values in flopy
-        well_loc.append([this_hob.obsname, this_hob.row, this_hob.column, this_hob.roff, this_hob.coff])
+        well_loc.append([this_hob.obsname, (this_hob.layer + 1), this_hob.row, this_hob.column, this_hob.roff, this_hob.coff])
 
         # create data frame and store in list
         data = {'site': obs_well_ids[i], 'date': date_list, 'heads': this_hob.time_series_data["hobs"]}
@@ -304,7 +315,7 @@ if create_mean_water_level_shapefile == 1:
 
 
     # create data frame of well location data
-    well_loc_df = pd.DataFrame(well_loc, columns=['obsname', 'row', 'col', 'roff', 'coff'])
+    well_loc_df = pd.DataFrame(well_loc, columns=['obsname', 'layer', 'row', 'col', 'roff', 'coff'])  # TODO: add layer here
 
     # create data frame of all sites
     df = pd.concat(df_list)

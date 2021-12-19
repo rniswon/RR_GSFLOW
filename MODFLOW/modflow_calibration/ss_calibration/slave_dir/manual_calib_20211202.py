@@ -31,10 +31,10 @@ from gw_utils import general_util
 # settings --------------------------------------------------------------####
 
 # run id
-run_id = '20211203_09'
+run_id = '20211210_01'
 
 # name of input param file to be updated
-input_param_file = 'input_param_20211201.csv'
+input_param_file = 'input_param_20211210.csv'
 
 # name of input param file to be exported
 input_param_file_updated = 'input_param_' + run_id + '.csv'
