@@ -1,0 +1,1599 @@
+             pestpp-glm 5.1.0
+
+    by The PEST++ Development Team
+
+
+
+version: 5.1.0
+binary compiled on Sep 17 2021 at 09:18:04
+
+using control file: "ss_mf.pst"
+
+in directory: "C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir"
+on host: "IGSWCGWWLT6828"
+started at 12/23/21 07:43:56
+
+
+Note 'NOPTMAX' == 0, switching to forgiveness mode when checking inputs
+
+Note: 3 unused lines in pest control file:
+  -->  line number 6: '2.000000E+01  -3.000000E+00   3.000000E-01   1.000000E-02        -7' 
+  -->  line number 10: '0         0         0' 
+  -->  line number 12: '1' 
+noptmax = 0, resetting max_run_fail = 1
+parameter warning: 1 parameters are at lower bound
+parameter warning: 4 parameters are at upper bound
+
+    This software has been approved for release by the
+    U.S.Geological Survey(USGS).Although the software has 
+    been subjected to rigorous review, the USGS reserves the
+    right to update the software as needed pursuant to further
+    analysisand review.No warranty, expressed or implied, is 
+    made by the USGS or the U.S.Government as to the
+    functionality of the softwareand related material nor shall
+    the fact of release constitute any such warranty.
+    Furthermore, the software is released on condition that
+    neither the USGS nor the U.S.Government shall be held
+    liable for any damages resulting from its authorized 
+    or unauthorized use.
+
+
+pestmode:- 
+   estimation
+
+
+Case dimensions:- 
+    Number of parameters = 412
+    Number of adjustable parameters = 323
+    Number of observations = 212
+    Number of prior estimates = 0
+
+PEST Control Information
+    relparmax = 10
+    facparmax = 10
+    facorig = 0.001
+    phiredswh = 0.1
+    noptmax = 0
+    phiredstp = 0.01
+    nphistp = 3
+    nphinored = 3
+    relparstp = 0.01
+    nrelpar = 3
+
+
+    PEST++ OPTIONS: 
+
+...general options (used in multiple tools): 
+svd_pack: redsvd
+lambda_scale_fac: 0.75,1,1.1,
+forgive_unknown_args: 0
+max_run_fail: 1
+yamr_poll_interval: 1
+parameter_covariance: 
+observation_covariance: 
+hotstart_resfile: 
+overdue_resched_fac: 1.15
+overdue_giveup_fac: 100
+overdue_giveup_minutes: 1e+30
+condor_submit_file: 
+tie_by_group: 0
+par_sigma_range: 4
+enforce_tied_bounds: 0
+debug_parse_only: 0
+check_tplins: 1
+fill_tpl_zeros: 0
+additional_ins_delimiters: ,
+random_seed: 358183147
+num_tpl_ins_threads: 1
+save_binary: 0
+ensemble_output_precision: 6
+panther_echo: 1
+panther_agent_restart_on_error: 0
+panther_agent_no_ping_timeout_secs: -1
+panther_debug_loop: 0
+debug_check_par_en_consistency: 0
+panther_agent_freeze_on_fail: 0
+panther_transfer_on_finish: 
+panther_transfer_on_fail: 
+
+...pestpp-glm specific options:
+max_n_super: 1000000
+super_eigthresh: 1e-06
+n_iter_base: 1000000
+n_iter_super: 0
+super_relparmax: 0.1
+max_super_frz_iter: 20
+max_reg_iter: 20
+lambdas: 0.1,1,10,100,1000,
+iteration_summary: 1
+der_forgive: 1
+uncertainty: 1
+forecasts: 
+base_jacobian: 
+glm_num_reals: 0
+jac_scale: 1
+glm_normal_form: DIAG
+glm_debug_der_fail: 0
+glm_debug_lamb_fail: 0
+glm_debug_real_fail: 0
+glm_accept_mc_phi: 0
+glm_rebase_super: 0
+glm_iter_mc: 0
+
+...pestpp-swp options:
+sweep_parameter_csv_file: 
+sweep_output_csv_file: sweep_out.csv
+sweep_chunk: 500
+sweep_forgive: 0
+sweep_base_run: 0
+
+...pestpp-opt options:
+opt_objective_function: 
+opt_coin_log: 1
+opt_skip_final: 0
+opt_std_weights: 0
+opt_stack_size: 0
+opt_par_stack: 
+opt_obs_stack: 
+opt_decision_variable_groups: 
+opt_external_variable_groups: 
+opt_constraint_groups: 
+opt_risk: 0.5
+opt_iter_derinc_fac: 1
+opt_direction: 1
+opt_iter_tol: 0.001
+opt_recalc_fosm_every: 1
+opt_chance_points: SINGLE
+
+...pestpp-sqp options:
+sqp_dv_en: 
+sqp_obs_restart_en: 
+sqp_num_reals: -1
+sqp_update_hessian: 0
+sqp_scale_facs:
+  1e-05
+  0.0001
+  0.01
+  0.1
+  1
+
+...pestpp-mou options:
+mou_generator: DE
+mou_population_size: 100
+mou_dv_population_file: 
+mou_obs_population_restart_file: 
+mou_objectives: 
+mou_max_archive_size: 500
+mou_risk_objective: 0
+mou_verbose_level: 1
+mou_env_selector: NSGA
+mou_mating_selector: TOURNAMENT
+mou_crossover_prob: 0.75
+mou_mutation_prob: -999
+mou_de_f: 0.8
+mou_save_population_every: -1
+mou_pso_omega: 0.7
+mou_pso_social_const: 2
+mou_pso_cognitive: 2
+mou_population_schedule: 
+mou_simplex_reflections:10
+mou_simplex_factors: 
+ 0.5
+ 0.6
+ 0.7
+ 0.8
+
+...shared pestpp-ies/pestpp-da options:
+(note: 'da' args override 'ies' args when using pestpp-da)
+ies_parameter_ensemble: 
+ies_observation_ensemble: 
+ies_weights_ensemble: 
+ies_restart_parameter_ensemble: 
+ies_restart_observation_ensemble: 
+ies_use_approximate_solution: 1
+ies_lambda_mults: 0.1,1,10,
+ies_initial_lambda: 0
+ies_use_approx: 1
+ies_subset_size: 4
+ies_reg_factor: 0
+ies_verbose_level: 0
+ies_use_prior_scaling: 0
+ies_num_reals: 50
+ies_bad_phi: 1e+300
+ies_bad_phi_sigma: 1e+300
+ies_include_base: 1
+ies_use_empirical_prior: 0
+ies_group_draws: 0
+ies_enforce_bounds: 1
+ies_localizer: 
+ies_accept_phi_fac: 1.05
+ies_lambda_inc_fac: 10
+ies_lambda_dec_fac: 0.75
+ies_save_lambda_ensembles: 0
+ies_subset_how: RANDOM
+ies_localize_how: PARAMETERS
+ies_num_threads: -1
+ies_debug_fail_subset: 0
+ies_debug_fail_remainder: 0
+ies_debug_bad_phi: 0
+ies_debug_upgrade_only: 0
+ies_debug_high_subset_phi: 0
+ies_debug_high_upgrade_phi: 0
+ies_csv_by_reals: 1
+ies_autoadaloc: 0
+ies_autoadaloc_sigma_dist: 1
+ies_enforce_chglim: 0
+ies_center_on: 
+ies_no_noise: 0
+ies_drop_conflicts: 0
+ies_save_rescov:0
+ies_pdc_sigma_distance: -1
+ies_use_mda: 0
+ies_mda_init_fac: 10
+ies_mda_dec_fac: 0.5
+ies_localization_type: LOCAL
+ies_upgrades_in_memory: 1
+ies_ordered_binary: 1
+ies_multimodal_alpha: 1
+
+pestpp-sen options: 
+gsa_method: MORRIS
+gsa_morris_pooled_obs: 0
+gsa_morris_obs_sen: 1
+gsa_morris_p: 4
+gsa_morris_r: 4
+gsa_morris_delta: 0.6666
+gsa_sobol_samples: 4
+gsa_sobol_par_dist: norm
+pestpp-da options (those not shared with pestpp-ies):
+da_parameter_cycle_table: 
+da_observation_cycle_table: 
+da_hotstart_cycle: 0
+da_stop_cycle: 1000000000
+da_use_simulated_states: 1
+
+
+
+Model command line(s):- 
+    run_model.bat
+
+Model interface files:-
+    template files:
+      tplfile.tpl
+    model input files:
+      input_param.csv
+
+    instruction files:
+      insfile.ins
+    model output files:
+      model_output.csv
+
+
+Parameter group information
+NAME             INCREMENT TYPE     DERIVATIVE INCREMENT    INCREMENT LOWER BOUND  FORCE CENTRAL     INCREMENT MULTIPLIER
+upw_ks                 RELATIVE                     0.03                        0         SWITCH                        2
+uzf_surfk              RELATIVE                     0.03                        0         SWITCH                        2
+uzf_vks                RELATIVE                     0.03                        0         SWITCH                        2
+uzf_finf               RELATIVE                     0.03                        0         SWITCH                        2
+sfr_ks                 RELATIVE                     0.03                        0         SWITCH                        2
+upw_vka                RELATIVE                     0.03                        0         SWITCH                        2
+sfr_spil               RELATIVE                     0.03                        0         SWITCH                        2
+lak_cd                 RELATIVE                     0.03                        0         SWITCH                        2
+well_rubber_dam        RELATIVE                     0.03                        0         SWITCH                        2
+uzf_pet                RELATIVE                     0.03                        0         SWITCH                        2
+
+
+
+Parameter information
+NAME          TRANSFORMATION        CHANGE LIMIT  INITIAL VALUE    LOWER BOUND    UPPER BOUND           GROUP          SCALE         OFFSET  DERIVATIVE COMMAND
+finf_1        fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_10       fixed                   FACTOR       0.472505           0.01              1        uzf_finf              1              0                   1
+finf_11       fixed                   FACTOR       0.472505           0.01              1        uzf_finf              1              0                   1
+finf_12       fixed                   FACTOR       0.472505           0.01              1        uzf_finf              1              0                   1
+finf_13       fixed                   FACTOR       0.472505           0.01              1        uzf_finf              1              0                   1
+finf_14       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_15       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_16       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_17       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_18       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_19       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_2        fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_20       fixed                   FACTOR       0.528462           0.01              1        uzf_finf              1              0                   1
+finf_21       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_22       fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_3        fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_4        fixed                   FACTOR        0.41058           0.01              1        uzf_finf              1              0                   1
+finf_5        fixed                   FACTOR        0.41058           0.01              1        uzf_finf              1              0                   1
+finf_6        fixed                   FACTOR       0.483035           0.01              1        uzf_finf              1              0                   1
+finf_7        fixed                   FACTOR       0.472505           0.01              1        uzf_finf              1              0                   1
+finf_8        fixed                   FACTOR       0.472505           0.01              1        uzf_finf              1              0                   1
+finf_9        fixed                   FACTOR       0.472505           0.01              1        uzf_finf              1              0                   1
+ks_1          log                     FACTOR        2.38458          1e-05            500          upw_ks              1              0                   1
+ks_10         log                     FACTOR        1.83441          1e-05            500          upw_ks              1              0                   1
+ks_100        log                     FACTOR       6.47e-05          1e-06            500          upw_ks              1              0                   1
+ks_101        log                     FACTOR    0.000692433          1e-05            500          upw_ks              1              0                   1
+ks_102        log                     FACTOR        7.4e-05          1e-06            500          upw_ks              1              0                   1
+ks_103        log                     FACTOR    0.000343907          1e-05            500          upw_ks              1              0                   1
+ks_104        log                     FACTOR       9.68e-06          1e-06            500          upw_ks              1              0                   1
+ks_105        log                     FACTOR       9.78e-06          1e-06            500          upw_ks              1              0                   1
+ks_106        log                     FACTOR    0.000145001          1e-05            500          upw_ks              1              0                   1
+ks_107        log                     FACTOR    0.000250589          1e-05            500          upw_ks              1              0                   1
+ks_108        log                     FACTOR        4.49419          1e-05            500          upw_ks              1              0                   1
+ks_109        log                     FACTOR        7.57701          1e-05            500          upw_ks              1              0                   1
+ks_11         log                     FACTOR       0.347789          1e-05            500          upw_ks              1              0                   1
+ks_110        log                     FACTOR        3.81348          1e-05            500          upw_ks              1              0                   1
+ks_111        log                     FACTOR        8.91185          1e-05            500          upw_ks              1              0                   1
+ks_112        log                     FACTOR        4.62197          1e-05            500          upw_ks              1              0                   1
+ks_113        log                     FACTOR      0.0704361          1e-05            500          upw_ks              1              0                   1
+ks_114        log                     FACTOR        9.76246          1e-05            500          upw_ks              1              0                   1
+ks_115        log                     FACTOR        6.76202          1e-05            500          upw_ks              1              0                   1
+ks_116        log                     FACTOR       0.390227          1e-05            500          upw_ks              1              0                   1
+ks_117        log                     FACTOR        13.8964          1e-05            500          upw_ks              1              0                   1
+ks_118        log                     FACTOR        1.98597          1e-05            500          upw_ks              1              0                   1
+ks_119        log                     FACTOR        10.6775          1e-05            500          upw_ks              1              0                   1
+ks_12         log                     FACTOR        9.26905          1e-05            500          upw_ks              1              0                   1
+ks_120        log                     FACTOR       0.122009          1e-05            500          upw_ks              1              0                   1
+ks_121        log                     FACTOR        2.30238          1e-05            500          upw_ks              1              0                   1
+ks_122        log                     FACTOR        42.2704          1e-05            500          upw_ks              1              0                   1
+ks_123        log                     FACTOR        9.66647          1e-05            500          upw_ks              1              0                   1
+ks_124        log                     FACTOR         2.1233          1e-05            500          upw_ks              1              0                   1
+ks_125        log                     FACTOR        29.8054          1e-05            500          upw_ks              1              0                   1
+ks_126        log                     FACTOR        265.054          1e-05            500          upw_ks              1              0                   1
+ks_127        log                     FACTOR       0.928577          1e-05            500          upw_ks              1              0                   1
+ks_128        log                     FACTOR        4.68648          1e-05            500          upw_ks              1              0                   1
+ks_129        log                     FACTOR        6.54666          1e-05            500          upw_ks              1              0                   1
+ks_13         log                     FACTOR       0.724742          1e-05            500          upw_ks              1              0                   1
+ks_130        log                     FACTOR        5.55856          1e-05            500          upw_ks              1              0                   1
+ks_131        log                     FACTOR     0.00020101          1e-05            500          upw_ks              1              0                   1
+ks_132        log                     FACTOR    0.000198996          1e-05            500          upw_ks              1              0                   1
+ks_133        log                     FACTOR     0.00020078          1e-05            500          upw_ks              1              0                   1
+ks_134        log                     FACTOR      0.0272014          1e-05            500          upw_ks              1              0                   1
+ks_135        log                     FACTOR    0.000158525          1e-05            500          upw_ks              1              0                   1
+ks_136        log                     FACTOR    0.000243726          1e-05            500          upw_ks              1              0                   1
+ks_137        log                     FACTOR     0.00385497          1e-05            500          upw_ks              1              0                   1
+ks_138        log                     FACTOR        6.74015          1e-05            500          upw_ks              1              0                   1
+ks_139        log                     FACTOR    0.000228583          1e-05            500          upw_ks              1              0                   1
+ks_14         log                     FACTOR        4.35608          1e-05            500          upw_ks              1              0                   1
+ks_140        log                     FACTOR        15.0065          1e-05            500          upw_ks              1              0                   1
+ks_141        log                     FACTOR    0.000198255          1e-05            500          upw_ks              1              0                   1
+ks_142        log                     FACTOR    0.000199662          1e-05            500          upw_ks              1              0                   1
+ks_143        log                     FACTOR     0.00138925          1e-05            500          upw_ks              1              0                   1
+ks_144        log                     FACTOR        1.04906          1e-05            500          upw_ks              1              0                   1
+ks_145        log                     FACTOR        29.2848          1e-05            500          upw_ks              1              0                   1
+ks_146        log                     FACTOR        5.89995          1e-05            500          upw_ks              1              0                   1
+ks_147        log                     FACTOR        2.24907          1e-05            500          upw_ks              1              0                   1
+ks_148        log                     FACTOR        6.13536          1e-05            500          upw_ks              1              0                   1
+ks_149        log                     FACTOR    0.000265699          1e-05            500          upw_ks              1              0                   1
+ks_15         log                     FACTOR        1.16277          1e-05            500          upw_ks              1              0                   1
+ks_150        log                     FACTOR        7.63014          1e-05            500          upw_ks              1              0                   1
+ks_151        log                     FACTOR        6.24238          1e-05            500          upw_ks              1              0                   1
+ks_152        log                     FACTOR       0.125561          1e-05            500          upw_ks              1              0                   1
+ks_153        log                     FACTOR        48.5618          1e-05            500          upw_ks              1              0                   1
+ks_154        log                     FACTOR        31.0662          1e-05            500          upw_ks              1              0                   1
+ks_155        log                     FACTOR    0.000175034          1e-05            500          upw_ks              1              0                   1
+ks_156        log                     FACTOR       0.185537          1e-05            500          upw_ks              1              0                   1
+ks_157        log                     FACTOR       0.180145          1e-05            500          upw_ks              1              0                   1
+ks_158        log                     FACTOR       0.641564          1e-05            500          upw_ks              1              0                   1
+ks_159        log                     FACTOR      0.0265115          1e-05            500          upw_ks              1              0                   1
+ks_16         log                     FACTOR         234.48          1e-05            500          upw_ks              1              0                   1
+ks_160        log                     FACTOR        1.09851          1e-05            500          upw_ks              1              0                   1
+ks_161        log                     FACTOR            500          1e-05            500          upw_ks              1              0                   1
+ks_162        log                     FACTOR       0.196601          1e-05            500          upw_ks              1              0                   1
+ks_163        log                     FACTOR      0.0698105          1e-05            500          upw_ks              1              0                   1
+ks_164        log                     FACTOR      0.0563574          1e-05            500          upw_ks              1              0                   1
+ks_165        log                     FACTOR        7.13465          1e-05            500          upw_ks              1              0                   1
+ks_166        log                     FACTOR       0.015612          1e-05            500          upw_ks              1              0                   1
+ks_167        log                     FACTOR      0.0246513          1e-05            500          upw_ks              1              0                   1
+ks_168        log                     FACTOR      0.0431236          1e-05            500          upw_ks              1              0                   1
+ks_169        log                     FACTOR    0.000230766          1e-05            500          upw_ks              1              0                   1
+ks_17         log                     FACTOR        1.71989          1e-05            500          upw_ks              1              0                   1
+ks_170        log                     FACTOR      0.0015118          1e-05            500          upw_ks              1              0                   1
+ks_171        log                     FACTOR       0.344979          1e-05            500          upw_ks              1              0                   1
+ks_172        log                     FACTOR      0.0203377          1e-05            500          upw_ks              1              0                   1
+ks_173        log                     FACTOR     0.00584377          1e-05            500          upw_ks              1              0                   1
+ks_174        log                     FACTOR        6.05553          1e-05            500          upw_ks              1              0                   1
+ks_175        log                     FACTOR        0.12935          1e-05            500          upw_ks              1              0                   1
+ks_176        log                     FACTOR      0.0014304          1e-05            500          upw_ks              1              0                   1
+ks_177        log                     FACTOR        1.15636          1e-05            500          upw_ks              1              0                   1
+ks_178        log                     FACTOR    0.000200237          1e-05            500          upw_ks              1              0                   1
+ks_179        log                     FACTOR       0.570999          1e-05            500          upw_ks              1              0                   1
+ks_18         log                     FACTOR         2.4534          1e-05            500          upw_ks              1              0                   1
+ks_180        log                     FACTOR       1.86e-05          1e-06            500          upw_ks              1              0                   1
+ks_181        log                     FACTOR      0.0124134          1e-05            500          upw_ks              1              0                   1
+ks_182        log                     FACTOR        5.24153          1e-05            500          upw_ks              1              0                   1
+ks_183        log                     FACTOR       0.996228          1e-05            500          upw_ks              1              0                   1
+ks_184        log                     FACTOR    0.000333768          1e-05            500          upw_ks              1              0                   1
+ks_185        log                     FACTOR       9.54e-05          1e-06            500          upw_ks              1              0                   1
+ks_186        log                     FACTOR       9.81e-05          1e-06            500          upw_ks              1              0                   1
+ks_187        log                     FACTOR    0.000109238          1e-05            500          upw_ks              1              0                   1
+ks_188        log                     FACTOR    0.000357299          1e-05            500          upw_ks              1              0                   1
+ks_189        log                     FACTOR    0.000114728          1e-05            500          upw_ks              1              0                   1
+ks_19         log                     FACTOR        45.9538          1e-05            500          upw_ks              1              0                   1
+ks_190        log                     FACTOR       9.63e-06          1e-06            500          upw_ks              1              0                   1
+ks_191        log                     FACTOR    0.000100802          1e-05            500          upw_ks              1              0                   1
+ks_192        log                     FACTOR    0.000121543          1e-05            500          upw_ks              1              0                   1
+ks_193        log                     FACTOR     0.00144696          1e-05            500          upw_ks              1              0                   1
+ks_194        log                     FACTOR       9.56e-06          1e-06            500          upw_ks              1              0                   1
+ks_195        log                     FACTOR    0.000673453          1e-05            500          upw_ks              1              0                   1
+ks_196        log                     FACTOR       9.59e-06          1e-06            500          upw_ks              1              0                   1
+ks_197        log                     FACTOR       8.18e-05          1e-05            500          upw_ks              1              0                   1
+ks_198        log                     FACTOR    0.000169942          1e-05            500          upw_ks              1              0                   1
+ks_199        log                     FACTOR       1.08e-05          1e-06            500          upw_ks              1              0                   1
+ks_2          log                     FACTOR      0.0230232          1e-05            500          upw_ks              1              0                   1
+ks_20         log                     FACTOR        1.66126          1e-05            500          upw_ks              1              0                   1
+ks_200        log                     FACTOR       9.65e-06          1e-06            500          upw_ks              1              0                   1
+ks_201        log                     FACTOR       9.56e-06          1e-06            500          upw_ks              1              0                   1
+ks_202        log                     FACTOR    0.000101318          1e-05            500          upw_ks              1              0                   1
+ks_203        log                     FACTOR    0.000113631          1e-05            500          upw_ks              1              0                   1
+ks_204        log                     FACTOR       9.95e-05          1e-06            500          upw_ks              1              0                   1
+ks_205        log                     FACTOR    0.000103474          1e-05            500          upw_ks              1              0                   1
+ks_206        log                     FACTOR       9.62e-06          1e-06            500          upw_ks              1              0                   1
+ks_207        log                     FACTOR     0.00010168          1e-05            500          upw_ks              1              0                   1
+ks_208        log                     FACTOR        1.3e-05          1e-06            500          upw_ks              1              0                   1
+ks_209        log                     FACTOR    0.000263615          1e-05            500          upw_ks              1              0                   1
+ks_21         log                     FACTOR       0.966005          1e-05            500          upw_ks              1              0                   1
+ks_210        log                     FACTOR       8.67e-05          1e-06            500          upw_ks              1              0                   1
+ks_211        log                     FACTOR        8.8e-05          1e-06            500          upw_ks              1              0                   1
+ks_212        log                     FACTOR        3.9e-05          1e-05            500          upw_ks              1              0                   1
+ks_213        log                     FACTOR       9.55e-05          1e-06            500          upw_ks              1              0                   1
+ks_214        log                     FACTOR       9.91e-05          1e-06            500          upw_ks              1              0                   1
+ks_215        log                     FACTOR        9.8e-05          1e-06            500          upw_ks              1              0                   1
+ks_216        log                     FACTOR    0.000100191          1e-05            500          upw_ks              1              0                   1
+ks_217        log                     FACTOR        5.4e-05          1e-06            500          upw_ks              1              0                   1
+ks_218        log                     FACTOR       5.16e-05          1e-06            500          upw_ks              1              0                   1
+ks_219        log                     FACTOR    0.000103707          1e-05            500          upw_ks              1              0                   1
+ks_22         log                     FACTOR       0.471353          1e-05            500          upw_ks              1              0                   1
+ks_220        log                     FACTOR       9.21e-05          1e-06            500          upw_ks              1              0                   1
+ks_221        log                     FACTOR    0.000124783          1e-05            500          upw_ks              1              0                   1
+ks_222        log                     FACTOR    0.000105081          1e-05            500          upw_ks              1              0                   1
+ks_223        log                     FACTOR    0.000100977          1e-05            500          upw_ks              1              0                   1
+ks_224        log                     FACTOR       9.97e-05          1e-06            500          upw_ks              1              0                   1
+ks_225        log                     FACTOR       9.78e-06          1e-06            500          upw_ks              1              0                   1
+ks_226        log                     FACTOR    0.000105268          1e-05            500          upw_ks              1              0                   1
+ks_227        log                     FACTOR       8.65e-05          1e-06            500          upw_ks              1              0                   1
+ks_228        log                     FACTOR       6.25e-05          1e-06            500          upw_ks              1              0                   1
+ks_229        log                     FACTOR    0.000390126          1e-05            500          upw_ks              1              0                   1
+ks_23         log                     FACTOR        362.416          1e-05            500          upw_ks              1              0                   1
+ks_230        log                     FACTOR       1.47e-05          1e-06            500          upw_ks              1              0                   1
+ks_231        log                     FACTOR       7.84e-05          1e-06            500          upw_ks              1              0                   1
+ks_232        log                     FACTOR    0.000353653          1e-05            500          upw_ks              1              0                   1
+ks_233        log                     FACTOR       5.73e-05          1e-06            500          upw_ks              1              0                   1
+ks_24         log                     FACTOR       0.049146          1e-05            500          upw_ks              1              0                   1
+ks_25         log                     FACTOR       0.083399          1e-05            500          upw_ks              1              0                   1
+ks_26         log                     FACTOR           5000          1e-05           5000          upw_ks              1              0                   1
+ks_27         log                     FACTOR       0.205893          1e-05            500          upw_ks              1              0                   1
+ks_28         log                     FACTOR       0.349053          1e-05            500          upw_ks              1              0                   1
+ks_29         log                     FACTOR        3.38511          1e-05            500          upw_ks              1              0                   1
+ks_3          log                     FACTOR       0.773116          1e-05            500          upw_ks              1              0                   1
+ks_30         log                     FACTOR       9.69e-06          1e-06            500          upw_ks              1              0                   1
+ks_31         log                     FACTOR        2.72432          1e-05            500          upw_ks              1              0                   1
+ks_32         log                     FACTOR    0.000189289          1e-05            500          upw_ks              1              0                   1
+ks_33         log                     FACTOR       0.102023          1e-05            500          upw_ks              1              0                   1
+ks_34         log                     FACTOR        50.9518          1e-05            500          upw_ks              1              0                   1
+ks_35         log                     FACTOR    0.000181164          1e-05            500          upw_ks              1              0                   1
+ks_36         log                     FACTOR    0.000484445          1e-05            500          upw_ks              1              0                   1
+ks_37         log                     FACTOR    0.000207331          1e-05            500          upw_ks              1              0                   1
+ks_38         log                     FACTOR        0.08028          1e-05            500          upw_ks              1              0                   1
+ks_39         log                     FACTOR    0.000195366          1e-05            500          upw_ks              1              0                   1
+ks_4          log                     FACTOR         68.553          1e-05            500          upw_ks              1              0                   1
+ks_40         log                     FACTOR        1.17776          1e-05            500          upw_ks              1              0                   1
+ks_41         log                     FACTOR        1.18304          1e-05            500          upw_ks              1              0                   1
+ks_42         log                     FACTOR        2.39047          1e-05            500          upw_ks              1              0                   1
+ks_43         log                     FACTOR      0.0873561          1e-05            500          upw_ks              1              0                   1
+ks_44         log                     FACTOR       0.299291          1e-05            500          upw_ks              1              0                   1
+ks_45         log                     FACTOR      0.0120236          1e-05            500          upw_ks              1              0                   1
+ks_46         log                     FACTOR       0.182526          1e-05            500          upw_ks              1              0                   1
+ks_47         log                     FACTOR        5.63642          1e-05            500          upw_ks              1              0                   1
+ks_48         log                     FACTOR        9.16324          1e-05            500          upw_ks              1              0                   1
+ks_49         log                     FACTOR    0.000175684          1e-05            500          upw_ks              1              0                   1
+ks_5          log                     FACTOR        159.075          1e-05            500          upw_ks              1              0                   1
+ks_50         log                     FACTOR        3.93419          1e-05            500          upw_ks              1              0                   1
+ks_51         log                     FACTOR       4.24e-05          1e-06            500          upw_ks              1              0                   1
+ks_52         log                     FACTOR     0.00336259          1e-05            500          upw_ks              1              0                   1
+ks_53         log                     FACTOR        5.11338          1e-05            500          upw_ks              1              0                   1
+ks_54         log                     FACTOR      0.0185949          1e-05            500          upw_ks              1              0                   1
+ks_55         log                     FACTOR        9.17403          1e-05            500          upw_ks              1              0                   1
+ks_56         log                     FACTOR        73.1444          1e-05            500          upw_ks              1              0                   1
+ks_57         log                     FACTOR        4.91491          1e-05            500          upw_ks              1              0                   1
+ks_58         log                     FACTOR       0.320067          1e-05            500          upw_ks              1              0                   1
+ks_59         log                     FACTOR      0.0629295          1e-05            500          upw_ks              1              0                   1
+ks_6          log                     FACTOR         244.82          1e-05            500          upw_ks              1              0                   1
+ks_60         log                     FACTOR        4.62419          1e-05            500          upw_ks              1              0                   1
+ks_61         log                     FACTOR      0.0293437          1e-05            500          upw_ks              1              0                   1
+ks_62         log                     FACTOR        0.19408          1e-05            500          upw_ks              1              0                   1
+ks_63         log                     FACTOR        10.9434          1e-05            500          upw_ks              1              0                   1
+ks_64         log                     FACTOR    0.000569741          1e-05            500          upw_ks              1              0                   1
+ks_65         log                     FACTOR     0.00144774          1e-05            500          upw_ks              1              0                   1
+ks_66         log                     FACTOR        5.72797          1e-05            500          upw_ks              1              0                   1
+ks_67         log                     FACTOR        11.9567          1e-05            500          upw_ks              1              0                   1
+ks_68         log                     FACTOR     0.00667846          1e-05            500          upw_ks              1              0                   1
+ks_69         log                     FACTOR       0.760225          1e-05            500          upw_ks              1              0                   1
+ks_7          log                     FACTOR       9.88e-06          1e-06            500          upw_ks              1              0                   1
+ks_70         log                     FACTOR        3.89028          1e-05            500          upw_ks              1              0                   1
+ks_71         log                     FACTOR       9.67e-06          1e-06            500          upw_ks              1              0                   1
+ks_72         log                     FACTOR       8.91e-05          1e-06            500          upw_ks              1              0                   1
+ks_73         log                     FACTOR    0.000101222          1e-05            500          upw_ks              1              0                   1
+ks_74         log                     FACTOR       9.33e-05          1e-06            500          upw_ks              1              0                   1
+ks_75         log                     FACTOR       1.14e-05          1e-06            500          upw_ks              1              0                   1
+ks_76         log                     FACTOR     0.00014601          1e-05            500          upw_ks              1              0                   1
+ks_77         log                     FACTOR    0.000102142          1e-05            500          upw_ks              1              0                   1
+ks_78         log                     FACTOR       1.41e-05          1e-06            500          upw_ks              1              0                   1
+ks_79         log                     FACTOR       9.61e-06          1e-06            500          upw_ks              1              0                   1
+ks_8          log                     FACTOR       9.69e-06          1e-06            500          upw_ks              1              0                   1
+ks_80         log                     FACTOR        189.115          1e-05            500          upw_ks              1              0                   1
+ks_81         log                     FACTOR       8.46e-05          1e-06            500          upw_ks              1              0                   1
+ks_82         log                     FACTOR            500          1e-05            500          upw_ks              1              0                   1
+ks_83         log                     FACTOR        6.81582          1e-05            500          upw_ks              1              0                   1
+ks_84         log                     FACTOR       8.43e-05          1e-06            500          upw_ks              1              0                   1
+ks_85         log                     FACTOR       1.25e-05          1e-06            500          upw_ks              1              0                   1
+ks_86         log                     FACTOR    0.000131494          1e-05            500          upw_ks              1              0                   1
+ks_87         log                     FACTOR            500          1e-05            500          upw_ks              1              0                   1
+ks_88         log                     FACTOR         26.816          1e-05            500          upw_ks              1              0                   1
+ks_89         log                     FACTOR       7.76e-05          1e-05            500          upw_ks              1              0                   1
+ks_9          log                     FACTOR         8.2024          1e-05            500          upw_ks              1              0                   1
+ks_90         log                     FACTOR        4.64516          1e-05            500          upw_ks              1              0                   1
+ks_91         log                     FACTOR        14.9836          1e-05            500          upw_ks              1              0                   1
+ks_92         log                     FACTOR    0.000113923          1e-05            500          upw_ks              1              0                   1
+ks_93         log                     FACTOR       0.185523          1e-05            500          upw_ks              1              0                   1
+ks_94         log                     FACTOR       9.59e-06          1e-06            500          upw_ks              1              0                   1
+ks_95         log                     FACTOR       9.99e-05          1e-05            500          upw_ks              1              0                   1
+ks_96         log                     FACTOR      0.0001728          1e-05            500          upw_ks              1              0                   1
+ks_97         log                     FACTOR       2.99e-05          1e-06            500          upw_ks              1              0                   1
+ks_98         log                     FACTOR    0.000108548          1e-05            500          upw_ks              1              0                   1
+ks_99         log                     FACTOR    0.000106436          1e-05            500          upw_ks              1              0                   1
+lak_cond_1    fixed                   FACTOR              1        1.1e-10        1.1e+10          lak_cd              1              0                   1
+lak_cond_12   log                     FACTOR        1.02947            0.1          10000          lak_cd              1              0                   1
+lak_cond_2    fixed                   FACTOR              1        1.1e-10        1.1e+10          lak_cd              1              0                   1
+pet_1         fixed                   FACTOR        9.5e-05        1.1e-10        1.1e+10         uzf_pet              1              0                   1
+pond_recharge log                     FACTOR        22026.2              1         100000 well_rubber_dam              1              0                   1
+sfr_k_1       log                     FACTOR      0.0605289          1e-05            500          sfr_ks              1              0                   1
+sfr_k_10      log                     FACTOR       0.113024          1e-05            500          sfr_ks              1              0                   1
+sfr_k_11      log                     FACTOR       0.217042          1e-05            500          sfr_ks              1              0                   1
+sfr_k_12      log                     FACTOR       0.884977          1e-05            500          sfr_ks              1              0                   1
+sfr_k_13      log                     FACTOR      0.0996134          1e-05            500          sfr_ks              1              0                   1
+sfr_k_14      log                     FACTOR        0.19625          1e-05            500          sfr_ks              1              0                   1
+sfr_k_15      log                     FACTOR       0.129128          1e-05            500          sfr_ks              1              0                   1
+sfr_k_16      log                     FACTOR       0.268345          1e-05            500          sfr_ks              1              0                   1
+sfr_k_17      log                     FACTOR       0.108845          1e-05            500          sfr_ks              1              0                   1
+sfr_k_18      log                     FACTOR       0.141475          1e-05            500          sfr_ks              1              0                   1
+sfr_k_19      log                     FACTOR        0.10352          1e-05            500          sfr_ks              1              0                   1
+sfr_k_2       log                     FACTOR       0.181512          1e-05            500          sfr_ks              1              0                   1
+sfr_k_20      log                     FACTOR        0.10393          1e-05            500          sfr_ks              1              0                   1
+sfr_k_21      log                     FACTOR        0.17615          1e-05            500          sfr_ks              1              0                   1
+sfr_k_22      log                     FACTOR       0.125671          1e-05            500          sfr_ks              1              0                   1
+sfr_k_3       log                     FACTOR      0.0941533          1e-05            500          sfr_ks              1              0                   1
+sfr_k_4       log                     FACTOR      0.0305992          1e-05            500          sfr_ks              1              0                   1
+sfr_k_5       log                     FACTOR       0.205416          1e-05            500          sfr_ks              1              0                   1
+sfr_k_6       log                     FACTOR       0.585941          1e-05            500          sfr_ks              1              0                   1
+sfr_k_7       log                     FACTOR       0.254318          1e-05            500          sfr_ks              1              0                   1
+sfr_k_8       log                     FACTOR       0.302234          1e-05            500          sfr_ks              1              0                   1
+sfr_k_9       log                     FACTOR       0.177565          1e-05            500          sfr_ks              1              0                   1
+spill_447     fixed                   FACTOR         185.06            100            220        sfr_spil              1              0                   1
+spill_449     fixed                   FACTOR          146.6            100            220        sfr_spil              1              0                   1
+spill_688     none                    FACTOR           8.23           8.23           11.6        sfr_spil              1              0                   1
+surfk_1_1     log                     FACTOR    0.000224089          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_10    log                     FACTOR    0.000253129          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_11    log                     FACTOR     0.00025089          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_12    log                     FACTOR    0.000250823          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_13    log                     FACTOR    0.000250889          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_14    log                     FACTOR    0.000250804          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_15    log                     FACTOR    0.000231029          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_16    log                     FACTOR    0.000227533          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_17    log                     FACTOR    0.000250919          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_18    log                     FACTOR    0.000263747          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_19    log                     FACTOR    0.000250861          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_2     log                     FACTOR    0.000225473          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_21    log                     FACTOR     0.00024883          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_3     log                     FACTOR    0.000232044          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_4     log                     FACTOR    0.000345703          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_5     log                     FACTOR     0.00033344          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_6     log                     FACTOR    0.000230508          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_8     log                     FACTOR    0.000249466          1e-10            500       uzf_surfk              1              0                   1
+surfk_1_9     log                     FACTOR    0.000211763          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_1     log                     FACTOR    0.000316376          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_10    log                     FACTOR    0.000246587          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_11    log                     FACTOR    0.000231153          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_12    log                     FACTOR    0.000208451          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_14    log                     FACTOR    0.000144923          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_15    log                     FACTOR     0.00016312          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_16    log                     FACTOR    0.000152994          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_17    log                     FACTOR    0.000158307          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_18    log                     FACTOR     0.00017246          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_19    log                     FACTOR    0.000158319          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_2     log                     FACTOR       9.26e-05          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_20    log                     FACTOR    0.000566105          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_21    log                     FACTOR    0.000158365          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_22    log                     FACTOR    0.000151874          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_3     log                     FACTOR       9.98e-05          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_4     log                     FACTOR     0.00022074          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_5     log                     FACTOR    0.000262488          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_6     log                     FACTOR     0.00012926          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_7     log                     FACTOR    0.000241375          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_8     log                     FACTOR    0.000241561          1e-10            500       uzf_surfk              1              0                   1
+surfk_2_9     log                     FACTOR    0.000216485          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_1     log                     FACTOR       3.01e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_10    log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_11    log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_12    log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_13    log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_14    log                     FACTOR       3.15e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_15    log                     FACTOR       3.08e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_16    log                     FACTOR       1.04e-07          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_17    log                     FACTOR       3.18e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_18    log                     FACTOR       2.99e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_19    log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_2     log                     FACTOR       3.08e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_20    log                     FACTOR       1.11e-07          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_21    log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_22    log                     FACTOR       2.48e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_3     log                     FACTOR       3.08e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_4     log                     FACTOR       3.08e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_5     log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_6     log                     FACTOR       9.98e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_7     log                     FACTOR       3.08e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_8     log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+surfk_3_9     log                     FACTOR        3.1e-08          1e-10            500       uzf_surfk              1              0                   1
+vka_ratio_1   none                    FACTOR       0.343478        1.1e-10        1.1e+10         upw_vka              1              0                   1
+vka_ratio_2   none                    FACTOR       0.101393        1.1e-10        1.1e+10         upw_vka              1              0                   1
+vka_ratio_3   none                    FACTOR      0.0601119        1.1e-10        1.1e+10         upw_vka              1              0                   1
+vks_1_1       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_10      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_11      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_12      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_13      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_14      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_15      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_16      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_17      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_18      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_19      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_2       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_21      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_3       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_4       fixed                   FACTOR    0.000398107          1e-10            500         uzf_vks              1              0                   1
+vks_1_5       fixed                   FACTOR    0.000398107          1e-10            500         uzf_vks              1              0                   1
+vks_1_6       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_8       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_1_9       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_1       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_10      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_11      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_12      fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_14      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_15      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_16      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_17      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_18      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_19      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_2       fixed                   FACTOR         0.0001          1e-10            500         uzf_vks              1              0                   1
+vks_2_20      fixed                   FACTOR    0.000630957          1e-10            500         uzf_vks              1              0                   1
+vks_2_21      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_22      fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_3       fixed                   FACTOR         0.0001          1e-10            500         uzf_vks              1              0                   1
+vks_2_4       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_5       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_6       fixed                   FACTOR    0.000158489          1e-10            500         uzf_vks              1              0                   1
+vks_2_7       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_8       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_2_9       fixed                   FACTOR    0.000251189          1e-10            500         uzf_vks              1              0                   1
+vks_3_1       fixed                   FACTOR       3.02e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_10      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_11      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_12      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_13      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_14      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_15      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_16      fixed                   FACTOR          1e-07          1e-10            500         uzf_vks              1              0                   1
+vks_3_17      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_18      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_19      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_2       fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_20      fixed                   FACTOR       1.15e-07          1e-10            500         uzf_vks              1              0                   1
+vks_3_21      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_22      fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_3       fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_4       fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_5       fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_6       fixed                   FACTOR          1e-07          1e-10            500         uzf_vks              1              0                   1
+vks_3_7       fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_8       fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+vks_3_9       fixed                   FACTOR       3.09e-08          1e-10            500         uzf_vks              1              0                   1
+
+
+
+Observation information
+NAME                                VALUE                GROUP              WEIGHT
+bsflo_1                             0.114               basflo             47.3879
+bsflo_10                             -999               basflo                   0
+bsflo_11                             -999               basflo                   0
+bsflo_12                             -999               basflo                   0
+bsflo_13                            0.114               basflo             47.3879
+bsflo_14                             -999               basflo                   0
+bsflo_15                             -999               basflo                   0
+bsflo_16                            0.114               basflo             47.3879
+bsflo_17                             -999               basflo                   0
+bsflo_18                            0.114               basflo             47.3879
+bsflo_19                             -999               basflo                   0
+bsflo_2                             0.114               basflo             47.3879
+bsflo_20                             -999               basflo                   0
+bsflo_3                              -999               basflo                   0
+bsflo_4                              -999               basflo                   0
+bsflo_5                             0.114               basflo             47.3879
+bsflo_6                             0.114               basflo             47.3879
+bsflo_7                              -999               basflo                   0
+bsflo_8                              -999               basflo                   0
+bsflo_9                              -999               basflo                   0
+gflo_1                             395596                ggflo                   0
+gflo_10                            268818                ggflo                   0
+gflo_11                            2347.1                ggflo                   0
+gflo_12                            272439                ggflo                   0
+gflo_13                       3.12006e+06                ggflo                   0
+gflo_14                            715847                ggflo                   0
+gflo_15                            270012                ggflo                   0
+gflo_16                            192046                ggflo                   0
+gflo_17                            709278                ggflo                   0
+gflo_18                       4.89947e+06                ggflo                   0
+gflo_19                              -999                ggflo                   0
+gflo_2                             634757                ggflo                   0
+gflo_20                            375102                ggflo                   0
+gflo_3                             673223                ggflo                   0
+gflo_4                             883062                ggflo                   0
+gflo_5                        1.49115e+06                ggflo                   0
+gflo_6                        2.02711e+06                ggflo                   0
+gflo_7                             103461                ggflo                   0
+gflo_8                            69467.9                ggflo                   0
+gflo_9                             256582                ggflo                   0
+ho_0                              68.2503                heads                   1
+ho_1                               314.63                heads                   1
+ho_10                              48.455                heads                   1
+ho_100                            190.365                heads                   1
+ho_101                            158.747                heads                   1
+ho_102                            160.161                heads                   1
+ho_103                            175.496                heads                   1
+ho_104                            170.152                heads                   1
+ho_105                            168.534                heads                   1
+ho_106                             166.46                heads                   1
+ho_107                            170.016                heads                   1
+ho_108                            170.801                heads                   1
+ho_109                            171.834                heads                   1
+ho_11                             40.0979                heads                   1
+ho_110                            170.791                heads                   1
+ho_111                            170.698                heads                   1
+ho_112                            171.367                heads                   1
+ho_113                            168.687                heads                   1
+ho_114                            171.771                heads                   1
+ho_115                            245.527                heads                   1
+ho_116                            236.496                heads                   1
+ho_117                             237.63                heads                   1
+ho_118                            218.041                heads                   1
+ho_119                            236.805                heads                   1
+ho_12                             19.3256                heads                   1
+ho_120                            250.561                heads                   1
+ho_121                            231.944                heads                   1
+ho_122                            311.561                heads                   1
+ho_123                            229.146                heads                   1
+ho_124                            257.824                heads                   1
+ho_125                            275.661                heads                   1
+ho_126                            234.976                heads                   1
+ho_127                            228.281                heads                   1
+ho_128                            183.661                heads                   1
+ho_129                            239.099                heads                   1
+ho_13                             12.3366                heads                   1
+ho_130                            202.966                heads                   1
+ho_131                            221.218                heads                   1
+ho_132                            211.235                heads                   1
+ho_133                            235.973                heads                   1
+ho_134                             236.65                heads                   1
+ho_135                            194.574                heads                   1
+ho_136                            216.039                heads                   1
+ho_137                            230.514                heads                   1
+ho_138                            193.811                heads                   1
+ho_139                            239.744                heads                   1
+ho_14                             324.889                heads                   1
+ho_140                            240.352                heads                   1
+ho_141                            243.034                heads                   1
+ho_142                            216.196                heads                   1
+ho_143                            242.481                heads                   1
+ho_144                            186.431                heads                   1
+ho_145                            205.223                heads                   1
+ho_146                            255.043                heads                   1
+ho_147                            257.293                heads                   1
+ho_148                            225.667                heads                   1
+ho_149                            213.561                heads                   1
+ho_15                              13.495                heads                   1
+ho_150                            248.101                heads                   1
+ho_151                            252.737                heads                   1
+ho_152                            191.459                heads                   1
+ho_153                            185.046                heads                   1
+ho_154                             177.11                heads                   1
+ho_155                            174.849                heads                   1
+ho_156                            174.632                heads                   1
+ho_157                            174.424                heads                   1
+ho_158                            197.995                heads                   1
+ho_159                            183.859                heads                   1
+ho_16                             62.0403                heads                   1
+ho_160                            192.995                heads                   1
+ho_161                            276.432                heads                   1
+ho_162                            214.526                heads                   1
+ho_163                            218.267                heads                   1
+ho_164                            197.411                heads                   1
+ho_165                            228.934                heads                   1
+ho_166                            228.378                heads                   1
+ho_167                            265.622                heads                   1
+ho_168                            275.129                heads                   1
+ho_169                            290.565                heads                   1
+ho_17                              3.9828                heads                   1
+ho_170                            290.379                heads                   1
+ho_18                              24.395                heads                   1
+ho_19                             37.4358                heads                   1
+ho_2                              83.3997                heads                   1
+ho_20                             18.1986                heads                   1
+ho_21                             39.1015                heads                   1
+ho_22                             15.4875                heads                   1
+ho_23                             14.4814                heads                   1
+ho_24                             12.5924                heads                   1
+ho_25                             11.5968                heads                   1
+ho_26                              10.719                heads                   1
+ho_27                             11.2937                heads                   1
+ho_28                             18.4356                heads                   1
+ho_29                             11.4599                heads                   1
+ho_3                              26.7286                heads                   1
+ho_30                              21.219                heads                   1
+ho_31                             17.6493                heads                   1
+ho_32                             10.0889                heads                   1
+ho_33                             31.2621                heads                   1
+ho_34                             47.2575                heads                   1
+ho_35                             39.2465                heads                   1
+ho_36                             -1.4093                heads                   1
+ho_37                             10.1445                heads                   1
+ho_38                             130.681                heads                   1
+ho_39                             122.097                heads                   1
+ho_4                              -4.5919                heads                   1
+ho_40                             64.1488                heads                   1
+ho_41                             58.4498                heads                   1
+ho_42                             93.1612                heads                   1
+ho_43                              41.659                heads                   1
+ho_44                             66.6429                heads                   1
+ho_45                             54.8153                heads                   1
+ho_46                              91.135                heads                   1
+ho_47                             100.721                heads                   1
+ho_48                             303.376                heads                   1
+ho_49                             49.4388                heads                   1
+ho_5                              -11.035                heads                   1
+ho_50                             61.6086                heads                   1
+ho_51                             86.1749                heads                   1
+ho_52                             85.2498                heads                   1
+ho_53                             82.7974                heads                   1
+ho_54                             55.9031                heads                   1
+ho_55                             75.2073                heads                   1
+ho_56                             47.1085                heads                   1
+ho_57                             49.3317                heads                   1
+ho_58                             39.6155                heads                   1
+ho_59                             42.3267                heads                   1
+ho_6                              65.1355                heads                   1
+ho_60                             48.1654                heads                   1
+ho_61                             48.3186                heads                   1
+ho_62                             59.1367                heads                   1
+ho_63                             53.5019                heads                   1
+ho_64                             313.117                heads                   1
+ho_65                             138.518                heads                   1
+ho_66                             337.486                heads                   1
+ho_67                             147.631                heads                   1
+ho_68                             149.403                heads                   1
+ho_69                             140.988                heads                   1
+ho_7                              173.466                heads                   1
+ho_70                             140.142                heads                   1
+ho_71                             535.275                heads                   1
+ho_72                             228.722                heads                   1
+ho_73                             241.856                heads                   1
+ho_74                             216.441                heads                   1
+ho_75                             221.086                heads                   1
+ho_76                              252.21                heads                   1
+ho_77                             229.772                heads                   1
+ho_78                             231.815                heads                   1
+ho_79                             226.911                heads                   1
+ho_8                              45.9676                heads                   1
+ho_80                             222.215                heads                   1
+ho_81                             205.057                heads                   1
+ho_82                             199.295                heads                   1
+ho_83                             194.966                heads                   1
+ho_84                             196.049                heads                   1
+ho_85                             167.548                heads                   1
+ho_86                             225.424                heads                   1
+ho_87                              230.07                heads                   1
+ho_88                             227.843                heads                   1
+ho_89                             227.538                heads                   1
+ho_9                              49.3246                heads                   1
+ho_90                             146.648                heads                   1
+ho_91                              209.99                heads                   1
+ho_92                             156.622                heads                   1
+ho_93                             152.277                heads                   1
+ho_94                             190.058                heads                   1
+ho_95                             162.931                heads                   1
+ho_96                             113.143                heads                   1
+ho_97                             158.129                heads                   1
+ho_98                             152.984                heads                   1
+ho_99                             164.834                heads                   1
+pmpchg                                  0               pmpchg                   0
+
+
+
+Prior information
+
+   no prior information provided
+
+
+
+PEST SVD Information
+    maxsing = 10000000
+    eigthresh = 1e-06
+
+
+
+
+
+...loading prior parameter covariance matrix
+
+   -----    Starting pestpp-glm Iterations    ----    
+
+-----------------------------------------
+     ---   OPTIMIZATION COMPLETE   ---   
+  Reason for terminating PEST++ simulation: NOPTMAX criterion met
+  Summary of termination criteria:
+  NOPTMAX = 0 ;  NOPT at termination = 0
+  NPHINORED = 3 ;  NPHINORED at termination = 0
+  NRELPAR = 3; RELPARSTP = 0.01 ;  NRELPAR at termination = 0
+  PHIREDSTP = 0.01; NPHISTP = 3
+  NPHISTP lowest PHI's:
+
+FINAL OPTIMISATION RESULTS
+
+  Optimal parameter values  
+
+     Parameter            
+        Name         Value
+    ------------  ------------
+    finf_1            0.483035
+    finf_10           0.472505
+    finf_11           0.472505
+    finf_12           0.472505
+    finf_13           0.472505
+    finf_14           0.483035
+    finf_15           0.483035
+    finf_16           0.483035
+    finf_17           0.483035
+    finf_18           0.483035
+    finf_19           0.483035
+    finf_2            0.483035
+    finf_20           0.528462
+    finf_21           0.483035
+    finf_22           0.483035
+    finf_3            0.483035
+    finf_4             0.41058
+    finf_5             0.41058
+    finf_6            0.483035
+    finf_7            0.472505
+    finf_8            0.472505
+    finf_9            0.472505
+    ks_1               2.38458
+    ks_10              1.83441
+    ks_100            6.47e-05
+    ks_101         0.000692433
+    ks_102             7.4e-05
+    ks_103         0.000343907
+    ks_104            9.68e-06
+    ks_105            9.78e-06
+    ks_106         0.000145001
+    ks_107         0.000250589
+    ks_108             4.49419
+    ks_109             7.57701
+    ks_11             0.347789
+    ks_110             3.81348
+    ks_111             8.91185
+    ks_112             4.62197
+    ks_113           0.0704361
+    ks_114             9.76246
+    ks_115             6.76202
+    ks_116            0.390227
+    ks_117             13.8964
+    ks_118             1.98597
+    ks_119             10.6775
+    ks_12              9.26905
+    ks_120            0.122009
+    ks_121             2.30238
+    ks_122             42.2704
+    ks_123             9.66647
+    ks_124              2.1233
+    ks_125             29.8054
+    ks_126             265.054
+    ks_127            0.928577
+    ks_128             4.68648
+    ks_129             6.54666
+    ks_13             0.724742
+    ks_130             5.55856
+    ks_131          0.00020101
+    ks_132         0.000198996
+    ks_133          0.00020078
+    ks_134           0.0272014
+    ks_135         0.000158525
+    ks_136         0.000243726
+    ks_137          0.00385497
+    ks_138             6.74015
+    ks_139         0.000228583
+    ks_14              4.35608
+    ks_140             15.0065
+    ks_141         0.000198255
+    ks_142         0.000199662
+    ks_143          0.00138925
+    ks_144             1.04906
+    ks_145             29.2848
+    ks_146             5.89995
+    ks_147             2.24907
+    ks_148             6.13536
+    ks_149         0.000265699
+    ks_15              1.16277
+    ks_150             7.63014
+    ks_151             6.24238
+    ks_152            0.125561
+    ks_153             48.5618
+    ks_154             31.0662
+    ks_155         0.000175034
+    ks_156            0.185537
+    ks_157            0.180145
+    ks_158            0.641564
+    ks_159           0.0265115
+    ks_16               234.48
+    ks_160             1.09851
+    ks_161                 500
+    ks_162            0.196601
+    ks_163           0.0698105
+    ks_164           0.0563574
+    ks_165             7.13465
+    ks_166            0.015612
+    ks_167           0.0246513
+    ks_168           0.0431236
+    ks_169         0.000230766
+    ks_17              1.71989
+    ks_170           0.0015118
+    ks_171            0.344979
+    ks_172           0.0203377
+    ks_173          0.00584377
+    ks_174             6.05553
+    ks_175             0.12935
+    ks_176           0.0014304
+    ks_177             1.15636
+    ks_178         0.000200237
+    ks_179            0.570999
+    ks_18               2.4534
+    ks_180            1.86e-05
+    ks_181           0.0124134
+    ks_182             5.24153
+    ks_183            0.996228
+    ks_184         0.000333768
+    ks_185            9.54e-05
+    ks_186            9.81e-05
+    ks_187         0.000109238
+    ks_188         0.000357299
+    ks_189         0.000114728
+    ks_19              45.9538
+    ks_190            9.63e-06
+    ks_191         0.000100802
+    ks_192         0.000121543
+    ks_193          0.00144696
+    ks_194            9.56e-06
+    ks_195         0.000673453
+    ks_196            9.59e-06
+    ks_197            8.18e-05
+    ks_198         0.000169942
+    ks_199            1.08e-05
+    ks_2             0.0230232
+    ks_20              1.66126
+    ks_200            9.65e-06
+    ks_201            9.56e-06
+    ks_202         0.000101318
+    ks_203         0.000113631
+    ks_204            9.95e-05
+    ks_205         0.000103474
+    ks_206            9.62e-06
+    ks_207          0.00010168
+    ks_208             1.3e-05
+    ks_209         0.000263615
+    ks_21             0.966005
+    ks_210            8.67e-05
+    ks_211             8.8e-05
+    ks_212             3.9e-05
+    ks_213            9.55e-05
+    ks_214            9.91e-05
+    ks_215             9.8e-05
+    ks_216         0.000100191
+    ks_217             5.4e-05
+    ks_218            5.16e-05
+    ks_219         0.000103707
+    ks_22             0.471353
+    ks_220            9.21e-05
+    ks_221         0.000124783
+    ks_222         0.000105081
+    ks_223         0.000100977
+    ks_224            9.97e-05
+    ks_225            9.78e-06
+    ks_226         0.000105268
+    ks_227            8.65e-05
+    ks_228            6.25e-05
+    ks_229         0.000390126
+    ks_23              362.416
+    ks_230            1.47e-05
+    ks_231            7.84e-05
+    ks_232         0.000353653
+    ks_233            5.73e-05
+    ks_24             0.049146
+    ks_25             0.083399
+    ks_26                 5000
+    ks_27             0.205893
+    ks_28             0.349053
+    ks_29              3.38511
+    ks_3              0.773116
+    ks_30             9.69e-06
+    ks_31              2.72432
+    ks_32          0.000189289
+    ks_33             0.102023
+    ks_34              50.9518
+    ks_35          0.000181164
+    ks_36          0.000484445
+    ks_37          0.000207331
+    ks_38              0.08028
+    ks_39          0.000195366
+    ks_4                68.553
+    ks_40              1.17776
+    ks_41              1.18304
+    ks_42              2.39047
+    ks_43            0.0873561
+    ks_44             0.299291
+    ks_45            0.0120236
+    ks_46             0.182526
+    ks_47              5.63642
+    ks_48              9.16324
+    ks_49          0.000175684
+    ks_5               159.075
+    ks_50              3.93419
+    ks_51             4.24e-05
+    ks_52           0.00336259
+    ks_53              5.11338
+    ks_54            0.0185949
+    ks_55              9.17403
+    ks_56              73.1444
+    ks_57              4.91491
+    ks_58             0.320067
+    ks_59            0.0629295
+    ks_6                244.82
+    ks_60              4.62419
+    ks_61            0.0293437
+    ks_62              0.19408
+    ks_63              10.9434
+    ks_64          0.000569741
+    ks_65           0.00144774
+    ks_66              5.72797
+    ks_67              11.9567
+    ks_68           0.00667846
+    ks_69             0.760225
+    ks_7              9.88e-06
+    ks_70              3.89028
+    ks_71             9.67e-06
+    ks_72             8.91e-05
+    ks_73          0.000101222
+    ks_74             9.33e-05
+    ks_75             1.14e-05
+    ks_76           0.00014601
+    ks_77          0.000102142
+    ks_78             1.41e-05
+    ks_79             9.61e-06
+    ks_8              9.69e-06
+    ks_80              189.115
+    ks_81             8.46e-05
+    ks_82                  500
+    ks_83              6.81582
+    ks_84             8.43e-05
+    ks_85             1.25e-05
+    ks_86          0.000131494
+    ks_87                  500
+    ks_88               26.816
+    ks_89             7.76e-05
+    ks_9                8.2024
+    ks_90              4.64516
+    ks_91              14.9836
+    ks_92          0.000113923
+    ks_93             0.185523
+    ks_94             9.59e-06
+    ks_95             9.99e-05
+    ks_96            0.0001728
+    ks_97             2.99e-05
+    ks_98          0.000108548
+    ks_99          0.000106436
+    lak_cond_1               1
+    lak_cond_12        1.02947
+    lak_cond_2               1
+    pet_1              9.5e-05
+    pond_recharge       22026.2
+    sfr_k_1          0.0605289
+    sfr_k_10          0.113024
+    sfr_k_11          0.217042
+    sfr_k_12          0.884977
+    sfr_k_13         0.0996134
+    sfr_k_14           0.19625
+    sfr_k_15          0.129128
+    sfr_k_16          0.268345
+    sfr_k_17          0.108845
+    sfr_k_18          0.141475
+    sfr_k_19           0.10352
+    sfr_k_2           0.181512
+    sfr_k_20           0.10393
+    sfr_k_21           0.17615
+    sfr_k_22          0.125671
+    sfr_k_3          0.0941533
+    sfr_k_4          0.0305992
+    sfr_k_5           0.205416
+    sfr_k_6           0.585941
+    sfr_k_7           0.254318
+    sfr_k_8           0.302234
+    sfr_k_9           0.177565
+    spill_447           185.06
+    spill_449            146.6
+    spill_688             8.23
+    surfk_1_1      0.000224089
+    surfk_1_10     0.000253129
+    surfk_1_11      0.00025089
+    surfk_1_12     0.000250823
+    surfk_1_13     0.000250889
+    surfk_1_14     0.000250804
+    surfk_1_15     0.000231029
+    surfk_1_16     0.000227533
+    surfk_1_17     0.000250919
+    surfk_1_18     0.000263747
+    surfk_1_19     0.000250861
+    surfk_1_2      0.000225473
+    surfk_1_21      0.00024883
+    surfk_1_3      0.000232044
+    surfk_1_4      0.000345703
+    surfk_1_5       0.00033344
+    surfk_1_6      0.000230508
+    surfk_1_8      0.000249466
+    surfk_1_9      0.000211763
+    surfk_2_1      0.000316376
+    surfk_2_10     0.000246587
+    surfk_2_11     0.000231153
+    surfk_2_12     0.000208451
+    surfk_2_14     0.000144923
+    surfk_2_15      0.00016312
+    surfk_2_16     0.000152994
+    surfk_2_17     0.000158307
+    surfk_2_18      0.00017246
+    surfk_2_19     0.000158319
+    surfk_2_2         9.26e-05
+    surfk_2_20     0.000566105
+    surfk_2_21     0.000158365
+    surfk_2_22     0.000151874
+    surfk_2_3         9.98e-05
+    surfk_2_4       0.00022074
+    surfk_2_5      0.000262488
+    surfk_2_6       0.00012926
+    surfk_2_7      0.000241375
+    surfk_2_8      0.000241561
+    surfk_2_9      0.000216485
+    surfk_3_1         3.01e-08
+    surfk_3_10         3.1e-08
+    surfk_3_11         3.1e-08
+    surfk_3_12         3.1e-08
+    surfk_3_13         3.1e-08
+    surfk_3_14        3.15e-08
+    surfk_3_15        3.08e-08
+    surfk_3_16        1.04e-07
+    surfk_3_17        3.18e-08
+    surfk_3_18        2.99e-08
+    surfk_3_19         3.1e-08
+    surfk_3_2         3.08e-08
+    surfk_3_20        1.11e-07
+    surfk_3_21         3.1e-08
+    surfk_3_22        2.48e-08
+    surfk_3_3         3.08e-08
+    surfk_3_4         3.08e-08
+    surfk_3_5          3.1e-08
+    surfk_3_6         9.98e-08
+    surfk_3_7         3.08e-08
+    surfk_3_8          3.1e-08
+    surfk_3_9          3.1e-08
+    vka_ratio_1       0.343478
+    vka_ratio_2       0.101393
+    vka_ratio_3      0.0601119
+    vks_1_1        0.000251189
+    vks_1_10       0.000251189
+    vks_1_11       0.000251189
+    vks_1_12       0.000251189
+    vks_1_13       0.000251189
+    vks_1_14       0.000251189
+    vks_1_15       0.000251189
+    vks_1_16       0.000251189
+    vks_1_17       0.000251189
+    vks_1_18       0.000251189
+    vks_1_19       0.000251189
+    vks_1_2        0.000251189
+    vks_1_21       0.000251189
+    vks_1_3        0.000251189
+    vks_1_4        0.000398107
+    vks_1_5        0.000398107
+    vks_1_6        0.000251189
+    vks_1_8        0.000251189
+    vks_1_9        0.000251189
+    vks_2_1        0.000251189
+    vks_2_10       0.000251189
+    vks_2_11       0.000251189
+    vks_2_12       0.000251189
+    vks_2_14       0.000158489
+    vks_2_15       0.000158489
+    vks_2_16       0.000158489
+    vks_2_17       0.000158489
+    vks_2_18       0.000158489
+    vks_2_19       0.000158489
+    vks_2_2             0.0001
+    vks_2_20       0.000630957
+    vks_2_21       0.000158489
+    vks_2_22       0.000158489
+    vks_2_3             0.0001
+    vks_2_4        0.000251189
+    vks_2_5        0.000251189
+    vks_2_6        0.000158489
+    vks_2_7        0.000251189
+    vks_2_8        0.000251189
+    vks_2_9        0.000251189
+    vks_3_1           3.02e-08
+    vks_3_10          3.09e-08
+    vks_3_11          3.09e-08
+    vks_3_12          3.09e-08
+    vks_3_13          3.09e-08
+    vks_3_14          3.09e-08
+    vks_3_15          3.09e-08
+    vks_3_16             1e-07
+    vks_3_17          3.09e-08
+    vks_3_18          3.09e-08
+    vks_3_19          3.09e-08
+    vks_3_2           3.09e-08
+    vks_3_20          1.15e-07
+    vks_3_21          3.09e-08
+    vks_3_22          3.09e-08
+    vks_3_3           3.09e-08
+    vks_3_4           3.09e-08
+    vks_3_5           3.09e-08
+    vks_3_6              1e-07
+    vks_3_7           3.09e-08
+    vks_3_8           3.09e-08
+    vks_3_9           3.09e-08
+
+
+  Observations with optimal model-simulated equivalents and residuals
+                 Name        Group             Measured             Modelled             Residual               Weight
+              bsflo_1       basflo             0.114000             0.103695            0.0103052              47.3879
+             bsflo_10       basflo             -999.000             -999.000             0.000000             0.000000
+             bsflo_11       basflo             -999.000             -999.000             0.000000             0.000000
+             bsflo_12       basflo             -999.000             -999.000             0.000000             0.000000
+             bsflo_13       basflo             0.114000            0.0830150            0.0309850              47.3879
+             bsflo_14       basflo             -999.000             -999.000             0.000000             0.000000
+             bsflo_15       basflo             -999.000             -999.000             0.000000             0.000000
+             bsflo_16       basflo             0.114000             0.113277          0.000723455              47.3879
+             bsflo_17       basflo             -999.000             -999.000             0.000000             0.000000
+             bsflo_18       basflo             0.114000             0.769496            -0.655496              47.3879
+             bsflo_19       basflo             -999.000             -999.000             0.000000             0.000000
+              bsflo_2       basflo             0.114000             0.142572           -0.0285717              47.3879
+             bsflo_20       basflo             -999.000             0.126446             -999.126             0.000000
+              bsflo_3       basflo             -999.000             -999.000             0.000000             0.000000
+              bsflo_4       basflo             -999.000             -999.000             0.000000             0.000000
+              bsflo_5       basflo             0.114000             0.180674           -0.0666741              47.3879
+              bsflo_6       basflo             0.114000             0.114508         -0.000508088              47.3879
+              bsflo_7       basflo             -999.000             -999.000             0.000000             0.000000
+              bsflo_8       basflo             -999.000             -999.000             0.000000             0.000000
+              bsflo_9       basflo             -999.000             -999.000             0.000000             0.000000
+               gflo_1        ggflo              395596.              394320.              1275.88             0.000000
+              gflo_10        ggflo              268818.             -999.000              269817.             0.000000
+              gflo_11        ggflo              2347.10             -999.000              3346.10             0.000000
+              gflo_12        ggflo              272439.             -999.000              273438.             0.000000
+              gflo_13        ggflo          3.12006e+06          3.26370e+06             -143636.             0.000000
+              gflo_14        ggflo              715847.             -999.000              716846.             0.000000
+              gflo_15        ggflo              270012.              798780.             -528768.             0.000000
+              gflo_16        ggflo              192046.              973480.             -781434.             0.000000
+              gflo_17        ggflo              709278.             -999.000              710277.             0.000000
+              gflo_18        ggflo          4.89947e+06          5.22220e+06             -322734.             0.000000
+              gflo_19        ggflo             -999.000             -999.000             0.000000             0.000000
+               gflo_2        ggflo              634757.              716490.             -81733.2             0.000000
+              gflo_20        ggflo              375102.              377520.             -2418.27             0.000000
+               gflo_3        ggflo              673223.              757920.             -84697.2             0.000000
+               gflo_4        ggflo              883062.             -999.000              884061.             0.000000
+               gflo_5        ggflo          1.49115e+06          1.64350e+06             -152349.             0.000000
+               gflo_6        ggflo          2.02711e+06          2.21430e+06             -187189.             0.000000
+               gflo_7        ggflo              103461.             -999.000              104460.             0.000000
+               gflo_8        ggflo              69467.9             -999.000              70466.9             0.000000
+               gflo_9        ggflo              256582.             -999.000              257581.             0.000000
+                 ho_0        heads              68.2503              72.3720             -4.12166              1.00000
+                 ho_1        heads              314.630              282.616              32.0139              1.00000
+                ho_10        heads              48.4550              40.0598              8.39518              1.00000
+               ho_100        heads              190.365              193.224             -2.85839              1.00000
+               ho_101        heads              158.747              161.230             -2.48328              1.00000
+               ho_102        heads              160.161              161.212             -1.05114              1.00000
+               ho_103        heads              175.496              176.761             -1.26499              1.00000
+               ho_104        heads              170.152              174.224             -4.07213              1.00000
+               ho_105        heads              168.534              172.754             -4.21997              1.00000
+               ho_106        heads              166.460              170.782             -4.32134              1.00000
+               ho_107        heads              170.016              169.988            0.0283392              1.00000
+               ho_108        heads              170.801              173.593             -2.79204              1.00000
+               ho_109        heads              171.834              174.289             -2.45474              1.00000
+                ho_11        heads              40.0979              45.6703             -5.57244              1.00000
+               ho_110        heads              170.791              174.794             -4.00293              1.00000
+               ho_111        heads              170.698              176.129             -5.43099              1.00000
+               ho_112        heads              171.367              175.681             -4.31371              1.00000
+               ho_113        heads              168.687              168.174             0.512728              1.00000
+               ho_114        heads              171.771              175.100             -3.32915              1.00000
+               ho_115        heads              245.527              244.483              1.04378              1.00000
+               ho_116        heads              236.496              240.516             -4.01960              1.00000
+               ho_117        heads              237.630              240.167             -2.53709              1.00000
+               ho_118        heads              218.041              233.471             -15.4305              1.00000
+               ho_119        heads              236.805              235.271              1.53425              1.00000
+                ho_12        heads              19.3256              26.4728             -7.14716              1.00000
+               ho_120        heads              250.561              254.613             -4.05213              1.00000
+               ho_121        heads              231.944              239.129             -7.18510              1.00000
+               ho_122        heads              311.561              298.992              12.5683              1.00000
+               ho_123        heads              229.146              292.461             -63.3156              1.00000
+               ho_124        heads              257.824              275.464             -17.6398              1.00000
+               ho_125        heads              275.661              276.485            -0.823494              1.00000
+               ho_126        heads              234.976              236.551             -1.57523              1.00000
+               ho_127        heads              228.281              222.679              5.60218              1.00000
+               ho_128        heads              183.661              198.043             -14.3822              1.00000
+               ho_129        heads              239.099              241.065             -1.96592              1.00000
+                ho_13        heads              12.3366              11.7037             0.632921              1.00000
+               ho_130        heads              202.966              218.808             -15.8418              1.00000
+               ho_131        heads              221.218              224.333             -3.11539              1.00000
+               ho_132        heads              211.235              211.586            -0.350370              1.00000
+               ho_133        heads              235.973              234.561              1.41200              1.00000
+               ho_134        heads              236.650              234.112              2.53726              1.00000
+               ho_135        heads              194.574              217.115             -22.5413              1.00000
+               ho_136        heads              216.039              218.312             -2.27373              1.00000
+               ho_137        heads              230.514              233.527             -3.01266              1.00000
+               ho_138        heads              193.811              217.898             -24.0876              1.00000
+               ho_139        heads              239.744              254.953             -15.2100              1.00000
+                ho_14        heads              324.889              326.904             -2.01493              1.00000
+               ho_140        heads              240.352              250.042             -9.68997              1.00000
+               ho_141        heads              243.034              242.111             0.922272              1.00000
+               ho_142        heads              216.196              242.707             -26.5109              1.00000
+               ho_143        heads              242.481              244.359             -1.87785              1.00000
+               ho_144        heads              186.431              238.729             -52.2976              1.00000
+               ho_145        heads              205.223              219.595             -14.3715              1.00000
+               ho_146        heads              255.043              254.471             0.571410              1.00000
+               ho_147        heads              257.293              255.823              1.47059              1.00000
+               ho_148        heads              225.667              219.586              6.08128              1.00000
+               ho_149        heads              213.561              222.443             -8.88152              1.00000
+                ho_15        heads              13.4950              22.5634             -9.06838              1.00000
+               ho_150        heads              248.101              236.889              11.2119              1.00000
+               ho_151        heads              252.737              237.942              14.7943              1.00000
+               ho_152        heads              191.459              190.550             0.909007              1.00000
+               ho_153        heads              185.046              183.657              1.38892              1.00000
+               ho_154        heads              177.110              185.870             -8.76067              1.00000
+               ho_155        heads              174.849              185.870             -11.0213              1.00000
+               ho_156        heads              174.632              185.870             -11.2387              1.00000
+               ho_157        heads              174.424              185.870             -11.4460              1.00000
+               ho_158        heads              197.995              190.412              7.58282              1.00000
+               ho_159        heads              183.859              190.412             -6.55368              1.00000
+                ho_16        heads              62.0403              54.5333              7.50696              1.00000
+               ho_160        heads              192.995              190.412              2.58222              1.00000
+               ho_161        heads              276.432              299.502             -23.0696              1.00000
+               ho_162        heads              214.526              233.953             -19.4275              1.00000
+               ho_163        heads              218.267              212.441              5.82638              1.00000
+               ho_164        heads              197.411              215.452             -18.0417              1.00000
+               ho_165        heads              228.934              234.457             -5.52269              1.00000
+               ho_166        heads              228.378              222.034              6.34468              1.00000
+               ho_167        heads              265.622              275.367             -9.74470              1.00000
+               ho_168        heads              275.129              275.655            -0.525410              1.00000
+               ho_169        heads              290.565              288.167              2.39736              1.00000
+                ho_17        heads              3.98280              13.5729             -9.59007              1.00000
+               ho_170        heads              290.379              288.148              2.23038              1.00000
+                ho_18        heads              24.3950              41.6553             -17.2603              1.00000
+                ho_19        heads              37.4358              40.8084             -3.37258              1.00000
+                 ho_2        heads              83.3997              92.3897             -8.98999              1.00000
+                ho_20        heads              18.1986              20.5882             -2.38965              1.00000
+                ho_21        heads              39.1015              29.4909              9.61061              1.00000
+                ho_22        heads              15.4875              23.3580             -7.87047              1.00000
+                ho_23        heads              14.4814              16.1717             -1.69034              1.00000
+                ho_24        heads              12.5924              16.6018             -4.00940              1.00000
+                ho_25        heads              11.5968              16.3035             -4.70672              1.00000
+                ho_26        heads              10.7190              16.5051             -5.78607              1.00000
+                ho_27        heads              11.2937              16.7282             -5.43448              1.00000
+                ho_28        heads              18.4356              18.4190            0.0165536              1.00000
+                ho_29        heads              11.4599              17.4825             -6.02262              1.00000
+                 ho_3        heads              26.7286              41.6224             -14.8938              1.00000
+                ho_30        heads              21.2190              25.8985             -4.67951              1.00000
+                ho_31        heads              17.6493              45.7353             -28.0860              1.00000
+                ho_32        heads              10.0889              41.7264             -31.6375              1.00000
+                ho_33        heads              31.2621              41.6226             -10.3605              1.00000
+                ho_34        heads              47.2575              41.6091              5.64840              1.00000
+                ho_35        heads              39.2465              41.7123             -2.46580              1.00000
+                ho_36        heads             -1.40930              7.38478             -8.79408              1.00000
+                ho_37        heads              10.1445              14.6052             -4.46067              1.00000
+                ho_38        heads              130.681              127.267              3.41372              1.00000
+                ho_39        heads              122.097              126.079             -3.98208              1.00000
+                 ho_4        heads             -4.59190              1.37150             -5.96340              1.00000
+                ho_40        heads              64.1488              62.5467              1.60209              1.00000
+                ho_41        heads              58.4498              60.3633             -1.91354              1.00000
+                ho_42        heads              93.1612              94.2256             -1.06438              1.00000
+                ho_43        heads              41.6590              46.6554             -4.99642              1.00000
+                ho_44        heads              66.6429              50.2206              16.4223              1.00000
+                ho_45        heads              54.8153              51.2019              3.61339              1.00000
+                ho_46        heads              91.1350              86.2994              4.83561              1.00000
+                ho_47        heads              100.721              101.524            -0.802969              1.00000
+                ho_48        heads              303.376              276.296              27.0799              1.00000
+                ho_49        heads              49.4388              51.9022             -2.46344              1.00000
+                 ho_5        heads             -11.0350              2.64594             -13.6809              1.00000
+                ho_50        heads              61.6086              51.5943              10.0143              1.00000
+                ho_51        heads              86.1749              80.4907              5.68422              1.00000
+                ho_52        heads              85.2498              85.1335             0.116324              1.00000
+                ho_53        heads              82.7974              83.6582            -0.860773              1.00000
+                ho_54        heads              55.9031              57.6595             -1.75642              1.00000
+                ho_55        heads              75.2073              77.6454             -2.43812              1.00000
+                ho_56        heads              47.1085              51.0310             -3.92252              1.00000
+                ho_57        heads              49.3317              52.2575             -2.92577              1.00000
+                ho_58        heads              39.6155              43.5211             -3.90556              1.00000
+                ho_59        heads              42.3267              44.2569             -1.93020              1.00000
+                 ho_6        heads              65.1355              59.5489              5.58658              1.00000
+                ho_60        heads              48.1654              50.9744             -2.80905              1.00000
+                ho_61        heads              48.3186              52.2373             -3.91875              1.00000
+                ho_62        heads              59.1367              58.3028             0.833943              1.00000
+                ho_63        heads              53.5019              54.6421             -1.14018              1.00000
+                ho_64        heads              313.117              338.961             -25.8446              1.00000
+                ho_65        heads              138.518              145.003             -6.48483              1.00000
+                ho_66        heads              337.486              334.428              3.05739              1.00000
+                ho_67        heads              147.631              150.837             -3.20597              1.00000
+                ho_68        heads              149.403              145.382              4.02144              1.00000
+                ho_69        heads              140.988              145.178             -4.18949              1.00000
+                 ho_7        heads              173.466              158.279              15.1871              1.00000
+                ho_70        heads              140.142              145.178             -5.03569              1.00000
+                ho_71        heads              535.275              550.566             -15.2917              1.00000
+                ho_72        heads              228.722              243.578             -14.8561              1.00000
+                ho_73        heads              241.856              250.314             -8.45827              1.00000
+                ho_74        heads              216.441              221.381             -4.93976              1.00000
+                ho_75        heads              221.086              222.258             -1.17175              1.00000
+                ho_76        heads              252.210              242.716              9.49468              1.00000
+                ho_77        heads              229.772              228.574              1.19839              1.00000
+                ho_78        heads              231.815              226.559              5.25538              1.00000
+                ho_79        heads              226.911              225.312              1.59884              1.00000
+                 ho_8        heads              45.9676              51.3091             -5.34155              1.00000
+                ho_80        heads              222.215              241.655             -19.4394              1.00000
+                ho_81        heads              205.057              218.086             -13.0292              1.00000
+                ho_82        heads              199.295              214.058             -14.7634              1.00000
+                ho_83        heads              194.966              218.117             -23.1511              1.00000
+                ho_84        heads              196.049              201.975             -5.92600              1.00000
+                ho_85        heads              167.548              196.986             -29.4378              1.00000
+                ho_86        heads              225.424              223.272              2.15201              1.00000
+                ho_87        heads              230.070              225.291              4.77862              1.00000
+                ho_88        heads              227.843              227.110             0.733374              1.00000
+                ho_89        heads              227.538              229.053             -1.51486              1.00000
+                 ho_9        heads              49.3246              47.7269              1.59767              1.00000
+                ho_90        heads              146.648              196.631             -49.9829              1.00000
+                ho_91        heads              209.990              213.172             -3.18181              1.00000
+                ho_92        heads              156.622              194.650             -38.0281              1.00000
+                ho_93        heads              152.277              207.235             -54.9575              1.00000
+                ho_94        heads              190.058              183.306              6.75259              1.00000
+                ho_95        heads              162.931              164.226             -1.29481              1.00000
+                ho_96        heads              113.143              146.014             -32.8708              1.00000
+                ho_97        heads              158.129              156.095              2.03437              1.00000
+                ho_98        heads              152.984              158.880             -5.89599              1.00000
+                ho_99        heads              164.834              161.041              3.79309              1.00000
+               pmpchg       pmpchg             0.000000              24116.5             -24116.5             0.000000
+
+Final composite objective function 
+  Final phi                                           Total : 32094.0
+  Contribution to phi from observation group       "basflo" : 979.095
+  Contribution to phi from observation group        "ggflo" : 0.000000
+  Contribution to phi from observation group        "heads" : 31114.9
+  Contribution to phi from observation group       "pmpchg" : 0.000000
+
+
+Number of forward model runs performed during optimization: 1
+
+
+pestpp-glm analysis complete...
+started at 12/23/21 07:43:56
+finished at 12/23/21 07:45:39
+took 1.70000 minutes

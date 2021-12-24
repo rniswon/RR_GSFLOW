@@ -2972,6 +2972,7 @@ class Gw_model(object):
             hoblist_ss = []
             counter = -1
             all_info = []
+            well_info = []
             for ii, well in enumerate(well_ids):
                 curr_well = hob_df[hob_df['well_ID'] == well]
                 curr_well = curr_well.copy()
@@ -2992,7 +2993,7 @@ class Gw_model(object):
                 c_row = int(curr_well['HRU_ROW'].values[0] - 1)
                 c_col = int(curr_well['HRU_COL'].values[0] - 1)
 
-                # assume that per_top and pef_botm are depths not elevations
+                # assume that perf_top and perf_botm are depths not elevations
                 perf_top_ft = curr_well['top_ft'].values[0]
                 perf_botm_ft = curr_well['bot_ft'].values[0]
                 if perf_top_ft == -9999:
@@ -3066,6 +3067,24 @@ class Gw_model(object):
                                                        column=c_col, roff=roff, coff=coff, itt=1,
                                                        time_series_data=tim_ser_data)
 
+                # store well data in preparation for later export
+                this_well_info = [obsname,
+                                  well,
+                                  curr_well['source'][0],
+                                  len(hds),
+                                  np.mean(curr_well['WL'].values * 0.3048),
+                                  np.mean(curr_well['top_ft'].values * 0.3048),
+                                  np.mean(curr_well['bot_ft'].values * 0.3048),
+                                  np.mean(curr_well['elev_ft'].values * 0.3048),
+                                  elev[0],
+                                  elev[1],
+                                  elev[2],
+                                  elev[3],
+                                  ibound[0],
+                                  ibound[1],
+                                  ibound[2]]
+                well_info.append(this_well_info)
+
                 # steady state
                 tim_ser_data2 = [[0.0, np.mean(hds)]]
                 obs_ss = flopy.modflow.HeadObservation(self.mf, obsname=obsname, layer=nly_n, row=c_row,
@@ -3093,6 +3112,24 @@ class Gw_model(object):
                                                        'median', 'grid_top_elev', 'grid_bot_elev', 'layer', 'row',
                                                        'col'])
             obs_info.to_csv('rr_obs_info.csv')
+
+            # create data frame of well info and export
+            well_info_df = pd.DataFrame(well_info, columns=['HOB_id',
+                                                           'well_id',
+                                                           'source',
+                                                           'num_obs',
+                                                           'depth_to_water_m',
+                                                           'depth_to_well_screen_top_m',
+                                                           'depth_to_well_screen_bottom_m',
+                                                           'elev_land_obs_m',
+                                                            'elev_land_model_m',
+                                                            'elev_botm_lyr1',
+                                                            'elev_botm_lyr2',
+                                                            'elev_botm_lyr3',
+                                                            'ibound_lyr1',
+                                                            'ibound_lyr2',
+                                                            'ibound_lyr3'])
+            well_info_df.to_csv('HOB_well_info_hru_obs2_20211130.csv')
 
         pass
 

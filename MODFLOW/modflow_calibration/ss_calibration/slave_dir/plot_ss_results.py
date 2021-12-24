@@ -20,11 +20,12 @@ from gw_utils import general_util
 
 plot_baseflows = 0
 plot_gage_flows = 0
-plot_groundwater_flows = 0
+plot_groundwater_heads = 0
 map_baseflows = 0
 map_streamflows = 0
 map_groundwater_head_resid = 0
-map_groundwater_head_contours_heatmap = 1
+map_groundwater_head_contours_heatmap = 0
+HOB_well_summary_table = 1
 
 
 
@@ -38,6 +39,9 @@ input_dir = r"."
 # output file directory (i.e. plot directory)
 output_dir = r"..\results"
 
+# misc files folder
+misc_files_folder = r".\misc_files"
+
 
 # set file names ------------------------------------------------------------------------------------####
 
@@ -48,7 +52,7 @@ model_output_file = "model_output.csv"
 mf_name_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
 
 # set run id to go in exported file names
-run_id = "20211208"
+run_id = "20211210"
 
 # read in files -----------------------------------------------------------------------####
 
@@ -56,6 +60,9 @@ run_id = "20211208"
 file_path = os.path.join(input_dir, model_output_file)
 model_output = pd.read_csv(file_path, na_values = -999)
 
+# read in HOB well info files
+hob_obs = pd.read_csv(os.path.join(misc_files_folder, "HOB_well_info_hru_obs2_20211130.csv"))
+hob_geology = pd.read_csv(os.path.join(misc_files_folder, "HOB_well_info_geology.txt"), sep=',')
 
 
 # plot base flow ------------------------------------------------------------------------------------####
@@ -111,7 +118,7 @@ if plot_gage_flows == 1:
 
 # plot groundwater heads ------------------------------------------------------------------------------------####
 
-if plot_groundwater_flows == 1:
+if plot_groundwater_heads == 1:
 
     # extract data
     heads = model_output.loc[model_output.obgnme == "HEADS"]
@@ -136,7 +143,12 @@ if plot_groundwater_flows == 1:
     file_name = os.path.join(output_dir, "plots", "gw_heads.jpg")
     plt.savefig(file_name)
 
+    #TODO: calculate R^2 for sim vs. obs plot and maybe place on the plot?
 
+
+
+    # TODO: plot resid vs. obs heads
+    # TODO:
 
 
 # map baseflow ------------------------------------------------------------------------------------####
@@ -377,6 +389,141 @@ if map_groundwater_head_contours_heatmap == 1:
     # mf.modelgrid.set_coord_info(xoff= xll, yoff= yll, epsg = epsg)
     # flopy.export.utils.export_contours(mf.modelgrid, filename, contours, fieldname = "contour_level")
 
+
+
+
+# create table summarizing wells -------------------------------------------------------------------------####
+
+if HOB_well_summary_table == 1:
+
+    # read in --------------------------------------------------####
+
+    # read in modflow model
+    mf = flopy.modflow.Modflow.load(mf_name_file, model_ws=os.path.dirname(mf_name_file), load_only=['DIS', 'BAS6'])
+
+
+    # create HOB output table --------------------------------------------------####
+
+    # read in model files (bas, dis, HOB)
+    def create_hob_output_table(mf, stress_period=[0, -1]):
+
+        # grab coordinate data for each grid cell
+        coord_row = mf.modelgrid.get_ycellcenters_for_layer(0)
+        coord_col = mf.modelgrid.get_xcellcenters_for_layer(0)
+
+        # get all files
+        mfname = os.path.join(mf.model_ws, mf.namefile)
+        mf_files = general_util.get_mf_files(mfname)
+
+        # read mf and get spatial reference
+        hobdf = hob_util.in_hob_to_df(mfname=mfname, return_model=False)
+
+        # read_hob_out
+        hobout_df = None
+        for file in mf_files.keys():
+            fn = mf_files[file][1]
+            basename = os.path.basename(fn)
+            if ".hob.out" in basename:
+                hobout_df = pd.read_csv(fn, delim_whitespace=True)
+
+        # loop over obs and compute residual error
+        obs_names = hobdf['Basename'].unique()
+        all_rec = []
+        cell_size = 300  # TODO: should grab this from mf object instead of assigning number
+        for obs_ in obs_names:
+
+            # grab hob data frame
+            curr_hob = hobdf[hobdf['Basename'] == obs_]
+
+            # trim data based on stress period
+            start = stress_period[0]
+            endd = stress_period[1]
+            if endd < 0:
+                endd = hobdf['stress_period'].max()
+            curr_hob = curr_hob[(curr_hob['stress_period'] >= start) & (curr_hob['stress_period'] <= endd)]
+
+            # grab hob outputs, calculate errors, store in list
+            # store: obsnme, nobs, sim_mean, obs_mean, error_mean, mse, mae
+            curr_hob_out = hobout_df[hobout_df['OBSERVATION NAME'].isin(curr_hob['name'].values)]
+            err = curr_hob_out['SIMULATED EQUIVALENT'] - curr_hob_out['OBSERVED VALUE']
+            rec = [obs_, curr_hob['layer'].values[0], curr_hob['row'].values[0], curr_hob['col'].values[0], curr_hob['roff'].values[0], curr_hob['coff'].values[0], curr_hob_out['SIMULATED EQUIVALENT'].mean(), curr_hob_out['OBSERVED VALUE'].mean(), err.mean(), (err ** 2.0).mean() ** 0.5, (err.abs()).mean()]
+            all_rec.append(rec)
+
+
+        # create table of hob output
+        hob_out = pd.DataFrame(all_rec, columns=['HOB_id', 'layer', 'row', 'col', 'roff', 'coff', 'sim_mean', 'obs_mean', 'error_mean', 'mse', 'mae'])
+
+        return hob_out
+
+    hob_out = create_hob_output_table(mf)
+
+
+
+
+    # create well summary table with one line per well --------------------------------------------------####
+
+    # HOB ID - based on HOB input
+    # well id - based on rr_obs_info
+    # source - based on rr_obs_info
+    # number of observations - based on rr_obs_info
+    # layer - based on HOB input
+    # row - based on HOB input
+    # column - based on HOB input
+    # roff - based on HOB input
+    # coff - based on HOB input
+    # upland vs valley - based on groundwater basins shapefile
+    # hydrogeo zone, layer 1 - based on geological framework shapefile
+    # hydrogeo zone, layer 2 - based on geological framework shapefile
+    # hydrogeo zone, layer 3 - based on geological framework shapefile
+    # K zone, layer 1 - based on K_zone_hru shapefile
+    # K zone, layer 2 - based on K_zone_hru shapefile
+    # K zone, layer 3 - based on K_zone_hru shapefile
+    # well screen depth,top - based on rr_obs_info
+    # well screen depth,bottom - based on rr_obs_info
+    # ibound layer 1 - based on bas file
+    # ibound layer 2 - based on bas file
+    # ibound layer 3 - based on bas file
+    # steady state sim value - based on HOB output
+    # steady state obs value - based on HOB input
+    # steady state residual (sim-obs) - based on HOB output
+    # depth to water - based on rr_obs_info
+    # actual land surface elevation - based on rr_obs_info
+    # model land surface elevation aka top of layer 1 - based on dis file
+    # bottom of layer 1 - based on dis file
+    # bottom of layer 2 - based on dis file
+    # bottom of layer 3 - based on dis file
+    # well summary categories - based on upland vs valley and steady state residual
+
+    # join hob_obs, hob_geology, and hob_out by HOB_id column
+    hob_obs_out = pd.merge(hob_obs, hob_out, on='HOB_id')
+    hob_well_info = pd.merge(hob_geology, hob_obs_out, left_on='obsnme', right_on='HOB_id')
+
+    # delete unneeded columns
+    hob_well_info.drop(['FID', 'Join_Count', 'Unnamed: 0'], axis=1, inplace=True)
+
+    # create column of well summary categories
+    # if val_vs_up = upland, summary_category = upland
+    # if mae > 10, summary_category = "error > 10 m"
+    # if mae > 5 and mae < 10, summary_category = "error 5-10 m"
+    # if mae < 5, summary_category = "error <= 5 m"
+
+
+
+    # create well summary table with summaries by categorized wells --------------------------------------------------####
+
+    # min, mean, max, and standard deviation of # obs per well
+    # min, mean, max, and standard deviation of depth to water
+    # min, mean, max, and standard deviation of land surface elevation (from model)
+    # min, mean, max, and standard deviation of residual
+
+
+
+    # display the well summary table info in box plots with points shown ----------------------------------------------####
+
+
+
+
+    script_check = 1
 
 
 
