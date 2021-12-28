@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
+from sklearn.metrics import r2_score
 from gw_utils import *
 from gw_utils import hob_resid_to_shapefile
 from osgeo import gdal
@@ -20,12 +21,12 @@ from gw_utils import general_util
 
 plot_baseflows = 0
 plot_gage_flows = 0
-plot_groundwater_heads = 0
+plot_groundwater_heads = 1
 map_baseflows = 0
 map_streamflows = 0
 map_groundwater_head_resid = 0
 map_groundwater_head_contours_heatmap = 0
-HOB_well_summary_table = 1
+HOB_well_summary_table = 0
 
 
 
@@ -52,7 +53,7 @@ model_output_file = "model_output.csv"
 mf_name_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
 
 # set run id to go in exported file names
-run_id = "20211210"
+run_id = "20211223"
 
 # read in files -----------------------------------------------------------------------####
 
@@ -101,6 +102,9 @@ if plot_gage_flows == 1:
     if lmax < np.max(gage_flow['obsval']):
         lmax = np.max(gage_flow['obsval'])
 
+    # calculate r^2
+    #r2 = r2_score(gage_flow['obsval'], gage_flow['simval'])
+
     # plot and export
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -110,6 +114,7 @@ if plot_gage_flows == 1:
     ax.set_xlabel('Observed streamflow (m^3/day)')
     ax.set_ylabel('Simulated streamflow (m^3/day)')
     ax.grid(True)
+    #ax.annotate("r^2 = {:.3f}".format(r2), (lmax/2, 0), size=14, color='red')
     file_name = os.path.join(output_dir, "plots", "gage_flow.jpg")
     plt.savefig(file_name)
 
@@ -131,7 +136,10 @@ if plot_groundwater_heads == 1:
     if lmax < np.max(heads['obsval']):
         lmax = np.max(heads['obsval'])
 
-    # plot and export
+    # calculate r^2
+    r2 = r2_score(heads['obsval'], heads['simval'])
+
+    # plot and export sim vs obs heads
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.scatter(heads['obsval'], heads['simval'])
@@ -140,15 +148,21 @@ if plot_groundwater_heads == 1:
     ax.set_xlabel('Observed head (m)')
     ax.set_ylabel('Simulated head (m)')
     ax.grid(True)
+    ax.annotate("r^2 = {:.3f}".format(r2), (lmax/2, 0), size=14, color='red')
     file_name = os.path.join(output_dir, "plots", "gw_heads.jpg")
     plt.savefig(file_name)
 
-    #TODO: calculate R^2 for sim vs. obs plot and maybe place on the plot?
+    # plot and export resid vs. obs heads
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.scatter(heads['obsval'], (heads['simval']- heads['obsval']))
+    ax.set_title('Groundwater head residuals vs. observed groundwater heads')
+    ax.set_xlabel('Observed head (m)')
+    ax.set_ylabel('Residual = simulated - observed (m)')
+    ax.grid(True)
+    file_name = os.path.join(output_dir, "plots", "gw_heads_resid_vs_obs.jpg")
+    plt.savefig(file_name)
 
-
-
-    # TODO: plot resid vs. obs heads
-    # TODO:
 
 
 # map baseflow ------------------------------------------------------------------------------------####
@@ -501,20 +515,80 @@ if HOB_well_summary_table == 1:
     # delete unneeded columns
     hob_well_info.drop(['FID', 'Join_Count', 'Unnamed: 0'], axis=1, inplace=True)
 
-    # create column of well summary categories
+    # add additional columns
+    hob_well_info['diff_elev_land_model_obs_m'] = np.absolute (hob_well_info['elev_land_model_m'] - hob_well_info['elev_land_obs_m'])
+    hob_well_info['elev_well_screen_top_m'] = hob_well_info['elev_land_model_m'] - hob_well_info['depth_to_well_screen_top_m']
+    hob_well_info['elev_well_screen_bottom_m'] = hob_well_info['elev_land_model_m'] - hob_well_info['depth_to_well_screen_bottom_m']
+
+    # function to create column of well summary categories
     # if val_vs_up = upland, summary_category = upland
     # if mae > 10, summary_category = "error > 10 m"
-    # if mae > 5 and mae < 10, summary_category = "error 5-10 m"
-    # if mae < 5, summary_category = "error <= 5 m"
+    # if mae > 5 and mae <= 10, summary_category = "error 5-10 m"
+    # if mae <= 5, summary_category = "error <= 5 m"
+    def create_summary_category(row):
+        if row['val_vs_up'] == 'upland':
+            summary_category = 'upland'
+        elif (row['val_vs_up'] == 'valley') & (row['mae'] > 10):
+            summary_category = 'valley, |residual| > 10 m'
+        elif (row['val_vs_up'] == 'valley') & (row['mae'] > 5) & (row['mae'] <= 10):
+            summary_category = 'valley, |residual| = 5-10 m'
+        elif (row['val_vs_up'] == 'valley') & (row['mae'] <= 5):
+            summary_category = 'valley, |residual| <= 5 m'
+        return summary_category
+    hob_well_info['summary_category'] = hob_well_info.apply(create_summary_category, axis=1)
 
 
 
-    # create well summary table with summaries by categorized wells --------------------------------------------------####
+    # create well summary table with summaries by categorized wells --------------------------------------####
 
-    # min, mean, max, and standard deviation of # obs per well
-    # min, mean, max, and standard deviation of depth to water
-    # min, mean, max, and standard deviation of land surface elevation (from model)
-    # min, mean, max, and standard deviation of residual
+    # create list of tables with -
+    # number of wells per group
+    # min, mean, median, max, and standard deviation of:
+        # num obs per well
+        # land surface elevation (from obs)
+        # land surface elevation (from model)
+        # difference between observed and model land surface elevation
+        # elev_well_screen_top_m
+        # elev_well_screen_bottom_m
+        # depth to water
+        # sim
+        # obs
+        # residual
+    df_list = []
+    num_well = hob_well_info.groupby('summary_category')['obsnme'].count()
+    df_num_well= pd.DataFrame({'count': num_well})
+    df_num_well['variable'] = 'num_well'
+    df_num_well.reset_index(inplace=True)
+    df_list.append(df_num_well)
+    var_list = ['num_obs', 'elev_land_obs_m', 'elev_land_model_m', 'diff_elev_land_model_obs_m',
+                'elev_well_screen_top_m', 'elev_well_screen_bottom_m', 'depth_to_water_m', 'sim_mean',
+                'obs_mean','mae']
+    for var in var_list:
+        df = hob_well_info.groupby('summary_category')[var].agg([('mean', np.mean),
+                                                                 ('median', np.median),
+                                                                 ('std', np.std),
+                                                                 ('min', np.min),
+                                                                 ('max', np.max)])
+        df['variable'] = var
+        df.reset_index(inplace=True)
+        df_list.append(df)
+
+    # convert list of data frames into one data frame
+    hob_well_info_summary = pd.concat(df_list, axis=0, ignore_index=True)
+    variable_col = hob_well_info_summary['variable']
+    hob_well_info_summary = hob_well_info_summary.drop(columns=['variable'])
+    hob_well_info_summary.insert(loc=0, column='variable', value=variable_col)
+
+
+
+
+    # export tables --------------------------------------------------------------------------------------####
+
+    file_name = os.path.join(output_dir, 'tables', 'hob_well_info.csv')
+    hob_well_info.to_csv(file_name, index=False)
+
+    file_name = os.path.join(output_dir, 'tables', 'hob_well_info_summary.csv')
+    hob_well_info_summary.to_csv(file_name, index=False)
 
 
 
