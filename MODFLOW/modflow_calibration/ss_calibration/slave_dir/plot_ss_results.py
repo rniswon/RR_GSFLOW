@@ -21,12 +21,12 @@ from gw_utils import general_util
 
 plot_baseflows = 0
 plot_gage_flows = 0
-plot_groundwater_heads = 1
+plot_groundwater_heads = 0
 map_baseflows = 0
 map_streamflows = 0
 map_groundwater_head_resid = 0
 map_groundwater_head_contours_heatmap = 0
-HOB_well_summary_table = 0
+HOB_well_summary_table = 1
 
 
 
@@ -480,6 +480,7 @@ if HOB_well_summary_table == 1:
     # well id - based on rr_obs_info
     # source - based on rr_obs_info
     # number of observations - based on rr_obs_info
+    # mode of water level observation months
     # layer - based on HOB input
     # row - based on HOB input
     # column - based on HOB input
@@ -506,7 +507,7 @@ if HOB_well_summary_table == 1:
     # bottom of layer 1 - based on dis file
     # bottom of layer 2 - based on dis file
     # bottom of layer 3 - based on dis file
-    # well summary categories - based on upland vs valley and steady state residual
+    # well summary categories - based on upland vs valley and steady state head residual
 
     # join hob_obs, hob_geology, and hob_out by HOB_id column
     hob_obs_out = pd.merge(hob_obs, hob_out, on='HOB_id')
