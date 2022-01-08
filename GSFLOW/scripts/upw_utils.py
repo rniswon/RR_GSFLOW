@@ -269,9 +269,50 @@ def change_upw_ss(Sim):
 
 
 
-def update_tr_upw_param_with_ss():
+def change_upw_tr(Sim):
 
-    pass
+    # extract upw package
+    upw = Sim.mf_tr.upw
+
+    # read in csv with new input parameters
+    df = pd.read_csv(Sim.input_file, index_col=False)
+
+    # get current ks parameters
+    ks = upw.hk.array.copy()
+
+    # get new ks parameters
+    df_upw = df[df['pargp'] == 'upw_ks']
+
+    # get zone names
+    zones = load_txt_3d(Sim.K_zones_file)
+
+    # loop over zones and update ks
+    for i, row in df_upw.iterrows():
+        nm = row['parnme']
+        zone_id = float(nm.split("_")[1])
+        mask = zones == zone_id
+        ks[mask] = row['parval1']
+
+    # get new vka parameters
+    df_vka = df[df['pargp'] == 'upw_vka']
+
+    # loop over zones and update vka
+    vka = np.zeros_like(ks)
+    for i, row in df_vka.iterrows():
+        nm = row['parnme']
+        layer_id = int(float(nm.split("_")[-1]))
+        vka[layer_id - 1, :, :] = ks[layer_id - 1, :, :] * row['parval1']
+
+    # make sure values aren't too low
+    ks[ks <= 1e-5] = 1e-5
+    vka[vka <= 1e-5] = 1e-5
+
+    # update modflow object with new ks and vka parameters
+    Sim.mf_tr.upw.hk = ks
+    Sim.mf_tr.upw.vka = vka
+
+    # print message
+    print("UPW package is updated.")
 
 
 

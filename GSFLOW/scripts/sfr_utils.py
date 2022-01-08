@@ -85,6 +85,60 @@ def change_sfr_ss(Sim):
         reach_data.loc[reach_data['iseg']==spill_seg, 'strtop'] = val.values[0]
     Sim.mf.sfr.reach_data = reach_data.to_records()
 
+
+def change_sfr_tr(Sim):
+
+    # extract sfr package
+    sfr = Sim.mf_tr.sfr
+
+    # read in csv with new input parameters
+    df = pd.read_csv(Sim.input_file, index_col=False)
+
+    # read in hru shapefile
+    if hasattr(Sim, 'hru_df'):
+        hru_df = Sim.hru_df
+    else:
+        hru_df = pd.read_csv(Sim.hru_shp_file)
+        Sim.hru_df = hru_df
+
+    # update streambed hydraulic conductivity
+    df_sfr = hru_df[hru_df['ISEG'] > 0]
+    sub_ids = df_sfr['subbasin'].unique()
+    sub_ids = np.sort(sub_ids)
+    reach_data = sfr.reach_data.copy()
+    reach_data = pd.DataFrame.from_records(reach_data)
+    spillways = reach_data[reach_data['strhc1'] == 0.0]['iseg'].values
+    for id in sub_ids:
+        curr_sub = df_sfr[df_sfr['subbasin'] == id]
+        nm = "sfr_k_" + str(int(id))
+        val = df.loc[df['parnme'] == nm, 'parval1']
+        rows = curr_sub['HRU_ROW'].values - 1
+        cols = curr_sub['HRU_COL'].values - 1
+        rows_cols = [xx for xx in zip(rows, cols)]
+        reach_rows_cols = [xx for xx in zip(reach_data['i'], reach_data['j'])]
+        par_filter = []
+        for rr_cc in reach_rows_cols:
+            if rr_cc in rows_cols:
+                par_filter.append(True)
+            else:
+                par_filter.append(False)
+        # par_filter = (reach_data['i'].isin(rows)) & (reach_data['j'].isin(cols))
+        reach_data.loc[par_filter, 'strhc1'] = val.values[0]
+    reach_data.loc[reach_data['iseg'].isin(spillways), 'strhc1'] = 0
+
+    # update spillway elevations
+    # NOTE: these spillway segments are hard-coded, will need to update this code if make changes to them in the future
+    for spill_seg in [447, 449, 688]:
+        nm = 'spill_{}'.format(spill_seg)
+        val = df.loc[df['parnme'] == nm, 'parval1']
+        reach_data.loc[reach_data['iseg'] == spill_seg, 'strtop'] = val.values[0]
+    Sim.mf_tr.sfr.reach_data = reach_data.to_records()
+
+    # print message
+    print("SFR Package is updated")
+
+
+
 def get_all_upstream_segs(Sim, seg):
 
     sfr = Sim.hru_df[Sim.hru_df['ISEG']>0]
@@ -136,10 +190,6 @@ def get_next_up(sfr, iseg):
 
     return upseg
 
-
-def update_tr_sfr_param_with_ss():
-
-    pass
 
 
 

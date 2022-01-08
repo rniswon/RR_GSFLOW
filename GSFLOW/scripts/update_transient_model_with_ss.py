@@ -20,7 +20,7 @@ update_starting_heads = 0
 update_starting_parameters = 1
 
 
-# set file names ----------------------------------------------------------------------------------------####
+# set file names and paths ----------------------------------------------------------------------------------------####
 
 # name files
 mf_ss_name_file = r"..\..\MODFLOW\archived_models\20_20211223\results\mf_dataset\rr_ss.nam"
@@ -32,6 +32,8 @@ mf_ss_heads_file = r"..\..\MODFLOW\archived_models\20_20211223\results\mf_datase
 # csv with best steady state params
 best_ss_input_params = r"..\..\MODFLOW\archived_models\20_20211223\input_param_20211223.csv"
 
+# directory with transient model input files
+tr_model_input_file_dir = r"..\modflow"
 
 
 # create Sim class --------------------------------------------------------#
@@ -43,15 +45,15 @@ Sim.hru_shp_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\
 Sim.gage_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\misc_files\gage_hru.csv"
 Sim.gage_measurement_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\gage_steady_state.csv"
 Sim.input_file = best_ss_input_params
+Sim.K_zones_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids.dat"
+Sim.average_rain_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\misc_files\average_daily_rain_m.dat"
+Sim.surf_geo_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\misc_files\surface_geology.txt"
+Sim.subbasins_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\misc_files\subbasins.txt"
+Sim.vks_zones_file = r"..\..\MODFLOW\modflow_calibration\ss_calibration\slave_dir\misc_files\vks_zones.txt"
 
 
 
-# load models ----------------------------------------------------------------------------------------####
-
-# # load steady state model
-# Sim.mf_ss = flopy.modflow.Modflow.load(os.path.basename(mf_ss_name_file),
-#                                    model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_ss_name_file)),
-#                                    verbose=True, forgive=False, version="mfnwt")
+# load transient model ----------------------------------------------------------------------------------------####
 
 # load transient model
 Sim.mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
@@ -64,7 +66,7 @@ Sim.mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
 if update_starting_heads == 1:
 
     # NOTE: don't need to do this if the starting heads from best steady state run are run in as a separate file
-    # TODO: but do I want to do change any unrealistic heads in here by updating the rr_ss.hds file maybe?
+    # TODO: but do I want to change any unrealistic heads in here by updating the rr_ss.hds file maybe?
 
     # get output heads from best steady state model
     heads_file = os.path.join(os.getcwd(), mf_ss_heads_file)
@@ -80,32 +82,40 @@ if update_starting_heads == 1:
 
 
 
-# update transient model starting parameters with parameters from best steady state run ------------------------------####
+# update transient model starting parameters with parameters from best steady state model run ------------------------------####
 
 if update_starting_parameters == 1:
 
     # update lake parameters
-    lak_utils.update_tr_lak_param_with_ss(Sim)
+    lak_utils.change_lak_tr(Sim)
 
     # update upw parameters
-    upw_utils.update_tr_upw_param_with_ss(Sim)
+    upw_utils.change_upw_tr(Sim)
 
     # update uzf parameters
-    uzf_utils.update_tr_uzf_param_with_ss(Sim)
+    uzf_utils.change_uzf_tr(Sim)
 
     # update sfr parameters
-    sfr_utils.update_tr_sfr_param_with_ss(Sim)
+    sfr_utils.change_sfr_tr(Sim)
 
     # update well parameters
-    well_utils.update_tr_wel_param_with_ss(Sim)
+    well_utils.change_well_tr(Sim)
+
+    # change file paths for export of updated model input files
+    Sim.mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
+    Sim.mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    Sim.mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
+    Sim.mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    Sim.mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.wel")
 
     # export updated transient model input files
-    Sim.mf_tr.lak.write_file()    # why do I get this error? AttributeError: 'numpy.ndarray' object has no attribute 'get_kper_entry'
+    Sim.mf_tr.lak.write_file()
     Sim.mf_tr.upw.write_file()
     Sim.mf_tr.uzf.write_file()
     Sim.mf_tr.sfr.write_file()
     Sim.mf_tr.wel.write_file()
 
+    xx=1
 
 
 

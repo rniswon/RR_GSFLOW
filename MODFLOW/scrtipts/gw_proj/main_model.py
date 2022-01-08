@@ -43,20 +43,15 @@ gw.ghb_package()
 # modify the grid to carve lakes
 Compute_Lake2.carve_lakes(gw)
 
-# generate boundary conditions
-
-
 # generate upw package
 geo_zones = []
 gw.upw_package(geo_zones)
 
-# generate hfb
+# generate hfb package
 gw.hfb_package()
 
-# generate sfr2 package
+# generate sfr package
 #gw.sfr2_package()
-
-# generate sfr3 package
 gw.sfr3_package()  #incorporating rubber dam
 
 # generate uzf package
@@ -65,9 +60,6 @@ gw.uzf_package()
 # generate lak package
 gw.lak_package()
 #gw.mf.lak.write_file()
-
-# generate gage package
-
 
 # generate well package
 #gw.well_package()
@@ -81,24 +73,18 @@ gw.hob_package3()  # same as hob_package2 but using model grid cell elevation as
 # generate gage package
 gw.gage_package() #TODO: unit number assignment for steady state model might be incorrect here
 
-# generate Control package
+# generate output control package
 gw.oc_package()
 
 # for steady-state
 if False:
     gw.rch_package()
 
-# generate hfb
-
-
-# generate obs
-
 # generate nwt
 nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\other_files\solver_options4.nwt",
                                      gw.mf)
 nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\other_files\solver_options4.nwt",
                                      gw.mfs)
-
 
 # Possible Unit bug
 gw.mf.external_output = [False] * len(gw.mf.external_fnames)
@@ -109,6 +95,8 @@ gw.mf.write_input()
 
 # generate steady state model
 gw.mfs.write_input()
+
+
 xx = 1
 
 

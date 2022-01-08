@@ -25,8 +25,8 @@ plot_groundwater_heads = 0
 map_baseflows = 0
 map_streamflows = 0
 map_groundwater_head_resid = 0
-map_groundwater_head_contours_heatmap = 0
-HOB_well_summary_table = 1
+map_groundwater_head_contours_heatmap = 1
+HOB_well_summary_table = 0
 
 
 
@@ -34,7 +34,7 @@ HOB_well_summary_table = 1
 
 # note: these file paths are relative to the location of this python script
 
-# input file directory (i.e. directory containing model_output.csv file)
+# directory containing mf model inputs (i.e. directory containing model_output.csv file)
 input_dir = r"."
 
 # output file directory (i.e. plot directory)
@@ -289,9 +289,8 @@ if map_groundwater_head_contours_heatmap == 1:
     mf = flopy.modflow.Modflow.load(mf_name_file, model_ws = os.path.dirname(mf_name_file))
 
     # get output head data
-    #head_file = os.path.join(input_dir, "rr_ss.hds")
-    #h = mf.get_output('rr_ss.hds')
-    head_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.hds"
+    head_file = os.path.join(input_dir, "mf_dataset", "rr_ss.hds")
+    #heads = mf.get_output('rr_ss.hds')
     heads = flopy.utils.HeadFile(head_file)
 
     # export contours of simulated heads for entire watershed
@@ -301,34 +300,34 @@ if map_groundwater_head_contours_heatmap == 1:
     mf.modelgrid.set_coord_info(xoff=xll, yoff=yll, epsg=epsg)
     for i in np.arange(0,mf.nlay):
         # head_array = np.array([heads.get_data(idx=0, mflay=0), heads.get_data(idx=0, mflay=1), heads.get_data(idx=0, mflay=2)])
-        # head_array[head_array > 5000] = -999.98999   # to deal with cells with giant (e.g. 1e30) simulated head values, setting them to masked value
+        # head_array[head_array > 5000] = -999.98999   # to deal with cells with giant (e.g. 1e30) simulated head values, setting them to masked value for now
         pmv = flopy.plot.PlotMapView(model=mf)
         contour_levels = np.arange(5, 550, 5)
         #contours = pmv.contour_array(head_array, masked_values=[-999.98999], levels=contour_levels)
         contours = pmv.contour_array(heads.get_data(idx=0, mflay=i), masked_values=[-999.98999], levels=contour_levels)
-        contour_file_name = "sim_head_contours_" + run_id + "_lyr" + str(i+1) + ".shp"
+        contour_file_name = f"sim_head_contours_{run_id}_lyr{str(i+1)}.shp"
         filename = os.path.join(output_dir, "gis", contour_file_name)
         flopy.export.utils.export_contours(mf.modelgrid, filename, contours, fieldname = "contour")
 
 
-    # # export filled contours of simulated heads for entire watershed
-    # for i in np.arange(0,mf.nlay):
-    #     # head_array = np.array([heads.get_data(idx=0, mflay=0), heads.get_data(idx=0, mflay=1), heads.get_data(idx=0, mflay=2)])
-    #     # head_array[head_array > 5000] = -999.98999   # to deal with cells with giant (e.g. 1e30) simulated head values, setting them to masked value
-    #     pmv = flopy.plot.PlotMapView(model=mf)
-    #     contour_levels = np.arange(5, 550, 5)
-    #     #contours = pmv.contour_array(head_array, masked_values=[-999.98999], levels=contour_levels)
-    #     #contours = pmv.contour_array(heads.get_data(idx=0, mflay=i), masked_values=[-999.98999], levels=contour_levels)
-    #     contours_filled = plt.contourf(heads.get_data(idx=0, mflay=i), contour_levels)
-    #     contours_filled_file_name = "sim_head_contours_filled_" + run_id + "_lyr" + str(i+1) + ".shp"
-    #     filename = os.path.join(output_dir, "gis", contours_filled_file_name)
-    #     xll = 465900
-    #     yll = 4238400
-    #     epsg = 26910
-    #     mf.modelgrid.set_coord_info(xoff= xll, yoff= yll, epsg = epsg)
-    #     #flopy.export.utils.export_contourf(mf.modelgrid, filename, contours_filled, fieldname = "contour")
-    #     flopy.export.utils.export_contourf(filename, contours_filled, fieldname = "contour")
-    #     #flopy.export.utils.export_contourf(mf.modelgrid, filename, contours_filled)
+    # export filled contours of simulated heads for entire watershed
+    for i in np.arange(0,mf.nlay):
+        # head_array = np.array([heads.get_data(idx=0, mflay=0), heads.get_data(idx=0, mflay=1), heads.get_data(idx=0, mflay=2)])
+        # head_array[head_array > 5000] = -999.98999   # to deal with cells with giant (e.g. 1e30) simulated head values, setting them to masked value
+        pmv = flopy.plot.PlotMapView(model=mf)
+        contour_levels = np.arange(5, 550, 5)
+        #contours = pmv.contour_array(head_array, masked_values=[-999.98999], levels=contour_levels)
+        #contours = pmv.contour_array(heads.get_data(idx=0, mflay=i), masked_values=[-999.98999], levels=contour_levels)
+        contours_filled = plt.contourf(heads.get_data(idx=0, mflay=i), contour_levels)
+        contours_filled_file_name = "sim_head_contours_filled_" + run_id + "_lyr" + str(i+1) + ".shp"
+        filename = os.path.join(output_dir, "gis", contours_filled_file_name)
+        xll = 465900
+        yll = 4238400
+        epsg = 26910
+        mf.modelgrid.set_coord_info(xoff= xll, yoff= yll, epsg = epsg)
+        #flopy.export.utils.export_contourf(mf.modelgrid, filename, contours_filled, fieldname = "contour")
+        flopy.export.utils.export_contourf(filename, contours_filled, fieldname = "contour")     # TODO: AttributeError: 'MultiPolygon' object has no attribute 'exterior'
+        #flopy.export.utils.export_contourf(mf.modelgrid, filename, contours_filled)
 
 
     # # export shapefile of simulated heads for entire watershed
