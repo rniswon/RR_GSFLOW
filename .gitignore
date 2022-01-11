@@ -34,3 +34,5 @@ GSFLOW/checks/check_obs_wells/compare_land_surf_elev/hob_land_elev_model/mf_data
 GSFLOW/modflow/output
 GSFLOW/archive/**/modflow/output
 GSFLOW/modflow/old
+GSFLOW/PRMS/old
+GSFLOW/PRMS/output

@@ -16,6 +16,11 @@ from gsflow.modflow import ModflowAg, Modflow
 #from gw_utils import general_util  # TODO: uncomment once fixed
 
 
+# ==========================================================================
+# TODO: incorporate update_transient_model_with_ss.py into this script
+# ==========================================================================
+
+
 # ==============================
 # Script settings
 # ==============================
@@ -23,7 +28,7 @@ from gsflow.modflow import ModflowAg, Modflow
 load_and_transfer_transient_files = 0
 update_one_cell_lakes = 1
 update_transient_model_for_smooth_running = 0
-update_prms_params_for_gsflow = 0
+update_prms_params_for_gsflow = 1
 update_prms_control_for_gsflow = 0
 update_prms_params_for_ag_package = 0
 
@@ -148,7 +153,7 @@ if load_and_transfer_transient_files == 1:
         shutil.rmtree(mf_dir_output)
     os.mkdir(mf_dir_output)
 
-    # copy prms files
+    # copy prms files and windows files (i.e. prms control, model run batch file)
     prms_folders_to_copy = ['windows', 'PRMS']
     for folder in prms_folders_to_copy:
         src = os.path.join(prms_control_folder, folder)
@@ -229,13 +234,16 @@ if update_one_cell_lakes == 1:
     Sim.ag_with_ponds = "ag_dataset_w_ponds.csv"
     Sim.ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
 
-    # load transient model, including ag package
+    # load transient modflow model, including ag package
     Sim.mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt")
     dis = Sim.mf_tr.dis
     ag = ModflowAg.load(Sim.ag_package_file, model=Sim.mf_tr, nper = dis.nper)
 
+    # load gsflow model
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
 
     # Rich:
@@ -318,7 +326,7 @@ if update_one_cell_lakes == 1:
         elev_botm = dis.botm.array
 
         # for each one-cell lake
-        for i in range(Sim.one_cell_lake_id):
+        for i in list(Sim.one_cell_lake_id):
 
             # for testing
             seg_mask = seg_data['iupseg'] == int(f"-{i}")
@@ -358,16 +366,34 @@ if update_one_cell_lakes == 1:
         print("SFR Package is updated")
 
 
+    # update SFR file
+    update_sfr_for_one_cell_lakes(Sim)
+
+
+
 
     # Make changes to storage ponds -----------------------------------------------------------------####
 
     # In storage pond file: Set storage to 0 for storage ponds representing 1-cell lakes
 
     # identify lake HRUs for one-cell lakes
+    params = gs.prms.parameters
+    lake_hru_id = params.get_values("lake_hru_id")
+    one_cell_lakes = list(range(3, 12, 1))
+    lake_hru_indices = np.where(np.isin(lake_hru_id, one_cell_lakes))[0]
 
-    # identify storage ponds at the lake HRUs
+    # set dprst_frac to 0 (i.e. no storage) at the lake HRUs
+    dprst_frac = params.get_values("dprst_frac")
+    dprst_frac[lake_hru_indices] = 0
+    gs.prms.parameters.set_values("dprst_frac", dprst_frac)
 
+    # set dprst_depth_avg to 0 (i.e. no storage) at the lake HRUs
+    dprst_depth_avg = params.get_values("dprst_depth_avg")
+    dprst_depth_avg[lake_hru_indices] = 0
+    gs.prms.parameters.set_values("dprst_depth_avg", dprst_depth_avg)
 
+    # write updated PRMS param file
+    gs.prms.parameters.write()
 
 
 
@@ -412,20 +438,29 @@ if update_transient_model_for_smooth_running == 1:
 
 if update_prms_params_for_gsflow == 1:
 
+    # load transient modflow model, including ag package
+    mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       verbose=True, forgive=False, version="mfnwt")
+
+    # load gsflow model
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
+
     # get and set nss
-    nss = mf.sfr.nss
+    nss = mf_tr.sfr.nss
     gs.prms.parameters.set_values('nsegment', [nss])
 
     # get and set nreach
-    nreach = mf.sfr.nstrm
+    nreach = mf_tr.sfr.nstrm
     gs.prms.parameters.set_values('nreach', [nreach])
 
     # update nlake to include lake 12
-    nlake = mf.lak.nlakes
+    nlake = mf_tr.lak.nlakes
     gs.prms.parameters.set_values('nlake', [nlake])
 
     # update nlake_hrus to include lake 12
-    lak_arr_lyr0 = mf.lak.lakarr.array[0][0]
+    lak_arr_lyr0 = mf_tr.lak.lakarr.array[0][0]
     nlake_hrus = len(lak_arr_lyr0[lak_arr_lyr0 > 0])
     gs.prms.parameters.set_values('nlake_hrus', [nlake_hrus])
 
@@ -462,6 +497,8 @@ if update_prms_control_for_gsflow == 1:
 # =================================
 
 if update_prms_params_for_ag_package == 1:
+
+
 
     # TODO to incorporate ag package into GSFLOW
     # 1) veg_type should not bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop
