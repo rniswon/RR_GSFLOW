@@ -18,6 +18,8 @@ from gw import Gw_model
 # from includes import Include
 import support
 import Compute_Lake2
+
+# read in config file
 config_file = r"rr_ss_config.ini"
 config = configparser.ConfigParser()
 config.read(config_file)
@@ -86,7 +88,7 @@ nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model
 nwt = flopy.modflow.mfnwt.ModflowNwt.load(r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\other_files\solver_options4.nwt",
                                      gw.mfs)
 
-# Possible Unit bug
+# possible unit bug
 gw.mf.external_output = [False] * len(gw.mf.external_fnames)
 gw.mfs.external_output = [False] * len(gw.mfs.external_fnames)
 
@@ -96,7 +98,7 @@ gw.mf.write_input()
 # generate steady state model
 gw.mfs.write_input()
 
-
+# breakpoint
 xx = 1
 
 

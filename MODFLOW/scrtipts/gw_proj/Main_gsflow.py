@@ -34,7 +34,7 @@ update_prms_params_for_ag_package = 0
 # ==============================
 
 # directory with transient model input files
-tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow"
+tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
 
 # name file
 mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
@@ -115,7 +115,7 @@ if load_and_transfer_transient_files == 1:
     # ===================
     # Load model
     # ===================
-    mf_nam = r"..\..\TR\rr_tr.nam"
+    mf_nam = r"..\..\tr\rr_tr.nam"
     prms_control_folder = r"..\..\.."
     if 1:
         # make prms changes
@@ -127,22 +127,26 @@ if load_and_transfer_transient_files == 1:
     # =======================
 
     #TODO: move inputs and outputs into separate folders here
-    #TODO: if do the above, may need to update update_transient_model_with_ss.py
-    #      and tr_forward_model_20210909.py scripts with updated file paths
 
-    # copy modflow files
-    mf_dir = os.path.join(model_folder, 'modflow')
-    if os.path.isdir(mf_dir):
-        shutil.rmtree(mf_dir)
-    os.mkdir(mf_dir)
+    # copy modflow input files and paste into modflow input folder
+    mf_dir_input = os.path.join(model_folder, 'modflow', 'input')
+    if os.path.isdir(mf_dir_input):
+        shutil.rmtree(mf_dir_input)
+    os.mkdir(mf_dir_input)
     #mf_files = general_util.get_mf_files(mf_nam)
     mf_files = get_mf_files(mf_nam)
     for key in mf_files.keys():
         if os.path.isfile(mf_files[key][1]):
             src = mf_files[key][1]
             basename = os.path.basename(src)
-            dst = os.path.join(mf_dir, basename)
+            dst = os.path.join(mf_dir_input, basename)
             shutil.copyfile(src, dst)
+
+    # create modflow output folder
+    mf_dir_output = os.path.join(model_folder, 'modflow', 'output')
+    if os.path.isdir(mf_dir_output):
+        shutil.rmtree(mf_dir_output)
+    os.mkdir(mf_dir_output)
 
     # copy prms files
     prms_folders_to_copy = ['windows', 'PRMS']
@@ -153,7 +157,7 @@ if load_and_transfer_transient_files == 1:
             shutil.rmtree(dst)
         shutil.copytree(src, dst)
 
-
+    # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
@@ -180,10 +184,22 @@ if load_and_transfer_transient_files == 1:
             n2 = len(parts[1])
             pp = parts[0] + " "*(20-n1-n2) + parts[1]
             if len(parts)>3:
-                pp = pp + os.path.join(r'  ..\modflow', parts[-2])
+                input_file_ext = ['dis', 'bas', 'ghb', 'upw', 'hfb', 'sfr', 'uzf', 'lak', 'wel', 'hob', 'gage', 'oc',
+                                  'nwt', 'dat']
+                file_ext = parts[-2].split('.')
+                if (file_ext[-1] in input_file_ext):
+                    pp = pp + os.path.join(r'  ..\modflow\input', parts[-2])
+                else:
+                    pp = pp + os.path.join(r'  ..\modflow\output', parts[-2])
                 pp = pp + " " + parts[-1]
             else:
-                pp = pp + os.path.join(r'  ..\modflow', parts[-1])
+                input_file_ext = ['dis', 'bas', 'ghb', 'upw', 'hfb', 'sfr', 'uzf', 'lak', 'wel', 'hob', 'gage', 'oc',
+                                  'nwt', 'dat', 'hds']
+                file_ext = parts[-1].split('.')
+                if (file_ext[-1] in input_file_ext):
+                    pp = pp + os.path.join(r'  ..\modflow\input', parts[-1])
+                else:
+                    pp = pp + os.path.join(r'  ..\modflow\output', parts[-1])
             fidw.write(pp)
         fidw.write("\n")
 
@@ -213,14 +229,13 @@ if update_one_cell_lakes == 1:
     Sim.ag_with_ponds = "ag_dataset_w_ponds.csv"
     Sim.ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
 
-    # load transient model
+    # load transient model, including ag package
     Sim.mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt")
     dis = Sim.mf_tr.dis
-    ag = ModflowAg.load(Sim.ag_package_file, model=Sim.mf_tr, nper = dis.nper)    # IndexError: list index out of range
-    #ag = Sim.mf_tr.ModflowAg.load
-    #gsflow.modflow.ModflowAg.load(Sim.ag_package_file, model=Sim.mf_tr, nper = dis.nper)
+    ag = ModflowAg.load(Sim.ag_package_file, model=Sim.mf_tr, nper = dis.nper)
+
 
 
     # Rich:
@@ -234,6 +249,7 @@ if update_one_cell_lakes == 1:
 
     # After conversation with Rich and Ayman:
     # Decided to keep one-cell lakes but make the changes below so that they behave more like streams
+
 
 
 
@@ -272,6 +288,8 @@ if update_one_cell_lakes == 1:
 
     # print message
     print("LAK package is updated")
+
+
 
 
     # Make changes to SFR for one-cell lakes -----------------------------------------------------------------####
@@ -356,6 +374,9 @@ if update_one_cell_lakes == 1:
     # Make changes to ag package -----------------------------------------------------------------####
 
     # In ag package: represent irrigation water coming out of the lake using ag package to send water to groups of fields
+
+
+
 
 
 

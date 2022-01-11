@@ -33,7 +33,7 @@ mf_ss_heads_file = r"..\..\MODFLOW\archived_models\20_20211223\results\mf_datase
 best_ss_input_params = r"..\..\MODFLOW\archived_models\20_20211223\input_param_20211223.csv"
 
 # directory with transient model input files
-tr_model_input_file_dir = r"..\modflow"
+tr_model_input_file_dir = r"..\modflow\input"
 
 
 # create Sim class --------------------------------------------------------#
