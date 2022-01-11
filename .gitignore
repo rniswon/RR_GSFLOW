@@ -31,8 +31,8 @@ GSFLOW/checks/check_obs_wells/compare_land_surf_elev/hob_land_elev_actual/mf_dat
 GSFLOW/checks/check_obs_wells/compare_land_surf_elev/hob_land_elev_mean/mf_dataset/ss/pumping_with_rural.wel
 GSFLOW/checks/check_obs_wells/compare_land_surf_elev/hob_land_elev_model/mf_dataset/ss/pumping_with_rural.wel
 **/pumping_with_rural.wel
-GSFLOW/modflow/output
+GSFLOW/modflow/output/**
 GSFLOW/archive/**/modflow/output
 GSFLOW/modflow/old
 GSFLOW/PRMS/old
-GSFLOW/PRMS/output
+GSFLOW/PRMS/output/**
