@@ -36,3 +36,4 @@ GSFLOW/archive/**/modflow/output
 GSFLOW/modflow/old
 GSFLOW/PRMS/old
 GSFLOW/PRMS/output/**
+GSFLOW/gis
