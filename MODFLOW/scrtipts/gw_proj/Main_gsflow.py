@@ -26,10 +26,11 @@ from gsflow.modflow import ModflowAg, Modflow
 # ==============================
 
 load_and_transfer_transient_files = 0
-update_one_cell_lakes = 1
-update_transient_model_for_smooth_running = 0
-update_prms_params_for_gsflow = 1
+update_one_cell_lakes = 0
+update_transient_model_for_smooth_running = 1
+update_prms_params_for_gsflow = 0
 update_prms_control_for_gsflow = 0
+update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
 
 
@@ -131,8 +132,6 @@ if load_and_transfer_transient_files == 1:
     # Transfer files
     # =======================
 
-    #TODO: move inputs and outputs into separate folders here
-
     # copy modflow input files and paste into modflow input folder
     mf_dir_input = os.path.join(model_folder, 'modflow', 'input')
     if os.path.isdir(mf_dir_input):
@@ -171,14 +170,14 @@ if load_and_transfer_transient_files == 1:
     # Copy MODFLOW name file & change name file
     # ===========================================
 
-    # TODO: update modflow name file to reflect inputs and outputs being in separate directories
-
+    # move name file
     dst = os.path.join(model_folder, 'windows', os.path.basename(mf_nam))
     shutil.copyfile(mf_nam, dst)
     fidr = open(dst, 'r')
     lines = fidr.readlines()
     fidr.close()
 
+    # change name file to include updated file paths due to files being moved
     fidw = open(dst, 'w')
     for line in lines:
         if '#' in line:
@@ -207,10 +206,11 @@ if load_and_transfer_transient_files == 1:
                     pp = pp + os.path.join(r'  ..\modflow\output', parts[-1])
             fidw.write(pp)
         fidw.write("\n")
-
     fidw.close()
 
     # todo: fix lak reuse stress data
+
+
 
 
 
@@ -414,21 +414,110 @@ if update_one_cell_lakes == 1:
 
 if update_transient_model_for_smooth_running == 1:
 
+    # load transient modflow model, including ag package
+    mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       verbose=True, forgive=False, version="mfnwt")
+    xx=1
+
+    # load gsflow model
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
+
+
+
+    # update NWT -------------------------------------------------------------------####
+
+    # update nwt package values to those suggested by Rich
+    mf_tr.nwt.maxiterout = 20
+    mf_tr.nwt.dbdtheta = 0.85
+
+    # write nwt file
+    mf_tr.nwt.write_file()
+
+
+
+    # update BAS -------------------------------------------------------------------####
+
+    #TODO: figure out why this is exporting weird file paths
+
+    # change name file to add starting heads input file (from best steady state model)
+    # starting_heads = os.path.join("..", 'modflow', 'input', "rr_ss.hds")
+    # mf_tr.add_external(starting_heads, 60, True)
+    # mf_tr.write_name_file()
+
     # update bas file to use external files (binary) in transient model generation code
-    # update name file to use external files (binary) in transient model generation code
-    # nan values coming from specified tab file flows (near the end) and the tabfiles have different end times
-        # need to fill in the tab files till the end of the transient simulation period
-        # need to update info about number of lines in tabfiles in sfr file
-    # UZF:
-        # Set VKS equal to the value of VKA in UPW (with VKA values extracted from the layer that recharge is specified in the IUZFBND array)
-        # Set SURFK equal to VKS
-        # Decrease the multiplier on SURFK by 3 orders of magnitude
-        # NOTE: If you use the Open/Close option for specifying arrays, you can use a single file for both VKS and surfk.
-        # Set extwc to 0.25
-        # Look at the ET budget again (after running the model) and make sure it is reasonable. Most of the water deep percolating into UZF is lost to ET.
-    # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
+    # TODO: find out whether this is actually better when interacting with the model through flopy
+
+
+
+    # update UZF -------------------------------------------------------------------####
+
+    # Set VKS equal to the value of VKA in UPW (with VKA values extracted from the layer that recharge is specified in the IUZFBND array)
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    vka = mf_tr.upw.vka.array
+    vka_selected_lyr = np.zeros_like(vka[0,:,:])
+    num_row = vka_selected_lyr.shape[0]
+    num_col = vka_selected_lyr.shape[1]
+
+    for i in list(range(0,num_row)):     # loop through rows
+        for j in list(range(0,num_col)):    # loop through columns
+
+            if iuzfbnd[i,j] == 0:
+                vka_selected_lyr[i, j] = vka[0, i, j]   # get vka from top layer for cells outside of the model domain (just to avoid having 0s since values are supposed to be positive and real)
+            elif iuzfbnd[i,j] > 0:
+                vka_selected_lyr[i,j] = vka[iuzfbnd[i,j]-1, i, j]     # get vka from iuzfbnd layer
+    mf_tr.uzf.vks = vka_selected_lyr   #TODO: can I just assign a numpy array to a flopy object?
+
+
+    # Set SURFK equal to VKS
+    # TODO: are any issues caused by using the command below?
+    mf_tr.uzf.surfk = mf_tr.uzf.vks
+
+
+    # Decrease the multiplier on SURFK by 3 orders of magnitude
+    # TODO: is this the right way to change the multiplier on surfk?
+    mf_tr.uzf.surfk.cnstnt = mf_tr.uzf.surfk.cnstnt/1000
+
+
+    # NOTE: If you use the Open/Close option for specifying arrays, you can use a single file for both VKS and surfk.
+    # TODO: how to implement this in flopy?
+    # TODO: find out whether this is actually better when interacting with the model through flopy
+
+
+    # Set extwc to 0.25
+    mf_tr.uzf.extwc.array[:,:,:,:] = 0.25
+
+
+    # Look at the ET budget again (after running the model) and make sure it is reasonable. Most of the water deep percolating into UZF is lost to ET.
+    # TODO: after looking at ET budget, maybe adjust something here?
+
+
+    # write uzf file
+    mf_tr.uzf.write_file()
+
+
+    # update LAK ---------------------------------------------------------------####
+
     # LAK: change the multipliers on lakebed leakance to 0.001
-    pass
+    mf_tr.lak.bdlknc.cnstnt = 0.001
+
+    # write lake file
+    mf_tr.lak.write_file()
+
+
+
+    # update PRMS param ---------------------------------------------------------------####
+
+    # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
+    vks_mod = mf_tr.uzf.vks.array * 0.5
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    vks_mod = vks_mod.reshape(1,nhru)
+    gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
+
+    # write prms param file
+    gs.prms.parameters.write()
+
 
 
 
@@ -490,6 +579,23 @@ if update_prms_control_for_gsflow == 1:
     pass
 
     xx = 1
+
+
+
+
+# =================================
+# Update PRMS HRUs for AG package
+# =================================
+
+if update_modflow_for_ag_package == 1:
+
+    # change name file to add ag package file
+
+    pass
+
+
+
+
 
 
 # =================================
