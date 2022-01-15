@@ -27,11 +27,11 @@ from gsflow.modflow import ModflowAg, Modflow
 
 load_and_transfer_transient_files = 0
 update_one_cell_lakes = 0
-update_transient_model_for_smooth_running = 1
+update_transient_model_for_smooth_running = 0
 update_prms_params_for_gsflow = 0
 update_prms_control_for_gsflow = 0
 update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 0
+update_prms_params_for_ag_package = 1
 
 
 
@@ -44,7 +44,6 @@ tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
 
 # name file
 mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
-
 
 
 
@@ -451,6 +450,8 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
+
+
     # update UZF -------------------------------------------------------------------####
 
     # Set VKS equal to the value of VKA in UPW (with VKA values extracted from the layer that recharge is specified in the IUZFBND array)
@@ -604,9 +605,25 @@ if update_modflow_for_ag_package == 1:
 
 if update_prms_params_for_ag_package == 1:
 
+    # load transient modflow model, including ag package
+    mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       verbose=True, forgive=False, version="mfnwt")
+    dis = mf_tr.dis
+    ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
+    ag = ModflowAg.load(ag_package_file, model=mf_tr, nper = dis.nper)
 
+    # load gsflow model
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
-    # TODO to incorporate ag package into GSFLOW
+    # read in ag dataset csv file
+    ag_dataset_file = "ag_dataset_w_ponds.csv"
+    ag_data = pd.read_csv(ag_dataset_file)
+
+    xx=1
+
+    # TODO to incorporate ag package into GSFLOW --> change only for ag cells
     # 1) veg_type should not bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop
     # 2) soil_moist_max is greater than daily max PET (>1inch)
     # 3) pref_flow_den=0 for all HRUs that are irrigated.
@@ -623,26 +640,82 @@ if update_prms_params_for_ag_package == 1:
 
     # veg_type should not be bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop -----------------------------------------#
     # Qs:
-    # 1) where are crop types stored?
-    # 2) do we want soil_type to be non-zero for every grid cell in the model domain? or only agricultural grid cells?
-    gs.prms.parameters.get_values('hru_type')
-    gs.prms.parameters.get_values('soil_type')
+    # 1) where are crop types stored?  --> look in ag_dataset_with_ponds.csv
+    # 2) do we want soil_type to be non-zero for every grid cell in the model domain? or only agricultural grid cells?  --> only ag cells
+    # 3) veg_type and soil_type should be replaced with cov_type in the above instructions? --> ask rich
+    # TODO: check over this
 
+    crop_type = ag_data['crop_type'].unique().tolist()
+    grasses = ['Miscellaneous Grasses',
+               'Miscellaneous Truck Crops',
+               'Mixed Pasture',
+               'Melons, Squash and Cucumbers',
+               'Alfalfa and Alfalfa Mixtures',
+               'Miscellaneous Grain and Hay']   # TODO: may want to update in the future
+    shrubs = ['Grapes',
+              'Young Perennials',
+              'Flowers, Nursery and Christmas Tree Farms']    # TODO: may want to update in the future, may want to break up christmas tree farms from flowers/nursery
+    trees = ['Olives',
+             'Pears',
+             'Miscellaneous Deciduous',
+             'Apples']     # TODO: may want to update in the future
+    cov_type_dict = {'grasses': 1,
+                     'shrubs': 2,
+                     'trees': 3}
+    nhru = gs.prms.parameters.get_values('nhru')[0]
+    cov_crop_df = pd.DataFrame({'hru_id': list(range(1, nhru+1)),
+                                'cov_type': gs.prms.parameters.get_values('cov_type').tolist(),
+                                'crop_type': ['none' for i in range(nhru)]})
+
+    # loop through crop types
+    for crop in crop_type:
+
+        # assign crop types in data frame with hru ids and cov_types
+        field_hru_crop = ag_data.loc[ag_data['crop_type'] == crop, 'field_hru_id'].tolist()
+        mask = cov_crop_df['hru_id'].isin(field_hru_crop)
+        cov_crop_df.loc[mask, 'crop_type'] = crop
+
+        # get ag field hrus with this crop that have cov_type = 0
+        # TODO: are we happy with the cov_type values for crops that don't have cov_type = 0?  or should we be assigning them for all crops?
+        mask = (cov_crop_df['crop_type'] == crop) & (cov_crop_df['cov_type'] == 0)
+        hru_select = cov_crop_df.loc[mask, 'hru_id'].values
+        hru_idx = hru_select - 1
+
+        # for selected hrus, assign cov_type by crop
+        cov_type = gs.prms.parameters.get_values('cov_type')
+        if crop.isin(grasses):
+            cov_type[hru_idx] = cov_type_dict['grasses']
+        elif crop.isin(shrubs):
+            cov_type[hru_idx] = cov_type_dict['shrubs']
+        elif crop.isin(trees):
+            cov_type[hru_idx] = cov_type_dict['trees']
+        gs.prms.parameters.set_values('cov_type', cov_type)
 
 
     # soil_moist_max is greater than daily max PET (>1inch) -------------------------------------------------------------------------------------#
     # Qs:
     # 1) how to estimate daily max PET?
     # 2) or just use > 1 inch?
+    # ** assume daily max PET is 10 mm (check model units and convert) and compare soil_moist_max to that  --> check with Rich
+    daily_max_pet = 0.01  # TODO: assuming daily max PET is 10 mm, converted to m is 0.01 m, also assuming that the model units are meters, check both of these
+    soil_moist_max = gs.prms.parameters.get_values('soil_moist_max')
+    hru_type = gs.prms.parameters.get_values('hru_type')
+    mask = (hru_type == 1) & (soil_moist_max < daily_max_pet)
+    soil_moist_max[mask] = daily_max_pet + (daily_max_pet*0.1)  # set soil_moist_max to a value 10% larger than daily_max_pet
+    gs.prms.parameters.set_values('soil_moist_max', soil_moist_max)
 
 
     # pref_flow_den=0 for all HRUs that are irrigated -------------------------------------------------------------------------------------#
-    # Q: how to determine which HRUs are irrigated?
-
+    # Q: how to determine which HRUs are irrigated?  --> can also just look at the ag_dataset_with_ponds.csv
+    hru_irrig = ag_data['field_hru_id'].tolist()
+    hru_idx = hru_irrig - 1
+    pref_flow_den = gs.prms.parameters.get_values('pref_flow_den')
+    pref_flow_den[hru_idx] = 0
+    gs.prms.parameters.set_values('pref_flow_den', pref_flow_den)
 
 
     # Only one of these options (TRIGGER, ETDEMAND) can be used at a time ------------------------------------------------------------------------------------#
-    # Q: what if neither is specified?
+    # Checked!  Using ETDEMAND only.
 
 
 
@@ -650,6 +723,7 @@ if update_prms_params_for_ag_package == 1:
     # If this true, the well not be able to deliver requested water.
     # If drawdown resulting from pumping cause the water table to go below cell bottom then this will cause convergence issues
     # Q: what counts as "very small thickness" or "very low conductivity"?
+    # ** hold off on this until after run model and look at demanded pumping (i.e. demanded ET) and actual pumping (i.e. actual ET)
 
 
 
@@ -657,27 +731,75 @@ if update_prms_params_for_ag_package == 1:
     # Qs:
     # 1) how to check if water is supplied from a stream?
     # 2) would need to check that the simulated flow never falls below the demand during the entire modeling period, right?
+    # ** look at this after running the model and compare simulated flows with surface diversions
 
 
 
     # In case you have information about deep percolation, use ssr2gw_rate and sat_threshold to impose these information ---------------------------#
     # Q: do we have information about deep percolation?
+    # ** talk about this more, don't currently have this info
 
 
 
     # When cov_type = 1 (grass), ETa will be insensitive to applied irrigation. For now use  cov_type = 2 (shrubs). A Permanent solution is needed in PRMS  ---------------#
-    # TODO: set all HRUs with cov_type = 1 to cov_type=2
+    # TODO: set all HRUs that are irrigated with cov_type = 1 to cov_type=2
+    hru_id = list(range(1, nhru + 1))
+    cov_type = gs.prms.parameters.get_values('cov_type').tolist()
+    ag_hru = ag_data['field_hru_id'].tolist()
+    mask = (hru_id.isin(ag_hru)) & (cov_type == 1)
+    cov_type[mask] = 2
+    gs.prms.parameters.set_values('cov_type', cov_type)
 
 
     # As much as possible assign upper bounds to water demand that is consistent with local practices ---------------------------------------------------------#
     # Q: how to determine what local practices are? maybe take a look at irrigation data and identify max irrigation
+    # TODO: estimate max amounts of water needed to irrigate for each crop type in the model and update Qmax in ag package, check to see if Josh already calculated this
+
+    # Based on Ayman's research
+    # Grapes 1 acre-ft/acre
+    # Apples: 2.5 acre-ft/acre
+    # Mixed pasture: 3.5 acre-ft/acre
+    # all other: 1 acre-ft/acre
+
+    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre), then convert to model units
+    qmax_dict = {'grapes': 1,
+                 'apples': 2.5,
+                 'mixed_pasture': 3.5,
+                 'other': 1}
+    cubic_meters_per_acre_ft = 1233.48185532
+    square_meters_per_acre = 4046.85642
+    for key in qmax_dict.keys():
+        qmax_dict[key] = qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * -1   # multiplying by -1 to indicate pumping
+
+    # extract well list
+    well_list = ag.well_list
+
+    # make changes to well_list
+    # TODO: figure out how to access well_list
+    # TODO: maybe loop through each well in well_list, match it up to the well in ag_data based on layer, row, col, and then update Qmax based on crop in ag_data
+
+
+    # save well list
+    ag.well_list = well_list  #TODO: make sure this is the right file type to be assigned here
 
 
 
-    # Make sure that you used Kc values that are reasonable; and make sure that you multiplied kc by jh_coef and NOT jh_coef_hru in the parameter file -----------------------#
+
+    # Make sure that you used Kc (crop coefficient) values that are reasonable; and make sure that you multiplied kc by jh_coef and NOT jh_coef_hru in the parameter file -----------------------#
     # how to determine what is reasonable?
+    # ** look at Kc_sonoma excel file
+    # ** find out: does Kc change with time?
+    # ** ask Rich: How can we change the Kc in the ag package?  Should we use the values determined by Andy Rich for the GSFLOW model?
+    # TODO: look at what Josh did
+
+
 
 
     # In general, you must go through all your HRUs that are used for Ag and make sure they are parameterized to represent Ag (soil_type, veg_type,
     #    soil_moist_max, soil_rechr_max, pref_flow_den, percent_imperv, etc.) ----------------------------------------------------------------------------------------------------#
     # Q: do we need to check other parameters than the ones listed here? do we have any data to guide these ag parameterizations?
+    # Q: what to do for soil_rechr_max and percent_imperv (=0?)
+
+
+    # write prms param file
+    gs.prms.parameters.write()
