@@ -9,7 +9,7 @@ HFB6              29  ..\modflow\input\rr_tr.hfb
 SFR               17  ..\modflow\input\rr_tr.sfr
 UZF               19  ..\modflow\input\rr_tr.uzf
 LAK              119  ..\modflow\input\rr_tr.lak
-WEL               20  ..\modflow\input\rr_tr.wel
+WEL               20  ..\modflow\input\pumping_with_rural.wel
 HOB               39  ..\modflow\input\rr_tr.hob
 GAGE             120  ..\modflow\input\rr_tr.gage
 OC                14  ..\modflow\input\rr_tr.oc
