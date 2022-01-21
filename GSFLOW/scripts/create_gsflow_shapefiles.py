@@ -13,6 +13,8 @@ import gsflow
 import flopy
 from flopy.utils import Transient3d
 from gsflow.modflow import ModflowAg, Modflow
+import ArrayToShapeFile as ATS
+import make_utm_proj as mup
 
 
 
@@ -152,19 +154,131 @@ if create_sfr_shp == 1:
 # ==============================
 if create_ag_shp == 1:
 
-    # TODO: use same method as used in plotting hob file in plot_ss_results.py?
-
     # load ag package
     dis = mf_tr.dis
     ag = ModflowAg.load(ag_package_file, model=mf_tr, nper=dis.nper)
 
-    # export shapefile - pond list
-    ag_file_path = os.path.join(gis_output_folder, "ag_pond_list.shp")
-    flopy.export.shapefile_utils.recarray2shp(ag.pond_list, mf_tr.modelgrid, ag_file_path)
+    xx=1
 
-    # export ag package shapefile - well_list
-    ag_file_path = os.path.join(gis_output_folder, "ag_well_list.shp")
-    flopy.export.shapefile_utils.recarray2shp(ag.well_list, mf_tr.modelgrid, ag_file_path)
+
+    # Wells ----------------------------------------------------------####
+
+    # get irrwell and well_list
+    irrwell = ag.irrwell
+    well_list = ag.well_list
+
+    # get irrigated cells from irrwells
+    irr = {}
+    lu_wls = []
+    prev = None
+    n = 1
+    for per, recarray in irrwell.items():
+        if prev is None:
+            prev = recarray
+        elif np.array_equiv(prev, recarray):
+            continue
+        else:
+            prev = recarray
+
+        arr = np.zeros((1, dis.nrow, dis.ncol), dtype=int)
+        for rec in recarray:
+            wellid = rec['wellid'] + 1
+            for name in rec.dtype.names:
+                if 'hru_id' in name:
+                    hru = rec[name]
+                    if hru == 0:
+                        pass
+                    else:
+                        # convert to zero based layer, row, column!
+                        k, i, j = dis.get_lrc([hru])[0]
+                        arr[0, i, j] = wellid
+
+        #irr[LUT[n]] = arr
+        irr[per] = arr
+        n += 1
+        lu_wls.append(wellid - 1)
+
+
+    # get transient well locations
+    wlls = {}
+    n = 1
+    well_array = np.zeros((dis.nlay, dis.nrow, dis.ncol), dtype=int)
+    for ix, rec in enumerate(well_list):
+        k = rec['k']
+        i = rec['i']
+        j = rec['j']
+        well_array[k, i, j] = ix + 1
+        if ix in lu_wls:
+            #wlls[LUT[n]] = well_array
+            n += 1
+            well_array = np.zeros((dis.nlay, dis.nrow, dis.ncol), dtype=int)
+
+
+
+    # write shapefile of irrigated cells from irrwell
+    shp_file_path = os.path.join(gis_output_folder, "irrwell_irr_cells.shp.shp")
+    ATS.create_shapefile_from_array(shp_file_path, irr, 1, mf_tr.modelgrid.xvertices,
+                                    mf_tr.modelgrid.yvertices, no_data=0,
+                                    no_lay=True)
+    mup.make_proj(shp_file_path)
+
+
+    # write shapefile of wells from well_list
+    shp_file_path = os.path.join(gis_output_folder, "ag_well_list.shp")
+    ATS.create_shapefile_from_array(shp_file_path, wlls, 4, mf_tr.modelgrid.xvertices,
+                                    mf_tr.modelgrid.yvertices, no_data=0)
+    mup.make_proj(shp_file_path)
+
+
+
+
+    # Ponds ----------------------------------------------------------####
+
+    # get irrpond and pond_list
+
+    # get irrigated cells from irrponds
+
+    # get pond locations
+
+    # write shapefile of irrigated cells from irrpond
+
+    # write shapefile of ponds from pond_list
+
+
+
+
+
+    # Diversions ----------------------------------------------------------####
+
+    # get irrdiversions and segment_list
+
+    # get irrigated cells from irrdiversions
+
+    # get segment locations
+
+    # write shapefile of irrigated cells from irrdiversions
+
+    # write shapefile of diversion segments from segment_list
+
+
+
+
+
+
+    # TODO: use ag_dataset_with_ponds.csv to plot wells, div_seg, field_hru_id, and pond_hru
+    # TODO: use same method as used in plotting hob file in plot_ss_results.py?
+
+    # # load ag package
+    # dis = mf_tr.dis
+    # ag = ModflowAg.load(ag_package_file, model=mf_tr, nper=dis.nper)
+    #
+    # # export shapefile - pond list
+    # ag_file_path = os.path.join(gis_output_folder, "ag_pond_list.shp")
+    # flopy.export.shapefile_utils.recarray2shp(ag.pond_list, mf_tr.modelgrid, ag_file_path)
+    #
+    # # export ag package shapefile - well_list
+    # ag_file_path = os.path.join(gis_output_folder, "ag_well_list.shp")
+    # flopy.export.shapefile_utils.recarray2shp(ag.well_list, mf_tr.modelgrid, ag_file_path)
 
     # # export ag package shapefile - segment_list
     # ag_file_path = os.path.join(gis_output_folder, "ag_segment_list.shp")
