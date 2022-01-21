@@ -27,11 +27,11 @@ from gsflow.modflow import ModflowAg, Modflow
 
 load_and_transfer_transient_files = 0
 update_one_cell_lakes = 0
-update_transient_model_for_smooth_running = 0
+update_transient_model_for_smooth_running = 1
 update_prms_params_for_gsflow = 0
 update_prms_control_for_gsflow = 0
 update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 1
+update_prms_params_for_ag_package = 0
 
 
 
@@ -417,22 +417,22 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt")
-    xx=1
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
+    xx=1
 
 
     # update NWT -------------------------------------------------------------------####
 
-    # update nwt package values to those suggested by Rich
-    mf_tr.nwt.maxiterout = 20
-    mf_tr.nwt.dbdtheta = 0.85
-
-    # write nwt file
-    mf_tr.nwt.write_file()
+    # # update nwt package values to those suggested by Rich
+    # mf_tr.nwt.maxiterout = 20
+    # mf_tr.nwt.dbdtheta = 0.85
+    #
+    # # write nwt file
+    # mf_tr.nwt.write_file()
 
 
 
@@ -454,44 +454,54 @@ if update_transient_model_for_smooth_running == 1:
 
     # update UZF -------------------------------------------------------------------####
 
-    # Set VKS equal to the value of VKA in UPW (with VKA values extracted from the layer that recharge is specified in the IUZFBND array)
-    iuzfbnd = mf_tr.uzf.iuzfbnd.array
-    vka = mf_tr.upw.vka.array
-    vka_selected_lyr = np.zeros_like(vka[0,:,:])
-    num_row = vka_selected_lyr.shape[0]
-    num_col = vka_selected_lyr.shape[1]
+    # update vks
+    mf_tr.uzf.vks = mf_tr.uzf.vks.array * 1000
 
-    for i in list(range(0,num_row)):     # loop through rows
-        for j in list(range(0,num_col)):    # loop through columns
+    # update nsets
+    mf_tr.uzf.nsets = 200
 
-            if iuzfbnd[i,j] == 0:
-                vka_selected_lyr[i, j] = vka[0, i, j]   # get vka from top layer for cells outside of the model domain (just to avoid having 0s since values are supposed to be positive and real)
-            elif iuzfbnd[i,j] > 0:
-                vka_selected_lyr[i,j] = vka[iuzfbnd[i,j]-1, i, j]     # get vka from iuzfbnd layer
-    mf_tr.uzf.vks = vka_selected_lyr   #TODO: can I just assign a numpy array to a flopy object?
+    # update ntrail2
+    mf_tr.uzf.ntrail2 = 10
 
 
-    # Set SURFK equal to VKS
-    # TODO: are any issues caused by using the command below?
-    mf_tr.uzf.surfk = mf_tr.uzf.vks
-
-
-    # Decrease the multiplier on SURFK by 3 orders of magnitude
-    # TODO: is this the right way to change the multiplier on surfk?
-    mf_tr.uzf.surfk.cnstnt = mf_tr.uzf.surfk.cnstnt/1000
-
-
-    # NOTE: If you use the Open/Close option for specifying arrays, you can use a single file for both VKS and surfk.
-    # TODO: how to implement this in flopy?
-    # TODO: find out whether this is actually better when interacting with the model through flopy
-
-
-    # Set extwc to 0.25
-    mf_tr.uzf.extwc.array[:,:,:,:] = 0.25
-
-
-    # Look at the ET budget again (after running the model) and make sure it is reasonable. Most of the water deep percolating into UZF is lost to ET.
-    # TODO: after looking at ET budget, maybe adjust something here?
+    # # Set VKS equal to the value of VKA in UPW (with VKA values extracted from the layer that recharge is specified in the IUZFBND array)
+    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    # vka = mf_tr.upw.vka.array
+    # vka_selected_lyr = np.zeros_like(vka[0,:,:])
+    # num_row = vka_selected_lyr.shape[0]
+    # num_col = vka_selected_lyr.shape[1]
+    #
+    # for i in list(range(0,num_row)):     # loop through rows
+    #     for j in list(range(0,num_col)):    # loop through columns
+    #
+    #         if iuzfbnd[i,j] == 0:
+    #             vka_selected_lyr[i, j] = vka[0, i, j]   # get vka from top layer for cells outside of the model domain (just to avoid having 0s since values are supposed to be positive and real)
+    #         elif iuzfbnd[i,j] > 0:
+    #             vka_selected_lyr[i,j] = vka[iuzfbnd[i,j]-1, i, j]     # get vka from iuzfbnd layer
+    # mf_tr.uzf.vks = vka_selected_lyr   #TODO: can I just assign a numpy array to a flopy object?
+    #
+    #
+    # # Set SURFK equal to VKS
+    # # TODO: are any issues caused by using the command below?
+    # mf_tr.uzf.surfk = mf_tr.uzf.vks
+    #
+    #
+    # # Decrease the multiplier on SURFK by 3 orders of magnitude
+    # # TODO: is this the right way to change the multiplier on surfk?
+    # mf_tr.uzf.surfk.cnstnt = mf_tr.uzf.surfk.cnstnt/1000
+    #
+    #
+    # # NOTE: If you use the Open/Close option for specifying arrays, you can use a single file for both VKS and surfk.
+    # # TODO: how to implement this in flopy?
+    # # TODO: find out whether this is actually better when interacting with the model through flopy
+    #
+    #
+    # # Set extwc to 0.25
+    # mf_tr.uzf.extwc.array[:,:,:,:] = 0.25
+    #
+    #
+    # # Look at the ET budget again (after running the model) and make sure it is reasonable. Most of the water deep percolating into UZF is lost to ET.
+    # # TODO: after looking at ET budget, maybe adjust something here?
 
 
     # write uzf file
@@ -500,21 +510,27 @@ if update_transient_model_for_smooth_running == 1:
 
     # update LAK ---------------------------------------------------------------####
 
-    # LAK: change the multipliers on lakebed leakance to 0.001
-    mf_tr.lak.bdlknc.cnstnt = 0.001
-
-    # write lake file
-    mf_tr.lak.write_file()
+    # # LAK: change the multipliers on lakebed leakance to 0.001
+    # mf_tr.lak.bdlknc.cnstnt = 0.001
+    #
+    # # write lake file
+    # mf_tr.lak.write_file()
 
 
 
     # update PRMS param ---------------------------------------------------------------####
 
-    # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
-    vks_mod = mf_tr.uzf.vks.array * 0.5
-    nhru = gs.prms.parameters.get_values("nhru")[0]
-    vks_mod = vks_mod.reshape(1,nhru)
-    gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
+    # # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
+    # vks_mod = mf_tr.uzf.vks.array * 0.5
+    # nhru = gs.prms.parameters.get_values("nhru")[0]
+    # vks_mod = vks_mod.reshape(1,nhru)
+    # gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
+
+    ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
+    ssr2gw_rate = ssr2gw_rate * 200
+    gs.prms.parameters.set_values("ssr2gw_rate", ssr2gw_rate)
+
+
 
     # write prms param file
     gs.prms.parameters.write()
