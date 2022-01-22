@@ -27,11 +27,11 @@ from gsflow.modflow import ModflowAg, Modflow
 
 load_and_transfer_transient_files = 0
 update_one_cell_lakes = 0
-update_transient_model_for_smooth_running = 1
+update_transient_model_for_smooth_running = 0
 update_prms_params_for_gsflow = 0
 update_prms_control_for_gsflow = 0
 update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 0
+update_prms_and_ag_params_for_ag_package = 1
 
 
 
@@ -422,8 +422,6 @@ if update_transient_model_for_smooth_running == 1:
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
-    xx=1
-
 
     # update NWT -------------------------------------------------------------------####
 
@@ -526,6 +524,7 @@ if update_transient_model_for_smooth_running == 1:
     # vks_mod = vks_mod.reshape(1,nhru)
     # gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
 
+    # update ssr2gw_rate
     ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
     ssr2gw_rate = ssr2gw_rate * 200
     gs.prms.parameters.set_values("ssr2gw_rate", ssr2gw_rate)
@@ -615,11 +614,11 @@ if update_modflow_for_ag_package == 1:
 
 
 
-# =================================
-# Update PRMS HRUs for AG package
-# =================================
+# ===========================================
+# Update PRMS and AG params for AG package
+# ===========================================
 
-if update_prms_params_for_ag_package == 1:
+if update_prms_and_ag_params_for_ag_package == 1:
 
     # load transient modflow model, including ag package
     mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
@@ -638,7 +637,7 @@ if update_prms_params_for_ag_package == 1:
     ag_data = pd.read_csv(ag_dataset_file)
 
     # TODO to incorporate ag package into GSFLOW --> change only for ag cells
-    # 1) veg_type should not bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop
+    # 1) cov_type should not be bare soil (cov_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop
     # 2) soil_moist_max is greater than daily max PET (>1inch)
     # 3) pref_flow_den=0 for all HRUs that are irrigated.
     # 4) Only one of these options (TRIGGER, ETDEMAND) can be used at a time.
@@ -652,14 +651,12 @@ if update_prms_params_for_ag_package == 1:
     #    soil_moist_max, soil_rechr_max, pref_flow_den, percent_imperv, etc.).
 
 
-    # veg_type should not be bare soil ( soil_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop -----------------------------------------#
-    # Qs:
-    # 1) where are crop types stored?  --> look in ag_dataset_with_ponds.csv
-    # 2) do we want soil_type to be non-zero for every grid cell in the model domain? or only agricultural grid cells?  --> only ag cells
-    # 3) veg_type and soil_type should be replaced with cov_type in the above instructions? --> ask rich
-    # TODO: check over this
+    # cov_type should not be bare soil (cov_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop -----------------------------------------#
 
+    # extract crop types
     crop_type = ag_data['crop_type'].unique().tolist()
+
+    # categorize crop types by cov_type
     grasses = ['Miscellaneous Grasses',
                'Miscellaneous Truck Crops',
                'Mixed Pasture',
@@ -676,12 +673,15 @@ if update_prms_params_for_ag_package == 1:
     cov_type_dict = {'grasses': 1,
                      'shrubs': 2,
                      'trees': 3}
+
+    # create data frame of hru_id, cov_type, soil_type, and crops
     nhru = gs.prms.parameters.get_values('nhru')[0]
     cov_crop_df = pd.DataFrame({'hru_id': list(range(1, nhru+1)),
                                 'cov_type': gs.prms.parameters.get_values('cov_type').tolist(),
+                                'soil_type': gs.prms.parameters.get_values('soil_type').tolist(),
                                 'crop_type': ['none' for i in range(nhru)]})
 
-    # loop through crop types
+    # fill in crop types for each HRU in data frame
     for crop in crop_type:
 
         # assign crop types in data frame with hru ids and cov_types
@@ -689,8 +689,12 @@ if update_prms_params_for_ag_package == 1:
         mask = cov_crop_df['hru_id'].isin(field_hru_crop)
         cov_crop_df.loc[mask, 'crop_type'] = crop
 
+
+    # update cov_type
+    for crop in crop_type:
+
         # get ag field hrus with this crop that have cov_type = 0
-        # TODO: are we happy with the cov_type values for crops that don't have cov_type = 0?  or should we be assigning them for all crops?
+        # TODO: are we happy with the cov_type values for crops that don't have cov_type = 0?  or should we be assigning them for all crops? currently just changing for cov_type=0
         mask = (cov_crop_df['crop_type'] == crop) & (cov_crop_df['cov_type'] == 0)
         hru_select = cov_crop_df.loc[mask, 'hru_id'].values
         hru_idx = hru_select - 1
@@ -706,17 +710,33 @@ if update_prms_params_for_ag_package == 1:
         gs.prms.parameters.set_values('cov_type', cov_type)
 
 
+    # update soil_type
+    for crop in crop_type:
+
+        # for ag cells with this crop that ahve soil_type = 1
+        mask = (cov_crop_df['crop_type'] == crop) & (cov_crop_df['soil_type'] == 1)
+        hru_select = cov_crop_df.loc[mask, 'hru_id'].values
+        hru_idx = hru_select - 1
+
+        # for selected hrus, assign soil_type=2
+        # TODO: could do this by crop type (as done for cov_type above) if have info on soil types for different types of crops
+        soil_type = gs.prms.parameters.get_values('soil_type')
+        soil_type[hru_idx] = 2
+        gs.prms.parameters.set_values('soil_type', soil_type)
+
+
+
+
     # soil_moist_max is greater than daily max PET (>1inch) -------------------------------------------------------------------------------------#
-    # Qs:
-    # 1) how to estimate daily max PET?
-    # 2) or just use > 1 inch?
-    # ** assume daily max PET is 10 mm (check model units and convert) and compare soil_moist_max to that  --> check with Rich
-    daily_max_pet = 1/2.54  # TODO: assuming daily max PET is 10 mm (check this assumption), converted to inches (units of soil_moist_max) is 1/2.54 m
+
+    daily_max_pet = 10    # assuming daily max PET is 10 mm
+    daily_max_pet = daily_max_pet * (1/10) * (1/2.54)   # converting daily_max_pet to inches (units of soil_moist_max): (10 mm) * (1 cm / 10 mm) * (1 in / 2.54 cm)
     soil_moist_max = gs.prms.parameters.get_values('soil_moist_max')
     hru_type = gs.prms.parameters.get_values('hru_type')
     mask = (hru_type == 1) & (soil_moist_max < daily_max_pet)
     soil_moist_max[mask] = daily_max_pet + (daily_max_pet*0.1)  # set soil_moist_max to a value 10% larger than daily_max_pet
     gs.prms.parameters.set_values('soil_moist_max', soil_moist_max)
+
 
 
     # pref_flow_den=0 for all HRUs that are irrigated -------------------------------------------------------------------------------------#
@@ -727,6 +747,7 @@ if update_prms_params_for_ag_package == 1:
     pref_flow_den = gs.prms.parameters.get_values('pref_flow_den')
     pref_flow_den[np.array(hru_idx).astype(int)] = 0
     gs.prms.parameters.set_values('pref_flow_den', pref_flow_den)
+
 
 
     # Only one of these options (TRIGGER, ETDEMAND) can be used at a time ------------------------------------------------------------------------------------#
@@ -767,14 +788,13 @@ if update_prms_params_for_ag_package == 1:
 
 
     # As much as possible assign upper bounds to water demand that is consistent with local practices ---------------------------------------------------------#
-    # Q: how to determine what local practices are? maybe take a look at irrigation data and identify max irrigation
-    # TODO: estimate max amounts of water needed to irrigate for each crop type in the model and update Qmax in ag package, check to see if Josh already calculated this
+    # NOTE: estimating max amounts of water needed to irrigate for each crop type in the model
 
-    # Based on Ayman's research  # TODO: what are the time units on these estimates?  per year?  per growing year?
-    # Grapes 1 acre-ft/acre
-    # Apples: 2.5 acre-ft/acre
-    # Mixed pasture: 3.5 acre-ft/acre
-    # all other: 1 acre-ft/acre
+    # Based on Ayman's research:
+    # Grapes: 1 acre-ft/acre/year
+    # Apples: 2.5 acre-ft/acre/year
+    # Mixed pasture: 3.5 acre-ft/acre/year
+    # all other: 1 acre-ft/acre/year
 
     # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre), then convert to model units (i.e. meters)
     Qmax_dict = {'Grapes': 1,
@@ -840,13 +860,21 @@ if update_prms_params_for_ag_package == 1:
 
 
     # Make sure that you used Kc (crop coefficient) values that are reasonable; and make sure that you multiplied kc by jh_coef and NOT jh_coef_hru in the parameter file -----------------------#
-    # Q: how to determine what is reasonable?
-    # TODO: look at Kc_sonoma excel file
-    # TODO: find out: does Kc change with time in the ag package? --> eff_fact changes with stress period and is dependent on Kc, so yes
-    # TODO: ask Rich: How can we change the Kc in the ag package?  Should we use the values determined by Andy Rich for the GSFLOW model?  --> we can change eff_fact, but only need to
-    #  do this if ET is not being simulated explicitly
-    # TODO: look at what Josh did  --> eff_fact is set to 0 for irrwell and to 1 for irrdiversion and irrpond, so
-    #  the ag input file currently assumes that ET is being simulated explicitly for the fields irrigated by wells but not for fields irrigated by diversions and ponds
+    # TODO: Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru)
+
+
+
+    # Add ag_frac as a PRMS parameter ------------------------------------------------------#
+    # TODO: get data from field_fac column in ag_dataset_with_ponds.csv
+
+
+
+    # Make sure the sum of percent_imperv and ag_frac aren’t greater than 1 ------------------------------------------------------#
+
+    # get percent_imperv and ag_frac
+    percent_imperv = gs.prms.parameters.get_values('percent_imperv').tolist()
+    ag_frac = gs.prms.parameters.get_values('ag_frac').tolist()
+    mask = (percent_imperv + ag_frac) > 1
 
 
 
@@ -855,7 +883,7 @@ if update_prms_params_for_ag_package == 1:
     # In general, you must go through all your HRUs that are used for Ag and make sure they are parameterized to represent Ag (soil_type, veg_type,
     #    soil_moist_max, soil_rechr_max, pref_flow_den, percent_imperv, etc.) ----------------------------------------------------------------------------------------------------#
     # Q: do we need to check other parameters than the ones listed here? do we have any data to guide these ag parameterizations?
-    # Q: what to do for soil_rechr_max and percent_imperv (=0?)
+    # Q: what to do for soil_rechr_max and percent_imperv?
 
 
     # write prms param file
