@@ -16,7 +16,7 @@ import well_utils
 import output_utils
 
 # script settings ----------------------------------------------------------------------------------------####
-update_starting_heads = 0
+update_starting_heads = 1
 update_starting_parameters = 1
 
 
