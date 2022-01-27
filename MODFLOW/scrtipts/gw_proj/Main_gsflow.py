@@ -2,6 +2,8 @@ import os, sys
 import shutil
 import numpy as np
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\pygsflow")
 
@@ -33,13 +35,14 @@ import output_utils
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 1
-update_prms_params_for_gsflow = 1
-update_transient_model_for_smooth_running = 1
-update_one_cell_lakes = 1
-update_modflow_for_ag_package = 1
-update_prms_params_for_ag_package = 1
-update_ag_package = 0
+update_prms_control_for_gsflow = 0
+update_prms_params_for_gsflow = 0
+update_transient_model_for_smooth_running = 0
+update_one_cell_lakes = 0
+update_modflow_for_ag_package = 0
+update_prms_params_for_ag_package = 0
+update_ag_package = 1
+do_checks = 0
 
 
 # ==============================
@@ -131,7 +134,7 @@ if load_and_transfer_transient_files == 1:
     prms_control_folder = r"..\..\.."
     if 1:
         # make prms changes
-        mf = flopy.modflow.Modflow.load(mf_nam, load_only=['DIS', 'BAS6', 'SFR', 'LAK'])
+        mf = gsflow.modflow.Modflow.load(mf_nam, load_only=['DIS', 'BAS6', 'SFR', 'LAK'])
 
 
     # =======================
@@ -259,7 +262,7 @@ Sim.vks_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_f
 # load transient model ----------------------------------------------------------------------------------------####
 
 # load transient model
-Sim.mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+Sim.mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                    model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                    verbose=True, forgive=False, version="mfnwt")
 
@@ -342,7 +345,7 @@ if update_prms_control_for_gsflow == 1:
 if update_prms_params_for_gsflow == 1:
 
     # load transient modflow model, including ag package
-    mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt")
 
@@ -395,7 +398,7 @@ if update_prms_params_for_gsflow == 1:
 if update_transient_model_for_smooth_running == 1:
 
     # load transient modflow model, including ag package
-    mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt")
 
@@ -411,7 +414,7 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.nwt.dbdtheta = 0.85
 
     # write nwt file
-    mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.nwt")
+    mf_tr.nwt.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.nwt")
     mf_tr.nwt.write_file()
 
 
@@ -512,17 +515,18 @@ if update_transient_model_for_smooth_running == 1:
 
     # update PRMS param to specific values ---------------------------------------------------------------####
 
-    # update ssr2gw_rate
-    ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
-    ssr2gw_rate = ssr2gw_rate * 200
-    gs.prms.parameters.set_values("ssr2gw_rate", ssr2gw_rate)
+    # OLD: these values got us good Sat_S values
+    # # update ssr2gw_rate
+    # ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
+    # ssr2gw_rate = ssr2gw_rate * 200
+    # gs.prms.parameters.set_values("ssr2gw_rate", ssr2gw_rate)
 
-    # OLD
-    # # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
-    # vks_mod = mf_tr.uzf.vks.array * 0.5
-    # nhru = gs.prms.parameters.get_values("nhru")[0]
-    # vks_mod = vks_mod.reshape(1,nhru)
-    # gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
+
+    # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
+    vks_mod = mf_tr.uzf.vks.array * 0.5
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    vks_mod = vks_mod.reshape(1,nhru)[0]
+    gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
 
 
 
@@ -593,7 +597,7 @@ if update_one_cell_lakes == 1:
     Sim.ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
 
     # load transient modflow model, including ag package
-    Sim.mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+    Sim.mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                            model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                            verbose=True, forgive=False, version="mfnwt")
     # dis = Sim.mf_tr.dis  #TODO: uncomment this if add in code that requires ag package
@@ -782,7 +786,7 @@ if update_one_cell_lakes == 1:
 if update_prms_params_for_ag_package == 1:
 
     # load transient modflow model, including ag package
-    mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt")
 
@@ -963,106 +967,106 @@ if update_prms_params_for_ag_package == 1:
 
 
 
-    # # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
-    #
-    # # get jh_coef
-    # jh_coef = gs.prms.parameters.get_values('jh_coef')
-    #
-    # # create data frame of jh_coef with nhru rows for each month
-    # nhru = gs.prms.parameters.get_values('nhru')[0]
-    # jh_coef_df = pd.DataFrame()
-    # for idx, coef in enumerate(jh_coef):
-    #     col_name = "month_" + str(idx+1)
-    #     jh_coef_df[col_name] = [coef for val in range(nhru)]
-    #
-    # # read in Kc values
-    # kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
-    # kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
-    #
-    # # get list of unique crop types
-    # crop_type = ag_data['crop_type'].unique().tolist()
-    #
-    # # create array of hru ids
-    # nhru = gs.prms.parameters.get_values('nhru')[0]
-    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
-    #
-    # # loop through months and crop types
-    # num_months = 12
-    # months = list(range(1,num_months + 1))
-    # for month in months:
-    #
-    #     for crop in crop_type:
-    #
-    #         # get Kc for this month and crop type
-    #         kc_col = "KC_" + str(month)
-    #         kc_row = kc_data['CropName2'] == crop
-    #         kc = kc_data[kc_col][kc_row].values[0]
-    #
-    #         # identify hru ids of this crop
-    #         ag_mask = ag_data['crop_type'] == crop
-    #         crop_hru = ag_data['field_hru_id'][ag_mask].values
-    #
-    #         # create mask of these hru_ids in parameter file
-    #         param_mask = np.isin(hru_id, crop_hru)
-    #
-    #         # change jh_coef values for hru_ids with this crop in this month
-    #         col_name = "month_" + str(month)
-    #         jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
-    #
-    #
-    # # format jh_coef_df for param file
-    # jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
-    # jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
-    #
-    # # change jh_coef in parameter file
-    # gs.prms.parameters.remove_record("jh_coef")
-    # gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2)
-    #
-    #
-    #
-    #
-    # # Add ag_frac as a PRMS parameter ------------------------------------------------------#
-    #
-    # # create hru_id array
-    # nhru = gs.prms.parameters.get_values('nhru')[0]
-    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
-    #
-    # # get field hru ids and field_fac (i.e. ag_frac) values
-    # field_hru_id = ag_data['field_hru_id'].values.tolist()
-    # field_fac = ag_data['field_fac'].values.tolist()
-    #
-    # # create ag_frac array
-    # ag_frac = np.zeros(nhru)
-    #
-    # # fill in ag_frac values for fields
-    # ag_frac_min_val = 0.01
-    # for field_hru_id_val, field_fac_val in zip(field_hru_id, field_fac):
-    #
-    #     # identify field hru id
-    #     mask = hru_id == field_hru_id_val
-    #
-    #     # fill in ag frac value if greater than min value
-    #     if field_fac_val >= ag_frac_min_val:
-    #         ag_frac[mask] = field_fac_val
-    #
-    # # add ag_frac as PRMS parameter
-    # gs.prms.parameters.add_record(name = "ag_frac", values = ag_frac, dimensions = [["nhru", nhru]], datatype = 2)
-    #
-    #
-    #
-    #
-    # # Make sure the sum of percent_imperv and ag_frac aren’t greater than 1 ------------------------------------------------------#
-    #
-    # # get percent_imperv and ag_frac
-    # percent_imperv = gs.prms.parameters.get_values('hru_percent_imperv')
-    # ag_frac = gs.prms.parameters.get_values('ag_frac')
-    #
-    # # create mask
-    # mask = (percent_imperv + ag_frac) > 1
-    #
-    # # change percent_imperv
-    # percent_imperv[mask] = 1 - ag_frac[mask]
-    # gs.prms.parameters.set_values('hru_percent_imperv', percent_imperv)
+    # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
+
+    # get jh_coef
+    jh_coef = gs.prms.parameters.get_values('jh_coef')
+
+    # create data frame of jh_coef with nhru rows for each month
+    nhru = gs.prms.parameters.get_values('nhru')[0]
+    jh_coef_df = pd.DataFrame()
+    for idx, coef in enumerate(jh_coef):
+        col_name = "month_" + str(idx+1)
+        jh_coef_df[col_name] = [coef for val in range(nhru)]
+
+    # read in Kc values
+    kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
+    kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
+
+    # get list of unique crop types
+    crop_type = ag_data['crop_type'].unique().tolist()
+
+    # create array of hru ids
+    nhru = gs.prms.parameters.get_values('nhru')[0]
+    hru_id = np.asarray(list(range(1,(nhru+1), 1)))
+
+    # loop through months and crop types
+    num_months = 12
+    months = list(range(1,num_months + 1))
+    for month in months:
+
+        for crop in crop_type:
+
+            # get Kc for this month and crop type
+            kc_col = "KC_" + str(month)
+            kc_row = kc_data['CropName2'] == crop
+            kc = kc_data[kc_col][kc_row].values[0]
+
+            # identify hru ids of this crop
+            ag_mask = ag_data['crop_type'] == crop
+            crop_hru = ag_data['field_hru_id'][ag_mask].values
+
+            # create mask of these hru_ids in parameter file
+            param_mask = np.isin(hru_id, crop_hru)
+
+            # change jh_coef values for hru_ids with this crop in this month
+            col_name = "month_" + str(month)
+            jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
+
+
+    # format jh_coef_df for param file
+    jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
+    jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
+
+    # change jh_coef in parameter file
+    gs.prms.parameters.remove_record("jh_coef")
+    gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
+
+
+
+
+    # Add ag_frac as a PRMS parameter ------------------------------------------------------#
+
+    # create hru_id array
+    nhru = gs.prms.parameters.get_values('nhru')[0]
+    hru_id = np.asarray(list(range(1,(nhru+1), 1)))
+
+    # get field hru ids and field_fac (i.e. ag_frac) values
+    field_hru_id = ag_data['field_hru_id'].values.tolist()
+    field_fac = ag_data['field_fac'].values.tolist()
+
+    # create ag_frac array
+    ag_frac = np.zeros(nhru)
+
+    # fill in ag_frac values for fields
+    ag_frac_min_val = 0.01
+    for field_hru_id_val, field_fac_val in zip(field_hru_id, field_fac):
+
+        # identify field hru id
+        mask = hru_id == field_hru_id_val
+
+        # fill in ag frac value if greater than min value
+        if field_fac_val >= ag_frac_min_val:
+            ag_frac[mask] = field_fac_val
+
+    # add ag_frac as PRMS parameter
+    gs.prms.parameters.add_record(name = "ag_frac", values = ag_frac, dimensions = [["nhru", nhru]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
+
+
+
+
+    # Make sure the sum of percent_imperv and ag_frac aren’t greater than 1 ------------------------------------------------------#
+
+    # get percent_imperv and ag_frac
+    percent_imperv = gs.prms.parameters.get_values('hru_percent_imperv')
+    ag_frac = gs.prms.parameters.get_values('ag_frac')
+
+    # create mask
+    mask = (percent_imperv + ag_frac) > 1
+
+    # change percent_imperv
+    percent_imperv[mask] = 1 - ag_frac[mask]
+    gs.prms.parameters.set_values('hru_percent_imperv', percent_imperv)
 
 
     # In general, you must go through all your HRUs that are used for Ag and make sure they are parameterized to represent Ag (soil_type, veg_type,
@@ -1099,12 +1103,13 @@ if update_modflow_for_ag_package == 1:
 if update_ag_package == 1:
 
     # load transient modflow model, including ag package
-    mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt")
-    dis = mf_tr.dis
-    ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
-    ag = ModflowAg.load(ag_package_file, model=mf_tr, nper = dis.nper)
+    #dis = mf_tr.dis
+    ag = mf_tr.ag
+    #ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
+    #ag = ModflowAg.load(ag_package_file, model=mf_tr, nper = dis.nper)
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -1135,11 +1140,11 @@ if update_ag_package == 1:
                  'other': 1}
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
-    year_per_days = 1/365
+    days_per_year = 365
     for key in Qmax_dict.keys():
 
         # convert to meters
-        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * year_per_days * -1   # multiplying by -1 to indicate pumping
+        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * (1/days_per_year) * -1   # multiplying by -1 to indicate pumping
 
 
     # create a Qmax_crop column in ag_data based on crop_type
@@ -1187,7 +1192,7 @@ if update_ag_package == 1:
 
 
     # save well list
-    ag.well_list = well_list  #TODO: make sure this is the right file type to be assigned here
+    ag.well_list = well_list  #TODO: make sure this is the right data type to be assigned here
 
 
 
@@ -1210,16 +1215,22 @@ if update_ag_package == 1:
     # loop through irr_div dictionary
     for key, rec_array in irr_div.items():
 
-        # loop through each record in rec_array
-        for rec in rec_array:
+        # set eff_fact to 0
+        field_names = rec_array.dtype.names
+        eff_fact_names = [x for x in field_names if 'eff_fact' in x]
+        for eff_fact_name in eff_fact_names:
+            rec_array[eff_fact_name] = [0] * len(rec_array)
 
-            # loop through eff_fact field names
-            field_names = rec.dtype.names
-            eff_fact_names = [x for x in field_names if 'eff_fact' in x]
-            for eff_fact_name in eff_fact_names:
-
-                # set eff_fact to 0
-                rec[eff_fact_name] = 0
+        # # loop through each record in rec_array
+        # for rec in rec_array:
+        #
+        #     # loop through eff_fact field names
+        #     field_names = rec.dtype.names
+        #     eff_fact_names = [x for x in field_names if 'eff_fact' in x]
+        #     for eff_fact_name in eff_fact_names:
+        #
+        #         # set eff_fact to 0
+        #         rec[eff_fact_name] = 0
 
 
 
@@ -1227,32 +1238,23 @@ if update_ag_package == 1:
     # loop through irr_well dictionary
     for key, rec_array in irr_well.items():
 
-        # loop through each record in rec_array
-        for rec in rec_array:
+        # set eff_fact to 0
+        field_names = rec_array.dtype.names
+        eff_fact_names = [x for x in field_names if 'eff_fact' in x]
+        for eff_fact_name in eff_fact_names:
+            rec_array[eff_fact_name] = [0] * len(rec_array)
 
-            # loop through eff_fact field names
-            field_names = rec.dtype.names
-            eff_fact_names = [x for x in field_names if 'eff_fact' in x]
-            for eff_fact_name in eff_fact_names:
-
-                # set eff_fact to 0
-                rec[eff_fact_name] = 0
 
 
     # set eff_fact to 0 for each record in irrpond
     # loop through irr_pond dictionary
     for key, rec_array in irr_pond.items():
 
-        # loop through each record in rec_array
-        for rec in rec_array:
-
-            # loop through eff_fact field names
-            field_names = rec.dtype.names
-            eff_fact_names = [x for x in field_names if 'eff_fact' in x]
-            for eff_fact_name in eff_fact_names:
-
-                # set eff_fact to 0
-                rec[eff_fact_name] = 0
+        # set eff_fact to 0
+        field_names = rec_array.dtype.names
+        eff_fact_names = [x for x in field_names if 'eff_fact' in x]
+        for eff_fact_name in eff_fact_names:
+            rec_array[eff_fact_name] = [0] * len(rec_array)
 
     # update ag package
     ag.irrdiversion = irr_div
@@ -1266,5 +1268,47 @@ if update_ag_package == 1:
 
     #  write updated ag package ---------------------------------------------------------#
 
-    ag.fn_path = os.path.join(os.getcwd(), ag_package_file)
+    ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
     ag.write_file()
+
+
+
+
+
+# ===========================================
+# Do checks
+# ===========================================
+if do_checks == 1:
+
+    # load transient modflow model, including ag package
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       verbose=True, forgive=False, version="mfnwt")
+
+    # load gsflow model
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
+
+    # get ssr2gw_rate
+    ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
+
+    # get vks and reshape
+    vks = mf_tr.uzf.vks.array
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    vks_nhru = vks.reshape(1,nhru)
+
+    # calculate vks/ssr2gw_rate
+    ratio = vks_nhru/ssr2gw_rate
+    num_row, num_col = vks.shape
+    ratio = ratio.reshape(num_row, num_col)
+
+    # plot ratio
+    sns.heatmap(ratio)
+
+    # plot vks
+    sns.heatmap(vks)
+
+    # plot ssr2gw_rate
+    ssr2gw_rate_mat = ssr2gw_rate.reshape(num_row, num_col)
+    sns.heatmap(ssr2gw_rate_mat)
+
