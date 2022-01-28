@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import geopandas
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\pygsflow")
 
@@ -41,8 +42,8 @@ update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
-update_ag_package = 1
-do_checks = 0
+update_ag_package = 0
+do_checks = 1
 
 
 # ==============================
@@ -134,7 +135,7 @@ if load_and_transfer_transient_files == 1:
     prms_control_folder = r"..\..\.."
     if 1:
         # make prms changes
-        mf = gsflow.modflow.Modflow.load(mf_nam, load_only=['DIS', 'BAS6', 'SFR', 'LAK'])
+        mf = flopy.modflow.Modflow.load(mf_nam, load_only=['DIS', 'BAS6', 'SFR', 'LAK'])
 
 
     # =======================
@@ -437,15 +438,43 @@ if update_transient_model_for_smooth_running == 1:
 
     # update UZF -------------------------------------------------------------------####
 
-    # update vks
+    # update vks ------------------------------------#
+
+    # set vks based on upw hk
     vks = np.zeros_like(mf_tr.upw.hk.array[0, :, :])
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
     for k in range(mf_tr.nlay):
         kh_layer = mf_tr.upw.hk.array[k, :, :]
         mask = iuzfbnd == (k + 1)
         vks[mask] = kh_layer[mask]
+
+    # scale
     vks_scaling_factor = 0.1
     vks = vks * vks_scaling_factor
+
+    # note: only use this section interactively
+    # # identify min vks value
+    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    # min_desired_vks = 1e-3
+    # mask = (vks < min_desired_vks) & (iuzfbnd > 0)
+    # vks_too_low = vks[mask]
+    # min_vks_too_low = vks_too_low.min()
+
+    # adjust values that are too low
+    vks_low_cutoff = [1e-6, 1e-5, 1e-4, 1e-3]
+    vks_low_factor = [10000, 1000, 100, 10]
+    for cutoff, factor in zip(vks_low_cutoff, vks_low_factor):
+        mask = (vks < cutoff) & (iuzfbnd > 0)
+        vks[mask] = vks[mask] * factor
+
+    # note: only use this section interactively
+    # check min vks again
+    # min_desired_vks = 1e-3
+    # mask = (vks < min_desired_vks) & (iuzfbnd > 0)
+    # vks_too_low = vks[mask]
+    # min_vks_too_low = vks_too_low.min()
+
+    # store
     mf_tr.uzf.vks = vks
 
     # update nsets
@@ -1289,6 +1318,9 @@ if do_checks == 1:
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
     gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
 
+
+    # check ratio between ssr2gw_rate and vks ---------------------------------####
+
     # get ssr2gw_rate
     ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
 
@@ -1303,12 +1335,175 @@ if do_checks == 1:
     ratio = ratio.reshape(num_row, num_col)
 
     # plot ratio
-    sns.heatmap(ratio)
+    #sns.heatmap(ratio)
+    plt.imshow(ratio)
+    plt.colorbar()
 
     # plot vks
-    sns.heatmap(vks)
+    #sns.heatmap(vks)
+    plt.imshow(vks)
+    plt.colorbar()
 
     # plot ssr2gw_rate
     ssr2gw_rate_mat = ssr2gw_rate.reshape(num_row, num_col)
-    sns.heatmap(ssr2gw_rate_mat)
+    #sns.heatmap(ssr2gw_rate_mat)
+    plt.imshow(ssr2gw_rate_mat)
+    plt.colorbar()
 
+
+    # check values at problem HRU with unsaturated zone issues ---------------------------------####
+
+    # identify problem hru
+    problem_hru = 83888
+
+    # get values of ssr2gw_rate and vks in problem hru
+    ssr2gw_rate[problem_hru-1]
+    vks_nhru[:, (problem_hru-1)][0]
+
+    # extract ibound
+    ibound = mf_tr.bas6.ibound.array
+    num_lay, num_row, num_col = ibound.shape
+
+    # get row and column indices of problem hru
+    hru_id = np.array(list(range(1, nhru + 1)))
+    hru_id_mat = hru_id.reshape(num_row, num_col)
+    problem_hru_idx = np.where(hru_id_mat == problem_hru)
+    problem_hru_row = problem_hru_idx[0][0]
+    problem_hru_col = problem_hru_idx[1][0]
+
+    # get ibound values of problem hru
+    ibound[:, problem_hru_row, problem_hru_col]
+
+    # get iuzfbnd values of problem hru
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    iuzfbnd[problem_hru_row, problem_hru_col]
+
+
+
+    # summarize vks by geologic zones -------------------------------------------------------####
+
+    # read in geologic zones
+    file_name = os.path.join("..", "..", "init_files", "RR_gfm_grid_1.9_gsflow.shp")
+    geo_frame = geopandas.read_file(file_name)
+    geo_frame = geo_frame.sort_values(by='HRU_ID')
+
+    # get vks
+    vks = mf_tr.uzf.vks.array
+    vks_nhru = vks.reshape(1, nhru)[0]
+
+    # get iuzfbnd
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    num_row, num_col = iuzfbnd.shape
+    iuzfbnd_nhru = iuzfbnd.reshape(1,nhru)[0]
+
+    # convert geologic zones to 2D array
+    # YF_zone = geo_frame['YF_zone'].values.reshape(num_row, num_col).astype(int)
+    # OF_zone = geo_frame['OF_zone'].values.reshape(num_row, num_col).astype(int)
+    # Fbrk_zone = geo_frame['Fbrk_zone'].values.reshape(num_row, num_col).astype(int)
+
+    # identify geologic zone ids
+    # 14 = fractured basement
+    # 15 = sonoma volcanics
+    # 16 = consolidated sediments
+    # 17 = unconsolidated sediments
+    # 18, 19 = channel deposits
+    geo_zones = [14, 15, 16, 17, 18, 19]
+
+    # create table of relevant data
+    df = pd.DataFrame({'iuzfbnd': iuzfbnd_nhru,
+                       'YF_zone': geo_frame['YF_zone'].values.astype(int),
+                       'OF_zone': geo_frame['OF_zone'].values.astype(int),
+                       'Fbrk_zone': geo_frame['Fbrk_zone'].values.astype(int),
+                       'vks': vks_nhru})
+
+    # summarize data for layer 1
+    vks_zone_stats_lyr1 = df.groupby(['iuzfbnd', 'YF_zone'])['vks'].describe().reset_index()
+    mask = vks_zone_stats_lyr1['iuzfbnd'] == 1
+    vks_zone_stats_lyr1 = vks_zone_stats_lyr1[mask]
+    vks_zone_stats_lyr1.rename(columns={'YF_zone': 'geo_zone'}, inplace=True)
+
+    # summarize data for layer 2
+    vks_zone_stats_lyr2 = df.groupby(['iuzfbnd', 'OF_zone'])['vks'].describe().reset_index()
+    mask = vks_zone_stats_lyr2['iuzfbnd'] == 2
+    vks_zone_stats_lyr2 = vks_zone_stats_lyr2[mask]
+    vks_zone_stats_lyr2.rename(columns={'OF_zone': 'geo_zone'}, inplace=True)
+
+    # summarize data for layer 3
+    vks_zone_stats_lyr3 = df.groupby(['iuzfbnd', 'Fbrk_zone'])['vks'].describe().reset_index()
+    mask = vks_zone_stats_lyr3['iuzfbnd'] == 3
+    vks_zone_stats_lyr3 = vks_zone_stats_lyr3[mask]
+    vks_zone_stats_lyr3.rename(columns={'Fbrk_zone': 'geo_zone'}, inplace=True)
+
+    # append data frames
+    vks_zone_stats = vks_zone_stats_lyr1.append(vks_zone_stats_lyr2)
+    vks_zone_stats = vks_zone_stats.append(vks_zone_stats_lyr3)
+
+    # export csv
+    file_path = 'vks_zone_stats.csv'
+    vks_zone_stats.to_csv(file_path, index=False)
+
+
+
+
+    # OLD
+    # # loop through each modflow layer
+    # vks_zone_stats = pd.DataFrame(columns = ['layer', 'geo_zone', 'count', 'vks_mean', 'vks_median', 'vks_min', 'vks_max', 'vks_sd'])
+    # layers = list(range(1, iuzfbnd.max()+1))
+    # for layer in layers:
+    #
+    #     if layer == 1:
+    #         layer_zones = YF_zone
+    #     elif layer == 2:
+    #         layer_zones = OF_zone
+    #     elif layer == 3:
+    #         layer_zones = Fbrk_zone
+    #
+    #     # loop through geologic zones
+    #     for zone in geo_zones:
+    #
+    #         # identify cells in this layer
+    #         mask = (iuzfbnd == layer) & (layer_zones == zone)
+    #         vks_val = vks[mask]
+    #
+    #         # store layer, zone, and vks stats
+    #         if len(vks_val) > 0:
+    #             df = {'layer': layer,
+    #                   'geo_zone': zone,
+    #                   'count': len(vks_val),
+    #                   'vks_mean': vks_val.mean(),
+    #                   'vks_median': np.median(vks_val),
+    #                   'vks_min': vks_val.min(),
+    #                   'vks_max': vks_val.max(),
+    #                   'vks_sd': np.std(vks_val)
+    #                   }
+    #             vks_zone_stats = vks_zone_stats.append(df, ignore_index=True)
+    #
+    # # write csv
+    # file_path = 'vks_zone_stats.csv'
+    # vks_zone_stats.to_csv(file_path, index=False)
+
+
+
+    # check upw hk values -------------------------------------------------------####
+
+    # grab ibound
+    ibound_lyr1 = mf_tr.bas6.ibound.array[0,:,:]
+    ibound_lyr2 = mf_tr.bas6.ibound.array[1,:,:]
+    ibound_lyr3 = mf_tr.bas6.ibound.array[2,:,:]
+
+    # grab hk
+    hk_lyr1 = mf_tr.upw.hk.array[0, :, :]
+    hk_lyr2 = mf_tr.upw.hk.array[1, :, :]
+    hk_lyr3 = mf_tr.upw.hk.array[2, :, :]
+
+    # get values for active cells: layer 1
+    mask = ibound_lyr1 == 1
+    hk_lyr1[mask].min()
+
+    # get values for active cells: layer 2
+    mask = ibound_lyr2 == 1
+    hk_lyr2[mask].min()
+
+    # get values for active cells: layer 3
+    mask = ibound_lyr3 == 1
+    hk_lyr3[mask].min()
