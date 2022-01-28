@@ -42,8 +42,8 @@ update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
-update_ag_package = 0
-do_checks = 1
+update_ag_package = 1
+do_checks = 0
 
 
 # ==============================
@@ -226,46 +226,47 @@ if load_and_transfer_transient_files == 1:
 # ==================================================================================================
 # Update transient model with parameters and heads from best steady state model
 # ==================================================================================================
+if (update_starting_heads == 1) | (update_starting_parameters == 1):
 
-# set file names and paths --------------------------------------------------------------------####
+    # set file names and paths --------------------------------------------------------------------####
 
-# name files
-mf_ss_name_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.nam"
-mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
+    # name files
+    mf_ss_name_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.nam"
+    mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
 
-# steady state heads file
-mf_ss_heads_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.hds"
+    # steady state heads file
+    mf_ss_heads_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.hds"
 
-# csv with best steady state params
-best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223.csv"
+    # csv with best steady state params
+    best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223.csv"
 
-# directory with transient model input files
-tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
-
-
-# create Sim class --------------------------------------------------------#
-
-class Sim():
-    pass
-Sim.tr_name_file = mf_tr_name_file
-Sim.hru_shp_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\hru_shp.csv"
-Sim.gage_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\gage_hru.csv"
-Sim.gage_measurement_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\gage_steady_state.csv"
-Sim.input_file = best_ss_input_params
-Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids.dat"
-Sim.average_rain_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\average_daily_rain_m.dat"
-Sim.surf_geo_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\surface_geology.txt"
-Sim.subbasins_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\subbasins.txt"
-Sim.vks_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\vks_zones.txt"
+    # directory with transient model input files
+    tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
 
 
+    # create Sim class --------------------------------------------------------#
 
-# load transient model ----------------------------------------------------------------------------------------####
+    class Sim():
+        pass
+    Sim.tr_name_file = mf_tr_name_file
+    Sim.hru_shp_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\hru_shp.csv"
+    Sim.gage_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\gage_hru.csv"
+    Sim.gage_measurement_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\gage_steady_state.csv"
+    Sim.input_file = best_ss_input_params
+    Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids.dat"
+    Sim.average_rain_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\average_daily_rain_m.dat"
+    Sim.surf_geo_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\surface_geology.txt"
+    Sim.subbasins_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\subbasins.txt"
+    Sim.vks_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\vks_zones.txt"
 
-# load transient model
-Sim.mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                   model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                   verbose=True, forgive=False, version="mfnwt")
+
+
+    # load transient model ----------------------------------------------------------------------------------------####
+
+    # load transient model
+    Sim.mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       verbose=True, forgive=False, version="mfnwt")
 
 
 
