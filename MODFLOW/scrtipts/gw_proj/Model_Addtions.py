@@ -58,6 +58,7 @@ def add_rural_domestic_pumping_to_well_pkg():
         new_well_df['i'] = curr_domestic_wells['row'].values.astype(well_df['i'])
         new_well_df['j'] = curr_domestic_wells['col'].values.astype(well_df['j'])
         new_well_df['flux'] = curr_domestic_wells['flows'].values.astype(well_df['flux'])
+        new_well_df = new_well_df[new_well_df['k']>-1]
         merg_df = pd.concat([well_df, new_well_df])
 
         merge_rec = merg_df.to_records(index=False)
