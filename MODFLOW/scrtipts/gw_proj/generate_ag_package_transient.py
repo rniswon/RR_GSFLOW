@@ -66,7 +66,7 @@ def build_option_block(
     options.irrigation_pond = True
     options.numirrponds = numirrponds
     options.maxcellspond = maxcellspond
-    options.maxwell = True
+    options.maxwells = True
     options.nummaxwell = nummaxwell
     options.tabfiles = False  # pumping wells will not be input as table files
     options.phiramp = True
@@ -151,13 +151,14 @@ def generate_pond_list(df_diversion):
     recarray = ModflowAg.get_empty(numrecords=len(pond_ids), block="pond")
 
     pond_lut = {}
+    qfrac = 1
     for ix, pond in enumerate(pond_ids):
         pond_lut[pond] = ix
         tdf = df_pond[df_pond.pond_id == pond]
         hru = tdf.pond_hru.values[0]
         volume = tdf.pond_area_m2.values[0] * 3  # assuming ponds are 3m deep
         seg = tdf.div_seg.values[0]
-        recarray[ix] = (hru, volume, seg)
+        recarray[ix] = (hru, volume, seg, qfrac)
 
     return pond_lut, recarray
 
@@ -453,6 +454,12 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
             df_diversion = df_diversion[
                 ~df_diversion['crop_type'].isin([crop])]
 
+    # set flowthrough
+    flowthrough = 1
+    low_flow_period = (6,7,8,9,10,11)
+    if int(month) in low_flow_period:
+        flowthrough=0
+
     df_irr_pond = pd.DataFrame(columns=columns)
 
     pond_id = [pond_lut[pid] for pid in df_diversion.pond_id.values]
@@ -460,7 +467,7 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     df_irr_pond['numcell'] = 1
     df_irr_pond['period'] = -1e+10
     df_irr_pond['triggerfact'] = -1e+10
-    df_irr_pond['flowthrough'] = 0  # pond inflow specified by SFR FLOW value
+    df_irr_pond['flowthrough'] = flowthrough
     df_irr_pond['hru_id{}'] = df_diversion['field_hru_id'].values
     df_irr_pond['dum{}'] = 0
     df_irr_pond['eff_fact{}'] = df_diversion['crop_coef'].values
@@ -524,11 +531,11 @@ def main():
     script_ws = os.path.abspath(os.path.dirname(__file__))
     repo_ws = os.path.join(script_ws, "..", "..", "..")
 
-    ag_dataset_file = os.path.join(script_ws, "ag_dataset_w_ponds.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds.csv")
     ag_dataset = pd.read_csv(ag_dataset_file)
     crop_kc_df = pd.read_excel(
         os.path.join(
-            repo_ws, "Data", "Pumping", "Agg_pumping", "KC_sonoma shared.xlsx"
+            repo_ws, "MODFLOW", "init_files", "KC_sonoma shared.xlsx"
         ),
         sheet_name='kc_info'
     )

@@ -33,8 +33,8 @@ import output_utils
 # Script settings
 # ==============================
 
-load_and_transfer_transient_files = 0
-update_starting_heads = 0
+load_and_transfer_transient_files = 1
+update_starting_heads = 1
 update_starting_parameters = 0
 update_prms_control_for_gsflow = 0
 update_prms_params_for_gsflow = 0
@@ -42,7 +42,7 @@ update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
-update_ag_package = 1
+update_ag_package = 0
 do_checks = 0
 
 
@@ -453,6 +453,9 @@ if update_transient_model_for_smooth_running == 1:
     vks_scaling_factor = 0.1
     vks = vks * vks_scaling_factor
 
+    # make vks larger
+    vks = vks * 10
+
     # note: only use this section interactively
     # # identify min vks value
     # iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -479,7 +482,7 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.vks = vks
 
     # update nsets
-    mf_tr.uzf.nsets = 200
+    mf_tr.uzf.nsets = 250
 
     # update ntrail2
     mf_tr.uzf.ntrail2 = 10
