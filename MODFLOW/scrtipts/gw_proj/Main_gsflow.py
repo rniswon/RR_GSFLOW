@@ -33,8 +33,8 @@ import output_utils
 # Script settings
 # ==============================
 
-load_and_transfer_transient_files = 1
-update_starting_heads = 1
+load_and_transfer_transient_files = 0
+update_starting_heads = 0
 update_starting_parameters = 0
 update_prms_control_for_gsflow = 0
 update_prms_params_for_gsflow = 0
@@ -42,7 +42,7 @@ update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
-update_ag_package = 0
+update_ag_package = 1
 do_checks = 0
 
 
@@ -481,13 +481,21 @@ if update_transient_model_for_smooth_running == 1:
     # store
     mf_tr.uzf.vks = vks
 
-    # update nsets
+
+    # update thti ------------------------------#
+    thts = mf_tr.uzf.thts.array
+    sy = mf_tr.upw.sy.array[0,:,:]
+    thtr = thts - sy
+    small_value = 0.01 * thtr.min()
+    mf_tr.uzf.thti = thtr + small_value
+
+    # update nsets -----------------------------#
     mf_tr.uzf.nsets = 250
 
-    # update ntrail2
+    # update ntrail2 ---------------------------#
     mf_tr.uzf.ntrail2 = 10
 
-    # write uzf file
+    # write uzf file --------------------------#
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
     mf_tr.uzf.write_file()
 
