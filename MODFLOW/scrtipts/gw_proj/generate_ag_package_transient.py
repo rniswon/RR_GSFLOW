@@ -151,7 +151,7 @@ def generate_pond_list(df_diversion):
     recarray = ModflowAg.get_empty(numrecords=len(pond_ids), block="pond")
 
     pond_lut = {}
-    qfrac = 1  # TODO: this assumes that each segment only sends water to one pond, need to make qfrac a fraction when a segment sends water to more than one pond
+    qfrac = 1
     for ix, pond in enumerate(pond_ids):
         pond_lut[pond] = ix
         tdf = df_pond[df_pond.pond_id == pond]
@@ -160,7 +160,14 @@ def generate_pond_list(df_diversion):
         seg = tdf.div_seg.values[0]
         recarray[ix] = (hru, volume, seg, qfrac)
 
-    # TODO: loop through seg from recarray and change qfrac whenever there is more than one value for a seg
+    # loop through seg from recarray and change qfrac whenever there is more than one pond watered by a seg
+    pond_df = pd.DataFrame(recarray)
+    seg_id = pond_df['segid'].unique()
+    for seg in seg_id:
+        mask = pond_df['segid'] == seg
+        num_pond = sum(mask)
+        pond_df.loc[mask, 'qfrac'] = 1/num_pond
+    recarray = pond_df.to_records()
 
     return pond_lut, recarray
 
@@ -464,21 +471,7 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
 
     df_irr_pond = pd.DataFrame(columns=columns)
 
-    # TODO: place pond_hru in irrpond rather than pond_id - why isn't this working?
-    # attempt #1
-    #pond_id = [pond_lut[pid] for pid in df_diversion.pond_id.values]   # original
-    # pond_hru_list = []
-    # for pid in pond_id:
-    #     mask = df_diversion['pond_id'][pid]
-    #     pond_hru = df_diversion['pond_hru'][mask]
-    #     pond_hru_list.append(pond_hru)
-
-    # attempt #2
-    pond_idx = [pond_lut[pid] for pid in df_diversion.pond_id.values]   # TODO: pond_lut[pid] is the index of pond_id in df_diversion, right?
-    pond_hru = df_diversion.iloc[pond_idx , 'pond_hru']
-
-    #df_irr_pond['pond_id'] = pond_id  # original
-    df_irr_pond['pond_id'] = pond_hru  # TODO: is this right?
+    df_irr_pond['pond_id'] = df_diversion['pond_hru'].values
     df_irr_pond['numcell'] = 1
     df_irr_pond['period'] = -1e+10
     df_irr_pond['triggerfact'] = -1e+10
@@ -504,7 +497,7 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     )
 
     for ix, pond in enumerate(unique_ponds):
-        tdf = df_irr_pond[df_irr_pond['pond_id'] == diversion]
+        tdf = df_irr_pond[df_irr_pond['pond_id'] == pond]
         tdf['numcell'] = len(tdf)
         # field fact should be normalized and sum to 1 based on
         #  the GSFLOW Ag package documentation
