@@ -27,7 +27,7 @@ def build_option_block(
     nummaxwell,
     numirrdiversions,
     maxcellsdiversion,
-    numirrponds,
+    num_ponds_total,
     maxcellspond
 ):
     """
@@ -64,7 +64,7 @@ def build_option_block(
     options.maxcellswell = maxcellswell
     options.supplemental_well = False
     options.irrigation_pond = True
-    options.numirrponds = numirrponds
+    options.numirrponds = num_ponds_total
     options.maxcellspond = maxcellspond
     options.maxwells = True
     options.nummaxwell = nummaxwell
@@ -161,15 +161,16 @@ def generate_pond_list(df_diversion):
         recarray[ix] = (hru, volume, seg, qfrac)
 
     # loop through seg from recarray and change qfrac whenever there is more than one pond watered by a seg
-    pond_df = pd.DataFrame(recarray)
-    seg_id = pond_df['segid'].unique()
+    pond_list_df = pd.DataFrame(recarray)
+    num_ponds_total = len(pond_list_df['hru_id'].unique())
+    seg_id = pond_list_df['segid'].unique()
     for seg in seg_id:
-        mask = pond_df['segid'] == seg
+        mask = pond_list_df['segid'] == seg
         num_pond = sum(mask)
-        pond_df.loc[mask, 'qfrac'] = 1/num_pond
-    recarray = pond_df.to_records()
+        pond_list_df.loc[mask, 'qfrac'] = 1/num_pond
+    recarray = pond_list_df.to_records()
 
-    return pond_lut, recarray
+    return pond_lut, recarray, num_ponds_total
 
 
 def create_irrwell_stress_period(stress_period, df_wells, df_kcs):
@@ -557,7 +558,7 @@ def main():
 
     ag_dataset_ponds = ag_dataset[ag_dataset['pod_type'] == "DIVERSION"].copy()
     ag_dataset_ponds = ag_dataset_ponds[~ag_dataset_ponds.pond_hru.isin([-1,])]
-    pond_lut, ag_pond_list = generate_pond_list(ag_dataset_ponds)
+    pond_lut, ag_pond_list, num_ponds_total = generate_pond_list(ag_dataset_ponds)
     irrpond_dict, numirrponds, maxcellspond = generate_irrpond(
         mf.nper, ag_dataset_ponds, crop_kc_df, pond_lut
     )
@@ -585,7 +586,7 @@ def main():
         len(ag_well_list),
         numirrdiversions,
         maxcellsdiversion,
-        numirrponds,
+        num_ponds_total,
         maxcellspond
     )
 

@@ -440,29 +440,28 @@ if update_transient_model_for_smooth_running == 1:
     # update UZF -------------------------------------------------------------------####
 
     # update iuzfbnd for problem cell ------------------------------------#
-    # NOTE: this is for testing only
-    # TODO: remove this section after finish testing
-
-    # identify problem hru
-    problem_hru = 83888
-
-    # get iuzfbnd
-    iuzfbnd = mf_tr.uzf.iuzfbnd.array
-
-    # get row and column indices of problem hru
-    nhru = gs.prms.parameters.get_values("nhru")[0]
-    hru_id = np.array(list(range(1, nhru + 1)))
-    num_row, num_col = iuzfbnd.shape
-    hru_id_mat = hru_id.reshape(num_row, num_col)
-    problem_hru_idx = np.where(hru_id_mat == problem_hru)
-    problem_hru_row = problem_hru_idx[0][0]
-    problem_hru_col = problem_hru_idx[1][0]
-
-    # turn off unsaturated flow for problem cell
-    iuzfbnd[problem_hru_row, problem_hru_col] = -3
-
-    # store
-    mf_tr.uzf.iuzfbnd = iuzfbnd
+    # # NOTE: this is for testing only
+    #
+    # # identify problem hru
+    # problem_hru = 83888
+    #
+    # # get iuzfbnd
+    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    #
+    # # get row and column indices of problem hru
+    # nhru = gs.prms.parameters.get_values("nhru")[0]
+    # hru_id = np.array(list(range(1, nhru + 1)))
+    # num_row, num_col = iuzfbnd.shape
+    # hru_id_mat = hru_id.reshape(num_row, num_col)
+    # problem_hru_idx = np.where(hru_id_mat == problem_hru)
+    # problem_hru_row = problem_hru_idx[0][0]
+    # problem_hru_col = problem_hru_idx[1][0]
+    #
+    # # turn off unsaturated flow for problem cell
+    # iuzfbnd[problem_hru_row, problem_hru_col] = -3
+    #
+    # # store
+    # mf_tr.uzf.iuzfbnd = iuzfbnd
 
 
     # update vks ------------------------------------#
@@ -513,7 +512,7 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.thti = thtr + small_value
 
     # update nsets -----------------------------#
-    mf_tr.uzf.nsets = 250
+    mf_tr.uzf.nsets = 350
 
     # update ntrail2 ---------------------------#
     mf_tr.uzf.ntrail2 = 10
