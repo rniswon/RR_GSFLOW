@@ -461,6 +461,8 @@ if update_transient_model_for_smooth_running == 1:
     # turn off unsaturated flow for problem cell
     iuzfbnd[problem_hru_row, problem_hru_col] = -3
 
+    # store
+    mf_tr.uzf.iuzfbnd = iuzfbnd
 
 
     # update vks ------------------------------------#

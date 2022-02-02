@@ -14,7 +14,6 @@ HOB               39  ..\modflow\input\rr_tr.hob
 GAGE             120  ..\modflow\input\rr_tr.gage
 OC                14  ..\modflow\input\rr_tr.oc
 NWT               32  ..\modflow\input\rr_tr.nwt
-AG               121  ..\modflow\input\rr_tr.ag
 DATA            1001  ..\modflow\input\Potter_Valley_inflow.dat
 DATA            1002  ..\modflow\input\Mendo_Lake_release.dat
 DATA            1003  ..\modflow\input\Sonoma_Lake_release.dat

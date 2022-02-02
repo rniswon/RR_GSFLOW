@@ -82,7 +82,6 @@ GSFLOW MODFLOW main             gsflow_modflow      2022-01-12
 UZF-NWT Package                 gwf2uzf1_NWT        2021-03-02
 SFR-NWT Package                 gwf2sfr7_NWT        2020-09-30
 LAK-NWT Package                 gwf2lak7_NWT        2021-09-28
-AG-NWT Package                  gwf2ag1_NWT_ponds   2021-10-19
 
 Using Control File: gsflow_rr.control
 
