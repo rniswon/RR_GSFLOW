@@ -50,6 +50,12 @@ do_checks = 0
 # Set file names and paths
 # ==============================
 
+# set script work space
+script_ws = os.path.abspath(os.path.dirname(__file__))
+
+# set repo work space
+repo_ws = os.path.join(script_ws, "..", "..", "..")
+
 # directory with transient model input files
 tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
 
@@ -440,27 +446,28 @@ if update_transient_model_for_smooth_running == 1:
     # update UZF -------------------------------------------------------------------####
 
     # update iuzfbnd for problem cell ------------------------------------#
-    # NOTE: this is for testing only
-    # TODO: remove this section after finish testing
-
-    # identify problem hru
-    problem_hru = 83888
-
-    # get iuzfbnd
-    iuzfbnd = mf_tr.uzf.iuzfbnd.array
-
-    # get row and column indices of problem hru
-    nhru = gs.prms.parameters.get_values("nhru")[0]
-    hru_id = np.array(list(range(1, nhru + 1)))
-    num_row, num_col = iuzfbnd.shape
-    hru_id_mat = hru_id.reshape(num_row, num_col)
-    problem_hru_idx = np.where(hru_id_mat == problem_hru)
-    problem_hru_row = problem_hru_idx[0][0]
-    problem_hru_col = problem_hru_idx[1][0]
-
-    # turn off unsaturated flow for problem cell
-    iuzfbnd[problem_hru_row, problem_hru_col] = -3
-
+    # # NOTE: this is for testing only
+    #
+    # # identify problem hru
+    # problem_hru = 83888
+    #
+    # # get iuzfbnd
+    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    #
+    # # get row and column indices of problem hru
+    # nhru = gs.prms.parameters.get_values("nhru")[0]
+    # hru_id = np.array(list(range(1, nhru + 1)))
+    # num_row, num_col = iuzfbnd.shape
+    # hru_id_mat = hru_id.reshape(num_row, num_col)
+    # problem_hru_idx = np.where(hru_id_mat == problem_hru)
+    # problem_hru_row = problem_hru_idx[0][0]
+    # problem_hru_col = problem_hru_idx[1][0]
+    #
+    # # turn off unsaturated flow for problem cell
+    # iuzfbnd[problem_hru_row, problem_hru_col] = -3
+    #
+    # # store
+    # mf_tr.uzf.iuzfbnd = iuzfbnd
 
 
     # update vks ------------------------------------#
@@ -511,7 +518,7 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.thti = thtr + small_value
 
     # update nsets -----------------------------#
-    mf_tr.uzf.nsets = 250
+    mf_tr.uzf.nsets = 350
 
     # update ntrail2 ---------------------------#
     mf_tr.uzf.ntrail2 = 10
@@ -519,47 +526,6 @@ if update_transient_model_for_smooth_running == 1:
     # write uzf file --------------------------#
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
     mf_tr.uzf.write_file()
-
-
-    # OLD
-    # # Set VKS equal to the value of VKA in UPW (with VKA values extracted from the layer that recharge is specified in the IUZFBND array)
-    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
-    # vka = mf_tr.upw.vka.array
-    # vka_selected_lyr = np.zeros_like(vka[0,:,:])
-    # num_row = vka_selected_lyr.shape[0]
-    # num_col = vka_selected_lyr.shape[1]
-    #
-    # for i in list(range(0,num_row)):     # loop through rows
-    #     for j in list(range(0,num_col)):    # loop through columns
-    #
-    #         if iuzfbnd[i,j] == 0:
-    #             vka_selected_lyr[i, j] = vka[0, i, j]   # get vka from top layer for cells outside of the model domain (just to avoid having 0s since values are supposed to be positive and real)
-    #         elif iuzfbnd[i,j] > 0:
-    #             vka_selected_lyr[i,j] = vka[iuzfbnd[i,j]-1, i, j]     # get vka from iuzfbnd layer
-    # mf_tr.uzf.vks = vka_selected_lyr   #TODO: can I just assign a numpy array to a flopy object?
-    #
-    #
-    # # Set SURFK equal to VKS
-    # # TODO: are any issues caused by using the command below?
-    # mf_tr.uzf.surfk = mf_tr.uzf.vks
-    #
-    #
-    # # Decrease the multiplier on SURFK by 3 orders of magnitude
-    # # TODO: is this the right way to change the multiplier on surfk?
-    # mf_tr.uzf.surfk.cnstnt = mf_tr.uzf.surfk.cnstnt/1000
-    #
-    #
-    # # NOTE: If you use the Open/Close option for specifying arrays, you can use a single file for both VKS and surfk.
-    # # TODO: how to implement this in flopy?
-    # # TODO: find out whether this is actually better when interacting with the model through flopy
-    #
-    #
-    # # Set extwc to 0.25
-    # mf_tr.uzf.extwc.array[:,:,:,:] = 0.25
-    #
-    #
-    # # Look at the ET budget again (after running the model) and make sure it is reasonable. Most of the water deep percolating into UZF is lost to ET.
-    # # TODO: after looking at ET budget, maybe adjust something here?
 
 
 
@@ -572,6 +538,24 @@ if update_transient_model_for_smooth_running == 1:
     #
     # # write lake file
     # mf_tr.lak.write_file()
+
+
+
+    # update UPW -------------------------------------------------------------------####
+
+    # decrease horizontal k in layer 3
+    hk = mf_tr.upw.hk.array
+    hk[2,:,:] = hk[2,:,:]/10
+    mf_tr.upw.hk = hk
+
+    # decrease vertical k in layer 3
+    vka = mf_tr.upw.vka.array
+    vka[2,:,:] = vka[2,:,:]/10
+    mf_tr.upw.vka = vka
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
 
 
 
@@ -774,7 +758,7 @@ if update_one_cell_lakes == 1:
 
             # get min lake elevation (i.e. elev of lake bottom grid cell) and calculate desired lake elev
             lake_min_elev = elev_botm[lak_lyr.max(),lak_row, lak_col]
-            lake_buffer = 2
+            lake_buffer = 5
             lake_elev = lake_min_elev + lake_buffer
 
             # calculate desired elevation of spillway/gate
@@ -1167,7 +1151,7 @@ if update_ag_package == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt")
+                                       load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
     #dis = mf_tr.dis
     ag = mf_tr.ag
     #ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
@@ -1178,7 +1162,7 @@ if update_ag_package == 1:
     gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
 
     # read in ag dataset csv file
-    ag_dataset_file = "ag_dataset_w_ponds.csv"
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds.csv")
     ag_data = pd.read_csv(ag_dataset_file)
 
 
@@ -1323,6 +1307,40 @@ if update_ag_package == 1:
     ag.irrwell = irr_well
     ag.irrpond = irr_pond
 
+
+
+
+    #  update well layer in well list ---------------------------------------------------------#
+
+    # read in ag well list data file
+    well_list_data_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list.csv")
+    well_list_data = pd.read_csv(well_list_data_file)
+
+    # extract well list from ag package
+    well_list = pd.DataFrame(ag.well_list)
+
+    # loop through ag well list
+    for idx, well in well_list.iterrows():
+
+        # grab well id info from ag package well list
+        mask_ag = well_list.index == idx
+        well_row = well_list.loc[mask_ag, 'i'].values[0]
+        well_col = well_list.loc[mask_ag, 'j'].values[0]
+
+        # # find this well in the well list data file - can't do it this way because there are repeated wells
+        # mask_file = (well_list_data['i'] == well_row) & (well_list_data['j'] == well_col)
+        # well_layer = well_list_data.loc[mask_file, 'well_layer']
+
+        # find this well in the well list data file
+        # note: this assumes that well_list and well_list_data are ordered in the same way
+        well_layer = well_list_data.loc[mask_ag, 'well_layer'].values[0]
+
+        # fill well depth into ag package well list
+        well_list.loc[mask_ag, 'k'] = int(well_layer) - 1  # subtracting 1 to get python 0-based index
+
+    # store
+    well_list['k'] = well_list['k'].astype('int')
+    ag.well_list = well_list.to_records()
 
 
 
