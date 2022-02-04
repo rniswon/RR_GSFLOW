@@ -155,11 +155,13 @@ for idx, well in well_list.iterrows():
 
 # determine well distance cutoffs (maybe several cutoffs that are each tried in turn)
 # TODO: try different cutoffs so that get smallest cutoff for which all wells get assigned a well elevation
-#well_dist_cutoffs = [10, 50, 100, 1000]  # these are in meters
-well_dist_cutoff = 1000  # these are in meters
+well_dist_cutoff = [10, 100, 1000, 10000]  # these are in meters
+#well_dist_cutoff = 1000  # these are in meters
 
 # loop through each AG well
 well_dwr['dist_to_ag_well'] = np.nan
+well_list['mean_dist_to_dwr_wells_m'] = np.nan
+well_list['num_dwr_wells'] = np.nan
 well_list['well_depth_m'] = np.nan
 well_list['top_lyr1'] = np.nan
 well_list['bot_lyr1'] = np.nan
@@ -185,7 +187,6 @@ for i, ag_well in well_list.iterrows():
         dwr_well_coord = (dwr_well_e, dwr_well_n)
 
         # get distance of AG well from the well completion wells
-        #well_dist = math.dist(ag_well_coord, dwr_well_coord)
         try:
             well_dist = distance.euclidean(ag_well_coord, dwr_well_coord)
         except:
@@ -196,31 +197,26 @@ for i, ag_well in well_list.iterrows():
 
 
     # get mean well depth of all wells within the distance cutoff
-    dist_mask = well_dwr['dist_to_ag_well'] < well_dist_cutoff
-    mean_well_depth_ft = well_dwr.loc[dist_mask, 'dist_to_ag_well'].mean()  # TODO: check units - assuming the DWR well depths are in ft, units not listed in spreadsheet or on website
-    ft_per_meter = 3.2808399
-    mean_well_depth = mean_well_depth_ft * 1/ft_per_meter    # convert from feet to meters
-    well_list.loc[ag_well_mask, 'well_depth_m'] = mean_well_depth
+    for cutoff in well_dist_cutoff:
 
-    # if there is at least one well within the first distance cutoff
+        if pd.isna(well_list.loc[ag_well_mask, 'well_depth_m'].values[0]):
 
-        # calculate the average well depth for wells within the cutoff
+            # get mean DWR well depth within cutoff
+            dist_mask = well_dwr['dist_to_ag_well'] < cutoff
+            mean_well_depth_ft = np.nanmean(well_dwr.loc[dist_mask, 'well_depth'].values)  # DWR well depths are in ft
+            ft_per_meter = 3.2808399
+            mean_well_depth = mean_well_depth_ft * (1/ft_per_meter)    # convert from feet to meters
+            well_list.loc[ag_well_mask, 'well_depth_m'] = mean_well_depth
 
-        # set the AG well depth equal to the calculated average
+            # get mean distance to DWR wells
+            mean_well_dist = np.nanmean(well_dwr.loc[dist_mask, 'dist_to_ag_well'].values)
+            well_list.loc[ag_well_mask, 'mean_dist_to_dwr_wells_m'] = mean_well_dist
 
-    # elif there is at least one well within the second distance cutoff
+            # get number of DWR wells
+            num_wells = np.count_nonzero(~np.isnan(well_dwr.loc[dist_mask, 'well_depth'].values))
+            well_list.loc[ag_well_mask, 'num_dwr_wells'] = num_wells
 
-        # calculate the average well depth for wells within the cutoff
 
-        # set the AG well depth equal to the calculated average
-
-    # elif there is at least one well within the third distance cutoff
-
-        # calculate the average well depth for wells within the cutoff
-
-        # set the AG well depth equal to the calculated average
-
-    # note: continue as necessary
 
     # get model grid cell elevations
     row_idx = well_list.loc[ag_well_mask, 'i'].values[0]
@@ -276,6 +272,5 @@ for i, ag_well in well_list.iterrows():
 
 #  Export table of AG well layers -----------------------------------------------####
 
-well_list.to_csv(ag_package_well_list_file)
+well_list.to_csv(ag_package_well_list_file, index=False)
 
-#TODO: use this table to update well layers in AG package well list in Main_gsflow.py
