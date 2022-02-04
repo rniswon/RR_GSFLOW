@@ -1,4 +1,4 @@
-Control file 
+Control file
 ####
 parameter_check_flag
 1
@@ -38,18 +38,18 @@ prms_warmup
 modflow_name
 1
 4
-rr_tr.nam
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\windows\rr_tr.nam
 ####
 param_file
 2
 4
-..\PRMS\input\prms_rr.param
-..\PRMS\input\ag_pond_HRUs.param
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\input\prms_rr.param
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\input\ag_pond_HRUs.param
 ####
 data_file
 1
 4
-..\PRMS\input\prms_rr.dat
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\input\prms_rr.dat
 ####
 dprst_flag
 1
@@ -69,7 +69,7 @@ temp_laps
 gsflow_output_file
 1
 4
-..\PRMS\output\RR_gsflow.out
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\output\RR_gsflow.out
 ####
 csvON_OFF
 1
@@ -79,7 +79,7 @@ csvON_OFF
 csv_output_file
 1
 4
-..\PRMS\output\gsflow.csv
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\output\gsflow.csv
 ####
 et_module
 1
@@ -94,7 +94,7 @@ init_vars_from_file
 model_output_file
 1
 4
-..\PRMS\output\rr_budget.out2
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\output\rr_budget.out2
 ####
 print_freq
 1
@@ -533,17 +533,17 @@ statsON_OFF
 stat_var_file
 1
 4
-..\PRMS\output\statvar_prms.dat
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\output\statvar_prms.dat
 ####
 var_init_file
 1
 4
-prms_ic.in
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\windows\prms_ic.in
 ####
 var_save_file
 1
 4
-..\PRMS\output\prms_ic_prms.out
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\output\prms_ic_prms.out
 ####
 print_debug
 1
@@ -572,7 +572,7 @@ sroff
 ani_output_file
 1
 4
-..\PRMS\output\animation.out
+C:\work\projects\russian_river\model\RR_GSFLOW\GSFLOW\PRMS\output\animation.out
 ####
 dispVar_element
 15
@@ -689,8 +689,13 @@ recharge
 hru_actet
 potet
 hru_ppt
-
-
-
-
-
+####
+agriculture_canopy_flag
+1
+1
+1
+####
+soilzone_module
+1
+4
+soilzone_ag

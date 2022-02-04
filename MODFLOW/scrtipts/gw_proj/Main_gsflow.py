@@ -36,13 +36,13 @@ import output_utils
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 0
+update_prms_control_for_gsflow = 1
 update_prms_params_for_gsflow = 0
 update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
-update_ag_package = 1
+update_ag_package = 0
 do_checks = 0
 
 
@@ -339,9 +339,29 @@ if update_starting_parameters == 1:
 
 if update_prms_control_for_gsflow == 1:
 
-    #gs.prms.control.set_values('statsON_OFF', [0])
-    #gs.prms.control.write()
+    # # load gsflow model
+    # gsflow_control = os.path.join(model_folder, 'windows', 'gsflow_rr.control')
+    # gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
+    #
+    # # add agriculture_canopy_flag
+    # # agriculture_canopy_flag
+    # # 1
+    # # 1
+    # # 1
+    # gs.prms.control.add_record(name = 'agriculture_canopy_flag', values = [1,1,1])   # TODO: why isn't this working?
+    #
+    # # add soilzone_module
+    # # soilzone_module
+    # # 1
+    # # 4
+    # # soilzone_ag
+    # gs.prms.control.add_record(name = 'soilzone_module', values = [1,4,'soilzone_ag'])   # TODO: why isn't this working?
+    #
+    # # write control file
+    # gs.prms.control.write()
+
     pass
+
 
 
 
