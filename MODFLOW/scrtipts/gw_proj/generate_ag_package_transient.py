@@ -146,18 +146,36 @@ def generate_pond_list(df_diversion):
     """
     print("@@@@@@ Building Pond List @@@@@@@")
     df_pond = df_diversion[['pond_id', 'pond_hru', 'pond_area_m2', 'div_seg']]
-    pond_ids = df_pond.pond_id.unique()
+    # pond_ids = df_pond.pond_id.unique()
+    pond_hrus = df_pond.pond_hru.unique()
 
-    recarray = ModflowAg.get_empty(numrecords=len(pond_ids), block="pond")
+    recarray = ModflowAg.get_empty(numrecords=len(pond_hrus), block="pond")
 
     pond_lut = {}
     qfrac = 1
-    for ix, pond in enumerate(pond_ids):
-        pond_lut[pond] = ix
-        tdf = df_pond[df_pond.pond_id == pond]
-        hru = tdf.pond_hru.values[0]
-        volume = tdf.pond_area_m2.values[0] * 3  # assuming ponds are 3m deep
-        seg = tdf.div_seg.values[0]
+    for ix, pond in enumerate(pond_hrus):
+        tdf = df_pond[df_pond.pond_hru == pond]
+        pond_ids = tdf.pond_id.unique()
+        if len(pond_ids) == 1:
+            hru = tdf.pond_hru.values[0]
+            volume = tdf.pond_area_m2.values[0] * 3  # assuming ponds are 3m deep
+            seg = tdf.div_seg.values[0]
+            pond_lut[hru] = [tdf.pond_id.values[0]]
+        else:
+            hru = tdf.pond_hru.values[0]
+            seg = tdf.div_seg.values[0]
+            div_segs = tdf.div_seg.unique()
+            if div_segs.size > 1:
+                print(pond_ids)
+                print(div_segs)
+                print(hru)
+                raise AssertionError("Not supported by AG Package")
+            volume = 0
+            for pid in pond_ids:
+                ttdf = tdf[tdf.pond_id == pid]
+                volume += ttdf.pond_area_m2.values[0] * 3
+
+            pond_lut[hru] = list(tdf.pond_id.unique())
         recarray[ix] = (hru, volume, seg, qfrac)
 
     # loop through seg from recarray and change qfrac whenever there is more than one pond watered by a seg
@@ -167,7 +185,7 @@ def generate_pond_list(df_diversion):
     for seg in seg_id:
         mask = pond_list_df['segid'] == seg
         num_pond = sum(mask)
-        pond_list_df.loc[mask, 'qfrac'] = 1/num_pond
+        pond_list_df.loc[mask, 'qfrac'] = 1 / num_pond
     recarray = pond_list_df.to_records()
 
     return pond_lut, recarray, num_ponds_total
@@ -425,8 +443,8 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     ----------
     stress_period : int
         zero based Modflow stress period number
-    df_wells : pd.Dataframe
-        df of Russian River ag well diversion data
+    df_diversion : pd.Dataframe
+        df of Russian River ag diversion data for irrigation ponds
     df_kcs : pd.Dataframe
         df of Russian River crop coeficients
 
@@ -482,7 +500,7 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     df_irr_pond['eff_fact{}'] = df_diversion['crop_coef'].values
     df_irr_pond['field_fact{}'] = df_diversion['field_fac'].values
 
-    # group diversions based on their segid!
+    # group ponds based on their pond_hru_id!
     unique_ponds = df_irr_pond['pond_id'].unique()
     numrecords = len(unique_ponds)
     maxells = 1
@@ -558,6 +576,11 @@ def main():
 
     ag_dataset_ponds = ag_dataset[ag_dataset['pod_type'] == "DIVERSION"].copy()
     ag_dataset_ponds = ag_dataset_ponds[~ag_dataset_ponds.pond_hru.isin([-1,])]
+    # move the two ponds over because they cannot be combined with other existing
+    # pond in the hru. Other pond has a seperate iseg for diversion that is not
+    # in the same tributary system.
+    ag_dataset_ponds.loc[ag_dataset_ponds.pond_id == 1550, "pond_hru"] += 1
+    ag_dataset_ponds.loc[ag_dataset_ponds.pond_id == 1662, "pond_hru"] += 1
     pond_lut, ag_pond_list, num_ponds_total = generate_pond_list(ag_dataset_ponds)
     irrpond_dict, numirrponds, maxcellspond = generate_irrpond(
         mf.nper, ag_dataset_ponds, crop_kc_df, pond_lut

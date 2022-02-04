@@ -14,7 +14,6 @@ HOB               39  ..\modflow\input\rr_tr.hob
 GAGE             120  ..\modflow\input\rr_tr.gage
 OC                14  ..\modflow\input\rr_tr.oc
 NWT               32  ..\modflow\input\rr_tr.nwt
-AG               121  ..\modflow\input\rr_tr.ag 
 DATA            1001  ..\modflow\input\Potter_Valley_inflow.dat
 DATA            1002  ..\modflow\input\Mendo_Lake_release.dat
 DATA            1003  ..\modflow\input\Sonoma_Lake_release.dat
@@ -37,7 +36,8 @@ DATA            1020  ..\modflow\input\rubber_dam_lake.dat
 DATA            1021  ..\modflow\output\pumping_reduction.out
 DATA(BINARY)      55  ..\modflow\output\rr_tr.cbc REPLACE
 DATA              81  ..\modflow\output\rr_tr.sfr.out
-DATA            1008  ..\modflow\output\rr_tr.uzf1008.out
+DATA            2000  ..\modflow\output\rr_tr_hru83888_2.uzf.out
+DATA            2001  ..\modflow\output\rr_tr_hru83888_3.uzf.out
 DATA            1022  ..\modflow\output\rr_tr.hob.out
 DATA            1023  ..\modflow\output\RUSSIAN_R_JOHNSONS_BEACH_GUERNEVILLE.go
 DATA            1024  ..\modflow\output\AUSTIN_C_NR_CAZADERO.go

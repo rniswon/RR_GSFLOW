@@ -522,47 +522,6 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.write_file()
 
 
-    # OLD
-    # # Set VKS equal to the value of VKA in UPW (with VKA values extracted from the layer that recharge is specified in the IUZFBND array)
-    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
-    # vka = mf_tr.upw.vka.array
-    # vka_selected_lyr = np.zeros_like(vka[0,:,:])
-    # num_row = vka_selected_lyr.shape[0]
-    # num_col = vka_selected_lyr.shape[1]
-    #
-    # for i in list(range(0,num_row)):     # loop through rows
-    #     for j in list(range(0,num_col)):    # loop through columns
-    #
-    #         if iuzfbnd[i,j] == 0:
-    #             vka_selected_lyr[i, j] = vka[0, i, j]   # get vka from top layer for cells outside of the model domain (just to avoid having 0s since values are supposed to be positive and real)
-    #         elif iuzfbnd[i,j] > 0:
-    #             vka_selected_lyr[i,j] = vka[iuzfbnd[i,j]-1, i, j]     # get vka from iuzfbnd layer
-    # mf_tr.uzf.vks = vka_selected_lyr   #TODO: can I just assign a numpy array to a flopy object?
-    #
-    #
-    # # Set SURFK equal to VKS
-    # # TODO: are any issues caused by using the command below?
-    # mf_tr.uzf.surfk = mf_tr.uzf.vks
-    #
-    #
-    # # Decrease the multiplier on SURFK by 3 orders of magnitude
-    # # TODO: is this the right way to change the multiplier on surfk?
-    # mf_tr.uzf.surfk.cnstnt = mf_tr.uzf.surfk.cnstnt/1000
-    #
-    #
-    # # NOTE: If you use the Open/Close option for specifying arrays, you can use a single file for both VKS and surfk.
-    # # TODO: how to implement this in flopy?
-    # # TODO: find out whether this is actually better when interacting with the model through flopy
-    #
-    #
-    # # Set extwc to 0.25
-    # mf_tr.uzf.extwc.array[:,:,:,:] = 0.25
-    #
-    #
-    # # Look at the ET budget again (after running the model) and make sure it is reasonable. Most of the water deep percolating into UZF is lost to ET.
-    # # TODO: after looking at ET budget, maybe adjust something here?
-
-
 
 
     # update LAK ---------------------------------------------------------------####
@@ -573,6 +532,24 @@ if update_transient_model_for_smooth_running == 1:
     #
     # # write lake file
     # mf_tr.lak.write_file()
+
+
+
+    # update UPW -------------------------------------------------------------------####
+
+    # decrease horizontal k in layer 3
+    hk = mf_tr.upw.hk.array
+    hk[2,:,:] = hk[2,:,:]/10
+    mf_tr.upw.hk = hk
+
+    # decrease vertical k in layer 3
+    vka = mf_tr.upw.vka.array
+    vka[2,:,:] = vka[2,:,:]/10
+    mf_tr.upw.vka = vka
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
 
 
 
@@ -1324,6 +1301,10 @@ if update_ag_package == 1:
     ag.irrwell = irr_well
     ag.irrpond = irr_pond
 
+
+
+
+    #  update well layer in well list ---------------------------------------------------------#
 
 
 
