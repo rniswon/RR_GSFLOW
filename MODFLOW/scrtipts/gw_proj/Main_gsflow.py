@@ -36,13 +36,13 @@ import output_utils
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 1
+update_prms_control_for_gsflow = 0
 update_prms_params_for_gsflow = 0
 update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
-update_ag_package = 0
+update_ag_package = 1
 do_checks = 0
 
 
