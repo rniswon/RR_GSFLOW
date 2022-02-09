@@ -25,10 +25,7 @@ repo_ws = os.path.join(script_ws, "..", "..")
 well_dwr_file = os.path.join(repo_ws, "MODFLOW", "init_files", "wellcompletionreports_DWR.csv")
 
 # set file path to mf name file
-# TODO: set this back to orig
-#mf_nam_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr.nam")
-mf_nam_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr_ag.nam")
-
+mf_nam_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr.nam")
 
 # set output file csv
 ag_package_well_list_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list.csv")

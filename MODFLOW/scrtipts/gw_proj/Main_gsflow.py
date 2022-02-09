@@ -42,7 +42,7 @@ update_prms_params_for_gsflow = 0
 update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 1
+update_prms_params_for_ag_package = 0
 update_ag_package = 1
 do_checks = 0
 
@@ -450,7 +450,7 @@ if update_transient_model_for_smooth_running == 1:
     # update nwt package values to those suggested by Rich
     mf_tr.nwt.maxiterout = 20
     mf_tr.nwt.dbdtheta = 0.85
-    mf_tr.nwt.headtol = 0.1
+    #mf_tr.nwt.headtol = 0.1  #TODO set this back after this test run on 2/8/22
 
     # write nwt file
     mf_tr.nwt.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.nwt")
@@ -474,34 +474,35 @@ if update_transient_model_for_smooth_running == 1:
 
     # update UPW -------------------------------------------------------------------####
 
-    # decrease horizontal and vertical K in all layers for zone containing problem grid cell (HRU 83888)
-
-    # get zone names
-    K_zones_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "misc_files", "K_zone_ids.dat")
-    zones = load_txt_3d(K_zones_file)
-
-    # extract hk and vka
-    hk = mf_tr.upw.hk.array
-    vka = mf_tr.upw.vka.array
-
-    # identify zones that need to change
-    zones_to_change = 190   # TODO: make this a list later, if need to look for multiple values
-
-    # create mask
-    mask = zones == zones_to_change  # TODO: change == to something that can look for multiple values later, if needed
-
-    # make changes to hk and vka
-    change_factor = 10
-    hk[mask] = hk[mask] / change_factor
-    vka[mask] = vka[mask] / change_factor
-
-    # store changes
-    mf_tr.upw.hk = hk
-    mf_tr.upw.vka = vka
-
-    # write upw file
-    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
-    mf_tr.upw.write_file()
+    # TODO: set this back after this test on 2/8/22
+    # # decrease horizontal and vertical K in all layers for zone containing problem grid cell (HRU 83888)
+    #
+    # # get zone names
+    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "misc_files", "K_zone_ids.dat")
+    # zones = load_txt_3d(K_zones_file)
+    #
+    # # extract hk and vka
+    # hk = mf_tr.upw.hk.array
+    # vka = mf_tr.upw.vka.array
+    #
+    # # identify zones that need to change
+    # zones_to_change = 190   # TODO: make this a list later, if need to look for multiple values
+    #
+    # # create mask
+    # mask = zones == zones_to_change  # TODO: change == to something that can look for multiple values later, if needed
+    #
+    # # make changes to hk and vka
+    # change_factor = 10
+    # hk[mask] = hk[mask] / change_factor
+    # vka[mask] = vka[mask] / change_factor
+    #
+    # # store changes
+    # mf_tr.upw.hk = hk
+    # mf_tr.upw.vka = vka
+    #
+    # # write upw file
+    # mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    # mf_tr.upw.write_file()
 
 
 
@@ -869,10 +870,10 @@ if update_one_cell_lakes == 1:
 if update_prms_params_for_ag_package == 1:
 
     # load transient modflow model, including ag package
-    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
-    ag = mf_tr.ag
+    # mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+    #                                    model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+    #                                    load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
+    # ag = mf_tr.ag
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -1522,7 +1523,7 @@ if update_ag_package == 1:
 
     #  write updated ag package ---------------------------------------------------------#
 
-    ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
+    ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")  
     ag.write_file()
 
 

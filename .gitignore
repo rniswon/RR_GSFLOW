@@ -38,3 +38,4 @@ GSFLOW/modflow/old
 GSFLOW/PRMS/old
 GSFLOW/PRMS/output/**
 GSFLOW/gis
+gsflow_scratch/

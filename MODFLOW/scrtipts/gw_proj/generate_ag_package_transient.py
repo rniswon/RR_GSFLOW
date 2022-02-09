@@ -12,6 +12,7 @@ except (ImportError, ModuleNotFoundError):
 
 import pandas as pd
 pd.options.mode.chained_assignment = None
+import geopandas
 
 
 def get_yr_mon_from_stress_period(sp):
@@ -566,6 +567,29 @@ def main():
         ),
         sheet_name='kc_info'
     )
+
+
+    #### -------------------
+
+    # FOR TESTING ONLY
+    subbasin_test = False
+    subbasin_choice = 4
+    if subbasin_test == True:
+
+         # read in field HRU shapefile
+         field_hru_shp_file = os.path.join(repo_ws, "MODFLOW", "init_files", "field_hru.shp")
+         field_hru = geopandas.read_file(field_hru_shp_file)
+
+        # get fields in chosen subbasin
+         field_hru = field_hru[field_hru['subbasin'] == subbasin_choice].copy().reset_index()
+         field_hru_sub = field_hru['HRU_ID'].values
+
+        # filter ag_dataset to only keep HRUs in subbasin_choice
+         mask = ag_dataset['field_hru_id'].isin(field_hru_sub)
+         ag_dataset = ag_dataset[mask].copy().reset_index()
+
+    #### -------------------
+
 
     # adjust ag_dataset to use 0-based rather than 1-based field HRU values (becuase flopy assumes 0-based)
     ag_dataset['field_hru_id'] = ag_dataset['field_hru_id'] - 1
