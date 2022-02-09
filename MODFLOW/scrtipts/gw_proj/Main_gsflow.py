@@ -1523,7 +1523,7 @@ if update_ag_package == 1:
 
     #  write updated ag package ---------------------------------------------------------#
 
-    ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")  
+    ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
     ag.write_file()
 
 

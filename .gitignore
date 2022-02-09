@@ -3,7 +3,6 @@ MODSIM/ResSimMODSIM/RRMinFLowMODSIM/obj/
 PRMS/output/
 *.cbc
 *.out
-*.hds
 *.go
 *.list
 */**/.idea/
@@ -39,3 +38,7 @@ GSFLOW/PRMS/old
 GSFLOW/PRMS/output/**
 GSFLOW/gis
 gsflow_scratch/
+MODFLOW/archived_models/**/*.hds
+MODFLOW/old/**/*.hds
+MODFLOW/modflow_calibration/**/*.hds
+GSFLOW/archive/2020/**/rr_tr.hds
