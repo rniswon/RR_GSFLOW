@@ -21,6 +21,7 @@ from gsflow.modflow import ModflowAg, Modflow
 import uzf_utils
 import sfr_utils
 import upw_utils
+from upw_utils import load_txt_3d
 import lak_utils
 import well_utils
 import output_utils
@@ -41,7 +42,7 @@ update_prms_params_for_gsflow = 0
 update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 0
+update_prms_params_for_ag_package = 1
 update_ag_package = 1
 do_checks = 0
 
@@ -61,6 +62,15 @@ tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
 
 # name file
 mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
+
+
+
+# ==============================
+# Set constants
+# ==============================
+ag_frac_min_val = 0.01
+
+
 
 
 
@@ -440,6 +450,7 @@ if update_transient_model_for_smooth_running == 1:
     # update nwt package values to those suggested by Rich
     mf_tr.nwt.maxiterout = 20
     mf_tr.nwt.dbdtheta = 0.85
+    mf_tr.nwt.headtol = 0.1
 
     # write nwt file
     mf_tr.nwt.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.nwt")
@@ -460,6 +471,37 @@ if update_transient_model_for_smooth_running == 1:
     # TODO: find out whether this is actually better when interacting with the model through flopy
 
 
+
+    # update UPW -------------------------------------------------------------------####
+
+    # decrease horizontal and vertical K in all layers for zone containing problem grid cell (HRU 83888)
+
+    # get zone names
+    K_zones_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "misc_files", "K_zone_ids.dat")
+    zones = load_txt_3d(K_zones_file)
+
+    # extract hk and vka
+    hk = mf_tr.upw.hk.array
+    vka = mf_tr.upw.vka.array
+
+    # identify zones that need to change
+    zones_to_change = 190   # TODO: make this a list later, if need to look for multiple values
+
+    # create mask
+    mask = zones == zones_to_change  # TODO: change == to something that can look for multiple values later, if needed
+
+    # make changes to hk and vka
+    change_factor = 10
+    hk[mask] = hk[mask] / change_factor
+    vka[mask] = vka[mask] / change_factor
+
+    # store changes
+    mf_tr.upw.hk = hk
+    mf_tr.upw.vka = vka
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
 
 
 
@@ -561,32 +603,7 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
-    # update UPW -------------------------------------------------------------------####
-
-    # decrease horizontal k in layer 3
-    hk = mf_tr.upw.hk.array
-    hk[2,:,:] = hk[2,:,:]/10
-    mf_tr.upw.hk = hk
-
-    # decrease vertical k in layer 3
-    vka = mf_tr.upw.vka.array
-    vka[2,:,:] = vka[2,:,:]/10
-    mf_tr.upw.vka = vka
-
-    # write upw file
-    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
-    mf_tr.upw.write_file()
-
-
-
     # update PRMS param to specific values ---------------------------------------------------------------####
-
-    # OLD: these values got us good Sat_S values
-    # # update ssr2gw_rate
-    # ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
-    # ssr2gw_rate = ssr2gw_rate * 200
-    # gs.prms.parameters.set_values("ssr2gw_rate", ssr2gw_rate)
-
 
     # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
     vks_mod = mf_tr.uzf.vks.array * 0.5
@@ -854,7 +871,8 @@ if update_prms_params_for_ag_package == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt")
+                                       load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
+    ag = mf_tr.ag
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -1090,8 +1108,96 @@ if update_prms_params_for_ag_package == 1:
 
 
 
+    # # Add ag_frac as a PRMS parameter ------------------------------------------------------#
+    # # NOTE: this extracts ag frac data from ag_dataset_with_ponds.csv AFTER extracting ag HRUs from the ag package
+    #
+    # ### irrwell ###
+    #
+    # irrwell = ag.irrwell
+    # ag_hru_irrwell = []
+    # for key, recarray in irrwell.items():
+    #
+    #     # extract ag HRUs from irrwell
+    #     field_names = recarray.dtype.names
+    #     hru_ids = [x for x in field_names if 'hru_id' in x]
+    #     for hru_id in hru_ids:
+    #         ag_hru_irrwell.append(recarray[hru_id].tolist())
+    #
+    # # flatten list of lists, remove 0s, and get unique HRU values
+    # ag_hru_irrwell = [val for sublist in ag_hru_irrwell for val in sublist]
+    # ag_hru_irrwell = [val for val in ag_hru_irrwell if val > 0]
+    # ag_hru_irrwell = np.unique(np.asarray(ag_hru_irrwell))
+    #
+    #
+    # ### irrpond ###
+    #
+    # irrpond = ag.irrpond
+    # ag_hru_irrpond = []
+    # for key, recarray in irrpond.items():
+    #
+    #     # extract ag HRUs from irrpond
+    #     field_names = recarray.dtype.names
+    #     hru_ids = [x for x in field_names if 'hru_id' in x]
+    #     for hru_id in hru_ids:
+    #         ag_hru_irrpond.append(recarray[hru_id].tolist())
+    #
+    # # flatten list of lists, remove 0s, and get unique HRU values
+    # ag_hru_irrpond = [val for sublist in ag_hru_irrpond for val in sublist]
+    # ag_hru_irrpond = [val for val in ag_hru_irrpond if val > 0]
+    # ag_hru_irrpond = np.unique(np.asarray(ag_hru_irrpond))
+    #
+    #
+    # ### irrdiversion ###
+    #
+    # irrdiv = ag.irrdiversion
+    # ag_hru_irrdiv = []
+    # for key, recarray in irrdiv.items():
+    #
+    #     # extract ag HRUs from irrdiv
+    #     field_names = recarray.dtype.names
+    #     hru_ids = [x for x in field_names if 'hru_id' in x]
+    #     for hru_id in hru_ids:
+    #         ag_hru_irrdiv.append(recarray[hru_id].tolist())
+    #
+    # # flatten list of lists, remove 0s, and get unique HRU values
+    # ag_hru_irrdiv = [val for sublist in ag_hru_irrdiv for val in sublist]
+    # ag_hru_irrdiv = [val for val in ag_hru_irrdiv if val > 0]
+    # ag_hru_irrdiv = np.unique(np.asarray(ag_hru_irrdiv))
+    #
+    #
+    # ### create ag_frac PRMS parameter ###
+    #
+    # # combine all ag_hru arrays and get unique ag hrus
+    # ag_hru = np.append(ag_hru_irrwell, ag_hru_irrpond)
+    # ag_hru = np.append(ag_hru, ag_hru_irrdiv)
+    # ag_hru = np.unique(ag_hru)
+    #
+    # # create hru_id array
+    # nhru = gs.prms.parameters.get_values('nhru')[0]
+    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
+    #
+    # # create ag_frac array
+    # ag_frac = np.zeros(nhru)
+    #
+    # # fill in ag_frac values for fields
+    # for hru in ag_hru:
+    #
+    #     # get field fac for each ag hru
+    #     mask_ag_data = ag_data['field_hru_id'] == hru
+    #     field_fac = ag_data.loc[mask_ag_data, 'field_fac'].values[0]
+    #
+    #     # fill in ag frac value
+    #     mask_hru = hru_id == hru
+    #     ag_frac[mask_hru] = field_fac
+    #
+    # # add ag_frac as PRMS parameter
+    # gs.prms.parameters.add_record(name = "ag_frac", values = ag_frac, dimensions = [["nhru", nhru]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
+
+
+
 
     # Add ag_frac as a PRMS parameter ------------------------------------------------------#
+    # NOTE: this extracts ag frac data from ag_dataset_with_ponds.csv only
 
     # create hru_id array
     nhru = gs.prms.parameters.get_values('nhru')[0]
@@ -1105,19 +1211,18 @@ if update_prms_params_for_ag_package == 1:
     ag_frac = np.zeros(nhru)
 
     # fill in ag_frac values for fields
-    ag_frac_min_val = 0.01
     for field_hru_id_val, field_fac_val in zip(field_hru_id, field_fac):
 
         # identify field hru id
         mask = hru_id == field_hru_id_val
 
         # fill in ag frac value if greater than min value
-        if field_fac_val >= ag_frac_min_val:
-            ag_frac[mask] = field_fac_val
+        # if field_fac_val >= ag_frac_min_val:
+        #     ag_frac[mask] = field_fac_val
+        ag_frac[mask] = field_fac_val
 
     # add ag_frac as PRMS parameter
     gs.prms.parameters.add_record(name = "ag_frac", values = ag_frac, dimensions = [["nhru", nhru]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
-
 
 
 
@@ -1185,6 +1290,7 @@ if update_ag_package == 1:
     ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds.csv")
     ag_data = pd.read_csv(ag_dataset_file)
 
+    xx=1
 
 
     # As much as possible assign upper bounds to water demand that are consistent with local practices ---------------------------------------------------------#
@@ -1361,6 +1467,54 @@ if update_ag_package == 1:
     # store
     well_list['k'] = well_list['k'].astype('int')
     ag.well_list = well_list.to_records()
+
+
+
+    #  remove fields with no ag from stress period data ---------------------------------------------------------#
+
+    # # create hru_id array
+    # nhru = gs.prms.parameters.get_values('nhru')[0]
+    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
+    #
+    # # get hru ids of fields with non-zero ag_frac
+    # ag_frac = gs.prms.parameters.get_values('ag_frac')
+    # mask = ag_frac > 0
+    # ag_fields = hru_id[mask]
+    #
+    # # get stress period data that contains field data
+    # irrwell = ag.irrwell
+    # irrpond = ag.irrpond
+    #
+    # # update fields in irrwell
+    # # (field HRU ID in irrwell: hru_id_well)
+    # for key, recarray in irrwell.items():
+    #
+    #     # convert recarray to data frame
+    #     df = pd.DataFrame(recarray)
+    #
+    #     # remove any records for fields (hru_id_well) not included in ag_frac_fields
+    #     mask = df['']
+    #
+    #     # update numcellpond
+    #
+    #     # store in irrwell
+    #     irrwell[key] = df.to_records()
+    #
+    #
+    # # update fields in irrpond
+    # # (field HRU ID in irrpond: hru_id_pond)
+    # for key, recarray in irrpond.items():
+    #
+    #     # convert recarray to data frame
+    #     df = pd.DataFrame(recarray)
+    #
+    #     # remove any records for fields (hru_id_pond) not included in ag_frac_fields
+    #
+    #     # update numcellwell
+    #
+    #     # store in irrwell
+    #     irrwell[key] = df.to_records()
+
 
 
 

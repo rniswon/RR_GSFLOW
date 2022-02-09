@@ -567,6 +567,13 @@ def main():
         sheet_name='kc_info'
     )
 
+    # adjust ag_dataset to use 0-based rather than 1-based field HRU values (becuase flopy assumes 0-based)
+    ag_dataset['field_hru_id'] = ag_dataset['field_hru_id'] - 1
+
+    # only keep ag field HRUs that have ag fraction >= a minimum value
+    ag_frac_min_val = 0.01
+    ag_dataset = ag_dataset[ag_dataset['field_fac'] >= ag_frac_min_val].copy().reset_index()
+
     # get BAS and DIS package from transient model
     model_ws = os.path.join(repo_ws, "MODFLOW", "TR")
     mf = Modflow.load(
