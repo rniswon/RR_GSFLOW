@@ -7,6 +7,8 @@ repository!!!!
 import datetime as dt
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import geopandas
 import os
 
 
@@ -49,7 +51,7 @@ class HobsOut(dict):
 
     """
 
-    def __init__(self, filename, strip_after=""):
+    def __init__(self, filename, strip_after="."):
         super(HobsOut, self).__init__()
         self.name = filename
         self._strip_after = strip_after
@@ -85,7 +87,7 @@ class HobsOut(dict):
         if self._strip_after:
             dict_name = obsname.split(self._strip_after)[0]
 
-        # SACr specific method to get a date from the obsname and set the
+        # Russian River specific method to get a date from the obsname and set the
         # obsname
 
         dstr = "0385"
@@ -765,11 +767,25 @@ class HobsOut(dict):
 
 
 if __name__ == "__main__":
+
+    # set workspaces
     script_ws = os.path.abspath(os.path.dirname(__file__))
     repo_ws = os.path.join(script_ws, "..", "..")
-    hobs_name = "rr_tr.hob.out"
 
-    tmp = HobsOut(os.path.join(repo_ws, "GSFLOW", "modflow", "output", hobs_name))
+    # set hobs output file name
+    hobs_name = "rr_tr.hob.out"
+    hobs_path = os.path.join(repo_ws, "GSFLOW", "modflow", "output", hobs_name)
+
+    # set hobs and well info files
+    well_info_file = os.path.join(repo_ws, "MODFLOW", "init_files", "hru_obs2_20211130.shp")
+    hob_well_info_file = os.path.join(repo_ws, "MODFLOW", "init_files", "HOB_well_info_hru_obs2_20211130.csv")
+
+    # read in hobs and well info files
+    well_info = geopandas.read_file(well_info_file)
+    hob_well_info = pd.read_csv(hob_well_info_file)
+
+
+    tmp = HobsOut(hobs_path)
     tmp.plot("04N01W01R04S", "o-")
     plt.legend(loc=0, numpoints=1)
     plt.show()

@@ -1278,10 +1278,7 @@ if update_ag_package == 1:
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
-    #dis = mf_tr.dis
     ag = mf_tr.ag
-    #ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
-    #ag = ModflowAg.load(ag_package_file, model=mf_tr, nper = dis.nper)
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -1538,7 +1535,8 @@ if do_checks == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt")
+                                       verbose=True, forgive=False, version="mfnwt",
+                                        load_only=["BAS6", "DIS", "AG", "SFR", "UZF", "UPW"])
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -1733,3 +1731,33 @@ if do_checks == 1:
     # get values for active cells: layer 3
     mask = ibound_lyr3 == 1
     hk_lyr3[mask].min()
+
+
+
+
+    # check correspondence between segment list and irrdiversion in ag package ---------------------------------####
+
+    # extract
+    ag = mf_tr.ag
+    irrdiv = ag.irrdiversion
+    seg_list = ag.segment_list
+
+    # extract segments from seg_list
+    irrdiv_seg = []
+    for key, recarray in irrdiv.items():
+
+        # extract seg ids from irrdiv
+        field_names = recarray.dtype.names
+        seg_ids = [x for x in field_names if 'segid' in x]
+        for seg_id in seg_ids:
+            irrdiv_seg.append(recarray[seg_id].tolist())
+
+    # flatten list of lists and get unique HRU values
+    irrdiv_seg = [val for sublist in irrdiv_seg for val in sublist]
+    irrdiv_seg = np.unique(np.asarray(irrdiv_seg))
+
+    # get segments that are in irrdiv but not in the segment list
+    irrdiv_NOT_seg_list = list(set(irrdiv_seg) - set(seg_list))
+
+    # get segments that are in the segment list but not in irrdiv
+    seg_list_NOT_irrdiv = list(set(seg_list) - set(irrdiv_seg))
