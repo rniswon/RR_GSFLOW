@@ -20,5 +20,5 @@ for iup_seg in unique_iupsegs:
         existing_iupseg = segments_df.loc[segments_df['nseg']==iup_seg, 'iupseg'].values[0]
         ag_dataset.loc[ag_dataset['div_seg'] == iup_seg, 'iupseg'] = existing_iupseg
 
-
+ag_dataset.to_csv(r"..\..\MODFLOW\init_files\ag_dataset_w_ponds_w_ipuseg.csv")
 xx = 1
