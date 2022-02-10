@@ -559,8 +559,9 @@ def main():
     script_ws = os.path.abspath(os.path.dirname(__file__))
     repo_ws = os.path.join(script_ws, "..", "..", "..")
 
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     ag_dataset = pd.read_csv(ag_dataset_file)
+    #ag_dataset = ag_dataset.head(100)
     crop_kc_df = pd.read_excel(
         os.path.join(
             repo_ws, "MODFLOW", "init_files", "KC_sonoma shared.xlsx"
