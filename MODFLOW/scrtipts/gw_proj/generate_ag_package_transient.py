@@ -559,8 +559,22 @@ def main():
     script_ws = os.path.abspath(os.path.dirname(__file__))
     repo_ws = os.path.join(script_ws, "..", "..", "..")
 
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     ag_dataset = pd.read_csv(ag_dataset_file)
+
+    # [Ayman]: find segments that divert watet directly to fields and to a pond
+
+
+    segments_pos_pond_id = set(ag_dataset.loc[ag_dataset['pond_id'] >= 0, 'div_seg'].values)
+    segments_neg_pond_id = set(ag_dataset.loc[ag_dataset['pond_id'] < 0, 'div_seg'].values)
+
+    segments_with_pond_and_field = segments_pos_pond_id.intersection(segments_neg_pond_id)
+    segments_with_only_bond = segments_pos_pond_id.difference(segments_neg_pond_id)
+    segments_with_only_field = segments_neg_pond_id.difference(segments_pos_pond_id)
+
+    total_field_area_orphan = ag_dataset[ag_dataset['div_seg'].isin(segments_with_only_field)]['field_area'].sum()
+    print("***** % of orfan field areas is {}".format(100*total_field_area_orphan/ag_dataset['field_area'].sum()))
+
     crop_kc_df = pd.read_excel(
         os.path.join(
             repo_ws, "MODFLOW", "init_files", "KC_sonoma shared.xlsx"
