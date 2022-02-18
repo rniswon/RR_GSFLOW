@@ -12,6 +12,7 @@ except (ImportError, ModuleNotFoundError):
 
 import pandas as pd
 pd.options.mode.chained_assignment = None
+import shapefile
 import geopandas
 
 
@@ -458,17 +459,17 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     df_diversion = df_diversion.copy()
     year, month = get_yr_mon_from_stress_period(stress_period)
 
-    columns = [
-        'pond_id',
-        'numcell',
-        'period',
-        'triggerfact',
-        'flowthrough',
-        'hru_id{}',
-        'dum{}',
-        'eff_fact{}',
-        'field_fact{}'
-    ]
+    # define low flow period
+    low_flow_period = (6,7,8,9,10,11)
+
+    # set flowthrough based on low flow period
+    flowthrough = 1
+    if int(month) in low_flow_period:
+        flowthrough=0
+
+    # filter out orphan fields if it is the low flow period
+    if int(month) in low_flow_period:
+        df_diversion = df_diversion[df_diversion['orphan_field'] == 0]
 
     # get crop info, namely decide if crop is irrigated or not
     not_irrigated_col = 'NotIrrigated_{}'.format(int(month))
@@ -483,14 +484,20 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
             df_diversion = df_diversion[
                 ~df_diversion['crop_type'].isin([crop])]
 
-    # set flowthrough
-    flowthrough = 1
-    low_flow_period = (6,7,8,9,10,11)
-    if int(month) in low_flow_period:
-        flowthrough=0
+
+    columns = [
+        'pond_id',
+        'numcell',
+        'period',
+        'triggerfact',
+        'flowthrough',
+        'hru_id{}',
+        'dum{}',
+        'eff_fact{}',
+        'field_fact{}'
+    ]
 
     df_irr_pond = pd.DataFrame(columns=columns)
-
     df_irr_pond['pond_id'] = df_diversion['pond_hru'].values
     df_irr_pond['numcell'] = 1
     df_irr_pond['period'] = -1e+10
@@ -551,36 +558,203 @@ def generate_irrpond(nper, df_diversion, df_kcs, pond_lut):
 
     return irrpond_dict, numirrponds, maxcellspond
 
+
+def parse_pond_shapefile(f):
+    xc = []
+    yc = []
+    area_m2 = []
+    pond_id = []
+    with shapefile.Reader(f) as r:
+        for ix, shape in enumerate(r.iterShapes()):
+            area = r.record(ix).area_sq_me
+            pid = r.record(ix).pond_id
+            gsu = flopy.utils.geospatial_utils.GeoSpatialUtil(shape)
+            x, y = gsu.points
+            xc.append(x)
+            yc.append(y)
+            area_m2.append(area)
+            pond_id.append(pid)
+    return np.array(xc), np.array(yc), np.array(area_m2), np.array(pond_id)
+
+
+def parse_pou_shapefile(f):
+    xc = []
+    yc = []
+    pou_id = []
+    with shapefile.Reader(f) as r:
+        for ix, shape in enumerate(r.iterShapes()):
+            pid = r.record(ix).FID_CropTy + 1
+            gsu = flopy.utils.geospatial_utils.GeoSpatialUtil(shape)
+            x, y = gsu.points
+            xc.append(x)
+            yc.append(y)
+            pou_id.append(pid)
+    return np.array(xc), np.array(yc), np.array(pou_id)
+
+
+def calculate_distance(px, py, fx, fy):
+    asq = (fx - px) ** 2
+    bsq = (fy - py) ** 2
+    c = np.sqrt(asq + bsq)
+    return c
+
+
+def identify_orphan_fields(ag_dataset, ag_dataset_w_orphan_fields_file):
+
+    # # [Ayman]: find segments that divert water directly to fields and to a pond
+    #
+    # segments_pos_pond_id = set(ag_dataset.loc[ag_dataset['pond_id'] >= 0, 'div_seg'].values)
+    # segments_neg_pond_id = set(ag_dataset.loc[ag_dataset['pond_id'] < 0, 'div_seg'].values)
+    #
+    # segments_with_pond_and_field = segments_pos_pond_id.intersection(segments_neg_pond_id)
+    # segments_with_only_pond = segments_pos_pond_id.difference(segments_neg_pond_id)
+    # segments_with_pond_and_field_minus_pond = segments_with_pond_and_field.difference(segments_with_only_pond)
+    # segments_with_only_field = segments_neg_pond_id.difference(segments_pos_pond_id)
+    #
+    # #total_field_area_orphan = ag_dataset[ag_dataset['div_seg'].isin(segments_with_only_field)]['field_area'].sum()
+    # total_field_area_orphan = ag_dataset[ag_dataset['div_seg'].isin(segments_with_pond_and_field_minus_pond)]['field_area'].sum()
+    # print("***** % of orphan field areas is {}".format(100*total_field_area_orphan/ag_dataset['field_area'].sum()))
+
+    # identify segments that send water to fields and ponds
+    ag_dataset_diversions = ag_dataset[ag_dataset['pod_type'] == "DIVERSION"].copy()
+    segments_pos_pond_id = set(ag_dataset_diversions.loc[ag_dataset_diversions['pond_id'] >= 0, 'div_seg'].values)
+    segments_neg_pond_id = set(ag_dataset_diversions.loc[ag_dataset_diversions['pond_id'] < 0, 'div_seg'].values)
+    segments_with_pond_and_field = segments_pos_pond_id.intersection(segments_neg_pond_id)
+    # segments_with_only_pond = segments_pos_pond_id.difference(segments_neg_pond_id)
+    # segments_with_only_field = segments_neg_pond_id.difference(segments_pos_pond_id)
+
+    # identify fields that get water from a segment that also sends water to a pond
+    ag_dataset_diversions_pond_and_field = ag_dataset_diversions[
+        ag_dataset_diversions['div_seg'].isin(segments_with_pond_and_field)]
+    ag_dataset_diversions_orphan_fields = ag_dataset_diversions_pond_and_field[
+        ag_dataset_diversions_pond_and_field['pond_id'] < 0]
+    orphan_fields = ag_dataset_diversions_orphan_fields['field_hru_id'].values
+
+    # calculate percentage of fields that get water from a segment that also sends water to a pond
+    orphan_field_area = ag_dataset_diversions_orphan_fields['field_area'].sum()
+    total_field_area = ag_dataset['field_area'].sum()
+    print("***** % of orphan field areas is {}".format(100 * (orphan_field_area / total_field_area)))
+
+    # add orphan field flag column to ag_dataset
+    ag_dataset['orphan_field'] = 0
+    mask = ((ag_dataset['pod_type'] == "DIVERSION") & (ag_dataset['div_seg'].isin(segments_with_pond_and_field)) & (ag_dataset['pond_id'] < 0) & ag_dataset['field_hru_id'].isin(orphan_fields))
+    ag_dataset.loc[mask, 'orphan_field'] = 1
+
+    # write to csv
+    ag_dataset.to_csv(ag_dataset_w_orphan_fields_file, index = False)
+
+    return segments_with_pond_and_field, ag_dataset
+
+
+
+
+def assign_orphan_fields_to_nearby_ponds(segments_with_pond_and_field, ag_dataset, ponds_coord_df, fields_coord_df, ag_dataset_w_no_orphan_fields_file):
+
+    # loop through segments that send water to both a field and a pond
+    for seg in segments_with_pond_and_field:
+
+        # create mask from this segment
+        mask_seg = (ag_dataset['div_seg'] == seg) & (ag_dataset['pod_type'] == "DIVERSION")
+        df_seg = ag_dataset[mask_seg]
+
+        # get arrays of pond ids and pond hrus associated with this segment
+        pond_id_arr = df_seg['pond_id'].unique()
+        pond_id_arr = pond_id_arr[pond_id_arr >= 0]
+        pond_hru_arr = df_seg['pond_hru'].unique()
+        pond_hru_arr = pond_hru_arr[pond_hru_arr >= 0]
+
+        # loop through fields associated with this segment
+        for idx, row in df_seg.iterrows():
+
+            # if not connected to a pond already
+            if row['pond_id'] < 0:
+
+                # get coordinates for this field
+                field_mask = fields_coord_df['fid'] == row['field_id']
+                fx = fields_coord_df.loc[field_mask, 'fx'].values[0]
+                fy = fields_coord_df.loc[field_mask, 'fy'].values[0]
+
+                # get coordinates for all ponds associated with this diversion segment and calculate distance to field
+                pond_dist_df = pd.DataFrame(columns = ['pond_id', 'px', 'py', 'pond_dist'], index = range(0, len(pond_id_arr)))
+                for i, pid in enumerate(pond_id_arr):
+
+                    # get pond coordinates
+                    ponds_mask = ponds_coord_df['pid'] == pid
+                    px = ponds_coord_df.loc[ponds_mask, 'px'].values[0]
+                    py = ponds_coord_df.loc[ponds_mask, 'py'].values[0]
+
+                    # calculate pond distance from field
+                    pond_dist = calculate_distance(px, py, fx, fy)
+
+                    # store
+                    pond_dist_df['pond_id'][i] = pid
+                    pond_dist_df['px'][i] = px
+                    pond_dist_df['px'][i] = py
+                    pond_dist_df['pond_dist'][i] = pond_dist
+
+
+                # identify closest pond id
+                min_dist_mask = pond_dist_df['pond_dist'] == pond_dist_df['pond_dist'].min()
+                closest_pond_id = pond_dist_df.loc[min_dist_mask, 'pond_id'].values[0]
+
+                # identify closest pond hru
+                pond_id_mask = ag_dataset['pond_id'] == closest_pond_id
+                closest_pond_hru = ag_dataset.loc[pond_id_mask, 'pond_hru'].values[0]
+
+                # connect it to the closest pond by assigning the pond id and pond hru
+                df_seg.loc[idx,'pond_id'] = closest_pond_id
+                df_seg.loc[idx,'pond_hru'] = closest_pond_hru
+
+        # store
+        ag_dataset[mask_seg] = df_seg
+
+    # write to csv
+    ag_dataset.to_csv(ag_dataset_w_no_orphan_fields_file, index=False)
+
+
+    return ag_dataset
+
+
+
+
+
 def main():
     # --------------------------------------------------------------
     # Read in files
     # this should be changed to read those files from the config file
     # --------------------------------------------------------------
+
+    # set workspaces
     script_ws = os.path.abspath(os.path.dirname(__file__))
     repo_ws = os.path.join(script_ws, "..", "..", "..")
 
+    # read in ag dataset
     ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     ag_dataset = pd.read_csv(ag_dataset_file)
 
-    # [Ayman]: find segments that divert watet directly to fields and to a pond
-
-
-    segments_pos_pond_id = set(ag_dataset.loc[ag_dataset['pond_id'] >= 0, 'div_seg'].values)
-    segments_neg_pond_id = set(ag_dataset.loc[ag_dataset['pond_id'] < 0, 'div_seg'].values)
-
-    segments_with_pond_and_field = segments_pos_pond_id.intersection(segments_neg_pond_id)
-    segments_with_only_bond = segments_pos_pond_id.difference(segments_neg_pond_id)
-    segments_with_only_field = segments_neg_pond_id.difference(segments_pos_pond_id)
-
-    total_field_area_orphan = ag_dataset[ag_dataset['div_seg'].isin(segments_with_only_field)]['field_area'].sum()
-    print("***** % of orfan field areas is {}".format(100*total_field_area_orphan/ag_dataset['field_area'].sum()))
-
+    # read in crop kc
     crop_kc_df = pd.read_excel(
         os.path.join(
             repo_ws, "MODFLOW", "init_files", "KC_sonoma shared.xlsx"
         ),
         sheet_name='kc_info'
     )
+
+    # read in ponds and fields shapefiles and extract coordinates
+    ponds_shp_file = os.path.join(repo_ws, "MODFLOW", "init_files", "pond_GIS", "storage_pond_centroids_proj.shp")
+    fields_shp_file = os.path.join(repo_ws, "MODFLOW", "init_files", "pond_GIS", "field_hru_centroids.shp")
+    px, py, pond_area_m2, pid = parse_pond_shapefile(ponds_shp_file)
+    fx, fy, fid = parse_pou_shapefile(fields_shp_file)
+    ponds_coord_df = pd.DataFrame({'px': px, 'py': py, 'pid': pid})
+    fields_coord_df = pd.DataFrame({'fx': fx, 'fy': fy, 'fid': fid})
+
+    # make sure that no diversions are supplying both a pond and a field directly
+    # for diversions that are doing this, assign the "orphan" fields to the nearest pond supplied by that diversion
+    ag_dataset_w_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_orphans.csv")
+    ag_dataset_w_no_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_no_orphans.csv")
+    segments_with_pond_and_field, ag_dataset = identify_orphan_fields(ag_dataset, ag_dataset_w_orphan_fields_file)
+    ag_dataset = assign_orphan_fields_to_nearby_ponds(segments_with_pond_and_field, ag_dataset, ponds_coord_df, fields_coord_df, ag_dataset_w_no_orphan_fields_file)
+
 
 
     #### -------------------
@@ -605,6 +779,10 @@ def main():
     #### -------------------
 
 
+
+
+
+
     # adjust ag_dataset to use 0-based rather than 1-based field HRU values (becuase flopy assumes 0-based)
     ag_dataset['field_hru_id'] = ag_dataset['field_hru_id'] - 1
 
@@ -619,6 +797,7 @@ def main():
         model_ws=model_ws
     )
 
+    # generate pond list and irrpond
     ag_dataset_ponds = ag_dataset[ag_dataset['pod_type'] == "DIVERSION"].copy()
     ag_dataset_ponds = ag_dataset_ponds[~ag_dataset_ponds.pond_hru.isin([-1,])]
     # move the two ponds over because they cannot be combined with other existing
@@ -631,6 +810,7 @@ def main():
         mf.nper, ag_dataset_ponds, crop_kc_df, pond_lut
     )
 
+    # generate well list and irrwell
     ag_dataset_wells = ag_dataset[ag_dataset['pod_type'] == 'WELL'].copy()
     ag_dataset_wells = ag_dataset_wells[~ag_dataset_wells.wrow.isin([0,])]
     ag_well_list = generate_well_list(ag_dataset_wells)
@@ -638,16 +818,17 @@ def main():
         mf.nper, ag_dataset_wells, crop_kc_df
     )
 
+    # generate segment list and irrdiversion
     ag_dataset_diversions = ag_dataset[
         ag_dataset['pod_type'] == 'DIVERSION'].copy()
     ag_dataset_diversions = ag_dataset_diversions[
         ag_dataset_diversions['pond_id'] == -1
     ]
     ag_dataset_diversions = ag_dataset_diversions.sort_values(by='div_seg')
-
     irrdiversion_dict, numirrdiversions, maxcellsdiversion = \
         generate_irrdiversion(mf.nper, ag_dataset_diversions, crop_kc_df)
 
+    # build options block
     options = build_option_block(
         numirrwells,
         maxcellswell,
@@ -658,6 +839,7 @@ def main():
         maxcellspond
     )
 
+    # create and write ag package
     print("@@@@@@ Creating ModflowAg object @@@@@@@")
     ag = ModflowAg(
         model=mf,

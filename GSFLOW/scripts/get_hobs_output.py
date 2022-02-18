@@ -10,760 +10,368 @@ import numpy as np
 import pandas as pd
 import geopandas
 import os
+import flopy
+from datetime import datetime
+from datetime import timedelta
 
 
-class HobsHeader(object):
-    sim_head = '"SIMULATED EQUIVALENT"'
-    obs_head = '"OBSERVED VALUE"'
-    obs_name = '"OBSERVATION NAME"'
-    # date = 'DATE'
-    # dyear = 'DECIMAL_YEAR'
 
-    header = {sim_head: None,
-              obs_head: None,
-              obs_name: None}
-              # date: None,
-              # dyear: None}
+def map_hobs_obsname_to_date(mf_tr_name_file):
+
+    # read in HOB input file
+    mf = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       verbose=True, forgive=False, version="mfnwt",
+                                        load_only=["BAS6", "DIS", "HOB"])
+    hob = mf.hob
+    obs_data = hob.obs_data
+
+    # loop through HOB wells
+    col_names = ['totim', 'irefsp', 'toffset', 'hobs', 'obsname']
+    hobs_df = pd.DataFrame(columns = col_names)
+    for idx, well in enumerate(obs_data):
+
+        # extract hob time series data
+        tsd = well.time_series_data
+
+        # store in data frame
+        df = pd.DataFrame(tsd)
+        hobs_df = hobs_df.append(df)
+
+    # convert column type and reset indices
+    hobs_df['obsname'] = hobs_df['obsname'].str.decode("utf-8")
+    hobs_df = hobs_df.reset_index(drop=True)
+
+    # add column for date (based on totim? based on combo irefsp and toffset?)
+    hobs_df['date'] = np.nan
+    for idx, row in enumerate(hobs_df.iterrows()):
+
+        # get totim
+        this_totim = row[1]['totim']  # TODO: why do I need this index here?
+
+        # get date
+        model_start_date = '1990-01-01'
+        model_start_date = datetime.strptime(model_start_date, "%Y-%m-%d")
+        hob_date = model_start_date + timedelta(days=this_totim)
+
+        # store date
+        mask = hobs_df.index == idx
+        hobs_df.loc[mask, 'date'] = hob_date
+
+    # export
+    file_name = os.path.join(repo_ws, "GSFLOW", "results", "tables", "hobs_df.csv")
+    hobs_df.to_csv(file_name)
+
+    return hobs_df
 
 
-class HobsOut(dict):
+
+def add_date_to_hobs_out(hobs_df, hobs_out_path):
+
+    # read in hobs output file
+    col_names = ["simulated", "observed", "obsname"]
+    hobs_out_df = pd.read_csv(hobs_out_path, sep="  ", skiprows=1, header=None, names = col_names)
+
+    # join hobs_df with hobs_out_df using obsname
+    hobs_out_df = pd.merge(hobs_out_df, hobs_df, on = 'obsname')
+
+    # reformat
+    hobs_out_df[['well_id', 'well_time']] = hobs_out_df['obsname'].str.split('.', 1, expand=True)
+    hobs_out_df['residual'] = hobs_out_df['simulated'] - hobs_out_df['observed']
+    hobs_out_df = hobs_out_df[['obsname', 'well_id', 'well_time', 'irefsp', 'toffset', 'totim', 'date', 'simulated', 'observed', 'residual']]
+
+    # export
+    file_name = os.path.join(repo_ws, "GSFLOW", "results", "tables", "hobs_out_df.csv")
+    hobs_out_df.to_csv(file_name)
+
+    return hobs_out_df
+
+
+
+def get_sum_squared_errors(df):
     """
-    Reads output data from Hobs file and prepares it for post processing.
-
-    Class sets observations to an ordered dictionary based on observation name
-
-    If observation name is consistant for a site, a time series is created
-    for plotting!
+    Returns the sum of squared errors from the residual
 
     Parameters
     ----------
-    filename : str
-        hobs filename
-    strip_after : str
-        flag to indicate a character to strip the hobs label after for
-        grouping wells.
+    obsname : str
+        observation name
 
-        Example:  OBS_1
-                  OBS_2
-        strip_after could be set to "_" and then all OBS observations will
-        be stored under the OBS key. This is extremely useful for plotting
-        and calculating statistics
-
+    Returns
+    -------
+        float: sum of square error
     """
+    return sum([i**2 for i in df['residual']])
+
+def get_rmse(df):
+    """
+    Returns the RMSE from the residual
+
+    Parameters
+    ----------
+    obsname : str
+        observation name
+
+    Returns
+    -------
+        float: rmse
+    """
+    return np.sqrt(np.mean([i**2 for i in df['residual']]))
+
+def get_number_observations(df):
+    """
+    Returns the number of observations for an obsname
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+    Returns
+    -------
+        int
+    """
+    return len(df['simulated'])
+
+def get_maximum_residual(df):
+    """
+    Returns the datetime.date and maximum residual value
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+
+    Returns
+    -------
+        tuple: (datetime.date, residual)
+    """
+    max_resid = df['residual'].max()
+    mask = df['residual'] == max_resid
+    max_resid_date = df.loc[mask, 'date']
+
+    return max_resid_date, max_resid
+
+def get_minimum_residual(df):
+    """
+    Returns the datetime.date, minimum residual value
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+
+    Returns
+    -------
+        tuple: (datetime.date, residual)
+    """
+    min_resid = df['residual'].min()
+    mask = df['residual'] == min_resid
+    min_resid_date = df.loc[mask, 'date']
+
+    return min_resid_date, min_resid
+
+def get_mean_residual(df):
+    """
+    Returns the datetime.date, minimum residual value
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+
+    Returns
+    -------
+        tuple: (datetime.date, residual)
+    """
+    data = df['residual']
+    return np.mean(data)
+
+def get_median_residual(df):
+    """
+    Returns the datetime.date, minimum residual value
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+
+    Returns
+    -------
+        tuple: (datetime.date, residual)
+    """
+    data = df['residual']
+    return np.median(data)
+
+def get_maximum_residual_heads(df):
+    """
+    Returns the datetime.date, simulated, and observed
+    heads at the maximum residual value
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+
+    Returns
+    -------
+        tuple: (datetime.date, simulated head, observed head)
+    """
+    resid = df['residual']
+    index = resid.index(max(resid))
+    observed = df['observed'][index]
+    simulated = df['simulated'][index]
+    date = df['date'][index]
+    return date, simulated, observed
+
+def get_minimum_residual_heads(df):
+    """
+    Returns the datetime.date, simulated, and observed
+    heads at the maximum residual value
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+
+    Returns
+    -------
+        tuple: (datetime.date, simulated head, observed head)
+    """
+    resid = df['residual']
+    index = resid.index(min(resid))
+    observed = df['observed'][index]
+    simulated = df['simulated'][index]
+    date = df['date'][index]
+    return date, simulated, observed
+
+def get_residual_bias(df):
+    """
+    Method to determine the bias of measurements +-
+    by checking the residual. Returns fraction of residuals
+    > 0.
+
+    Parameters
+    ----------
+    df : pandas data frame with HOBS data
+
+
+    Returns
+    -------
+        (float) fraction of residuals greater than zero
+    """
+    nobs = len(df['residual'])
+    num_greater_than_zero = sum(df['residual'] > 0)
+    bias = num_greater_than_zero / nobs
+
+    return bias
+
+# def write_dbf(self, dbfname, filter=None):
+#     """
+#     Method to write a dbf file from a the HOBS dictionary
+#
+#     Parameters
+#     ----------
+#     dbfname : str
+#         dbf file name
+#     filter: (str, list, tuple, or function)
+#         filtering criteria for writing statistics.
+#         Function must return True for filter out, false for write to file
+#
+#     """
+#     import shapefile
+#     data = []
+#     for obsname, meta_data in self.items():
+#
+#         if self.__filter(obsname, filter):
+#             continue
+#
+#         for ix, val in enumerate(meta_data['simval']):
+#             data.append([obsname,
+#                          self.__get_date_string(meta_data['date'][ix]),
+#                          val,
+#                          meta_data['obsval'][ix],
+#                          meta_data['residual'][ix]])
+#
+#     try:
+#         # traps for pyshp 1 vs. pyshp 2
+#         w = shapefile.Writer(dbf=dbfname)
+#     except Exception:
+#         w = shapefile.Writer()
+#
+#     w.field("HOBSNAME", fieldType="C")
+#     w.field("HobsDate", fieldType="D")
+#     w.field("HeadSim", fieldType='N', decimal=8)
+#     w.field("HeadObs", fieldType="N", decimal=8)
+#     w.field("Residual", fieldType="N", decimal=8)
+#
+#     for rec in data:
+#         w.record(*rec)
+#
+#     try:
+#         w.save(dbf=dbfname)
+#     except AttributeError:
+#         w.close()
+#
+# def write_min_max_residual_dbf(self, dbfname, filter=None):
+#     """
+#     Method to write a dbf of transient observations
+#     using observation statistics
+#
+#     Parameters
+#     ----------
+#     dbfname : str
+#         dbf file name
+#     filter: (str, list, tuple, or function)
+#         filtering criteria for writing statistics.
+#         Function must return True for filter out, false for write to file
+#
+#     """
+#     import shapefile
+#     data = []
+#     for obsname, meta_data in self.items():
+#         if self.__filter(obsname, filter):
+#             continue
+#
+#         max_date, resid_max = self.get_maximum_residual(obsname)
+#         min_date, resid_min = self.get_minimum_residual(obsname)
+#         simval_max, obsval_max = self.get_maximum_residual_heads(obsname)[1:]
+#         simval_min, obsval_min = self.get_minimum_residual_heads(obsname)[1:]
+#
+#         data.append([obsname,
+#                      self.get_number_observations(obsname),
+#                      self.__get_date_string(max_date), resid_max,
+#                      self.__get_date_string(min_date), resid_min,
+#                      simval_max, obsval_max, simval_min, obsval_min])
+#
+#     try:
+#         # traps for pyshp 1 vs. pyshp 2
+#         w = shapefile.Writer(dbf=dbfname)
+#     except Exception:
+#         w = shapefile.Writer()
+#
+#     w.field("HOBSNAME", fieldType="C")
+#     w.field("FREQUENCY", fieldType="N")
+#     w.field("MaxDate", fieldType="C")
+#     w.field("MaxResid", fieldType='N', decimal=8)
+#     w.field("MinDate", fieldType="C", decimal=8)
+#     w.field("MinResid", fieldType="N", decimal=8)
+#     w.field("MaxHeadSim", fieldType="N", decimal=8)
+#     w.field("MaxHeadObs", fieldType="N", decimal=8)
+#     w.field("MinHeadSim", fieldType="N", decimal=8)
+#     w.field("MinHeadObs", fieldType="N", decimal=8)
+#
+#     for rec in data:
+#         w.record(*rec)
+#
+#     try:
+#         w.save(dbf=dbfname)
+#     except AttributeError:
+#         w.close()
 
-    def __init__(self, filename, strip_after="."):
-        super(HobsOut, self).__init__()
-        self.name = filename
-        self._strip_after = strip_after
-        self._dataframe = None
-        self.__read_hobs_output()
-
-    def __read_hobs_output(self):
-        """
-        Method to read a hobs output file. Dynamically sets header information
-        and reads associated values.
-
-        Sets values to HobsOut dictionary
-        """
-
-        with open(self.name) as hobout:
-            for ix, line in enumerate(hobout):
-                if ix == 0:
-                    self.__set_header(line)
-
-                else:
-                    self.__set_dictionary_values(line)
-
-    def __set_dictionary_values(self, line):
-        """
-        Method to set incoming hobs line to dictionary data values
-
-        Args:
-            line: (str)
-        """
-        t = line.strip().split()
-        obsname = t[HobsHeader.header[HobsHeader.obs_name]]
-        dict_name = obsname
-        if self._strip_after:
-            dict_name = obsname.split(self._strip_after)[0]
-
-        # Russian River specific method to get a date from the obsname and set the
-        # obsname
-
-        dstr = "0385"
-        obsname = obsname
-        dict_name = obsname
-
-        mo = int(dstr[2:])
-        yr = int(dstr[:2])
-        if yr < 20:
-            yr += 2000
-        else:
-            yr += 1900
-
-        dstr ='{:04d}-{:02d}-15'.format(yr, mo)
-
-        simval = float(t[HobsHeader.header[HobsHeader.sim_head]])
-        obsval = float(t[HobsHeader.header[HobsHeader.obs_head]])
-        residual = simval - obsval
-        date = self.__set_datetime_object(dstr)
-        # decimal_date = float(t[HobsHeader.header[HobsHeader.dyear]])
-
-        if dict_name in self:
-            self[dict_name]['simval'].append(simval)
-            self[dict_name]['obsval'].append(obsval)
-            self[dict_name]['date'].append(date)
-            # self[dict_name]['decimal_date'].append(decimal_date)
-            self[dict_name]['residual'].append(residual)
-            self[dict_name]["obsname"].append(obsname)
-        else:
-            self[dict_name] = {"obsname": [obsname], "date": [date],
-                               # "decimal_date": [decimal_date],
-                               "simval": [simval], "obsval": [obsval],
-                               "residual": [residual]}
-
-    def __set_header(self, line):
-        """
-        Reads header line and sets header index
-
-        Parameters
-        ----------
-        line : str
-            first line of the HOB file
-
-        """
-        n = 0
-        s = ""
-
-        for i in line:
-            s += i
-            if s in HobsHeader.header:
-                HobsHeader.header[s] = n
-                n += 1
-                s = ""
-
-            elif s in (" ", "\t", "\n"):
-                s = ""
-
-            else:
-                pass
-
-        for key, value in HobsHeader.header.items():
-            if value is None:
-                raise AssertionError("HobsHeader headings must be updated")
-
-    def __set_datetime_object(self, s):
-        """
-        Reformats a string of YYYY-mm-dd to a datetime object
-
-        Parameters
-        ----------
-        s : str
-            string of YYYY-mm-dd
-
-        Returns
-        -------
-            datetime.date
-        """
-        return dt.datetime.strptime(s, "%Y-%m-%d")
-
-    def __get_date_string(self, date):
-        """
-
-        Parmaeters
-        ----------
-            date: datetime.datetime object
-
-        Returns
-        -------
-            string
-
-        """
-        return date.strftime("%Y/%m/%d")
-
-    @property
-    def obsnames(self):
-        """
-        Return a list of obsnames from the HobsOut dictionary
-        """
-        return self.keys()
-
-    def to_dataframe(self):
-        """
-        Method to get a pandas dataframe object of the
-        HOBs data.
-
-        Returns
-        -------
-            pd.DataFrame
-        """
-        import pandas as pd
-
-        if self._dataframe is None:
-            df = None
-            for hobsname, d in self.items():
-                t = pd.DataFrame(d)
-                if df is None:
-                    df = t
-                else:
-                    df = pd.concat([df, t], ignore_index=True)
-            self._dataframe = df
-
-        return self._dataframe
-
-    def get_sum_squared_errors(self, obsname):
-        """
-        Returns the sum of squared errors from the residual
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            float: sum of square error
-        """
-        return sum([i**2 for i in self[obsname]['residual']])
-
-    def get_rmse(self, obsname):
-        """
-        Returns the RMSE from the residual
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            float: rmse
-        """
-        return np.sqrt(np.mean([i**2 for i in self[obsname]['residual']]))
-
-    def get_number_observations(self, obsname):
-        """
-        Returns the number of observations for an obsname
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            int
-        """
-        return len(self[obsname]['simval'])
-
-    def get_maximum_residual(self, obsname):
-        """
-        Returns the datetime.date and maximum residual value
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            tuple: (datetime.date, residual)
-        """
-        data = self[obsname]['residual']
-        index = data.index(max(data))
-        date = self[obsname]['date'][index]
-        return date, max(data)
-
-    def get_minimum_residual(self, obsname):
-        """
-        Returns the datetime.date, minimum residual value
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            tuple: (datetime.date, residual)
-        """
-        data = self[obsname]['residual']
-        index = data.index(min(data))
-        date = self[obsname]['date'][index]
-        return date, min(data)
-
-    def get_mean_residual(self, obsname):
-        """
-        Returns the datetime.date, minimum residual value
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            tuple: (datetime.date, residual)
-        """
-        data = self[obsname]['residual']
-        return np.mean(data)
-
-    def get_median_residual(self, obsname):
-        """
-        Returns the datetime.date, minimum residual value
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            tuple: (datetime.date, residual)
-        """
-        data = self[obsname]['residual']
-        return np.median(data)
-
-    def get_maximum_residual_heads(self, obsname):
-        """
-        Returns the datetime.date, simulated, and observed
-        heads at the maximum residual value
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            tuple: (datetime.date, simulated head, observed head)
-        """
-        resid = self[obsname]['residual']
-        index = resid.index(max(resid))
-        observed = self[obsname]['obsval'][index]
-        simulated = self[obsname]['simval'][index]
-        date = self[obsname]['date'][index]
-        return date, simulated, observed
-
-    def get_minimum_residual_heads(self, obsname):
-        """
-        Returns the datetime.date, simulated, and observed
-        heads at the maximum residual value
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-
-        Returns
-        -------
-            tuple: (datetime.date, simulated head, observed head)
-        """
-        resid = self[obsname]['residual']
-        index = resid.index(min(resid))
-        observed = self[obsname]['obsval'][index]
-        simulated = self[obsname]['simval'][index]
-        date = self[obsname]['date'][index]
-        return date, simulated, observed
-
-    def get_residual_bias(self, filter=None):
-        """
-        Method to determine the bias of measurements +-
-        by checking the residual. Returns fraction of residuals
-        > 0.
-
-        Parameters
-        ----------
-        filter: (str, list, tuple, or function)
-            filtering criteria for writing statistics.
-            Function must return True for filter out, false to use
-
-        Returns
-        -------
-            (float) fraction of residuals greater than zero
-        """
-        nobs = 0.
-        ngreaterzero = 0.
-
-        for obsname, meta_data in self.items():
-            if self.__filter(obsname, filter):
-                continue
-
-            residual = np.array(meta_data['residual'])
-            rgreaterzero = sum((residual > 0))
-
-            nobs += residual.size
-            ngreaterzero += rgreaterzero
-
-        try:
-            bias = ngreaterzero / nobs
-        except ZeroDivisionError:
-            raise ZeroDivisionError("No observations found!")
-
-        return bias
-
-    def write_dbf(self, dbfname, filter=None):
-        """
-        Method to write a dbf file from a the HOBS dictionary
-
-        Parameters
-        ----------
-        dbfname : str
-            dbf file name
-        filter: (str, list, tuple, or function)
-            filtering criteria for writing statistics.
-            Function must return True for filter out, false for write to file
-
-        """
-        import shapefile
-        data = []
-        for obsname, meta_data in self.items():
-
-            if self.__filter(obsname, filter):
-                continue
-
-            for ix, val in enumerate(meta_data['simval']):
-                data.append([obsname,
-                             self.__get_date_string(meta_data['date'][ix]),
-                             val,
-                             meta_data['obsval'][ix],
-                             meta_data['residual'][ix]])
-
-        try:
-            # traps for pyshp 1 vs. pyshp 2
-            w = shapefile.Writer(dbf=dbfname)
-        except Exception:
-            w = shapefile.Writer()
-
-        w.field("HOBSNAME", fieldType="C")
-        w.field("HobsDate", fieldType="D")
-        w.field("HeadSim", fieldType='N', decimal=8)
-        w.field("HeadObs", fieldType="N", decimal=8)
-        w.field("Residual", fieldType="N", decimal=8)
-
-        for rec in data:
-            w.record(*rec)
-
-        try:
-            w.save(dbf=dbfname)
-        except AttributeError:
-            w.close()
-
-    def write_min_max_residual_dbf(self, dbfname, filter=None):
-        """
-        Method to write a dbf of transient observations
-        using observation statistics
-
-        Parameters
-        ----------
-        dbfname : str
-            dbf file name
-        filter: (str, list, tuple, or function)
-            filtering criteria for writing statistics.
-            Function must return True for filter out, false for write to file
-
-        """
-        import shapefile
-        data = []
-        for obsname, meta_data in self.items():
-            if self.__filter(obsname, filter):
-                continue
-
-            max_date, resid_max = self.get_maximum_residual(obsname)
-            min_date, resid_min = self.get_minimum_residual(obsname)
-            simval_max, obsval_max = self.get_maximum_residual_heads(obsname)[1:]
-            simval_min, obsval_min = self.get_minimum_residual_heads(obsname)[1:]
-
-            data.append([obsname,
-                         self.get_number_observations(obsname),
-                         self.__get_date_string(max_date), resid_max,
-                         self.__get_date_string(min_date), resid_min,
-                         simval_max, obsval_max, simval_min, obsval_min])
-
-        try:
-            # traps for pyshp 1 vs. pyshp 2
-            w = shapefile.Writer(dbf=dbfname)
-        except Exception:
-            w = shapefile.Writer()
-
-        w.field("HOBSNAME", fieldType="C")
-        w.field("FREQUENCY", fieldType="N")
-        w.field("MaxDate", fieldType="C")
-        w.field("MaxResid", fieldType='N', decimal=8)
-        w.field("MinDate", fieldType="C", decimal=8)
-        w.field("MinResid", fieldType="N", decimal=8)
-        w.field("MaxHeadSim", fieldType="N", decimal=8)
-        w.field("MaxHeadObs", fieldType="N", decimal=8)
-        w.field("MinHeadSim", fieldType="N", decimal=8)
-        w.field("MinHeadObs", fieldType="N", decimal=8)
-
-        for rec in data:
-            w.record(*rec)
-
-        try:
-            w.save(dbf=dbfname)
-        except AttributeError:
-            w.close()
-
-    def __filter(self, obsname, filter):
-        """
-        Boolean filetering method, checks if observation name
-        is in the filter.
-
-        Parameters
-        ----------
-        obsname : str
-            observation name
-        filter: (str, list, tuple, or function)
-            filtering criteria for writing statistics.
-            Function must return True for filter out, false for write to file
-
-        Returns
-        -------
-            bool: True if obsname in filter
-
-        """
-        if filter is None:
-            return False
-
-        elif isinstance(filter, list) or isinstance(filter, tuple):
-            if obsname in list:
-                return True
-
-        elif isinstance(filter, str):
-            if obsname == filter:
-                return True
-
-        elif callable(filter):
-            if filter(obsname):
-                return True
-
-        else:
-            raise Exception("Filter is not an appropriate type")
-
-        return False
-
-    def write_summary_statistics_csv(self, csvname, filter=None):
-        """
-        Method to write summary calibration statistics to a
-        CSV file for analysis and reports
-
-        Parameters
-        ----------
-        csvname : str
-            csv file name
-        filter: (str, list, tuple, or function)
-            filtering criteria for writing statistics.
-            Function must return True for filter out, false for write to file
-
-        """
-        data = []
-        header = ["Well name", "Average", "Median",
-                  "Minimum", "Maximum", "RMSE ft", "Frequency"]
-
-        for obsname, meta_data in sorted(self.items()):
-
-            if self.__filter(obsname, filter):
-                continue
-
-            resid_mean = self.get_mean_residual(obsname)
-            resid_median = self.get_median_residual(obsname)
-            resid_max = self.get_maximum_residual(obsname)[-1]
-            resid_min = self.get_minimum_residual(obsname)[-1]
-            rmse = self.get_rmse(obsname)
-            frequency = self.get_number_observations(obsname)
-            data.append((obsname, resid_mean, resid_median,
-                         resid_min, resid_max, rmse, frequency))
-
-        data = np.array(data, dtype=[('id', 'O'), ('mean', float),
-                                     ('med', float), ('min', float),
-                                     ('max', float), ('rmse', float),
-                                     ('num', np.int)])
-
-        with open(csvname, "w") as foo:
-            foo.write(",".join(header) + "\n")
-            np.savetxt(foo, data, fmt="%15s,%.2f,%2f,%2f,%2f,%2f,%d")
-
-    def plot(self, obsname, *args, **kwargs):
-        """
-        Plotting functionality from the hobs dictionary
-
-        Parameters
-        ----------
-        obsname: str
-            hobs package observation name
-        *args: matplotlib args
-        **kwargs: matplotlib kwargs
-
-        Returns
-        -------
-            matplotlib.pyplot.axes object
-
-        """
-        simulated = True
-        if "observed" in kwargs:
-            simulated = False
-            kwargs.pop('observed')
-
-        observed = True
-        if "simulated" in kwargs:
-            observed = False
-            kwargs.pop('simulated')
-
-        if obsname not in self:
-            raise AssertionError("Obsname {}: not valid".format(obsname))
-
-        axes = False
-        if 'ax' in kwargs:
-            ax = kwargs.pop('ax')
-            axes = True
-
-        if not axes:
-            ax = plt.subplot(111)
-
-        obsval = self[obsname]['obsval']
-        simval = self[obsname]['simval']
-        date = self[obsname]['date']
-
-        if observed:
-            kwargs['label'] = "Observed"
-            kwargs['color'] = 'r'
-
-            ax.plot(date, obsval, *args, **kwargs)
-
-        if simulated:
-            kwargs['label'] = "Simulated"
-            kwargs['color'] = 'b'
-
-            ax.plot(date, simval, *args, **kwargs)
-
-        return ax
-
-    def plot_measured_vs_simulated(self, filter=None, **kwargs):
-        """
-        Plots measured vs. simulated data along a 1:1 profile.
-
-        Parameters
-        ----------
-        filter: (str, list, tuple, or function)
-            filtering criteria for writing statistics.
-            Function must return True for filter out, false for write to file
-        **kwargs: matplotlib.pyplot plotting kwargs
-
-        Returns
-        -------
-            matplotlib.pyplot.axes object
-
-        """
-        axes = plt.subplot(111)
-
-        for obsname, meta_data in self.items():
-
-            if self.__filter(obsname, filter):
-                continue
-
-            simulated = meta_data['simval']
-            observed = meta_data['obsval']
-
-            axes.plot(observed, simulated, 'bo', markeredgecolor='k')
-
-        return axes
-
-    def plot_simulated_vs_residual(self, filter=None,
-                                   histogram=False, **kwargs):
-        """
-        Creates a matplotlib plot of simulated heads vs residual
-
-        Parameters
-        ----------
-        filter: (str, list, tuple, or function)
-            filtering criteria for writing statistics.
-            Function must return True for filter out, false for write to file
-        histogram: (bool)
-            Boolean variable that defines either a scatter plot (False)
-            or a histogram (True) of residuals
-
-        **kwargs: matplotlib.pyplot plotting kwargs
-
-        Returns
-        -------
-            matplotlib.pyplot.axes object
-
-        """
-        axes = plt.subplot(111)
-
-        if not histogram:
-            for obsname, meta_data in self.items():
-
-                if self.__filter(obsname, filter):
-                    continue
-
-                residual = meta_data['residual']
-                observed = meta_data['obsval']
-
-                axes.plot(observed, residual, 'bo', markeredgecolor="k")
-
-        else:
-            bins = np.arange(-23, 23, 5)
-
-            d = {}
-            for ix, abin in enumerate(bins):
-                frequency = 0
-                frequency0 = 0
-                for obsname, meta_data in self.items():
-                    if self.__filter(obsname, filter):
-                        continue
-
-                    for residual in meta_data['residual']:
-                        if ix == 0:
-                            if residual < abin:
-                                frequency += 1
-
-                        elif ix == (len(bins) - 1):
-                            if bins[ix - 1] <= residual < abin:
-                                frequency0 += 1
-                            if residual > abin:
-                                frequency += 1
-
-                        else:
-                            if bins[ix - 1] <= residual < abin:
-                                frequency += 1
-
-                if ix == 0:
-                    name = "Less than {}".format(abin + 1)
-
-                elif ix == (len(bins) - 1):
-                    name0 = "{} to {}".format(bins[ix - 1] + 1, abin)
-                    name = "Greater than {}".format(abin)
-                    d[ix + 1] = {'name': name0,
-                                 'frequency': frequency0}
-
-                else:
-                    name = "{} to {}".format(bins[ix - 1] + 1, abin)
-
-                adj = ix + 1
-                if ix == (len(bins) - 1):
-                    adj += 1
-
-                d[adj] = {'name': name,
-                          'frequency': frequency}
-
-            tick_num = []
-            tick_name = []
-            for index, meta_data in sorted(d.items()):
-                axes.bar(index, meta_data['frequency'], width=0.8,
-                         **kwargs)
-                tick_num.append(index)
-                tick_name.append(meta_data['name'])
-
-            plt.xticks(tick_num, tick_name, rotation=45, fontsize=10)
-            plt.xlim([0.5, len(tick_num) + 1])
-            plt.subplots_adjust(left=0.12, bottom=0.22,
-                                right=0.90, top=0.90,
-                                wspace=0.20, hspace=0.20)
-            plt.ylabel("Frequency")
-
-        return axes
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -772,21 +380,97 @@ if __name__ == "__main__":
     script_ws = os.path.abspath(os.path.dirname(__file__))
     repo_ws = os.path.join(script_ws, "..", "..")
 
-    # set hobs output file name
-    hobs_name = "rr_tr.hob.out"
-    hobs_path = os.path.join(repo_ws, "GSFLOW", "modflow", "output", hobs_name)
+    # create data frame that maps HOBS observation name to date
+    mf_tr_name_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr.nam")
+    hobs_df = map_hobs_obsname_to_date(mf_tr_name_file)
 
-    # set hobs and well info files
-    well_info_file = os.path.join(repo_ws, "MODFLOW", "init_files", "hru_obs2_20211130.shp")
-    hob_well_info_file = os.path.join(repo_ws, "MODFLOW", "init_files", "HOB_well_info_hru_obs2_20211130.csv")
+    # read in and add dates to hobs output file
+    hobs_out_name = "rr_tr.hob.out"
+    hobs_out_path = os.path.join(repo_ws, "GSFLOW", "modflow", "output", hobs_out_name)
+    hobs_out_df = add_date_to_hobs_out(hobs_df, hobs_out_path)
 
-    # read in hobs and well info files
-    well_info = geopandas.read_file(well_info_file)
-    hob_well_info = pd.read_csv(hob_well_info_file)
+    # loop through HOBS wells
+    col_names = ["well_id", "resid_mean", "resid_median", "resid_min", "resid_max", "rmse", "bias", "num_obs"]
+    summary_stats = pd.DataFrame(columns = col_names)
+    hobs_wells = hobs_out_df['well_id'].unique()
+    for well in hobs_wells:
+
+        # filter by well
+        well_mask = hobs_out_df['well_id'] == well
+        df = hobs_out_df[well_mask]
+        df = df.sort_values(by = 'date')
 
 
-    tmp = HobsOut(hobs_path)
-    tmp.plot("04N01W01R04S", "o-")
-    plt.legend(loc=0, numpoints=1)
-    plt.show()
-    print('break')
+
+        # plot time series of simulated and observed heads
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.scatter(df.date, df.observed, label = 'Observed')
+        plt.scatter(df.date, df.simulated, label = 'Simulated')
+        plt.plot(df.date, df.observed)
+        plt.plot(df.date, df.simulated)
+        plt.title('Head time series: ' + str(well))
+        plt.xlabel('Date')
+        plt.ylabel('Head (m)')
+        plt.legend()
+        file_name = 'time_series_' + str(well) + '.jpg'
+        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_time_series", file_name)
+        plt.savefig(file_path)
+
+
+
+        # plot simulated vs. observed heads
+        all_val = np.append(df['simulated'].values, df['observed'].values)
+        min_val = all_val.min()
+        max_val = all_val.max()
+        plot_buffer = (max_val - min_val) * 0.05
+        df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
+
+        plt.style.use('default')
+        fig = plt.figure(figsize=(8, 8), dpi=150)
+        ax = fig.add_subplot(111)
+        ax.scatter(df.observed, df.simulated)
+        ax.plot(df_1to1.observed, df_1to1.simulated, color = "red", label='1:1 line')
+        ax.set_title('Simulated vs. observed heads: ' + str(well))
+        plt.xlabel('Observed head (m)')
+        plt.ylabel('Simulated head (m)')
+        ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
+        ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
+        plt.legend()
+        file_name = 'sim_vs_obs_' + str(well) + '.jpg'
+        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_sim_vs_obs", file_name)
+        plt.savefig(file_path)
+
+
+
+        # plot residuals vs. simulated heads
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.scatter(df.simulated, df.residual)
+        plt.title('Residuals vs. simulated heads: ' + str(well))
+        plt.xlabel('Simulated head (m)')
+        plt.ylabel('Head residual (m)')
+        file_name = 'resid_vs_sim' + str(well) + '.jpg'
+        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_resid_vs_sim", file_name)
+        plt.savefig(file_path)
+
+
+
+        # calculate summary statistics and append to data frame
+        resid_mean = get_mean_residual(df)
+        resid_median = get_median_residual(df)
+        resid_max = get_maximum_residual(df)[-1]
+        resid_min = get_minimum_residual(df)[-1]
+        rmse = get_rmse(df)
+        bias = get_residual_bias(df)
+        num_obs = get_number_observations(df)
+        these_summary_stats = pd.DataFrame({"well_id": [well], "resid_mean": [resid_mean], "resid_median": [resid_median],
+                                            "resid_min": [resid_min], "resid_max": [resid_max], "rmse": [rmse], "bias": [bias],
+                                            "num_obs": [num_obs]})
+        summary_stats = summary_stats.append(these_summary_stats)
+
+    # export summary stats data frame
+    file_name= "gw_summary_stats.csv"
+    file_path = os.path.join(repo_ws, "GSFLOW", "results", "tables", file_name)
+    summary_stats.to_csv(file_path, index=False)
+

@@ -25,7 +25,7 @@ from upw_utils import load_txt_3d
 import lak_utils
 import well_utils
 import output_utils
-
+import matplotlib.pyplot as plt
 
 
 
@@ -43,7 +43,9 @@ update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
+update_output_control = 0
 update_ag_package = 1
+create_tabfiles_for_pond_diversions = 0
 do_checks = 0
 
 
@@ -376,6 +378,7 @@ if update_prms_control_for_gsflow == 1:
 
 
 
+
 # ==========================================
 # Update PRMS parameter file for GSFLOW
 # ==========================================
@@ -450,7 +453,7 @@ if update_transient_model_for_smooth_running == 1:
     # update nwt package values to those suggested by Rich
     mf_tr.nwt.maxiterout = 20
     mf_tr.nwt.dbdtheta = 0.85
-    #mf_tr.nwt.headtol = 0.1  #TODO set this back after this test run on 2/8/22
+    mf_tr.nwt.headtol = 0.1
 
     # write nwt file
     mf_tr.nwt.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.nwt")
@@ -474,11 +477,10 @@ if update_transient_model_for_smooth_running == 1:
 
     # update UPW -------------------------------------------------------------------####
 
-    # TODO: set this back after this test on 2/8/22
-    # # decrease horizontal and vertical K in all layers for zone containing problem grid cell (HRU 83888)
+    # # decrease horizontal and vertical K in all layers for zone containing (or adjacent to) problem grid cell (HRU 83888) in layer 3
     #
     # # get zone names
-    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "misc_files", "K_zone_ids.dat")
+    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids.dat")
     # zones = load_txt_3d(K_zones_file)
     #
     # # extract hk and vka
@@ -486,13 +488,13 @@ if update_transient_model_for_smooth_running == 1:
     # vka = mf_tr.upw.vka.array
     #
     # # identify zones that need to change
-    # zones_to_change = 190   # TODO: make this a list later, if need to look for multiple values
+    # zones_to_change = [190, 231]
     #
     # # create mask
-    # mask = zones == zones_to_change  # TODO: change == to something that can look for multiple values later, if needed
+    # mask = np.isin(zones, zones_to_change)
     #
     # # make changes to hk and vka
-    # change_factor = 10
+    # change_factor = 100
     # hk[mask] = hk[mask] / change_factor
     # vka[mask] = vka[mask] / change_factor
     #
@@ -602,6 +604,12 @@ if update_transient_model_for_smooth_running == 1:
     # # write lake file
     # mf_tr.lak.write_file()
 
+    # update nssitr
+    mf_tr.lak.nssitr = 20
+
+    # write lake file
+    mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
+    mf_tr.lak.write_file()
 
 
     # update PRMS param to specific values ---------------------------------------------------------------####
@@ -677,7 +685,7 @@ if update_one_cell_lakes == 1:
     Sim.tr_name_file = mf_tr_name_file
     Sim.one_cell_lake_id = range(3, 12, 1)  # lakes 3-11 are one-cell lakes  # TODO: extract this info from the lake package instead of hard-coding it here
     Sim.hru_lakes = r"..\..\init_files\hru_lakes.shp"
-    Sim.ag_with_ponds = "ag_dataset_w_ponds.csv"
+    Sim.ag_with_ponds = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     Sim.ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
 
     # load transient modflow model, including ag package
@@ -796,7 +804,7 @@ if update_one_cell_lakes == 1:
 
             # get min lake elevation (i.e. elev of lake bottom grid cell) and calculate desired lake elev
             lake_min_elev = elev_botm[lak_lyr.max(),lak_row, lak_col]
-            lake_buffer = 5
+            lake_buffer = 2
             lake_elev = lake_min_elev + lake_buffer
 
             # calculate desired elevation of spillway/gate
@@ -880,7 +888,7 @@ if update_prms_params_for_ag_package == 1:
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
     # read in ag dataset csv file
-    ag_dataset_file = "ag_dataset_w_ponds.csv"
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     ag_data = pd.read_csv(ag_dataset_file)
 
     # TODO to incorporate ag package into GSFLOW --> change only for ag cells
@@ -994,7 +1002,7 @@ if update_prms_params_for_ag_package == 1:
 
 
     # pref_flow_den=0 for all HRUs that are irrigated -------------------------------------------------------------------------------------#
-    # note: getting irrigated HRUs from ag_dataset_with_ponds.csv
+    # note: getting irrigated HRUs from ag_dataset_w_ponds_w_ipuseg.csv
 
     # get irrigated hrus and pref_flow_den values
     hru_irrig = ag_data['field_hru_id'].tolist()
@@ -1110,7 +1118,7 @@ if update_prms_params_for_ag_package == 1:
 
 
     # # Add ag_frac as a PRMS parameter ------------------------------------------------------#
-    # # NOTE: this extracts ag frac data from ag_dataset_with_ponds.csv AFTER extracting ag HRUs from the ag package
+    # # NOTE: this extracts ag frac data from ag_dataset_w_ponds_w_ipuseg.csv AFTER extracting ag HRUs from the ag package
     #
     # ### irrwell ###
     #
@@ -1198,7 +1206,7 @@ if update_prms_params_for_ag_package == 1:
 
 
     # Add ag_frac as a PRMS parameter ------------------------------------------------------#
-    # NOTE: this extracts ag frac data from ag_dataset_with_ponds.csv only
+    # NOTE: this extracts ag frac data from ag_dataset_w_ponds_w_ipuseg.csv only
 
     # create hru_id array
     nhru = gs.prms.parameters.get_values('nhru')[0]
@@ -1268,6 +1276,28 @@ if update_modflow_for_ag_package == 1:
 
 
 
+
+# ===========================================
+# Update output control package
+# ===========================================
+
+if update_output_control == 1:
+
+    # # load transient modflow model, including ag package
+    # mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+    #                                    model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+    #                                    load_only=["BAS6", "DIS", "OC"], verbose=True, forgive=False, version="mfnwt")
+
+    # # update output control
+    # oc = mf_tr.oc
+    # oc.stress_period_data.values()
+
+    pass
+
+
+
+
+
 # ===========================================
 # Update AG package
 # ===========================================
@@ -1285,10 +1315,8 @@ if update_ag_package == 1:
     gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
 
     # read in ag dataset csv file
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     ag_data = pd.read_csv(ag_dataset_file)
-
-    xx=1
 
 
     # As much as possible assign upper bounds to water demand that are consistent with local practices ---------------------------------------------------------#
@@ -1310,7 +1338,7 @@ if update_ag_package == 1:
                  'other': 1}
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
-    days_per_year = 365
+    days_per_year = 365    #TODO: need to update this so that it is days_per_growing_season with different numbers of days for the different crops - extract from KC_sonoma shared
     for key in Qmax_dict.keys():
 
         # convert to meters
@@ -1391,18 +1419,6 @@ if update_ag_package == 1:
         for eff_fact_name in eff_fact_names:
             rec_array[eff_fact_name] = [0] * len(rec_array)
 
-        # # loop through each record in rec_array
-        # for rec in rec_array:
-        #
-        #     # loop through eff_fact field names
-        #     field_names = rec.dtype.names
-        #     eff_fact_names = [x for x in field_names if 'eff_fact' in x]
-        #     for eff_fact_name in eff_fact_names:
-        #
-        #         # set eff_fact to 0
-        #         rec[eff_fact_name] = 0
-
-
 
     # set eff_fact to 0 for each record in irrwell
     # loop through irr_well dictionary
@@ -1413,7 +1429,6 @@ if update_ag_package == 1:
         eff_fact_names = [x for x in field_names if 'eff_fact' in x]
         for eff_fact_name in eff_fact_names:
             rec_array[eff_fact_name] = [0] * len(rec_array)
-
 
 
     # set eff_fact to 0 for each record in irrpond
@@ -1528,6 +1543,184 @@ if update_ag_package == 1:
 
 
 # ===========================================
+# Create tabfiles for pond diversions
+# ===========================================
+
+if create_tabfiles_for_pond_diversions == 1:
+
+    # load transient modflow model, including ag package
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
+    ag = mf_tr.ag
+
+    # # load gsflow model
+    # prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    # gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
+
+    # read in ag dataset csv file
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_orphans.csv")
+    ag_data = pd.read_csv(ag_dataset_file)
+
+
+    # Get irrigation demand for each field -------------------------------------------------------####
+
+    # TODO: turn this into a function so that can use it both here and in the "update ag package" section above -
+    #       but if do this need to make the functions the same, currently, the code in this section keeps Qmax_field positive
+    #       whereas the code in the section above makes it negative (for use in well list)
+
+    # extract crop types
+    crop_type = ag_data['crop_type'].unique().tolist()
+
+    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    Qmax_dict = {'Grapes': 1,
+                 'Apples': 2.5,
+                 'Mixed Pasture': 3.5,
+                 'other': 1}
+    cubic_meters_per_acre_ft = 1233.48185532
+    square_meters_per_acre = 4046.85642
+    #days_per_year = 365
+    for key in Qmax_dict.keys():
+
+        # convert to meters
+        # not multiplying by -1 because interested in field water demand, not well pumping
+        # not converting to # days in a year, instead keeping as irrigation demand per growing season
+        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft
+
+
+    # create a Qmax_crop column in ag_data based on crop_type
+    ag_data['Qmax_crop'] = 0
+    for crop in crop_type:
+
+        # identify rows with this crop
+        mask = ag_data['crop_type'] == crop
+
+        # get Qmax for this crop
+        if crop == 'Grapes':
+            Qmax = Qmax_dict['Grapes']
+        elif crop == 'Apples':
+            Qmax = Qmax_dict['Apples']
+        elif crop == 'Mixed Pasture':
+            Qmax = Qmax_dict['Mixed Pasture']
+        else:
+            Qmax = Qmax_dict['other']
+
+        # fill in Qmax_crop column
+        ag_data.loc[mask, 'Qmax_crop'] = Qmax
+
+    # create a Qmax_field column in ag_data, based on qmax_crop and field_area
+    ag_data['Qmax_field'] = ag_data['Qmax_crop'] * ag_data['field_area']
+
+
+
+    # Get volumetric water demand for each pond in terms of pond depth -------------------------------------------------------####
+    # Calculate combined annual water demand of all fields except orphan fields that get water from a pond
+
+    # loop through ponds
+    pond_list = pd.DataFrame(ag.pond_list)
+    pond_list['max_demand_m3'] = 0
+    pond_list['pond_area_m2'] = 0
+    pond_list['pond_depth_m'] = 0
+    pond_list['pond_depth_in'] = 0
+    ponds = pond_list['hru_id'].values
+    for pond in ponds:
+
+        # create data frame of all fields that get water from this pond, excluding orphan fields
+        # TODO: why aren't all the ponds in the pond list in ag_dataset_w_ponds?
+        ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond) & (ag_data['orphan_field'] == 0)
+        pond_df = ag_data[ag_data_mask]
+        if len(pond_df.index) == 0:                             # TODO: delete this once fix this problem
+            print("pond not found: pond HRU ", pond)            # TODO: delete this once fix this problem
+
+        # calculate the max ag water demand (units: m^3/day)
+        pond_list_mask = pond_list['hru_id'] == pond
+        max_demand_m3 = pond_df['Qmax_field'].sum()
+        pond_list.loc[pond_list_mask, 'max_demand_m3'] = max_demand_m3
+
+        # store the pond area
+        pond_area_m2 = pond_df['pond_area_m2'].values[0]
+        pond_list.loc[pond_list_mask, 'pond_area_m2'] = pond_area_m2
+
+        # calculate pond depth required to satisfy water demand given the pond area
+        pond_depth_m = max_demand_m3 / pond_area_m2
+        pond_list.loc[pond_list_mask, 'pond_depth_m'] = pond_depth_m
+        inches_per_meter = 39.3700787
+        pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_m / inches_per_meter
+
+
+
+
+    # Update prms dprst_depth_avg param with pond depths -----------------------------------####
+
+    # get pond hru values
+    pond_hru = pond_list['hru_id'].values
+
+    # extract variables from param file
+    dprst_depth_avg = gs.prms.parameters.get_values("dprst_depth_avg")
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    hru_id_list = list(range(1, nhru+1))
+
+    # update depths
+    for hru_id in hru_id_list:
+
+        # if this is an ag pond
+        if set([hru_id]).intersection(set(pond_hru)) > 0:
+
+            # get updated pond depth
+            mask = pond_list['pond_hru'] == pond_hru
+            pond_depth_in = pond_list.loc[mask, 'pond_depth_in']
+
+            # update pond depth
+            idx = hru_id - 1
+            dprst_depth_avg[idx] = pond_depth_in
+
+    # store
+    gs.prms.parameters.set_values('dprst_depth_avg', [dprst_depth_avg])
+
+    # export updated prms file
+    gs.prms.parameters.write()
+
+
+
+    # Create tab files -------------------------------------------------------####
+    # Fill ponds during the wettest month of the wet season to cover the water demand
+    # by dividing up the demand among the number of days in the month
+
+    # assign wettest month of wet season
+    wettest_month = 1    # assuming January for now
+    num_days_in_wettest_month = 31
+
+    # summarize (i.e. add up) pond demand by diversion segment
+    #seg_df =
+
+
+    # loop through diversion segments
+    tabfile_format_df = pd.DataFrame()
+    for seg in div_seg:
+
+        # calculate daily irrigation demand during wettest month
+        daily_irrig_demand_wettest_month = seg_df['max_demand_m3'] / num_days_in_wettest_month
+
+        # create tabfile
+        # TODO: just modify tabfile format df
+
+        # export tabfile
+
+    # add diversion segments to SFR file
+    # TODO: need to add to number of tabfiles at the top of the file and diversion segment entries at the bottom of the file
+
+    # add diversion segments to NAM file
+
+
+
+    pass
+
+
+
+
+
+
+# ===========================================
 # Do checks
 # ===========================================
 if do_checks == 1:
@@ -1536,7 +1729,7 @@ if do_checks == 1:
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                        verbose=True, forgive=False, version="mfnwt",
-                                        load_only=["BAS6", "DIS", "AG", "SFR", "UZF", "UPW"])
+                                        load_only=["BAS6", "DIS", "AG", "SFR", "UZF", "UPW", "WEL"])
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -1601,6 +1794,10 @@ if do_checks == 1:
     # get iuzfbnd values of problem hru
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
     iuzfbnd[problem_hru_row, problem_hru_col]
+
+
+
+
 
 
 
@@ -1761,3 +1958,69 @@ if do_checks == 1:
 
     # get segments that are in the segment list but not in irrdiv
     seg_list_NOT_irrdiv = list(set(seg_list) - set(irrdiv_seg))
+
+
+
+    # check UPW at a specified grid cell -----------------------------------------------####
+
+    # identify problem hru
+    problem_hru = 83888
+
+    # get number of rows and columns
+    num_lay, num_row, num_col = mf_tr.upw.hk.array.shape
+
+    # get row and column indices of problem hru
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    hru_id = np.array(list(range(1, nhru + 1)))
+    hru_id_mat = hru_id.reshape(num_row, num_col)
+    problem_hru_idx = np.where(hru_id_mat == problem_hru)
+    problem_hru_row = problem_hru_idx[0][0]
+    problem_hru_col = problem_hru_idx[1][0]
+
+    # extract upw hk
+    hk = mf_tr.upw.hk.array
+    hk[:, problem_hru_row, problem_hru_col]
+
+    # extract upw vka
+    vka = mf_tr.upw.vka.array
+    vka[:, problem_hru_row, problem_hru_col]
+
+
+
+    # check pumping at a specified well -----------------------------------------------####
+
+    # define function to get well pumping
+    def get_well_pumping(mf, hru_row, hru_col):
+
+        # get well data
+        wel = mf.wel
+
+        # get well pumping
+        q_list=[]
+        num_sp = mf.dis.nper
+        for idx, sp in enumerate(range(num_sp)):
+
+            df = pd.DataFrame(wel.stress_period_data[sp])
+            mask = (df['i'] == (hru_row-1)) & (df['j'] == (hru_col-1))  # subtracting 1 to get 0-based i and j values in well package
+
+            if sum(mask > 0):
+                qval = df.loc[mask, 'flux'].values[0]
+                q_list.append(qval)
+            else:
+                q_list.append(0)
+
+        # create data frame
+        q_df = pd.DataFrame({'stress_period': range(num_sp), 'flux': q_list})
+
+        return q_df
+
+    # get well pumping
+    well_hru_row = 332
+    well_hru_col = 144
+    q_df = get_well_pumping(mf_tr, well_hru_row, well_hru_col)
+
+    # plot
+    plt.plot(q_df.stress_period, q_df.flux)
+    plt.title('Pumping time series at well: HRU_ROW = ' + str(well_hru_row) + ', HRU_COL = ' + str(well_hru_col))
+    plt.xlabel('Stress period')
+    plt.ylabel('Q (m^3/day)')

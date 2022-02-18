@@ -33,6 +33,7 @@ GSFLOW/checks/check_obs_wells/compare_land_surf_elev/hob_land_elev_model/mf_data
 GSFLOW/modflow/output/**
 GSFLOW/archive/**/modflow/output
 GSFLOW/archive/**/PRMS/output
+GSFLOW/archive/**/results
 GSFLOW/modflow/old
 GSFLOW/PRMS/old
 GSFLOW/PRMS/output/**
@@ -42,3 +43,4 @@ MODFLOW/archived_models/**/*.hds
 MODFLOW/old/**/*.hds
 MODFLOW/modflow_calibration/**/*.hds
 GSFLOW/archive/2020/**/rr_tr.hds
+GSFLOW/results/
