@@ -39,15 +39,15 @@ import flopy.utils.binaryfile as bf
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 1
-update_prms_params_for_gsflow = 1
-update_transient_model_for_smooth_running = 1
-update_one_cell_lakes = 1
-update_modflow_for_ag_package = 1
-update_prms_params_for_ag_package = 1
-update_output_control = 1
-update_ag_package = 1
-create_tabfiles_for_pond_diversions = 0
+update_prms_control_for_gsflow = 0
+update_prms_params_for_gsflow = 0
+update_transient_model_for_smooth_running = 0
+update_one_cell_lakes = 0
+update_modflow_for_ag_package = 0
+update_prms_params_for_ag_package = 0
+update_output_control = 0
+update_ag_package = 0
+create_tabfiles_for_pond_diversions = 1
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -933,7 +933,7 @@ if update_one_cell_lakes == 1:
 
             # get min lake elevation (i.e. elev of lake bottom grid cell) and calculate desired lake elev
             lake_min_elev = elev_botm[lak_lyr.max(),lak_row, lak_col]
-            lake_buffer = 3
+            lake_buffer = 5
             lake_elev = lake_min_elev + lake_buffer
 
             # calculate desired elevation of spillway/gate

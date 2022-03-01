@@ -689,7 +689,16 @@ recharge
 hru_actet
 potet
 hru_ppt
-
+####
+soilzone_module
+1
+4
+soilzone_ag
+####
+agriculture_canopy_flag
+1
+1
+1
 
 
 

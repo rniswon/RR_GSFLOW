@@ -14,6 +14,7 @@ HOB               39  ..\modflow\input\rr_tr.hob
 GAGE             120  ..\modflow\input\rr_tr.gage
 OC                14  ..\modflow\input\rr_tr.oc
 NWT               32  ..\modflow\input\rr_tr.nwt
+AG               121  ..\modflow\input\rr_tr.ag
 DATA            1001  ..\modflow\input\Potter_Valley_inflow.dat
 DATA            1002  ..\modflow\input\Mendo_Lake_release.dat
 DATA            1003  ..\modflow\input\Sonoma_Lake_release.dat
@@ -64,6 +65,6 @@ DATA            1043  ..\modflow\output\mendo_lake_bdg.lak.out
 DATA            1044  ..\modflow\output\sonoma_lake_bdg.lak.out
 DATA            1045  ..\modflow\output\rubber_dam_lake_bdg.lak.out
 DATA(BINARY)      51  ..\modflow\output\rr_tr.hds REPLACE
-DATA(BINARY)      60  ..\modflow\input\rr_ss.hds 
+DATA(BINARY)      60  ..\modflow\input\rr_ss.hds
 DATA(BINARY) 	3000  ..\modflow\output\uzf_recharge.out
 DATA(BINARY)	3001  ..\modflow\output\uzf_discharge.out
