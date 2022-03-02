@@ -675,7 +675,7 @@ if update_transient_model_for_smooth_running == 1:
     upland_mask = iuzfbnd > 1
 
     # increase vks
-    vks_upland_scaling_factor = 10
+    vks_upland_scaling_factor = 3
     vks = mf_tr.uzf.vks.array
     vks[upland_mask] = vks[upland_mask] * vks_upland_scaling_factor
     mf_tr.uzf.vks = vks
@@ -815,7 +815,7 @@ if update_one_cell_lakes == 1:
     Sim.tr_name_file = mf_tr_name_file
     Sim.one_cell_lake_id = range(3, 12, 1)  # lakes 3-11 are one-cell lakes  # TODO: extract this info from the lake package instead of hard-coding it here
     Sim.hru_lakes = r"..\..\init_files\hru_lakes.shp"
-    Sim.ag_with_ponds = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
+    #Sim.ag_with_ponds = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     Sim.ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
 
     # load transient modflow model, including ag package
@@ -857,7 +857,7 @@ if update_one_cell_lakes == 1:
         lakarr = lak.lakarr.array[:, :, :, :]
 
         # set lakebed leakance to 0 for one cell lakes
-        for i in Sim.one_cell_lake_id:
+        for i in list(Sim.one_cell_lake_id):
             cond[lakarr == i] = 0
         cc = np.zeros_like(lak.lakarr.array)
         cc[:, :, :, :] = cond
@@ -933,7 +933,7 @@ if update_one_cell_lakes == 1:
 
             # get min lake elevation (i.e. elev of lake bottom grid cell) and calculate desired lake elev
             lake_min_elev = elev_botm[lak_lyr.max(),lak_row, lak_col]
-            lake_buffer = 5
+            lake_buffer = 3
             lake_elev = lake_min_elev + lake_buffer
 
             # calculate desired elevation of spillway/gate
@@ -1022,6 +1022,8 @@ if update_prms_params_for_ag_package == 1:
     # read in ag dataset csv file
     ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     ag_data = pd.read_csv(ag_dataset_file)
+    ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
+    ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
 
     # TODO to incorporate ag package into GSFLOW --> change only for ag cells
     # 1) cov_type should not be bare soil (cov_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop
@@ -1460,6 +1462,8 @@ if update_ag_package == 1:
     # read in ag dataset csv file
     ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
     ag_data = pd.read_csv(ag_dataset_file)
+    ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
+    ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
 
 
     # As much as possible assign upper bounds to water demand that are consistent with local practices ---------------------------------------------------------#
@@ -1700,13 +1704,15 @@ if create_tabfiles_for_pond_diversions == 1:
                                         load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
     ag = mf_tr.ag
 
-    # # load gsflow model
-    # prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
-    # gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
+    # load gsflow model
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
 
     # read in ag dataset csv file
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_orphans.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_orphans.csv")  # because don't want to store water in ponds for orphan fields
     ag_data = pd.read_csv(ag_dataset_file)
+    ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1     # update pond HRUs to match changes made in generate_ag_package_transient.py
+    ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1    # update pond HRUs to match changes made in generate_ag_package_transient.py
 
 
     # Get irrigation demand for each field -------------------------------------------------------####
@@ -1772,11 +1778,8 @@ if create_tabfiles_for_pond_diversions == 1:
     for pond in ponds:
 
         # create data frame of all fields that get water from this pond, excluding orphan fields
-        # TODO: why aren't all the ponds in the pond list in ag_dataset_w_ponds?
         ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond) & (ag_data['orphan_field'] == 0)
         pond_df = ag_data[ag_data_mask]
-        if len(pond_df.index) == 0:                             # TODO: delete this once fix this problem
-            print("pond not found: pond HRU ", pond)            # TODO: delete this once fix this problem
 
         # calculate the max ag water demand (units: m^3/day)
         pond_list_mask = pond_list['hru_id'] == pond
@@ -1791,7 +1794,7 @@ if create_tabfiles_for_pond_diversions == 1:
         pond_depth_m = max_demand_m3 / pond_area_m2
         pond_list.loc[pond_list_mask, 'pond_depth_m'] = pond_depth_m
         inches_per_meter = 39.3700787
-        pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_m / inches_per_meter
+        pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_m * inches_per_meter
 
 
 
@@ -1810,10 +1813,10 @@ if create_tabfiles_for_pond_diversions == 1:
     for hru_id in hru_id_list:
 
         # if this is an ag pond
-        if set([hru_id]).intersection(set(pond_hru)) > 0:
+        if len(set([hru_id]).intersection(set(pond_hru))) > 0:
 
             # get updated pond depth
-            mask = pond_list['pond_hru'] == pond_hru
+            mask = pond_list['hru_id'] == hru_id
             pond_depth_in = pond_list.loc[mask, 'pond_depth_in']
 
             # update pond depth
@@ -2268,5 +2271,33 @@ if do_recharge_experiments == 1:
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
     mf_tr.uzf.write_file()
 
+
+
+    # double check HRU ID of problem grid cell ---------------------------------####
+
+    # problem grid cell
+    problem_row = 332
+    problem_col = 145
+
+    # get number of rows and columns
+    ibound = mf_tr.bas6.ibound.array
+    num_lay, num_row, num_col = ibound.shape
+
+    # get hru id matrix
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    hru_id = np.array(list(range(1, nhru + 1)))
+    hru_id_mat = hru_id.reshape(num_row, num_col)
+
+    # get hru id of problem grid cell
+    problem_hru = hru_id_mat[problem_row-1, problem_col-1]
+
+
+    # check lakebed leakance ---------------------------------####
+
+    lak = mf_tr.lak
+    cond = lak.bdlknc.array[:, :, :, :].copy()
+    plt.imshow(cond[0, 0, :, :])
+    plt.imshow(cond[0, 1, :, :])
+    plt.imshow(cond[0, 1, :, :])
 
 
