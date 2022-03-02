@@ -1,9 +1,3 @@
-"""
-Comment @ JL 3/26/2020. This version of hobs_output has been specifically
-customized for the SACr model. Do not incorporate changes into the main
-repository!!!!
-"""
-
 import datetime as dt
 import matplotlib.pyplot as plt
 import numpy as np

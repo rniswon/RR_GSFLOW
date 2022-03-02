@@ -22,7 +22,7 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set file path to well completion csv from DWR
-well_dwr_file = os.path.join(repo_ws, "MODFLOW", "init_files", "wellcompletionreports_DWR.csv")
+well_dwr_file = os.path.join(repo_ws, "GSFLOW", "scripts", "inputs_for_scripts", "wellcompletionreports_DWR.csv")
 
 # set file path to mf name file
 mf_nam_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr.nam")

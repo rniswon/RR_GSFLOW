@@ -5,6 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import geopandas
+from matplotlib.colors import LogNorm
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\pygsflow")
 
@@ -26,6 +27,7 @@ import lak_utils
 import well_utils
 import output_utils
 import matplotlib.pyplot as plt
+import flopy.utils.binaryfile as bf
 
 
 
@@ -44,9 +46,10 @@ update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
 update_output_control = 0
-update_ag_package = 1
-create_tabfiles_for_pond_diversions = 0
+update_ag_package = 0
+create_tabfiles_for_pond_diversions = 1
 do_checks = 0
+do_recharge_experiments = 0
 
 
 # ==============================
@@ -145,6 +148,10 @@ model_folder = r"..\..\..\GSFLOW"
 # ================================================================
 
 if load_and_transfer_transient_files == 1:
+
+    # print
+    print('Load and transfer transient files')
+
 
     # ===================
     # Load model
@@ -283,13 +290,16 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
 
     # load transient model
     Sim.mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt")
+                                            model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                            verbose=True, forgive=False, version="mfnwt")
 
 
 
 # update transient model starting heads with heads from best steady state run ------------------------------####
 if update_starting_heads == 1:
+
+    # print
+    print('Update starting heads')
 
     # NOTE: don't need to do this if the starting heads from best steady state run are run in as a separate file
     # TODO: but do I want to change any unrealistic heads in here by updating the rr_ss.hds file maybe?
@@ -312,6 +322,9 @@ if update_starting_heads == 1:
 # update transient model starting parameters with parameters from best steady state model run ------------------------------####
 
 if update_starting_parameters == 1:
+
+    # print
+    print('Update starting parameters')
 
     # update lake parameters
     lak_utils.change_lak_tr(Sim)
@@ -351,6 +364,9 @@ if update_starting_parameters == 1:
 
 if update_prms_control_for_gsflow == 1:
 
+    # print
+    print('Update PRMS control for GSFLOW')
+
     # # load gsflow model
     # gsflow_control = os.path.join(model_folder, 'windows', 'gsflow_rr.control')
     # gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
@@ -385,10 +401,13 @@ if update_prms_control_for_gsflow == 1:
 
 if update_prms_params_for_gsflow == 1:
 
+    # print
+    print('Update PRMS parameters for GSFLOW')
+
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt")
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        load_only=["BAS6", "DIS", "SFR", "LAK"], verbose=True, forgive=False, version="mfnwt")
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -438,10 +457,14 @@ if update_prms_params_for_gsflow == 1:
 
 if update_transient_model_for_smooth_running == 1:
 
+    # print
+    print('Update transient model for smooth running')
+
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt")
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK"],
+                                        verbose=True, forgive=False, version="mfnwt")
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -508,6 +531,74 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
+    # update SY so that it is spatially distributed ---------------------------------------####
+
+    # specific yields from Cardwell (1965):
+    # lower Russian River valley alluvium: 15-20%
+    # Russian River valley alluvium in Healdsburg area down to 50 ft: 14%
+    # Alexander Valley alluvium: 20%
+    # Sanel valley alluvium: 20%
+    # Ukiah valley alluvium: 20%
+    # Potter valley alluvium: 5%
+
+    # specific yields from DWR (2003) via https://srcity.org/DocumentCenter/View/15220/SNMP_Chapter-3?bidId=
+    # Santa Rosa Valley: 8-17%
+    # Glen Ellen formation: 3-7%
+    # Wilson Grove formation: 10-20%
+    # Sonoma Volcanics: 0-15%
+
+    # specific yields from https://www.who.int/water_sanitation_health/resourcesquality/wqachapter9.pdf
+    # consolidated rocks (sandstone, limestone and dolomite,
+    # shale, fractured basalt, weathered granite and gneiss): 0.5-10%
+
+    # assign SY values for geological zones
+    sy_bedrock = 0.03
+    sy_sonoma_volcanics = 0.07
+    sy_consolidated_sediments = 0.15
+    sy_unconsolidated_sediments = 0.2
+    sy_channel_deposits = 0.2
+
+    # read in geological zones
+    geo_zones_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
+    geo_zones = np.load(geo_zones_file, allow_pickle=True).all()
+    geo_zones = geo_zones['zones']
+
+    # extract SY
+    sy = mf_tr.upw.sy.array
+
+    # assign SY for geological zones
+    sy[geo_zones == 14] = sy_bedrock
+    sy[geo_zones == 15] = sy_sonoma_volcanics
+    sy[geo_zones == 16] = sy_consolidated_sediments
+    sy[geo_zones == 17] = sy_unconsolidated_sediments
+    sy[geo_zones == 18] = sy_channel_deposits
+    sy[geo_zones == 19] = sy_channel_deposits
+
+    # # plot layer 1
+    # plt.imshow(sy[0, :, :])
+    # plt.colorbar()
+    # plt.title("Specific yield: layer 1")
+    #
+    # # plot layer 2
+    # plt.imshow(sy[1, :, :])
+    # plt.colorbar()
+    # plt.title("Specific yield: layer 2")
+    #
+    # # plot layer 3
+    # plt.imshow(sy[2, :, :])
+    # plt.colorbar()
+    # plt.title("Specific yield: layer 3")
+
+    # store SY
+    mf_tr.upw.sy = sy
+
+    # write file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
+
+
+
+
     # update UZF -------------------------------------------------------------------####
 
     # update iuzfbnd for problem cell ------------------------------------#
@@ -535,7 +626,7 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.iuzfbnd = iuzfbnd
 
 
-    # update vks ------------------------------------#
+    # update vks: everywhere ------------------------------------#
 
     # set vks based on upw hk
     vks = np.zeros_like(mf_tr.upw.hk.array[0, :, :])
@@ -575,12 +666,48 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.vks = vks
 
 
+
+    # update vks: in upland areas ------------------------------------#
+
+    # identify upland areas
+    # NOTE: defining upland areas as areas that don't have layer 1 as their top layer
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    upland_mask = iuzfbnd > 1
+
+    # increase vks
+    vks_upland_scaling_factor = 10
+    vks = mf_tr.uzf.vks.array
+    vks[upland_mask] = vks[upland_mask] * vks_upland_scaling_factor
+    mf_tr.uzf.vks = vks
+
+
+
     # update thti ------------------------------#
+
+    # OLD - can be deleted
     # thts = mf_tr.uzf.thts.array
     # sy = mf_tr.upw.sy.array[0,:,:]
     # thtr = thts - sy
     # small_value = 0.01 * thtr.min()
     # mf_tr.uzf.thti = thtr + small_value
+
+    # set SY scaling factor
+    sy_scaling_factor = 0.3
+
+    # get SY for the IUZFBND layers
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    sy = mf_tr.upw.sy.array
+    sy_iuzfbnd = sy[2,:,:]  # set everything to layer 3 values to start
+    sy_iuzfbnd[iuzfbnd == 1] = sy[0,:,:][iuzfbnd == 1]  # then update layer 1 values
+    sy_iuzfbnd[iuzfbnd == 2] = sy[1,:,:][iuzfbnd == 2]  # then update layer 2 values
+
+    # set thti
+    thts = mf_tr.uzf.thts.array
+    thtr = thts - sy_iuzfbnd
+    thti = thtr + (sy_scaling_factor * sy_iuzfbnd)
+    mf_tr.uzf.thti = thti
+
+
 
     # update nsets -----------------------------#
     mf_tr.uzf.nsets = 350
@@ -604,12 +731,12 @@ if update_transient_model_for_smooth_running == 1:
     # # write lake file
     # mf_tr.lak.write_file()
 
-    # update nssitr
-    mf_tr.lak.nssitr = 20
-
-    # write lake file
-    mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
-    mf_tr.lak.write_file()
+    # # update nssitr
+    # mf_tr.lak.nssitr = 100
+    #
+    # # write lake file
+    # mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
+    # mf_tr.lak.write_file()
 
 
     # update PRMS param to specific values ---------------------------------------------------------------####
@@ -674,6 +801,9 @@ if update_transient_model_for_smooth_running == 1:
 
 if update_one_cell_lakes == 1:
 
+    # print
+    print('Update one cell lakes')
+
 
     # load transient model -----------------------------------------------####
 
@@ -690,10 +820,9 @@ if update_one_cell_lakes == 1:
 
     # load transient modflow model, including ag package
     Sim.mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                           model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                           verbose=True, forgive=False, version="mfnwt")
-    # dis = Sim.mf_tr.dis  #TODO: uncomment this if add in code that requires ag package
-    # ag = ModflowAg.load(Sim.ag_package_file, model=Sim.mf_tr, nper = dis.nper)  #TODO: uncomment this if add in code that requires ag package
+                                            model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                            load_only=["BAS6", "DIS", "LAK", "SFR", "AG"],
+                                            verbose=True, forgive=False, version="mfnwt")
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -804,7 +933,7 @@ if update_one_cell_lakes == 1:
 
             # get min lake elevation (i.e. elev of lake bottom grid cell) and calculate desired lake elev
             lake_min_elev = elev_botm[lak_lyr.max(),lak_row, lak_col]
-            lake_buffer = 2
+            lake_buffer = 5
             lake_elev = lake_min_elev + lake_buffer
 
             # calculate desired elevation of spillway/gate
@@ -876,6 +1005,9 @@ if update_one_cell_lakes == 1:
 # ===========================================
 
 if update_prms_params_for_ag_package == 1:
+
+    # print
+    print('Update PRMS parameters for AG package')
 
     # load transient modflow model, including ag package
     # mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
@@ -1267,6 +1399,10 @@ if update_prms_params_for_ag_package == 1:
 # =================================
 
 if update_modflow_for_ag_package == 1:
+
+    # print
+    print('Update MODFLOW for AG package')
+
     # change name file to add ag package file
     # TODO
 
@@ -1282,6 +1418,10 @@ if update_modflow_for_ag_package == 1:
 # ===========================================
 
 if update_output_control == 1:
+
+    # print
+    print('Update output control')
+
 
     # # load transient modflow model, including ag package
     # mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
@@ -1304,10 +1444,13 @@ if update_output_control == 1:
 
 if update_ag_package == 1:
 
+    # print
+    print('Update AG package')
+
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
     ag = mf_tr.ag
 
     # load gsflow model
@@ -1548,10 +1691,13 @@ if update_ag_package == 1:
 
 if create_tabfiles_for_pond_diversions == 1:
 
+    # print
+    print('Create tabfiles for pond diversions')
+
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
     ag = mf_tr.ag
 
     # # load gsflow model
@@ -1727,8 +1873,8 @@ if do_checks == 1:
 
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt",
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        verbose=True, forgive=False, version="mfnwt",
                                         load_only=["BAS6", "DIS", "AG", "SFR", "UZF", "UPW", "WEL"])
 
     # load gsflow model
@@ -2024,3 +2170,103 @@ if do_checks == 1:
     plt.title('Pumping time series at well: HRU_ROW = ' + str(well_hru_row) + ', HRU_COL = ' + str(well_hru_col))
     plt.xlabel('Stress period')
     plt.ylabel('Q (m^3/day)')
+
+
+
+    # extract spatial distribution of recharge and discharge from transient model ---------------------------------####
+
+
+    # zon_dict = flopy.utils.zonbud.read_zbarray(‘zon_file’)
+    # cbb = bf.CellBudgetFile(‘P2Rv8.2.cbb’, precision =’double’)
+    # zb = flopy.utils.zonbud.ZoneBudget(cbb, zon_dict, verbose=True)
+
+    # extract cbc file
+    cbc_file_path = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "rr_tr.cbc")
+    cbc = bf.CellBudgetFile(cbc_file_path)
+
+    # Extract flow right face and flow front face
+    # time = 10
+    # frf = cbc.get_data(text="FLOW RIGHT FACE", totim=time)[0]
+    # fff = cbc.get_data(text="FLOW FRONT FACE", totim=time)[0]
+
+    # get recharge
+    rech = cbc.get_data(idx=0, kstpkper = (0,0), totim=0, text="UZF RECHARGE", full3D=True)
+    cbc.get_kstp()
+
+
+    # get discharge
+
+
+
+    # extract spatial distribution of recharge and discharge from steady state model ---------------------------------####
+
+
+
+
+
+
+
+# ===========================================
+# Do recharge experiments
+# ===========================================
+
+if do_recharge_experiments == 1:
+
+    # print
+    print('Do UZF experiments')
+
+    # load transient modflow model, including ag package
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        verbose=True, load_only=["BAS6", "DIS", "UZF"], forgive=False, version="mfnwt")
+
+    # load gsflow model
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
+
+
+    # # increase VKS in upland areas --------------------------------------------------####
+    #
+    # # identify upland areas
+    # # NOTE: defining upland areas as areas that don't have layer 1 as their top layer
+    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    # upland_mask = iuzfbnd > 1
+    #
+    # # increase vks
+    # vks_upland_scaling_factor = 10
+    # vks = mf_tr.uzf.vks.array
+    # vks[upland_mask] = vks[upland_mask] * vks_upland_scaling_factor
+    # mf_tr.uzf.vks = vks
+    #
+    # # write uzf file
+    # mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
+    # mf_tr.uzf.write_file()
+    #
+    #
+    # # increase ssr2gw_rate in upland areas --------------------------------------------------####
+    #
+    # # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
+    # vks_mod = mf_tr.uzf.vks.array * 0.5
+    # nhru = gs.prms.parameters.get_values("nhru")[0]
+    # vks_mod = vks_mod.reshape(1,nhru)[0]
+    # gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
+    #
+    # # write prms parameter file
+    # gs.prms.parameters.write()
+
+
+    # update THTI --------------------------------------------------####
+
+    sy_scaling_factor = 0.15
+    sy = mf_tr.upw.sy.array[0,:,:]
+    thts = mf_tr.uzf.thts.array
+    thtr = thts - sy
+    thti = thtr + (sy_scaling_factor * sy)
+    mf_tr.uzf.thti = thti
+
+    # write uzf file
+    mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
+    mf_tr.uzf.write_file()
+
+
+
