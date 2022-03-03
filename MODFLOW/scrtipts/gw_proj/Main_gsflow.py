@@ -6,6 +6,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import geopandas
 from matplotlib.colors import LogNorm
+from datetime import datetime
+from datetime import timedelta
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\flopy_develop\flopy")
 #fpth = sys.path.insert(0,r"D:\Workspace\Codes\pygsflow")
 
@@ -47,8 +49,8 @@ update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
 update_output_control = 0
 update_ag_package = 0
-create_tabfiles_for_pond_diversions = 1
-do_checks = 0
+create_tabfiles_for_pond_diversions = 0
+do_checks = 1
 do_recharge_experiments = 0
 
 
@@ -463,7 +465,7 @@ if update_transient_model_for_smooth_running == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                        load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK"],
+                                        load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK", "WEL"],
                                         verbose=True, forgive=False, version="mfnwt")
 
     # load gsflow model
@@ -474,13 +476,49 @@ if update_transient_model_for_smooth_running == 1:
     # update NWT -------------------------------------------------------------------####
 
     # update nwt package values to those suggested by Rich
-    mf_tr.nwt.maxiterout = 20
+    mf_tr.nwt.headtol = 0.5
+    mf_tr.nwt.fluxtol = 200000
+    mf_tr.nwt.maxiterout = 50
     mf_tr.nwt.dbdtheta = 0.85
-    mf_tr.nwt.headtol = 0.1
+    mf_tr.nwt.backflag = 0
+    mf_tr.nwt.iacl = 1
+    mf_tr.nwt.mxiterxmd = 20
 
     # write nwt file
     mf_tr.nwt.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.nwt")
     mf_tr.nwt.write_file()
+
+
+
+    # update WEL -------------------------------------------------------------------####
+
+    # extract well package
+    wel = mf_tr.wel
+
+    # identify grid cell with problem wells
+    well_lay = 3
+    well_row = 332
+    well_col = 145
+
+    # identify and remove problem wells
+    nper = mf_tr.nper
+    for per in range(nper):
+
+        # extract stress period data
+        spd = pd.DataFrame(wel.stress_period_data.data[per])
+
+        # identify problem wells
+        mask = (spd['k'] == (well_lay-1)) & (spd['i'] == (well_row-1)) & (spd['j'] == (well_col-1))
+
+        # remove problem wells
+        spd_updated = spd[~mask]
+
+        # convert back to recarray and store in well package
+        wel.stress_period_data.data[per] = spd_updated.to_records(index=False)
+
+    # write well file
+    mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
+    mf_tr.wel.write_file()
 
 
 
@@ -675,7 +713,7 @@ if update_transient_model_for_smooth_running == 1:
     upland_mask = iuzfbnd > 1
 
     # increase vks
-    vks_upland_scaling_factor = 3
+    vks_upland_scaling_factor = 1
     vks = mf_tr.uzf.vks.array
     vks[upland_mask] = vks[upland_mask] * vks_upland_scaling_factor
     mf_tr.uzf.vks = vks
@@ -692,7 +730,7 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.thti = thtr + small_value
 
     # set SY scaling factor
-    sy_scaling_factor = 0.3
+    sy_scaling_factor = 0.18
 
     # get SY for the IUZFBND layers
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -990,7 +1028,6 @@ if update_one_cell_lakes == 1:
     # Make changes to ag package -----------------------------------------------------------------####
 
     # TODO: In ag package: represent irrigation water coming out of the lake using ag package to send water to groups of fields
-
 
 
 
@@ -1425,16 +1462,23 @@ if update_output_control == 1:
     print('Update output control')
 
 
-    # # load transient modflow model, including ag package
-    # mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-    #                                    model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-    #                                    load_only=["BAS6", "DIS", "OC"], verbose=True, forgive=False, version="mfnwt")
+    # load transient modflow model, including ag package
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                       load_only=["BAS6", "DIS", "OC"], verbose=True, forgive=False, version="mfnwt")
 
-    # # update output control
-    # oc = mf_tr.oc
-    # oc.stress_period_data.values()
+    # create new "heavy" output control file with budgets and heads output at each time step
+    nstp = mf_tr.dis.nstp.array
+    nper = mf_tr.nper
+    spd = {}
+    for per in range(nper):
+        for stp in range(nstp[per]):
+            spd[(per, stp)] = ["SAVE HEAD", "SAVE BUDGET"]
+    oc = flopy.modflow.ModflowOc(mf_tr, stress_period_data = spd, cboufm='(20i5)', filenames='rr_tr_heavy.oc')
 
-    pass
+    # export
+    mf_tr.oc.fn_path = os.path.join(tr_model_input_file_dir, 'rr_tr_heavy.oc')
+    mf_tr.oc.write_file()
 
 
 
@@ -1678,8 +1722,6 @@ if update_ag_package == 1:
 
 
 
-
-
     #  write updated ag package ---------------------------------------------------------#
 
     ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
@@ -1701,7 +1743,7 @@ if create_tabfiles_for_pond_diversions == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                        load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
+                                        load_only=["BAS6", "DIS", "SFR", "AG"], verbose=True, forgive=False, version="mfnwt")
     ag = mf_tr.ag
 
     # load gsflow model
@@ -1824,7 +1866,7 @@ if create_tabfiles_for_pond_diversions == 1:
             dprst_depth_avg[idx] = pond_depth_in
 
     # store
-    gs.prms.parameters.set_values('dprst_depth_avg', [dprst_depth_avg])
+    gs.prms.parameters.set_values('dprst_depth_avg', dprst_depth_avg)
 
     # export updated prms file
     gs.prms.parameters.write()
@@ -1840,29 +1882,90 @@ if create_tabfiles_for_pond_diversions == 1:
     num_days_in_wettest_month = 31
 
     # summarize (i.e. add up) pond demand by diversion segment
-    #seg_df =
+    seg_df = pond_list.groupby('segid').sum().reset_index()
 
+    # create tabfile template
+    model_time_step = mf_tr.dis.get_totim() - 1
+    model_time_step = [int(x) for x in model_time_step]
+    model_start_date = '1990-01-01'
+    model_start_date = datetime.strptime(model_start_date, "%Y-%m-%d")
+    model_date=[]
+    model_month=[]
+    for idx, step in enumerate(model_time_step):
+        this_date = model_start_date + timedelta(days=step)
+        model_date.append(this_date)
+        this_month = this_date.month
+        model_month.append(this_month)
+    tabfile_format_df = pd.DataFrame({'model_date': model_date, 'model_month': model_month, 'model_time_step': model_time_step, 'daily_demand_m3': 0})
+
+    # create directory for ag diversions
+    ag_div_dir_path = os.path.join(repo_ws, 'GSFLOW', 'modflow', 'input', 'ag_diversions')
+    if not os.path.exists(ag_div_dir_path):
+        os.mkdir(ag_div_dir_path)
 
     # loop through diversion segments
-    tabfile_format_df = pd.DataFrame()
+    div_seg = seg_df['segid'].unique()
+    num_lines = []
+    file_name_list = []
     for seg in div_seg:
 
+        # make a copy of tabfile format df
+        this_tabfile = tabfile_format_df.copy()
+
         # calculate daily irrigation demand during wettest month
-        daily_irrig_demand_wettest_month = seg_df['max_demand_m3'] / num_days_in_wettest_month
+        seg_mask = seg_df['segid'] == seg
+        daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'max_demand_m3'].values[0] / num_days_in_wettest_month
 
         # create tabfile
-        # TODO: just modify tabfile format df
+        month_mask = this_tabfile['model_month'] == wettest_month
+        this_tabfile.loc[month_mask, 'daily_demand_m3'] = daily_irrig_demand_wettest_month
+        this_tabfile = this_tabfile[['model_time_step', 'daily_demand_m3']]
+
+        # store number of lines in the tabfile
+        num_lines.append(this_tabfile.shape[0])
 
         # export tabfile
+        file_name = 'div_seg_' + str(seg) + '.txt'
+        file_name_list.append(file_name)
+        file_path = os.path.join(ag_div_dir_path, file_name)
+        this_tabfile.to_csv(file_path, sep='\t', header=False, index=False)
 
-    # add diversion segments to SFR file
-    # TODO: need to add to number of tabfiles at the top of the file and diversion segment entries at the bottom of the file
+    # create data frame with info needed to add diversion segments to sfr file
+    num_div_seg = len(div_seg)
+    unit_num = list(range(5000,(5000+num_div_seg)))
+    div_seg_sfr = pd.DataFrame({'div_seg': div_seg, 'num_lines': num_lines, 'file_name': file_name_list, 'unit': unit_num})
 
-    # add diversion segments to NAM file
+    # add diversion segments to SFR file: options
+    sfr = mf_tr.sfr
+    num_tabfiles = sfr.options.numtab + num_div_seg
+    max_lines = max(sfr.options.maxval, div_seg_sfr['num_lines'].max())
+    sfr.options.numtab = num_tabfiles
+    sfr.options.maxval = max_lines
+
+    # add diversion segments to SFR file: tabfiles
+    tabfiles_dict = sfr.tabfiles_dict
+    for i, row in div_seg_sfr.iterrows():
+        tabfiles_dict[row['div_seg']] = {'numval': row['num_lines'], 'inuit': row['unit']}
+    sfr.tabfiles_dict = tabfiles_dict
+
+    # write updated sfr file
+    mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    mf_tr.sfr.write_file()
+
+    #add diversion segments to NAM file and export updated name file
+    dst = os.path.join(mf_tr_name_file)
+    fidw = open(dst, 'a')
+    for i, row in div_seg_sfr.iterrows():
+
+        fidw.write("\n")
+        new_line = 'DATA            ' + str(row['unit']) + '  ..\\modflow\\input\\ag_diversions\\' + row['file_name']
+        fidw.write(new_line)
+
+    fidw.close()
 
 
 
-    pass
+
 
 
 
@@ -2205,7 +2308,42 @@ if do_checks == 1:
 
 
 
+    # double check HRU ID of problem grid cell ---------------------------------####
 
+    # problem grid cell
+    problem_row = 332
+    problem_col = 145
+
+    # get number of rows and columns
+    ibound = mf_tr.bas6.ibound.array
+    num_lay, num_row, num_col = ibound.shape
+
+    # get hru id matrix
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    hru_id = np.array(list(range(1, nhru + 1)))
+    hru_id_mat = hru_id.reshape(num_row, num_col)
+
+    # get hru id of problem grid cell
+    problem_hru = hru_id_mat[problem_row-1, problem_col-1]
+
+
+    # check lakebed leakance ---------------------------------####
+
+    lak = mf_tr.lak
+    cond = lak.bdlknc.array[:, :, :, :].copy()
+    plt.imshow(cond[0, 0, :, :])
+    plt.imshow(cond[0, 1, :, :])
+    plt.imshow(cond[0, 1, :, :])
+
+
+
+    # create subbasin file with integers ---------------------------------####
+
+    subbasin_file = os.path.join(repo_ws, 'GSFLOW', 'scripts', 'inputs_for_scripts', 'subbasins.txt')
+    subbasin = pd.read_csv(subbasin_file, header = None, sep=' ')
+    for i in subbasin.columns:
+        subbasin[[i]] = subbasin[[i]].astype(int)
+    subbasin.to_csv(subbasin_file, header=False, index=False, sep='\t')
 
 
 
@@ -2273,31 +2411,6 @@ if do_recharge_experiments == 1:
 
 
 
-    # double check HRU ID of problem grid cell ---------------------------------####
 
-    # problem grid cell
-    problem_row = 332
-    problem_col = 145
-
-    # get number of rows and columns
-    ibound = mf_tr.bas6.ibound.array
-    num_lay, num_row, num_col = ibound.shape
-
-    # get hru id matrix
-    nhru = gs.prms.parameters.get_values("nhru")[0]
-    hru_id = np.array(list(range(1, nhru + 1)))
-    hru_id_mat = hru_id.reshape(num_row, num_col)
-
-    # get hru id of problem grid cell
-    problem_hru = hru_id_mat[problem_row-1, problem_col-1]
-
-
-    # check lakebed leakance ---------------------------------####
-
-    lak = mf_tr.lak
-    cond = lak.bdlknc.array[:, :, :, :].copy()
-    plt.imshow(cond[0, 0, :, :])
-    plt.imshow(cond[0, 1, :, :])
-    plt.imshow(cond[0, 1, :, :])
 
 
