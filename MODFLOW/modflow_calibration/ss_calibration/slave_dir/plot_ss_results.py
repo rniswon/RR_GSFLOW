@@ -25,8 +25,8 @@ plot_groundwater_heads = 0
 map_baseflows = 0
 map_streamflows = 0
 map_groundwater_head_resid = 0
-map_groundwater_head_contours_heatmap = 1
-HOB_well_summary_table = 0
+map_groundwater_head_contours_heatmap = 0
+HOB_well_summary_table = 1
 
 
 

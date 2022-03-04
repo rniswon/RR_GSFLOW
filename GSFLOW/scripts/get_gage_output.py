@@ -420,12 +420,37 @@ if __name__ == "__main__":
     # 17: Russian River near Windsor
     # 18: Russian River near Guerneville
     # 19: Russian River Johnson's Beach near Guerneville
-    ds = sim_obs_daily_dict[5]
-    us = sim_obs_daily_dict[1]
-    diff_obs = ds['obs_flow'] - us['obs_flow']
-    diff_sim = ds['obs_flow'] - us['obs_flow']
-    date = ds['date']
 
+    # set downstream and upstream gage ids
+    #(5,1), (6,5), (13,6), (18,13)
+    ds_id = 18
+    us_id = 13
+
+    # get downstream and upstream flows
+    ds = sim_obs_daily_dict[ds_id]
+    us = sim_obs_daily_dict[us_id]
+
+    # calculate difference between downstream and upstream flows
+    diff_obs = ds['obs_flow'] - us['obs_flow']
+    diff_sim = ds['sim_flow'] - us['sim_flow']
+
+    # calculate (absolute) cumulative differences
+    diff_obs_cum = diff_obs.abs().cumsum()
+    diff_sim_cum = diff_sim.abs().cumsum()
+
+    # plot
+    date = ds['date']
+    plt.style.use('default')
+    plt.figure(figsize=(12, 8), dpi=150)
+    plt.plot(date, diff_obs_cum, label = 'Observed')
+    plt.plot(date, diff_sim_cum, label = 'Simulated')
+    plt.title('Cumulative absolute difference in streamflow between downstream gage ' + str(ds_id) + ' and upstream gage ' + str(us_id))
+    plt.xlabel('Date')
+    plt.ylabel('Cumulative absolute difference in streamflow (ft^3/s)')
+    plt.legend()
+    file_name = 'cumdiff_streamflow_time_series_dsgage_' + str(ds_id) + '_usgage_' + str(us_id) + '.jpg'
+    file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumdiff", file_name)
+    plt.savefig(file_path)
 
 
 
