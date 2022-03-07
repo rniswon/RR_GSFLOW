@@ -14,7 +14,7 @@ repo_ws = os.path.join(script_ws, "..", "..", "..")
 
 # set file paths
 file_path_geo_old = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow.shp")
-file_path_geo_new = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow_20220304.shp")
+file_path_geo_new = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow_20220307.shp")
 
 # read in geologic framework
 gf = geopandas.read_file(file_path_geo_old)
@@ -46,6 +46,13 @@ gf.loc[mask, 'OF_zone'] = frac_brk      # set to fractured bedrock
 gf.loc[mask, 'OF_tk'] = frac_brk_lyr2_tk     # set thickness of layer 2 fractured bedrock
 gf.loc[mask, 'Fbrk_tp'] = gf.loc[mask, 'OF_tp'] - gf.loc[mask, 'OF_tk']   # update top of layer 3 elevation
 gf.loc[mask, 'Bmt_nf'] = gf.loc[mask, 'Fbrk_tp'] - gf.loc[mask, 'Fbrk_tk']   # update bottom of layer 3 elevation
+
+# fix grid cells in active cells with missing elevation values
+mask = (gf['YF_zone'] != inactive) & (gf['YF_tp'] == -9999)   # identify grid cells with active cells in layer 1
+gf.loc[mask, 'YF_tp'] = gf.loc[mask, 'DEM_ADJ']         # fix top of layer 1 grid cell elevation
+gf.loc[mask, 'OF_tp'] = gf.loc[mask, 'YF_tp'] - gf.loc[mask, 'YF_tk']    # fix top of layer 2 grid cell elevation
+gf.loc[mask, 'Fbrk_tp'] = gf.loc[mask, 'OF_tp'] - gf.loc[mask, 'OF_tk']    # fix top of layer 3 grid cell elevation
+gf.loc[mask, 'Bmt_nf'] = gf.loc[mask, 'Fbrk_tp'] - gf.loc[mask, 'Fbrk_tk']    # fix bottom of layer 3 grid cell elevation
 
 # export shapefile
 gf.to_file(file_path_geo_new)
