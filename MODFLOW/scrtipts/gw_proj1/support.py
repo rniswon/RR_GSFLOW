@@ -26,7 +26,7 @@ def read_time_dis_file(fname, sheet = 'time_dis'):
     time_dis = pd.read_excel(fname,sheet_name= sheet)
     return time_dis
 
-def compute_grid_geometry(gw_object): # obselete
+def compute_grid_geometry(gw_object):
     """
     Determine the layers thikness, implement any changes to the grid
     :param hru_df:
@@ -93,6 +93,85 @@ def compute_grid_geometry(gw_object): # obselete
     z3[mask1] = 14
     zones[2,:,:] = z3
 
+    gw_object.Zone3D = zones
+
+    # save grid and zones
+    grid_info = dict()
+    grid_info['grid'] = grid
+    grid_info['zones'] = zones
+    np.save("grid_info.npy", grid_info)
+
+
+def compute_grid_geometry1(gw_object):
+    """
+    Determine the layers thikness, implement any changes to the grid
+    :param hru_df:
+    :param nlayr:
+    :return:
+    """
+
+    # get elevation of top of model domain and thickness of each layer
+    top = gw_object.hru_param['DEM_ADJ'].values.reshape(gw_object.nrows, gw_object.ncols)
+    field_name = gw_object.config.get('Geo_Framework', 'thickness_layer1_field')
+    thk_1 =  gw_object.geo_df[field_name].values.reshape(gw_object.nrows, gw_object.ncols)
+    field_name = gw_object.config.get('Geo_Framework', 'thickness_layer2_field')
+    thk_2 = gw_object.geo_df[field_name].values.reshape(gw_object.nrows, gw_object.ncols)
+    field_name = gw_object.config.get('Geo_Framework', 'thickness_layer3_field')
+    thk_3 = gw_object.geo_df[field_name].values.reshape(gw_object.nrows, gw_object.ncols)
+
+    # create model grid with elevations of all layers
+    grid = np.zeros((gw_object.nlayers+1, gw_object.nrows, gw_object.ncols))
+    grid[0,:,:] = top
+    grid[1,:,:] = grid[0,:,:] - thk_1
+    grid[2, :, :] = grid[1, :, :] - thk_2
+    grid[3, :, :] = grid[2, :, :] - thk_3
+
+    # get hru type
+    hru_type = gw_object.hru_param['HRU_TYPE'].values
+    hru_type = hru_type.reshape( gw_object.nrows, gw_object.ncols)
+
+    # identify active cells with 0 thickness  and assign them a thickness in layer 3
+    tot_thick = grid[0,:,:] - grid[3, :, :]
+    mask = np.logical_and(tot_thick == 0, hru_type == 1)
+    thk_3[mask] = 50.0
+    mask_newbedrock = mask.copy()
+    grid[3, :, :] = grid[2, :, :] - thk_3
+    tot_thick = grid[0, :, :] - grid[3, :, :]
+    mask = np.logical_and(tot_thick == 0, hru_type == 1)
+    if np.any(mask):
+        print("Error in the grid") # just to check
+
+    # # find all cells that are surrounded by zero thiknesses
+    # tot_thick = grid[0, :, :] - grid[3, :, :]
+    # flag_arr = np.zeros_like(tot_thick)
+    # flag_arr[tot_thick>0] = 1.0
+    # k = np.array([[0, 1, 0], [1, 0, 1], [0, 1, 0]])
+
+    # store model grid
+    gw_object.grid_3d = grid
+
+    # get zones
+    zones = np.zeros((gw_object.nlayers, gw_object.nrows, gw_object.ncols))
+    field_name = gw_object.config.get('Geo_Framework', 'zones_laye1')
+    z1 = gw_object.geo_df[field_name].values.reshape(gw_object.nrows, gw_object.ncols)
+    field_name = gw_object.config.get('Geo_Framework', 'zones_laye2')
+    z2 = gw_object.geo_df[field_name].values.reshape(gw_object.nrows, gw_object.ncols)
+    field_name = gw_object.config.get('Geo_Framework', 'zones_laye3')
+    z3 = gw_object.geo_df[field_name].values.reshape(gw_object.nrows, gw_object.ncols)
+    z3[mask_newbedrock] = 14 # bedrock
+
+    # check if a zone is 0 in active area, and if so, fix it
+    mask1 = np.logical_and(z1 == 0, (grid[0, :, :] - grid[1, :, :]) > 0)     # layer 1
+    z1[mask1] = 14
+    zones[0,:,:] = z1
+    mask1 = np.logical_and(z2 == 0, (grid[1, :, :] - grid[2, :, :]) > 0)      # layer 2
+    z2[mask1] = 14
+    zones[1,:,:] = z2
+    mask1 = np.logical_and(z3 == 0, (grid[2, :, :] - grid[3, :, :]) > 0)       # layer 3
+    z3[mask1] = 14
+    zones[2,:,:] = z3
+
+    # store zones
     gw_object.Zone3D = zones
 
     # save grid and zones

@@ -34,10 +34,15 @@ def add_rural_domestic_pumping_to_well_pkg():
     - We assume that rural pumping occurs in the top active layer
     """
 
-    model_ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\TR"
+    # set workspaces
+    script_ws = os.path.abspath(os.path.dirname(__file__))
+    repo_ws = os.path.join(script_ws, "..", "..", "..")
+    #model_ws =  r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\TR"
+    model_ws = os.path.join(repo_ws, "MODFLOW", "tr")
     fn = "rr_tr.nam"
 
-    domestic_wells_df = pd.read_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\init_files\rural_domestic_master.csv")
+    #domestic_wells_df = pd.read_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\init_files\rural_domestic_master.csv")
+    domestic_wells_df = pd.read_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master.csv"))
     domestic_wells_df['sp']  = domestic_wells_df['sp' ] - 1
     domestic_wells_df['col'] = domestic_wells_df['col'] - 1
     domestic_wells_df['row'] = domestic_wells_df['row'] - 1

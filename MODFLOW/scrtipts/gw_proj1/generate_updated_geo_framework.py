@@ -28,7 +28,20 @@ uncons_sed = 17
 chan_dep_lyr1 = 18
 chan_dep_lyr2 = 19
 frac_brk_lyr2_tk = 25   # meters
-frac_brk_lyr3_tk = 50    # meters
+
+# re-calculate all elevations in old geological framework based on thicknesses since some elevations appear to be missing in active cells
+gf['YF_tp'] = gf['DEM_ADJ']
+gf['OF_tp'] = gf['YF_tp'] - gf['YF_tk']
+gf['Fbrk_tp'] = gf['OF_tp'] - gf['OF_tk']
+gf['Bmt_nf'] = gf['Fbrk_tp'] - gf['Fbrk_tk']
+
+# make sure no zones are 0 in active zone
+mask = np.logical_and(gf['YF_zone'] == 0, (gf['YF_tp'] - gf['OF_tp']) > 0)        # layer 1
+gf.loc[mask, 'YF_zone'] = chan_dep_lyr1
+mask = np.logical_and(gf['OF_zone'] == 0, (gf['OF_tp'] - gf['Fbrk_tp']) > 0)       # layer 2
+gf.loc[mask, 'OF_zone'] = frac_brk
+mask = np.logical_and(gf['Fbrk_zone'] == 0, (gf['Fbrk_tp'] - gf['Bmt_nf']) > 0)     # layer 3
+gf.loc[mask, 'Fbrk_zone'] = frac_brk
 
 # move all channel deposits in layer 2 to layer 1
 mask = gf['OF_zone'] == chan_dep_lyr2      # identify layer 2 grid cells with channel deposits
@@ -46,13 +59,6 @@ gf.loc[mask, 'OF_zone'] = frac_brk      # set to fractured bedrock
 gf.loc[mask, 'OF_tk'] = frac_brk_lyr2_tk     # set thickness of layer 2 fractured bedrock
 gf.loc[mask, 'Fbrk_tp'] = gf.loc[mask, 'OF_tp'] - gf.loc[mask, 'OF_tk']   # update top of layer 3 elevation
 gf.loc[mask, 'Bmt_nf'] = gf.loc[mask, 'Fbrk_tp'] - gf.loc[mask, 'Fbrk_tk']   # update bottom of layer 3 elevation
-
-# fix grid cells in active cells with missing elevation values
-mask = (gf['YF_zone'] != inactive) & (gf['YF_tp'] == -9999)   # identify grid cells with active cells in layer 1
-gf.loc[mask, 'YF_tp'] = gf.loc[mask, 'DEM_ADJ']         # fix top of layer 1 grid cell elevation
-gf.loc[mask, 'OF_tp'] = gf.loc[mask, 'YF_tp'] - gf.loc[mask, 'YF_tk']    # fix top of layer 2 grid cell elevation
-gf.loc[mask, 'Fbrk_tp'] = gf.loc[mask, 'OF_tp'] - gf.loc[mask, 'OF_tk']    # fix top of layer 3 grid cell elevation
-gf.loc[mask, 'Bmt_nf'] = gf.loc[mask, 'Fbrk_tp'] - gf.loc[mask, 'Fbrk_tk']    # fix bottom of layer 3 grid cell elevation
 
 # export shapefile
 gf.to_file(file_path_geo_new)

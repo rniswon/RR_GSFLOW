@@ -70,7 +70,7 @@ class Gw_model(object):
         # load geological dataframe
         self.geo_df = geopandas.read_file(self.config.get('Geo_Framework', 'filename'))
         self.geo_df = self.geo_df.sort_values(by=['HRU_ID'])
-        support.compute_grid_geometry(self)
+        support.compute_grid_geometry1(self)
 
         # Read excel file for stress periods
         xfile = self.config.get('Budget_info', 'budget_excel_file')

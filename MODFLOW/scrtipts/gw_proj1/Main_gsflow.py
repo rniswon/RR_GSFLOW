@@ -50,7 +50,7 @@ update_prms_params_for_ag_package = 0
 update_output_control = 0
 update_ag_package = 0
 create_tabfiles_for_pond_diversions = 0
-do_checks = 1
+do_checks = 0
 do_recharge_experiments = 0
 
 
@@ -597,7 +597,7 @@ if update_transient_model_for_smooth_running == 1:
     sy_channel_deposits = 0.2
 
     # read in geological zones
-    geo_zones_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
+    geo_zones_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
     geo_zones = np.load(geo_zones_file, allow_pickle=True).all()
     geo_zones = geo_zones['zones']
 
