@@ -162,236 +162,235 @@ if __name__ == "__main__":
         sim_obs_year['sim_flow'] = sim_obs_year['sim_flow'].values * seconds_per_day
         sim_obs_year['obs_flow'] = sim_obs_year['obs_flow'].values * seconds_per_day
 
-        # calculate error metrics if have observed data
-        # TODO: need to write functions for the rest of the error metrics and calculate/store them below
-        if gage_id in gages_with_obs:
-
-
-            # ANNUAL ERROR METRICS -------------------------------------------------####
-
-            # calculate error metrics: annual flow volumes
-            nse = nash_sutcliffe_efficiency(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
-            paee = calculate_paee(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
-            aaee = calculate_aaee(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
-
-            # store error metrics: annual flow volumes
-            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_annual', gage_id] = nse
-            error_metric_df.loc[error_metric_df['error_metric'] == 'paee_annual', gage_id] = paee
-            error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_annual', gage_id] = aaee
-
-
-            # MONTHLY ERROR METRICS  -------------------------------------------------####
-
-            # calculate error metrics: monthly mean flows (for each year)
-            nse = nash_sutcliffe_efficiency(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
-            paee = calculate_paee(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
-            aaee = calculate_aaee(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
-
-            # store error metrics: monthly mean flows (for each year)
-            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_monthly', gage_id] = nse
-            error_metric_df.loc[error_metric_df['error_metric'] == 'paee_monthly', gage_id] = paee
-            error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_monthly', gage_id] = aaee
-
-
-            # DAILY ERROR METRICS  -------------------------------------------------####
-
-            # calculate error metrics: daily flows
-            nse = nash_sutcliffe_efficiency(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
-            paee = calculate_paee(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
-            aaee = calculate_aaee(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
-
-            # store error metrics: daily flows
-            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_daily', gage_id] = nse
-            error_metric_df.loc[error_metric_df['error_metric'] == 'paee_daily', gage_id] = paee
-            error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_daily', gage_id] = aaee
-
-
-
-
-        # ANNUAL PLOTS  -------------------------------------------------####
-
-        # plot annual flow volumes: time series
-        plt.style.use('default')
-        plt.figure(figsize=(12, 8), dpi=150)
-        plt.scatter(sim_obs_year.year, sim_obs_year.obs_flow, label = 'Observed')
-        plt.scatter(sim_obs_year.year, sim_obs_year.sim_flow, label = 'Simulated')
-        plt.plot(sim_obs_year.year, sim_obs_year.obs_flow)
-        plt.plot(sim_obs_year.year, sim_obs_year.sim_flow)
-        plt.title('Annual streamflow volumes: subbasin ' + str(gage_id) + "\n" + gage_name)
-        plt.xlabel('Year')
-        plt.ylabel('Annual streamflow volume (ft^3)')
-        plt.legend()
-        file_name = 'annual_streamflow_volume_time_series_' + str(gage_id).zfill(2) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_annual", file_name)
-        plt.savefig(file_path)
-
-        # plot annual flow volumes: sim vs. obs
-        if gage_id in gages_with_obs:
-
-            all_val = np.append(sim_obs_year['sim_flow'].values, sim_obs_year['obs_flow'].values)
-            min_val = np.nanmin(all_val)
-            max_val = np.nanmax(all_val)
-            plot_buffer = (max_val - min_val) * 0.05
-            df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
-
-            plt.style.use('default')
-            fig = plt.figure(figsize=(8, 8), dpi=150)
-            ax = fig.add_subplot(111)
-            ax.scatter(sim_obs_year.obs_flow, sim_obs_year.sim_flow)
-            ax.plot(df_1to1.observed, df_1to1.simulated, color = "red", label='1:1 line')
-            ax.set_title('Simulated vs. observed annual streamflow volume: subbasin '  + str(gage_id) + "\n" + gage_name)
-            plt.xlabel('Observed annual streamflow volume (ft^3)')
-            plt.ylabel('Simulated annual streamflow volume (ft^3)')
-            ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
-            ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
-            plt.legend()
-            file_name = 'annual_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_annual", file_name)
-            plt.savefig(file_path)
-
-
-
-        # MONTHLY PLOTS: mean over all years  -------------------------------------------------####
-
-        # TODO: display by water year
-
-        # plot monthly mean flows: time series
-        plt.style.use('default')
-        plt.figure(figsize=(12, 8), dpi=150)
-        plt.scatter(sim_obs_month.month, sim_obs_month.obs_flow, label='Observed')
-        plt.scatter(sim_obs_month.month, sim_obs_month.sim_flow, label='Simulated')
-        plt.plot(sim_obs_month.month, sim_obs_month.obs_flow)
-        plt.plot(sim_obs_month.month, sim_obs_month.sim_flow)
-        plt.title('Monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
-        plt.xlabel('Month')
-        plt.ylabel('Monthly mean streamflow (ft^3/s)')
-        plt.legend()
-        file_name = 'monthly_mean_streamflow_time_series_' + str(gage_id).zfill(2) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_monthly", file_name)
-        plt.savefig(file_path)
-
-        # plot monthly mean flows: sim vs. obs
-        if gage_id in gages_with_obs:
-
-            all_val = np.append(sim_obs_month['sim_flow'].values, sim_obs_month['obs_flow'].values)
-            min_val = np.nanmin(all_val)
-            max_val = np.nanmax(all_val)
-            plot_buffer = (max_val - min_val) * 0.05
-            df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
-
-            plt.style.use('default')
-            fig = plt.figure(figsize=(8, 8), dpi=150)
-            ax = fig.add_subplot(111)
-            ax.scatter(sim_obs_month.obs_flow, sim_obs_month.sim_flow)
-            ax.plot(df_1to1.observed, df_1to1.simulated, color = "red", label='1:1 line')
-            ax.set_title('Simulated vs. observed mean monthly streamflow: subbasin '  + str(gage_id) + "\n" + gage_name)
-            plt.xlabel('Observed monthly mean streamflow (ft^3/s)')
-            plt.ylabel('Simulated monthly mean streamflow (ft^3/s)')
-            ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
-            ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
-            plt.legend()
-            file_name = 'monthly_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_monthly", file_name)
-            plt.savefig(file_path)
-
-
-
-
-        # MONTHLY PLOTS: for each year  -------------------------------------------------####
-
-        # TODO: display each year separately in a seaborn type plot
-
-        # plot monthly mean flows: time series
-        plt.style.use('default')
-        plt.figure(figsize=(12, 8), dpi=150)
-        plt.scatter(sim_obs_yearmonth.date, sim_obs_yearmonth.obs_flow, label='Observed')
-        plt.scatter(sim_obs_yearmonth.date, sim_obs_yearmonth.sim_flow, label='Simulated')
-        plt.plot(sim_obs_yearmonth.date, sim_obs_yearmonth.obs_flow)
-        plt.plot(sim_obs_yearmonth.date, sim_obs_yearmonth.sim_flow)
-        plt.title('Monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
-        plt.xlabel('Date')
-        plt.ylabel('Monthly mean streamflow (ft^3/s)')
-        plt.legend()
-        file_name = 'yearmonth_streamflow_time_series_' + str(gage_id).zfill(2) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
-        plt.savefig(file_path)
-
-        # figure, ax = plt.subplots(figsize=(12, 12))
-        # sim_obs_yearmonth_long = sim_obs_yearmonth.drop(['sim_stage'], axis=1)
-        # sim_obs_yearmonth_long = pd.melt(sim_obs_yearmonth_long, id_vars=['date', 'year', 'month', 'day'], var_name='flow_type', value_name='flow')
-        # #this_plot = sns.FacetGrid(data=sim_obs_yearmonth_long, col='year', col_wrap=5, sharex=False, sharey=False)
-        # #this_plot.map_dataframe(sns.lineplot, x="month", y="flow", hue="flow_type")
-        # this_plot = sns.relplot(data=sim_obs_yearmonth_long, x="month", y="flow", hue="flow_type", col="year", col_wrap=5, kind='line')
-        # this_plot.add_legend()
-        # this_plot.suptitle('Monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
-        # #this_plot.fig.subplots_adjust(top=.8)
-        # #ax.set_xlabel('Month')
-        # #ax.set_xlabel('Monthly mean streamflow (ft^3/s)')
-        # file_name = 'yearmonth_streamflow_time_series_' + str(gage_id).zfill(2) + '.jpg'
-        # file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
-        # plt.savefig(file_path)
-
-        # plot monthly mean flows: sim vs. obs
-        # TODO: color the points by month
-        if gage_id in gages_with_obs:
-            all_val = np.append(sim_obs_yearmonth['sim_flow'].values, sim_obs_yearmonth['obs_flow'].values)
-            min_val = np.nanmin(all_val)
-            max_val = np.nanmax(all_val)
-            plot_buffer = (max_val - min_val) * 0.05
-            df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
-
-            plt.style.use('default')
-            fig = plt.figure(figsize=(8, 8), dpi=150)
-            ax = fig.add_subplot(111)
-            ax.scatter(sim_obs_yearmonth.obs_flow, sim_obs_yearmonth.sim_flow)
-            ax.plot(df_1to1.observed, df_1to1.simulated, color="red", label='1:1 line')
-            ax.set_title('Simulated vs. observed monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
-            plt.xlabel('Observed monthly mean streamflow (ft^3/s)')
-            plt.ylabel('Simulated monthly mean streamflow (ft^3/s)')
-            ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
-            ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
-            plt.legend()
-            file_name = 'yearmonth_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
-            plt.savefig(file_path)
-
-
-
-        # DAILY PLOTS  -------------------------------------------------####
-
-        # plot daily flows: time series
-        #TODO: make the dates on the x-axis not overlap
-        #fig, ax = plt.subplots(figsize=(20, 8))
-        plt.subplots(figsize=(8, 12))
-        sim_obs_daily_long = sim_obs_daily.drop(['sim_stage'], axis=1)
-        sim_obs_daily_long = pd.melt(sim_obs_daily_long, id_vars=['date', 'year', 'month', 'day', 'yearday', 'gage_id', 'gage_name'], var_name='flow_type', value_name='flow')
-        this_plot = sns.FacetGrid(data=sim_obs_daily_long, col='year', col_wrap=5, sharex=False, sharey=False)
-        this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type")
-        this_plot.add_legend()
-        # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
-        # ax.xaxis.set_minor_locator(locator)
-        # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
-        file_name = 'daily_streamflow_time_series_' + str(gage_id) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
-        plt.savefig(file_path)
-
-
-        # plot daily flows: sim vs. obs
-        if gage_id in gages_with_obs:
-            this_plot = sns.FacetGrid(data=sim_obs_daily, col='year', col_wrap=5, sharex=False, sharey=False)
-            this_plot.map_dataframe(sns.scatterplot, x="obs_flow", y="sim_flow", hue="month")
-            this_plot.add_legend()
-            file_name = 'daily_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
-            plt.savefig(file_path)
-
-
-
-
-    # export error metrics
-    file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'tables', 'streamflow_error_metrics.csv')
-    error_metric_df.to_csv(file_path, index=False)
-
+    #     # calculate error metrics if have observed data
+    #     # TODO: need to write functions for the rest of the error metrics and calculate/store them below
+    #     if gage_id in gages_with_obs:
+    #
+    #
+    #         # ANNUAL ERROR METRICS -------------------------------------------------####
+    #
+    #         # calculate error metrics: annual flow volumes
+    #         nse = nash_sutcliffe_efficiency(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
+    #         paee = calculate_paee(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
+    #         aaee = calculate_aaee(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
+    #
+    #         # store error metrics: annual flow volumes
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'nse_annual', gage_id] = nse
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'paee_annual', gage_id] = paee
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_annual', gage_id] = aaee
+    #
+    #
+    #         # MONTHLY ERROR METRICS  -------------------------------------------------####
+    #
+    #         # calculate error metrics: monthly mean flows (for each year)
+    #         nse = nash_sutcliffe_efficiency(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
+    #         paee = calculate_paee(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
+    #         aaee = calculate_aaee(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
+    #
+    #         # store error metrics: monthly mean flows (for each year)
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'nse_monthly', gage_id] = nse
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'paee_monthly', gage_id] = paee
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_monthly', gage_id] = aaee
+    #
+    #
+    #         # DAILY ERROR METRICS  -------------------------------------------------####
+    #
+    #         # calculate error metrics: daily flows
+    #         nse = nash_sutcliffe_efficiency(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
+    #         paee = calculate_paee(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
+    #         aaee = calculate_aaee(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
+    #
+    #         # store error metrics: daily flows
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'nse_daily', gage_id] = nse
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'paee_daily', gage_id] = paee
+    #         error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_daily', gage_id] = aaee
+    #
+    #
+    #
+    #
+    #     # ANNUAL PLOTS  -------------------------------------------------####
+    #
+    #     # plot annual flow volumes: time series
+    #     plt.style.use('default')
+    #     plt.figure(figsize=(12, 8), dpi=150)
+    #     plt.scatter(sim_obs_year.year, sim_obs_year.obs_flow, label = 'Observed')
+    #     plt.scatter(sim_obs_year.year, sim_obs_year.sim_flow, label = 'Simulated')
+    #     plt.plot(sim_obs_year.year, sim_obs_year.obs_flow)
+    #     plt.plot(sim_obs_year.year, sim_obs_year.sim_flow)
+    #     plt.title('Annual streamflow volumes: subbasin ' + str(gage_id) + "\n" + gage_name)
+    #     plt.xlabel('Year')
+    #     plt.ylabel('Annual streamflow volume (ft^3)')
+    #     plt.legend()
+    #     file_name = 'annual_streamflow_volume_time_series_' + str(gage_id).zfill(2) + '.jpg'
+    #     file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_annual", file_name)
+    #     plt.savefig(file_path)
+    #
+    #     # plot annual flow volumes: sim vs. obs
+    #     if gage_id in gages_with_obs:
+    #
+    #         all_val = np.append(sim_obs_year['sim_flow'].values, sim_obs_year['obs_flow'].values)
+    #         min_val = np.nanmin(all_val)
+    #         max_val = np.nanmax(all_val)
+    #         plot_buffer = (max_val - min_val) * 0.05
+    #         df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
+    #
+    #         plt.style.use('default')
+    #         fig = plt.figure(figsize=(8, 8), dpi=150)
+    #         ax = fig.add_subplot(111)
+    #         ax.scatter(sim_obs_year.obs_flow, sim_obs_year.sim_flow)
+    #         ax.plot(df_1to1.observed, df_1to1.simulated, color = "red", label='1:1 line')
+    #         ax.set_title('Simulated vs. observed annual streamflow volume: subbasin '  + str(gage_id) + "\n" + gage_name)
+    #         plt.xlabel('Observed annual streamflow volume (ft^3)')
+    #         plt.ylabel('Simulated annual streamflow volume (ft^3)')
+    #         ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
+    #         ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
+    #         plt.legend()
+    #         file_name = 'annual_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
+    #         file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_annual", file_name)
+    #         plt.savefig(file_path)
+    #
+    #
+    #
+    #     # MONTHLY PLOTS: mean over all years  -------------------------------------------------####
+    #
+    #     # TODO: display by water year
+    #
+    #     # plot monthly mean flows: time series
+    #     plt.style.use('default')
+    #     plt.figure(figsize=(12, 8), dpi=150)
+    #     plt.scatter(sim_obs_month.month, sim_obs_month.obs_flow, label='Observed')
+    #     plt.scatter(sim_obs_month.month, sim_obs_month.sim_flow, label='Simulated')
+    #     plt.plot(sim_obs_month.month, sim_obs_month.obs_flow)
+    #     plt.plot(sim_obs_month.month, sim_obs_month.sim_flow)
+    #     plt.title('Monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
+    #     plt.xlabel('Month')
+    #     plt.ylabel('Monthly mean streamflow (ft^3/s)')
+    #     plt.legend()
+    #     file_name = 'monthly_mean_streamflow_time_series_' + str(gage_id).zfill(2) + '.jpg'
+    #     file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_monthly", file_name)
+    #     plt.savefig(file_path)
+    #
+    #     # plot monthly mean flows: sim vs. obs
+    #     if gage_id in gages_with_obs:
+    #
+    #         all_val = np.append(sim_obs_month['sim_flow'].values, sim_obs_month['obs_flow'].values)
+    #         min_val = np.nanmin(all_val)
+    #         max_val = np.nanmax(all_val)
+    #         plot_buffer = (max_val - min_val) * 0.05
+    #         df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
+    #
+    #         plt.style.use('default')
+    #         fig = plt.figure(figsize=(8, 8), dpi=150)
+    #         ax = fig.add_subplot(111)
+    #         ax.scatter(sim_obs_month.obs_flow, sim_obs_month.sim_flow)
+    #         ax.plot(df_1to1.observed, df_1to1.simulated, color = "red", label='1:1 line')
+    #         ax.set_title('Simulated vs. observed mean monthly streamflow: subbasin '  + str(gage_id) + "\n" + gage_name)
+    #         plt.xlabel('Observed monthly mean streamflow (ft^3/s)')
+    #         plt.ylabel('Simulated monthly mean streamflow (ft^3/s)')
+    #         ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
+    #         ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
+    #         plt.legend()
+    #         file_name = 'monthly_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
+    #         file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_monthly", file_name)
+    #         plt.savefig(file_path)
+    #
+    #
+    #
+    #
+    #     # MONTHLY PLOTS: for each year  -------------------------------------------------####
+    #
+    #     # TODO: display each year separately in a seaborn type plot
+    #
+    #     # plot monthly mean flows: time series
+    #     plt.style.use('default')
+    #     plt.figure(figsize=(12, 8), dpi=150)
+    #     plt.scatter(sim_obs_yearmonth.date, sim_obs_yearmonth.obs_flow, label='Observed')
+    #     plt.scatter(sim_obs_yearmonth.date, sim_obs_yearmonth.sim_flow, label='Simulated')
+    #     plt.plot(sim_obs_yearmonth.date, sim_obs_yearmonth.obs_flow)
+    #     plt.plot(sim_obs_yearmonth.date, sim_obs_yearmonth.sim_flow)
+    #     plt.title('Monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
+    #     plt.xlabel('Date')
+    #     plt.ylabel('Monthly mean streamflow (ft^3/s)')
+    #     plt.legend()
+    #     file_name = 'yearmonth_streamflow_time_series_' + str(gage_id).zfill(2) + '.jpg'
+    #     file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
+    #     plt.savefig(file_path)
+    #
+    #     # figure, ax = plt.subplots(figsize=(12, 12))
+    #     # sim_obs_yearmonth_long = sim_obs_yearmonth.drop(['sim_stage'], axis=1)
+    #     # sim_obs_yearmonth_long = pd.melt(sim_obs_yearmonth_long, id_vars=['date', 'year', 'month', 'day'], var_name='flow_type', value_name='flow')
+    #     # #this_plot = sns.FacetGrid(data=sim_obs_yearmonth_long, col='year', col_wrap=5, sharex=False, sharey=False)
+    #     # #this_plot.map_dataframe(sns.lineplot, x="month", y="flow", hue="flow_type")
+    #     # this_plot = sns.relplot(data=sim_obs_yearmonth_long, x="month", y="flow", hue="flow_type", col="year", col_wrap=5, kind='line')
+    #     # this_plot.add_legend()
+    #     # this_plot.suptitle('Monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
+    #     # #this_plot.fig.subplots_adjust(top=.8)
+    #     # #ax.set_xlabel('Month')
+    #     # #ax.set_xlabel('Monthly mean streamflow (ft^3/s)')
+    #     # file_name = 'yearmonth_streamflow_time_series_' + str(gage_id).zfill(2) + '.jpg'
+    #     # file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
+    #     # plt.savefig(file_path)
+    #
+    #     # plot monthly mean flows: sim vs. obs
+    #     # TODO: color the points by month
+    #     if gage_id in gages_with_obs:
+    #         all_val = np.append(sim_obs_yearmonth['sim_flow'].values, sim_obs_yearmonth['obs_flow'].values)
+    #         min_val = np.nanmin(all_val)
+    #         max_val = np.nanmax(all_val)
+    #         plot_buffer = (max_val - min_val) * 0.05
+    #         df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
+    #
+    #         plt.style.use('default')
+    #         fig = plt.figure(figsize=(8, 8), dpi=150)
+    #         ax = fig.add_subplot(111)
+    #         ax.scatter(sim_obs_yearmonth.obs_flow, sim_obs_yearmonth.sim_flow)
+    #         ax.plot(df_1to1.observed, df_1to1.simulated, color="red", label='1:1 line')
+    #         ax.set_title('Simulated vs. observed monthly mean streamflow: subbasin ' + str(gage_id) + "\n" + gage_name)
+    #         plt.xlabel('Observed monthly mean streamflow (ft^3/s)')
+    #         plt.ylabel('Simulated monthly mean streamflow (ft^3/s)')
+    #         ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
+    #         ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
+    #         plt.legend()
+    #         file_name = 'yearmonth_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
+    #         file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
+    #         plt.savefig(file_path)
+    #
+    #
+    #
+    #     # DAILY PLOTS  -------------------------------------------------####
+    #
+    #     # plot daily flows: time series
+    #     #TODO: make the dates on the x-axis not overlap
+    #     #fig, ax = plt.subplots(figsize=(20, 8))
+    #     plt.subplots(figsize=(8, 12))
+    #     sim_obs_daily_long = sim_obs_daily.drop(['sim_stage'], axis=1)
+    #     sim_obs_daily_long = pd.melt(sim_obs_daily_long, id_vars=['date', 'year', 'month', 'day', 'yearday', 'gage_id', 'gage_name'], var_name='flow_type', value_name='flow')
+    #     this_plot = sns.FacetGrid(data=sim_obs_daily_long, col='year', col_wrap=5, sharex=False, sharey=False)
+    #     this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type")
+    #     this_plot.add_legend()
+    #     # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
+    #     # ax.xaxis.set_minor_locator(locator)
+    #     # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
+    #     file_name = 'daily_streamflow_time_series_' + str(gage_id) + '.jpg'
+    #     file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+    #     plt.savefig(file_path)
+    #
+    #
+    #     # plot daily flows: sim vs. obs
+    #     if gage_id in gages_with_obs:
+    #         this_plot = sns.FacetGrid(data=sim_obs_daily, col='year', col_wrap=5, sharex=False, sharey=False)
+    #         this_plot.map_dataframe(sns.scatterplot, x="obs_flow", y="sim_flow", hue="month")
+    #         this_plot.add_legend()
+    #         file_name = 'daily_streamflow_sim_vs_obs_' + str(gage_id) + '.jpg'
+    #         file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+    #         plt.savefig(file_path)
+    #
+    #
+    #
+    #
+    # # export error metrics
+    # file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'tables', 'streamflow_error_metrics.csv')
+    # error_metric_df.to_csv(file_path, index=False)
 
 
    # calculate cumulative differences between downstream and upstream gauges on main stem: simulated flows only
@@ -406,6 +405,7 @@ if __name__ == "__main__":
     # 17: Russian River near Windsor
     # 18: Russian River near Guerneville
     # 19: Russian River Johnson's Beach near Guerneville
+    xx=1
     #sim_obs_daily_dict
 
     # calculate cumulative differences between downstream and upstream gauges on main stem: simulated and observed flows
@@ -420,7 +420,37 @@ if __name__ == "__main__":
     # 17: Russian River near Windsor
     # 18: Russian River near Guerneville
     # 19: Russian River Johnson's Beach near Guerneville
-    #sim_obs_daily_dict
+
+    # set downstream and upstream gage ids
+    #(5,1), (6,5), (13,6), (18,13)
+    ds_id = 18
+    us_id = 13
+
+    # get downstream and upstream flows
+    ds = sim_obs_daily_dict[ds_id]
+    us = sim_obs_daily_dict[us_id]
+
+    # calculate difference between downstream and upstream flows
+    diff_obs = ds['obs_flow'] - us['obs_flow']
+    diff_sim = ds['sim_flow'] - us['sim_flow']
+
+    # calculate (absolute) cumulative differences
+    diff_obs_cum = diff_obs.abs().cumsum()
+    diff_sim_cum = diff_sim.abs().cumsum()
+
+    # plot
+    date = ds['date']
+    plt.style.use('default')
+    plt.figure(figsize=(12, 8), dpi=150)
+    plt.plot(date, diff_obs_cum, label = 'Observed')
+    plt.plot(date, diff_sim_cum, label = 'Simulated')
+    plt.title('Cumulative absolute difference in streamflow between downstream gage ' + str(ds_id) + ' and upstream gage ' + str(us_id))
+    plt.xlabel('Date')
+    plt.ylabel('Cumulative absolute difference in streamflow (ft^3/s)')
+    plt.legend()
+    file_name = 'cumdiff_streamflow_time_series_dsgage_' + str(ds_id) + '_usgage_' + str(us_id) + '.jpg'
+    file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumdiff", file_name)
+    plt.savefig(file_path)
 
 
 
@@ -432,180 +462,5 @@ if __name__ == "__main__":
 
 
 
-    # if debug:
-    #     gage_name = os.path.join(ws, "..", "output", "SACr.gag1")
-    #     gage_no = 1
-    #     out_name = os.path.join(ws, "script_output", "test.png")
-    #     out_csv = os.path.join(ws, "script_output", "test.csv")
-    #     out_csv2 = os.path.join(ws, 'script_output', 'test2.csv')
-    # else:
-    #     gage_name = os.path.join(ws, sys.argv[1])
-    #     gage_no = sys.argv[2]
-    #     if gage_no not in ('1', '2', '3', '4', '5'):
-    #         raise AssertionError("Gage number must be 1, 2, 3, 4, or 5")
-    #     out_name = os.path.join(ws, sys.argv[3])
-    #     out_csv = os.path.join(ws, sys.argv[4])
-    #     out_csv2 = os.path.join(ws, sys.argv[5])
-
-    # gage_no = 'gage_{}'.format(gage_no)
-    #
-    # data = read_gage(gage_name, start_date)
-    # df = pd.DataFrame.from_dict(data)
-    # df.date = pd.to_datetime(df.date).values.astype(np.int64)
-    # df = df.groupby(['year', 'month'], as_index=False)[['stage', 'flow', 'date']].mean()
-    # df.date = pd.to_datetime(df.date)
-    # date = df['date'].values
-
-    # obs_date = []
-    # for iloc, row in obs_df.iterrows():
-    #     t = df[(df['year'] == row.year) & (df['month'] == row.month)]
-    #     if len(t.date.values) > 0:
-    #         obs_date.append(t.date.values[0])
-    #     else:
-    #         obs_date.append(np.nan)
-    #
-    # obs_df['date'] = obs_date
-    #
-    # xlim = [min(date), max(date)]
-
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    # # lns1 = ax.plot(date, df['stage'].values, '--', color='peru',
-    # #                label="Simulated stage")
-    # # ax2 = ax.twinx()
-    # lns2 = ax.plot(date, df['flow'].values, 'b-', label=r"Simulated Flow")
-    #
-    # mask = np.isnan(obs_df['date'].values)
-    # obs_date = np.ma.array(obs_df['date'].values, mask=mask)
-    # obs_flow = np.ma.array(obs_df[gage_no].values, mask=mask)
-    #
-    # lns3 = ax.plot(obs_date, obs_flow, 'r-',
-    #                label=r"Observed Flow")
-    #
-    # ax.set_xlabel("Date")
-    # ax.set_xlim(xlim)
-    # # ax.set_ylabel(r"Monthly mean stage, in $m$", fontsize=12)
-    # # ax.yaxis.label.set_color("peru")
-    # ax.set_ylabel(r"Monthly mean flow, in $m^{3}\,d^{-1}$", fontsize=12)
-    # ax.yaxis.label.set_color("b")
-    # ax.set_yscale('log')
-
-    # lns = lns2 + lns3 # + lns1
-    # labels = [l.get_label() for l in lns]
-    # ax.legend(lns, labels, loc=0)
-    # plt.subplots_adjust(left=0.12, bottom=0.11, right=0.81, top=0.88)
-    # plt.savefig(out_name)
-    # plt.close()
-    #
-    # df = df.drop(columns=['date'])
-    # df.to_csv(out_csv, index=False)
-    #
-    # sim = df.flow.values
-    # obs = [np.nan, np.nan, np.nan] + list(obs_df[gage_no].values) + [np.nan, np.nan, np.nan]
-    # obs = np.array(obs)
-    # plt1980 = True
-    # if len(sim) != len(obs):
-    #     obs = obs[0:len(sim)]
-    #     plt1980 = False
-    # nse = nash_sutcliffe_efficiency(sim, obs)
-    # nnse = 1 / (2 - nse)
-    #
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    #
-    # lmin = np.min(sim)
-    # lmax = np.max(sim)
-    #
-    # if lmin > np.min(obs):
-    #     lmin = np.min(obs)
-    #
-    # if lmax < np.max(obs):
-    #     lmax = np.max(obs)
-    #
-    # if lmin <= 0:
-    #     lmin = 1
-    #
-    # ax.scatter(obs, sim)
-    # ax.plot([lmin, lmax], [lmin, lmax], "k--")
-    #
-    # ax.set_xlim([lmin, lmax])
-    # ax.set_ylim([lmin, lmax])
-    # ax.set_xscale('log')
-    # ax.set_yscale('log')
-    #
-    # ax.set_xlabel(r"Observed mean monthly flow, in $m^{3}\,d^{-1}$",
-    #               fontsize=12)
-    # ax.set_ylabel(r"Simulated mean monthly flow, in $m^{3}\,d^{-1}$",
-    #               fontsize=12)
-    # ax.text(0.25, 0.93,
-    #         'NSE: {:.2f}'.format(nse),
-    #         transform=ax.transAxes)
-    # ax.text(0.25, 0.87,
-    #         'NNSE: {:.2f}'.format(nnse),
-    #         transform=ax.transAxes)
-    # out_name = out_name[:-4] + "_1to1.png"
-    # plt.savefig(out_name)
-    # print(nse, nnse)
-    #
-    # paee = calculate_paee(sim, obs)
-    # aaee = calculate_aaee(sim, obs)
-    # smean, smax, smin = mean_max_min(sim)
-    # omean, omax, omin = mean_max_min(obs)
-    #
-    # header = "PAEE,AAEE,sim mean m^3/mo,sim max m^3/mo,sim min m^3/mo,obs mean m^3/mo,obs max m^3/mo,obs min m^3/mo\n"
-    # metrics = "{:.2f},{:.2f},{:.2f},{:.2f},{:.2f},{:.2f},{:.2f},{:.2f}\n".format(paee, aaee, smean, smax, smin, omean, omax, omin)
-    #
-    # with open(out_csv2, 'w') as foo:
-    #     foo.write(header)
-    #     foo.write(metrics)
-    #
-    # if not plt1980:
-    #     sys.exit(1)
-    #
-    # df = df[df.year >= 1980]
-    # obs_df = obs_df[obs_df.year >= 1980]
-    # if len(df) == 0 or len(obs_df) == 0:
-    #     print('zzzxxx')
-    #     sys.exit(0)
-    # sim = df.flow.values
-    # obs = list(obs_df[gage_no].values) + [np.nan, np.nan, np.nan]
-    # obs = np.array(obs)
-    # nse = nash_sutcliffe_efficiency(sim, obs)
-    # nnse = 1 / (2 - nse)
-    #
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111)
-    #
-    # lmin = np.min(sim)
-    # lmax = np.max(sim)
-    #
-    # if lmin > np.min(obs):
-    #     lmin = np.min(obs)
-    #
-    # if lmax < np.max(obs):
-    #     lmax = np.max(obs)
-    #
-    # if lmin <= 0:
-    #     lmin = 1
-    #
-    # ax.scatter(obs, sim)
-    # ax.plot([lmin, lmax], [lmin, lmax], "k--")
-    #
-    # ax.set_xlim([lmin, lmax])
-    # ax.set_ylim([lmin, lmax])
-    # ax.set_xscale('log')
-    # ax.set_yscale('log')
-    #
-    # ax.set_xlabel(r"Observed mean monthly flow, in $m^{3}\,d^{-1}$", fontsize=12)
-    # ax.set_ylabel(r"Simulated mean monthly flow, in $m^{3}\,d^{-1}$", fontsize=12)
-    # ax.text(0.25, 0.93,
-    #         'NSE: {:.2f}'.format(nse),
-    #         transform=ax.transAxes)
-    # ax.text(0.25, 0.87,
-    #         'NNSE: {:.2f}'.format(nnse),
-    #         transform=ax.transAxes)
-    # out_name = out_name[:-4] + "_after_1980.png"
-    # plt.savefig(out_name)
-    # print(nse, nnse)
 
 
