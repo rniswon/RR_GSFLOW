@@ -56,7 +56,7 @@ gf.loc[mask, 'Bmt_nf'] = gf.loc[mask, 'Fbrk_tp'] - gf.loc[mask, 'Fbrk_tk']  # up
 # set all inactive areas in the new layer 2 to a fractured bedrock zone
 mask = (gf['OF_zone'] == inactive) & (gf['Fbrk_zone'] > inactive)   # identify inactive layer 2 grid cells that are still within the model boundary
 gf.loc[mask, 'OF_zone'] = frac_brk      # set to fractured bedrock
-gf.loc[mask, 'OF_tk'] = frac_brk_lyr2_tk     # set thickness of layer 2 fractured bedrock
+gf.loc[mask, 'OF_tk'] = frac_brk_lyr2_tk     # set thickness of layer 2 to fractured bedrock
 gf.loc[mask, 'Fbrk_tp'] = gf.loc[mask, 'OF_tp'] - gf.loc[mask, 'OF_tk']   # update top of layer 3 elevation
 gf.loc[mask, 'Bmt_nf'] = gf.loc[mask, 'Fbrk_tp'] - gf.loc[mask, 'Fbrk_tk']   # update bottom of layer 3 elevation
 

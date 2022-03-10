@@ -41,15 +41,15 @@ import flopy.utils.binaryfile as bf
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 0
-update_prms_params_for_gsflow = 0
-update_transient_model_for_smooth_running = 0
-update_one_cell_lakes = 0
-update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 0
-update_output_control = 0
-update_ag_package = 0
-create_tabfiles_for_pond_diversions = 0
+update_prms_control_for_gsflow = 1
+update_prms_params_for_gsflow = 1
+update_transient_model_for_smooth_running = 1
+update_one_cell_lakes = 1
+update_modflow_for_ag_package = 1
+update_prms_params_for_ag_package = 1
+update_output_control = 1
+update_ag_package = 1
+create_tabfiles_for_pond_diversions = 1
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -265,7 +265,7 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     mf_ss_heads_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.hds"
 
     # csv with best steady state params
-    best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223.csv"
+    best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223_newgf.csv"
 
     # directory with transient model input files
     tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
@@ -280,7 +280,7 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     Sim.gage_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\gage_hru.csv"
     Sim.gage_measurement_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\gage_steady_state.csv"
     Sim.input_file = best_ss_input_params
-    Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids.dat"
+    Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids_20220307.dat"
     Sim.average_rain_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\average_daily_rain_m.dat"
     Sim.surf_geo_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\surface_geology.txt"
     Sim.subbasins_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\subbasins.txt"
@@ -541,7 +541,7 @@ if update_transient_model_for_smooth_running == 1:
     # # decrease horizontal and vertical K in all layers for zone containing (or adjacent to) problem grid cell (HRU 83888) in layer 3
     #
     # # get zone names
-    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids.dat")
+    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
     # zones = load_txt_3d(K_zones_file)
     #
     # # extract hk and vka
@@ -730,7 +730,7 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.thti = thtr + small_value
 
     # set SY scaling factor
-    sy_scaling_factor = 0.18
+    sy_scaling_factor = 0.15
 
     # get SY for the IUZFBND layers
     iuzfbnd = mf_tr.uzf.iuzfbnd.array

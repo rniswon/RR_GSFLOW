@@ -66,11 +66,11 @@ def add_upw_parameters_to_input_file(input_file = r"input_param.csv" ):
     df = remove_group(df, 'upw_ks')
 
     # read zone ids
-    fn = r".\misc_files\K_zone_ids.dat"
+    fn = r".\misc_files\K_zone_ids_20220307.dat"
     zone_id = load_txt_3d(fn)
 
     # read zone names
-    fn = r".\misc_files\K_zone_names.dat"
+    fn = r".\misc_files\K_zone_names_20220307.dat"
     zone_nms = load_txt_3d(fn)
 
     zids = np.unique(zone_id)
@@ -136,8 +136,8 @@ def generate_zone_files_from_shp():
     for i, id in enumerate(unique_names):
         zone_ids[zone_names == id] = i
 
-    save_txt_3d(r'.\misc_files\K_zone_ids.dat', zone_ids, fmt = '%d')
-    save_txt_3d(r'.\misc_files\K_zone_names.dat', zone_names, fmt='%d')
+    save_txt_3d(r'.\misc_files\K_zone_ids_20220307.dat', zone_ids, fmt = '%d')
+    save_txt_3d(r'.\misc_files\K_zone_names_20220307.dat', zone_names, fmt='%d')
 
 
 def remove_zones_with_small_pixcels(num = 5, zones = None):
@@ -241,7 +241,7 @@ def change_upw_ss(Sim):
     all_zones = {}
 
     # get zone names
-    zones = load_txt_3d(r".\misc_files\K_zone_ids.dat")
+    zones = load_txt_3d(r".\misc_files\K_zone_ids_20220307.dat")
 
     # loop over zones and apply changes
     for i, row in df_upw.iterrows():
