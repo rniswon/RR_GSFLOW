@@ -22,7 +22,7 @@ K_zones_old_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids.da
 input_param_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "20_20211223", "input_param_20211223.csv")
 input_param_newgf_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "20_20211223", "input_param_20211223_newgf.csv")
 
-# get new model grid
+# set new model grid
 grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
 
 # set old model grid
