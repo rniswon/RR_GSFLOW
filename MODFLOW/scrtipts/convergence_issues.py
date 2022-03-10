@@ -5,8 +5,8 @@ import datetime
 import calendar
 
 import flopy
-lst_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220217\modflow\output\rr_tr.list"
-tr = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220217\windows\rr_tr.nam"
+lst_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\modflow\output\rr_tr.list"
+tr = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\windows\rr_tr.nam"
 
 key_word = "  Residual-Control"
 key_word2 = "       NWT REQUIRED"
@@ -27,14 +27,14 @@ with open(lst_file, 'r') as fid:
         if inblock:
             try:
                 #print(line)
-                if int(line.split()[1]) >= 200:
+                if int(line.split()[1]) >= 95:
                     if "LAKE" in line:
                         lake_list.append(int(line.split()[3]))
                     else:
                         col = int(line.split()[3])
                         row =  int(line.split()[4])
                         layer= int(line.split()[5])
-                        cell_list.append([col, row, layer])
+                        cell_list.append([col, row, layer, np.log10(float(line.split()[6]))])
 
                     pass
             except:
@@ -44,8 +44,9 @@ with open(lst_file, 'r') as fid:
             inblock = False
 
 cell_list = np.array(cell_list)
-plt.imshow(tr_mf.bas6.ibound.array[0,:,:])
-plt.scatter(cell_list[:,0], cell_list[:,1])
+plt.imshow(tr_mf.bas6.ibound.array[1,:,:], alpha = 0.5)
+plt.scatter(cell_list[:,0], cell_list[:,1], c = cell_list[:,3], cmap = 'jet', s = 10)
+plt.colorbar()
 plt.figure()
 plt.plot(error)
 plt.title("Error %")
