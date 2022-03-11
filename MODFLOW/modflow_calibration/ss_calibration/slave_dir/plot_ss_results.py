@@ -53,7 +53,7 @@ model_output_file = "model_output.csv"
 mf_name_file = r"C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\mf_dataset\rr_ss.nam"
 
 # set run id to go in exported file names
-run_id = "20211223"
+run_id = "20220311"
 
 # read in files -----------------------------------------------------------------------####
 

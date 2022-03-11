@@ -258,14 +258,14 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     # set file names and paths --------------------------------------------------------------------####
 
     # name files
-    mf_ss_name_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.nam"
+    mf_ss_name_file = r"..\..\archived_models\21_20220311\mf_dataset\rr_ss.nam"
     mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
 
     # steady state heads file
-    mf_ss_heads_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.hds"
+    mf_ss_heads_file = r"..\..\archived_models\21_20220311\mf_dataset\rr_ss.hds"
 
     # csv with best steady state params
-    best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223_newgf.csv"
+    best_ss_input_params = r"..\..\archived_models\21_20220311\input_param_20211223_newgf.csv"
 
     # directory with transient model input files
     tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
