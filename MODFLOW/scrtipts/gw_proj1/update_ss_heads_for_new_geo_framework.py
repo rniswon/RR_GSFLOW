@@ -52,40 +52,40 @@ grid_all = np.load(grid_file, allow_pickle=True).all()
 geo_zones_new = grid_all['zones']
 
 
-# Make changes to starting heads: based on old starting heads ------------------------------------------------####
-
-# create array of initial heads
-strt_new = strt_old
-
-# identify layer 2 grid cells that are now in layer 1 in both the old and new geologic frameworks
-mask_old = geo_zones_old[1,:,:] == chan_dep_lyr2
-mask_new = geo_zones_new[0,:,:] == chan_dep_lyr2
-
-# update starting heads for these new layer 1 grid cells
-# TODO: should I be simply setting them equal to the old layer 2 starting heads?  that's what I'm doing for now
-strt_new[0,:,:][mask_new] = strt_old[1,:,:][mask_old]
-
-# identify new layer 2 weathered bedrock grid cells
-mask_new = (geo_zones_new[1,:,:] == frac_brk) & (geo_zones_old[1,:,:] != frac_brk)
-
-# update starting heads for these new layer 2 grid cells
-# TODO: should I be simply setting them equal to the old layer 3 starting heads?  that's what I'm doing for now
-strt_new[1,:,:][mask_new] = strt_old[2,:,:][mask_new]
+# # Make changes to starting heads: based on old starting heads ------------------------------------------------####
+#
+# # create array of initial heads
+# strt_new = strt_old
+#
+# # identify layer 2 grid cells that are now in layer 1 in both the old and new geologic frameworks
+# mask_old = geo_zones_old[1,:,:] == chan_dep_lyr2
+# mask_new = geo_zones_new[0,:,:] == chan_dep_lyr2
+#
+# # update starting heads for these new layer 1 grid cells
+# # TODO: should I be simply setting them equal to the old layer 2 starting heads?  that's what I'm doing for now
+# strt_new[0,:,:][mask_new] = strt_old[1,:,:][mask_old]
+#
+# # identify new layer 2 weathered bedrock grid cells
+# mask_new = (geo_zones_new[1,:,:] == frac_brk) & (geo_zones_old[1,:,:] != frac_brk)
+#
+# # update starting heads for these new layer 2 grid cells
+# # TODO: should I be simply setting them equal to the old layer 3 starting heads?  that's what I'm doing for now
+# strt_new[1,:,:][mask_new] = strt_old[2,:,:][mask_new]
 
 
 
 # Make changes to starting heads: based on land surface elevation ------------------------------------------------####
 
-# # get land surface elevation
-# dis_top_lyr1 = mf.dis.top.array
-# dis_botm_lyr1 = mf.dis.botm.array[0,:,:]
-# dis_botm_lyr2 = mf.dis.botm.array[1,:,:]
-#
-#
-# # assign strt
-# # strt_new = np.stack([dis_top_lyr1-1, dis_top_lyr1-1, dis_top_lyr1-1])
-# # strt_new = np.stack([dis_top_lyr1, dis_top_lyr1, dis_top_lyr1])
-# strt_new = np.stack([dis_top_lyr1, dis_botm_lyr1, dis_botm_lyr2])
+# get land surface elevation
+dis_top_lyr1 = mf.dis.top.array
+dis_botm_lyr1 = mf.dis.botm.array[0,:,:]
+dis_botm_lyr2 = mf.dis.botm.array[1,:,:]
+
+
+# assign strt
+# strt_new = np.stack([dis_top_lyr1-1, dis_top_lyr1-1, dis_top_lyr1-1])
+# strt_new = np.stack([dis_top_lyr1, dis_top_lyr1, dis_top_lyr1])
+strt_new = np.stack([dis_top_lyr1, dis_botm_lyr1, dis_botm_lyr2])
 
 
 

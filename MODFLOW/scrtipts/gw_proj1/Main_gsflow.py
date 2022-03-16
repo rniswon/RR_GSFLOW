@@ -492,37 +492,37 @@ if update_transient_model_for_smooth_running == 1:
 
     # update WEL -------------------------------------------------------------------####
 
-    # extract well package
-    wel = mf_tr.wel
+    # # extract well package
+    # wel = mf_tr.wel
+    #
+    # # identify grid cell with problem wells
+    # well_lay = 3
+    # well_row = 332
+    # well_col = 145
+    #
+    # # identify and remove problem wells
+    # nper = mf_tr.nper
+    # for per in range(nper):
+    #
+    #     # extract stress period data
+    #     spd = pd.DataFrame(wel.stress_period_data.data[per])
+    #
+    #     # identify problem wells
+    #     mask = (spd['k'] == (well_lay-1)) & (spd['i'] == (well_row-1)) & (spd['j'] == (well_col-1))
+    #
+    #     # remove problem wells
+    #     spd_updated = spd[~mask]
+    #
+    #     # convert back to recarray and store in well package
+    #     wel.stress_period_data.data[per] = spd_updated.to_records(index=False)
+    #
+    # # write well file
+    # mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
+    # mf_tr.wel.write_file()
 
-    # identify grid cell with problem wells
-    well_lay = 3
-    well_row = 332
-    well_col = 145
-
-    # identify and remove problem wells
-    nper = mf_tr.nper
-    for per in range(nper):
-
-        # extract stress period data
-        spd = pd.DataFrame(wel.stress_period_data.data[per])
-
-        # identify problem wells
-        mask = (spd['k'] == (well_lay-1)) & (spd['i'] == (well_row-1)) & (spd['j'] == (well_col-1))
-
-        # remove problem wells
-        spd_updated = spd[~mask]
-
-        # convert back to recarray and store in well package
-        wel.stress_period_data.data[per] = spd_updated.to_records(index=False)
-
-    # write well file
-    mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
-    mf_tr.wel.write_file()
 
 
-
-    # update BAS -------------------------------------------------------------------####
+    # update BAS: make sure no initial heads in active area are set to -999 -------------------------------------------------------------------####
 
     #TODO: figure out why this is exporting weird file paths
 
@@ -533,6 +533,61 @@ if update_transient_model_for_smooth_running == 1:
 
     # update bas file to use external files (binary) in transient model generation code
     # TODO: find out whether this is actually better when interacting with the model through flopy
+
+    # extract starting heads
+    strt = mf_tr.bas6.strt.array
+    strt_lyr1 = strt[0, :, :]
+    strt_lyr2 = strt[1, :, :]
+    strt_lyr3 = strt[2, :, :]
+
+    # extract ibound
+    ibound = mf_tr.bas6.ibound.array
+    ibound_lyr1 = ibound[0, :, :]
+    ibound_lyr2 = ibound[1, :, :]
+    ibound_lyr3 = ibound[2, :, :]
+
+    # identify active grid cells with low starting heads
+    mask_lyr1 = (ibound_lyr1 == 1) & (strt_lyr1 < -500)
+    problem_cells = np.argwhere(mask_lyr1)
+
+    # for each of these grid cells, assign a starting head equal to the average of the surrounding active grid cells
+    strt_lyr1_nan = np.copy(strt_lyr1)
+    strt_lyr1_nan[strt_lyr1_nan < -500] = np.nan
+    for cell in problem_cells:
+        # get row and col of this problem cell
+        row = cell[0]
+        col = cell[1]
+
+        # get neighbors
+        row_up = row - 1
+        row_down = row + 1
+        col_left = col - 1
+        col_right = col + 1
+        neighbor_up = strt_lyr1_nan[row_up, col]
+        neighbor_down = strt_lyr1_nan[row_down, col]
+        neighbor_left = strt_lyr1_nan[row, col_left]
+        neighbor_right = strt_lyr1_nan[row, col_right]
+        neighbor_upleft = strt_lyr1_nan[row_up, col_left]
+        neighbor_upright = strt_lyr1_nan[row_up, col_right]
+        neighbor_downleft = strt_lyr1_nan[row_down, col_left]
+        neighbor_downright = strt_lyr1_nan[row_down, col_right]
+        strt_lyr1[row, col] = np.nanmean(np.array([neighbor_up, neighbor_down, neighbor_left, neighbor_right,
+                                                   neighbor_upleft, neighbor_upright, neighbor_downleft,
+                                                   neighbor_downright]))
+
+    # store updated values
+    strt = np.stack([strt_lyr1, strt_lyr2, strt_lyr3])
+    mf_tr.bas6.strt = strt
+
+    mf_tr.bas6.fn_path = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "rr_tr.bas")
+    mf_tr.bas6.write_file()
+
+
+
+    # update BAS: make sure no initial heads in active area are below bottom of grid cell ----------------------------------------------####
+
+    # TODO: consider whether doing this makes sense
+
 
 
 
@@ -558,6 +613,58 @@ if update_transient_model_for_smooth_running == 1:
     # change_factor = 100
     # hk[mask] = hk[mask] / change_factor
     # vka[mask] = vka[mask] / change_factor
+    #
+    # # store changes
+    # mf_tr.upw.hk = hk
+    # mf_tr.upw.vka = vka
+    #
+    # # write upw file
+    # mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    # mf_tr.upw.write_file()
+
+
+
+    # TODO: use the code below to update UPW initial K param values
+    # # increase horizontal and vertical K in weathered bedrock for layer 2
+    #
+    # # set constants for geologic zones
+    # inactive = 0
+    # frac_brk = 14
+    # sonoma_volc = 15
+    # cons_sed = 16
+    # uncons_sed = 17
+    # chan_dep_lyr1 = 18
+    # chan_dep_lyr2 = 19
+    #
+    # # get new geological zones
+    # grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
+    # grid_all_new = np.load(grid_file, allow_pickle=True).all()
+    # geo_zones_new = grid_all_new['zones']
+    #
+    # # get old geological zones
+    # grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
+    # grid_all_old = np.load(grid_file, allow_pickle=True).all()
+    # geo_zones_old = grid_all_old['zones']
+    #
+    # # get zone names
+    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
+    # K_zones = load_txt_3d(K_zones_file)
+    #
+    # # extract hk and vka
+    # hk = mf_tr.upw.hk.array
+    # vka = mf_tr.upw.vka.array
+    #
+    # # identify weathered bedrock in layer 2
+    # mask = (geo_zones_new == frac_brk) & (geo_zones_old != frac_brk)
+    # zones_to_change = np.unique(K_zones[mask])
+    #
+    # # create mask
+    # mask = np.isin(K_zones, zones_to_change)
+    #
+    # # make changes to hk and vka
+    # change_factor = 100
+    # hk[mask] = hk[mask] * change_factor
+    # vka[mask] = vka[mask] * change_factor
     #
     # # store changes
     # mf_tr.upw.hk = hk
@@ -664,6 +771,11 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.iuzfbnd = iuzfbnd
 
 
+    # update nuztop --------------------------------------------#
+
+    mf_tr.uzf.nuztop = 4
+
+
     # update vks: everywhere ------------------------------------#
 
     # set vks based on upw hk
@@ -751,7 +863,7 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.nsets = 350
 
     # update ntrail2 ---------------------------#
-    mf_tr.uzf.ntrail2 = 10
+    mf_tr.uzf.ntrail2 = 10  # TODO: try setting this to 20 to get around the too many waves error
 
     # write uzf file --------------------------#
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")

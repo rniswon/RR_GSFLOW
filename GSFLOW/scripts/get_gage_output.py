@@ -81,7 +81,8 @@ if __name__ == "__main__":
     # read in info about observed streamflow data
     gage_file = os.path.join(script_ws, 'inputs_for_scripts', 'gage_hru.shp')
     gage_df = geopandas.read_file(gage_file)
-    gage_df = gage_df[['subbasin', 'Gage_Name']]
+    gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
+    gage_df['Name'] = pd.to_numeric(gage_df['Name'])
 
     # identify gages with available observations
     gages_with_obs = [1,2,3,5,6,13,16,18,20,21,22]
@@ -89,10 +90,30 @@ if __name__ == "__main__":
     gage_mask = gage_df['subbasin'].isin(gages_with_obs)
     gage_df.loc[gage_mask, 'obs_available'] = 1
 
-    # read in observed streamflow data
+    # read in observed streamflow data: both local flows and gage flows
     obs_name = os.path.join(script_ws, 'inputs_for_scripts', 'RR_local_flows_w_Austin.xlsx')
-    obs_df = pd.read_excel(obs_name, sheet_name='daily_local_flows')
-    obs_df.date = pd.to_datetime(obs_df.date).dt.date
+    obs_df_local = pd.read_excel(obs_name, sheet_name='daily_local_flows')
+    obs_df_local.date = pd.to_datetime(obs_df_local.date).dt.date
+    obs_df_gage = pd.read_excel(obs_name, sheet_name='gage_flows')
+    obs_df_gage.date = pd.to_datetime(obs_df_gage.date).dt.date
+
+    # reformat observed streamflow data: gage flows
+    obs_df_gage.drop(['Unnamed: 6', 'Unnamed: 7'], 1, inplace=True)  # remove unnecessary columns
+    obs_df_gage['subbasin_id'] = 0   # add a station id column to contain PRMS station ids
+    obs_df_gage['station_name'] = 'none'   # add a station name column
+    stations = obs_df_gage['station'].unique()
+    for station in stations:
+
+        # get subbasin id and gage name
+        mask_gage_df = gage_df['Name'] == station
+        subbasin_id = gage_df.loc[mask_gage_df, 'subbasin'].values[0]
+        station_name = gage_df.loc[mask_gage_df, 'Gage_Name'].values[0]
+
+        # assign subbasin id and gage name
+        mask_obs_df_gage = obs_df_gage['station'] == station
+        obs_df_gage.loc[mask_obs_df_gage, 'subbasin_id'] = subbasin_id
+        obs_df_gage.loc[mask_obs_df_gage, 'station_name'] = station_name
+
 
     # prepare empty error metric data frame
     num_subbasin = 22
@@ -128,7 +149,9 @@ if __name__ == "__main__":
         if gage_id in gages_with_obs:
 
             # get obs data
-            this_obs = obs_df[['date', 'year', 'month', 'day', 'yearday', gage_id]]
+            #this_obs = obs_df_gage[['date', 'year', 'month', 'day', 'yearday', gage_id]]
+            #this_obs = obs_df_gage[['date', 'year', 'month', 'day', gage_id]]
+            this_obs = obs_df_gage[obs_df_gage['subbasin_id'] == gage_id]
             this_obs.rename(columns={gage_id: 'obs_flow'}, inplace=True)
 
             # put sim and obs in same data frame
