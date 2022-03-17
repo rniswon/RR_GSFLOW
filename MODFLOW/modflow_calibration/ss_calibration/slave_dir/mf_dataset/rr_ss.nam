@@ -13,7 +13,7 @@ WEL               20  rr_ss.wel
 HOB               39  rr_ss.hob
 GAGE             120  rr_ss.gage
 OC                14  rr_ss.oc
-NWT               32  rr_ss.nwt
+NWT               32  rr_ss_v1.nwt
 DATA            1001  rubber_dam_spillway_outflow_ss.dat
 DATA            1002  rubber_dam_gate_outflow_ss.dat
 DATA            1003  rubber_dam_pond_outflow_ss.dat
@@ -58,3 +58,4 @@ DATA            1043  mendo_lake_bdg.lak.out
 DATA            1044  sonoma_lake_bdg.lak.out
 DATA            1045  rubber_dam_lake_bdg.lak.out
 DATA(BINARY)      51  rr_ss.hds REPLACE
+DATA(BINARY)      60  rr_ss_v1.hds
