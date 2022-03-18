@@ -588,6 +588,7 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
+
     # update UPW -------------------------------------------------------------------####
 
     # # decrease horizontal and vertical K in all layers for zone containing (or adjacent to) problem grid cell (HRU 83888) in layer 3
@@ -670,6 +671,7 @@ if update_transient_model_for_smooth_running == 1:
     # write upw file
     mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
     mf_tr.upw.write_file()
+
 
 
     # update SY so that it is spatially distributed ---------------------------------------####
