@@ -16,10 +16,12 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..", "..")
 
 # set ss name file path
-ss_name_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset_test", "rr_ss.nam")
+#ss_name_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset", "rr_ss.nam")
+ss_name_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "mf_dataset", "rr_ss.nam")
 
 # set heads file
-heads_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset_test", "rr_ss.hds")
+#heads_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset", "rr_ss.hds")
+heads_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "mf_dataset", "rr_ss.hds")
 
 
 
@@ -207,8 +209,8 @@ df = pd.DataFrame({'row': problem_cell_row + 1,
                    'surfk': surfk_problem,
                    'finf': finf_problem,
                    'vks': vks_problem})
-file_name = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset_test", "RR_problem_grid_cells.csv")
-df.to_csv(file_name, index=False)
+#file_name = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset_test", "RR_problem_grid_cells.csv")
+#df.to_csv(file_name, index=False)
 
 
 
