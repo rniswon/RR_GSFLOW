@@ -76,13 +76,18 @@ if __name__ == "__main__":
     print("\n@@@@ CREATING GAGE OUTPUT FIGURE @@@@")
     script_ws = os.path.abspath(os.path.dirname(__file__))
     repo_ws = os.path.join(script_ws, "..", "..")
+
+    # set flag
+    prepare_obs_data = 1
+
+    # set start and end dates of modeling period
     start_date = "01-01-1990"
+    end_date = "12-31-2015"
 
     # read in info about observed streamflow data
     gage_file = os.path.join(script_ws, 'inputs_for_scripts', 'gage_hru.shp')
     gage_df = geopandas.read_file(gage_file)
-    gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
-    gage_df['Name'] = pd.to_numeric(gage_df['Name'])
+    gage_df = gage_df[['subbasin', 'Gage_Name']]
 
     # identify gages with available observations
     gages_with_obs = [1,2,3,5,6,13,16,18,20,21,22]
@@ -90,30 +95,83 @@ if __name__ == "__main__":
     gage_mask = gage_df['subbasin'].isin(gages_with_obs)
     gage_df.loc[gage_mask, 'obs_available'] = 1
 
-    # read in observed streamflow data: both local flows and gage flows
-    obs_name = os.path.join(script_ws, 'inputs_for_scripts', 'RR_local_flows_w_Austin.xlsx')
-    obs_df_local = pd.read_excel(obs_name, sheet_name='daily_local_flows')
-    obs_df_local.date = pd.to_datetime(obs_df_local.date).dt.date
-    obs_df_gage = pd.read_excel(obs_name, sheet_name='gage_flows')
-    obs_df_gage.date = pd.to_datetime(obs_df_gage.date).dt.date
+    # prepare or read in obs data
+    if prepare_obs_data == 1:
 
-    # reformat observed streamflow data: gage flows
-    obs_df_gage.drop(['Unnamed: 6', 'Unnamed: 7'], 1, inplace=True)  # remove unnecessary columns
-    obs_df_gage['subbasin_id'] = 0   # add a station id column to contain PRMS station ids
-    obs_df_gage['station_name'] = 'none'   # add a station name column
-    stations = obs_df_gage['station'].unique()
-    for station in stations:
+        # read in observed streamflow data: both gage flows and other flows
+        obs_name = os.path.join(script_ws, 'inputs_for_scripts', 'RR_local_flows_w_Austin.xlsx')
+        other_flows = pd.read_excel(obs_name, sheet_name='other_flows')
+        other_flows.date = pd.to_datetime(other_flows.date).dt.date
+        gage_flows = pd.read_excel(obs_name, sheet_name='gage_flows')
+        gage_flows.date = pd.to_datetime(gage_flows.date).dt.date
+        gage_flows.drop(['Unnamed: 6', 'Unnamed: 7'], 1, inplace=True)  # remove unnecessary columns
 
-        # get subbasin id and gage name
-        mask_gage_df = gage_df['Name'] == station
-        subbasin_id = gage_df.loc[mask_gage_df, 'subbasin'].values[0]
-        station_name = gage_df.loc[mask_gage_df, 'Gage_Name'].values[0]
+        # trim gage flows to model start and end dates
+        gage_flows['date'] = pd.to_datetime(gage_flows['date'])
+        gage_flows = gage_flows[(gage_flows['date'] >= start_date) & (gage_flows['date'] <= end_date)]
+        gage_flows['date'] = gage_flows['date'].dt.date
 
-        # assign subbasin id and gage name
-        mask_obs_df_gage = obs_df_gage['station'] == station
-        obs_df_gage.loc[mask_obs_df_gage, 'subbasin_id'] = subbasin_id
-        obs_df_gage.loc[mask_obs_df_gage, 'station_name'] = station_name
+        # convert gage flows to wide form data frame
+        gage_flows = pd.pivot(gage_flows, index=['date', 'year', 'month', 'day'], columns='station', values='discharge (cfs)').reset_index()
 
+        # merge gage flows with other flows
+        gage_and_other_flows = pd.merge(gage_flows, other_flows, how='left', on=['date'])
+
+        # export data frame
+        file_path = os.path.join(script_ws, "inputs_for_scripts", "RR_gage_and_other_flows.csv")
+        gage_and_other_flows.to_csv(file_path, index=False)
+
+    else:
+
+        # read in previously prepared gage flows and other flows
+        file_path = os.path.join(script_ws, "inputs_for_scripts", "RR_gage_and_other_flows.csv")
+        gage_and_other_flows = pd.read_csv(file_path)
+        gage_and_other_flows.date = pd.to_datetime(gage_and_other_flows.date).dt.date
+
+
+    # read in sim flows and store in dictionary
+    sim_file_path = os.path.join(repo_ws, 'GSFLOW', 'modflow', 'output')
+    sim_files = [x for x in os.listdir(sim_file_path) if x.endswith('.go')]
+    sim_dict = {}
+    for file in sim_files:
+
+        # read in gage file
+        gage_file = os.path.join(repo_ws, 'GSFLOW', 'modflow', 'output', file)
+        data = read_gage(gage_file, start_date)
+        sim_df = pd.DataFrame.from_dict(data)
+        sim_df.date = pd.to_datetime(sim_df.date).dt.date  #TODO: why would we need this? - .values.astype(np.int64)
+
+        # add station, subbasin id, and gage name
+
+
+
+        # convert flow units from m^3/day to ft^3/s
+        days_div_sec = 1/86400      # 1 day is 86400 seconds
+        ft3_div_m3 = 35.314667/1       # 35.314667 cubic feet in 1 cubic meter
+        sim_df['sim_flow'] = sim_df['sim_flow'].values * days_div_sec * ft3_div_m3
+
+
+
+
+    # # reformat observed streamflow data: gage flows
+    # gage_flows['subbasin_id'] = 0   # add a station id column to contain PRMS station ids
+    # gage_flows['station_name'] = 'none'   # add a station name column
+    # stations = gage_df['Name'].unique()
+    # for station in stations:
+    #
+    #     # get subbasin id and gage name
+    #     mask_gage_df = gage_df['Name'] == station
+    #     subbasin_id = gage_df.loc[mask_gage_df, 'subbasin'].values[0]
+    #     station_name = gage_df.loc[mask_gage_df, 'Gage_Name'].values[0]
+    #
+    #     # assign subbasin id and gage name
+    #     mask_gage_flows = gage_flows['station'] == station
+    #     gage_flows.loc[mask_gage_flows, 'subbasin_id'] = subbasin_id
+    #     gage_flows.loc[mask_gage_flows, 'station_name'] = station_name
+    #
+    # # assign gage 11471000 a station name and subbasin id
+    # mask = gage_flows['station'] == 11471000
+    # gage_flows.loc[mask, 'station_name'] = "PVP_intake"
 
     # prepare empty error metric data frame
     num_subbasin = 22
@@ -129,9 +187,10 @@ if __name__ == "__main__":
     sim_obs_daily_dict = {}
     for idx, row in gage_df.iterrows():
 
-        # get gage name and id
+        # get gage name, subbasin id, and station id
         gage_name = row['Gage_Name']
-        gage_id = row['subbasin']
+        subbasin_id = row['subbasin']
+        station = row['Name']
 
         # read in gage file
         gage_file = os.path.join(repo_ws, 'GSFLOW', 'modflow', 'output', (gage_name + '.go'))
@@ -146,16 +205,19 @@ if __name__ == "__main__":
         sim_df['sim_flow'] = sim_df['sim_flow'].values * days_div_sec * ft3_div_m3
 
         # get observed data for this gage
-        if gage_id in gages_with_obs:
+        if subbasin_id in gages_with_obs:
 
             # get obs data
-            #this_obs = obs_df_gage[['date', 'year', 'month', 'day', 'yearday', gage_id]]
-            #this_obs = obs_df_gage[['date', 'year', 'month', 'day', gage_id]]
-            this_obs = obs_df_gage[obs_df_gage['subbasin_id'] == gage_id]
-            this_obs.rename(columns={gage_id: 'obs_flow'}, inplace=True)
+            obs_df = gage_flows[gage_flows['subbasin_id'] == subbasin_id]
+            obs_df.rename(columns={'discharge (cfs)': 'obs_flow'}, inplace=True)
+
+            # cut to modeling period
+            obs_df['date'] = pd.to_datetime(obs_df['date'])
+            obs_df = obs_df[(obs_df['date'] >= start_date) & (obs_df['date'] <= end_date)]
+            obs_df['date'] = obs_df['date'].dt.date
 
             # put sim and obs in same data frame
-            sim_obs_daily = pd.merge(sim_df, this_obs, how = 'left', on=['date', 'year', 'month'])
+            sim_obs_daily = pd.merge(sim_df, obs_df, how = 'left', on=['date', 'year', 'month'])
 
         else:
 
@@ -166,9 +228,9 @@ if __name__ == "__main__":
             sim_obs_daily['yearday'] = np.nan
 
         # store sim_obs_daily in dictionary
-        sim_obs_daily['gage_id'] = gage_id
+        sim_obs_daily['subbasin_id'] = subbasin_id
         sim_obs_daily['gage_name'] = gage_name
-        sim_obs_daily_dict[gage_id] = sim_obs_daily
+        sim_obs_daily_dict[subbasin_id] = sim_obs_daily
 
         # aggregate data by year and month: mean
         sim_obs_yearmonth = sim_obs_daily.groupby(['year', 'month'], as_index=False)[['sim_stage', 'sim_flow', 'obs_flow']].mean()

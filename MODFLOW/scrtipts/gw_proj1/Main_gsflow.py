@@ -258,14 +258,14 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     # set file names and paths --------------------------------------------------------------------####
 
     # name files
-    mf_ss_name_file = r"..\..\archived_models\21_20220311\mf_dataset\rr_ss.nam"
+    mf_ss_name_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.nam"
     mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
 
     # steady state heads file
-    mf_ss_heads_file = r"..\..\archived_models\21_20220311\mf_dataset\rr_ss.hds"
+    mf_ss_heads_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.hds"
 
     # csv with best steady state params
-    best_ss_input_params = r"..\..\archived_models\21_20220311\input_param_20211223_newgf.csv"
+    best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223_newgf.csv"
 
     # directory with transient model input files
     tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
@@ -522,7 +522,8 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
-    # update BAS: make sure no initial heads in active area are set to -999 -------------------------------------------------------------------####
+
+    # update BAS -------------------------------------------------------------------####
 
     #TODO: figure out why this is exporting weird file paths
 
@@ -531,62 +532,58 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.add_external(starting_heads, 60, True)
     # mf_tr.write_name_file()
 
-    # update bas file to use external files (binary) in transient model generation code
-    # TODO: find out whether this is actually better when interacting with the model through flopy
-
-    # extract starting heads
-    strt = mf_tr.bas6.strt.array
-    strt_lyr1 = strt[0, :, :]
-    strt_lyr2 = strt[1, :, :]
-    strt_lyr3 = strt[2, :, :]
-
-    # extract ibound
-    ibound = mf_tr.bas6.ibound.array
-    ibound_lyr1 = ibound[0, :, :]
-    ibound_lyr2 = ibound[1, :, :]
-    ibound_lyr3 = ibound[2, :, :]
-
-    # identify active grid cells with low starting heads
-    mask_lyr1 = (ibound_lyr1 == 1) & (strt_lyr1 < -500)
-    problem_cells = np.argwhere(mask_lyr1)
-
-    # for each of these grid cells, assign a starting head equal to the average of the surrounding active grid cells
-    strt_lyr1_nan = np.copy(strt_lyr1)
-    strt_lyr1_nan[strt_lyr1_nan < -500] = np.nan
-    for cell in problem_cells:
-        # get row and col of this problem cell
-        row = cell[0]
-        col = cell[1]
-
-        # get neighbors
-        row_up = row - 1
-        row_down = row + 1
-        col_left = col - 1
-        col_right = col + 1
-        neighbor_up = strt_lyr1_nan[row_up, col]
-        neighbor_down = strt_lyr1_nan[row_down, col]
-        neighbor_left = strt_lyr1_nan[row, col_left]
-        neighbor_right = strt_lyr1_nan[row, col_right]
-        neighbor_upleft = strt_lyr1_nan[row_up, col_left]
-        neighbor_upright = strt_lyr1_nan[row_up, col_right]
-        neighbor_downleft = strt_lyr1_nan[row_down, col_left]
-        neighbor_downright = strt_lyr1_nan[row_down, col_right]
-        strt_lyr1[row, col] = np.nanmean(np.array([neighbor_up, neighbor_down, neighbor_left, neighbor_right,
-                                                   neighbor_upleft, neighbor_upright, neighbor_downleft,
-                                                   neighbor_downright]))
-
-    # store updated values
-    strt = np.stack([strt_lyr1, strt_lyr2, strt_lyr3])
-    mf_tr.bas6.strt = strt
-
-    mf_tr.bas6.fn_path = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "rr_tr.bas")
-    mf_tr.bas6.write_file()
-
-
-
-    # update BAS: make sure no initial heads in active area are below bottom of grid cell ----------------------------------------------####
-
-    # TODO: consider whether doing this makes sense
+    # # extract ibound
+    # ibound = mf_tr.bas6.ibound.array
+    # ibound_lyr1 = ibound[0, :, :]
+    # ibound_lyr2 = ibound[1, :, :]
+    # ibound_lyr3 = ibound[2, :, :]
+    #
+    # # extract dis elevations
+    # botm = mf_tr.dis.botm.array
+    # botm_lyr1 = botm[0, :, :]
+    # botm_lyr2 = botm[1, :, :]
+    # botm_lyr3 = botm[2, :, :]
+    #
+    # # extract initial heads
+    # strt = mf_tr.bas6.strt.array
+    # strt_lyr1 = strt[0, :, :]
+    # strt_lyr2 = strt[1, :, :]
+    # strt_lyr3 = strt[2, :, :]
+    #
+    # # identify active grid cells with initial heads below bottom of grid cell
+    # diff_lyr1 = strt_lyr1 - botm_lyr1
+    # mask_lyr1 = (ibound_lyr1 > 0) & (diff_lyr1 < 0)
+    # diff_lyr2 = strt_lyr2 - botm_lyr2
+    # mask_lyr2 = (ibound_lyr2 > 0) & (diff_lyr2 < 0)
+    # diff_lyr3 = strt_lyr3 - botm_lyr3
+    # mask_lyr3 = (ibound_lyr3 > 0) & (diff_lyr3 < 0)
+    #
+    # # # find the max diff
+    # # max_diff_lyr1 = np.max(np.abs(diff_lyr1[mask_lyr1]))
+    # # max_diff_lyr2 = np.max(np.abs(diff_lyr2[mask_lyr2]))
+    # # #max_diff_lyr3 = np.max(np.abs(diff_lyr3[mask_lyr3]))
+    #
+    # # # raise the entire initial head array for each layer by the max diff
+    # # strt_lyr1_new = strt_lyr1 + max_diff_lyr1
+    # # strt_lyr2_new = strt_lyr2 + max_diff_lyr2
+    # # #strt_lyr3_new = strt_lyr3 + max_diff_lyr3
+    # # strt_lyr3_new = strt_lyr3
+    #
+    # # raise the initial heads for these grid cells to not have dry grid cells for initial heads
+    # strt_lyr1_new = np.copy(strt_lyr1)
+    # strt_lyr2_new = np.copy(strt_lyr2)
+    # strt_lyr3_new = np.copy(strt_lyr3)
+    # strt_lyr1_new[mask_lyr1] = strt_lyr1[mask_lyr1] + diff_lyr1[mask_lyr1]
+    # strt_lyr2_new[mask_lyr2] = strt_lyr2[mask_lyr2] + diff_lyr2[mask_lyr2]
+    # strt_lyr3_new[mask_lyr3] = strt_lyr3[mask_lyr3] + diff_lyr3[mask_lyr3]
+    #
+    # # store the new initial heads
+    # strt = np.stack([strt_lyr1_new, strt_lyr2_new, strt_lyr3_new])
+    # mf_tr.bas6.strt = strt
+    #
+    # # write file
+    # mf_tr.bas6.fn_path = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "rr_tr.bas")
+    # mf_tr.bas6.write_file()
 
 
 
@@ -625,55 +622,54 @@ if update_transient_model_for_smooth_running == 1:
 
 
     # TODO: use the code below to update UPW initial K param values
-    # # increase horizontal and vertical K in weathered bedrock for layer 2
-    #
-    # # set constants for geologic zones
-    # inactive = 0
-    # frac_brk = 14
-    # sonoma_volc = 15
-    # cons_sed = 16
-    # uncons_sed = 17
-    # chan_dep_lyr1 = 18
-    # chan_dep_lyr2 = 19
-    #
-    # # get new geological zones
-    # grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
-    # grid_all_new = np.load(grid_file, allow_pickle=True).all()
-    # geo_zones_new = grid_all_new['zones']
-    #
-    # # get old geological zones
-    # grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
-    # grid_all_old = np.load(grid_file, allow_pickle=True).all()
-    # geo_zones_old = grid_all_old['zones']
-    #
-    # # get zone names
-    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
-    # K_zones = load_txt_3d(K_zones_file)
-    #
-    # # extract hk and vka
-    # hk = mf_tr.upw.hk.array
-    # vka = mf_tr.upw.vka.array
-    #
-    # # identify weathered bedrock in layer 2
-    # mask = (geo_zones_new == frac_brk) & (geo_zones_old != frac_brk)
-    # zones_to_change = np.unique(K_zones[mask])
-    #
-    # # create mask
-    # mask = np.isin(K_zones, zones_to_change)
-    #
-    # # make changes to hk and vka
-    # change_factor = 100
-    # hk[mask] = hk[mask] * change_factor
-    # vka[mask] = vka[mask] * change_factor
-    #
-    # # store changes
-    # mf_tr.upw.hk = hk
-    # mf_tr.upw.vka = vka
-    #
-    # # write upw file
-    # mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
-    # mf_tr.upw.write_file()
+    # increase horizontal and vertical K in weathered bedrock for layer 2
 
+    # set constants for geologic zones
+    inactive = 0
+    frac_brk = 14
+    sonoma_volc = 15
+    cons_sed = 16
+    uncons_sed = 17
+    chan_dep_lyr1 = 18
+    chan_dep_lyr2 = 19
+
+    # get new geological zones
+    grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
+    grid_all_new = np.load(grid_file, allow_pickle=True).all()
+    geo_zones_new = grid_all_new['zones']
+
+    # get old geological zones
+    grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
+    grid_all_old = np.load(grid_file, allow_pickle=True).all()
+    geo_zones_old = grid_all_old['zones']
+
+    # get zone names
+    K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
+    K_zones = load_txt_3d(K_zones_file)
+
+    # extract hk and vka
+    hk = mf_tr.upw.hk.array
+    vka = mf_tr.upw.vka.array
+
+    # identify weathered bedrock in layer 2
+    mask = (geo_zones_new == frac_brk) & (geo_zones_old != frac_brk)
+    zones_to_change = np.unique(K_zones[mask])
+
+    # create mask
+    mask = np.isin(K_zones, zones_to_change)
+
+    # make changes to hk and vka
+    change_factor = 100
+    hk[mask] = hk[mask] * change_factor
+    vka[mask] = vka[mask] * change_factor
+
+    # store changes
+    mf_tr.upw.hk = hk
+    mf_tr.upw.vka = vka
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
 
 
     # update SY so that it is spatially distributed ---------------------------------------####
@@ -771,11 +767,6 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.iuzfbnd = iuzfbnd
 
 
-    # update nuztop --------------------------------------------#
-
-    mf_tr.uzf.nuztop = 4
-
-
     # update vks: everywhere ------------------------------------#
 
     # set vks based on upw hk
@@ -863,7 +854,7 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.nsets = 350
 
     # update ntrail2 ---------------------------#
-    mf_tr.uzf.ntrail2 = 10  # TODO: try setting this to 20 to get around the too many waves error
+    mf_tr.uzf.ntrail2 = 10
 
     # write uzf file --------------------------#
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")

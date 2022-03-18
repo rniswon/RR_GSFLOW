@@ -5,6 +5,7 @@ PRMS/output/
 *.out
 *.go
 *.list
+*.bak
 */**/.idea/
 .idea/
 MODFLOW/modflow_calibration/ss_calibration/.idea/
