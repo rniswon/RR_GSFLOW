@@ -45,5 +45,6 @@ MODFLOW/archived_models/**/*.hds
 MODFLOW/old/**/*.hds
 MODFLOW/modflow_calibration/**/*.hds
 GSFLOW/archive/2020/**/rr_tr.hds
+GSFLOW/archive/**/rr_tr.hds
 GSFLOW/results/
 **/wellcompletionreports_DWR.csv
