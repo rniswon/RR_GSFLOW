@@ -17,11 +17,13 @@ repo_ws = os.path.join(script_ws, "..", "..", "..")
 
 # set ss name file path
 #ss_name_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset", "rr_ss.nam")
-ss_name_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "mf_dataset", "rr_ss.nam")
+#ss_name_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "mf_dataset", "rr_ss.nam")
+ss_name_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "22_20220319", "mf_dataset", "rr_ss.nam")
 
 # set heads file
 #heads_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "21_20220311", "mf_dataset", "rr_ss.hds")
-heads_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "mf_dataset", "rr_ss.hds")
+#heads_file = os.path.join(repo_ws, "MODFLOW", "modflow_calibration", "ss_calibration", "slave_dir", "mf_dataset", "rr_ss.hds")
+heads_file = os.path.join(repo_ws, "MODFLOW", "archived_models", "22_20220319", "mf_dataset", "rr_ss.hds")
 
 
 

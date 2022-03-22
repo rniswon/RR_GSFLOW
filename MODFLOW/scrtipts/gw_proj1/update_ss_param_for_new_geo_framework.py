@@ -15,7 +15,7 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..", "..")
 
 # set K zone ids files
-K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
+K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220318.dat")
 K_zones_old_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids.dat")
 
 # get previous best ss K values

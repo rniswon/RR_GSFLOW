@@ -38,18 +38,18 @@ import flopy.utils.binaryfile as bf
 # Script settings
 # ==============================
 
-load_and_transfer_transient_files = 0
-update_starting_heads = 0
-update_starting_parameters = 0
-update_prms_control_for_gsflow = 1
-update_prms_params_for_gsflow = 1
-update_transient_model_for_smooth_running = 1
-update_one_cell_lakes = 1
-update_modflow_for_ag_package = 1
-update_prms_params_for_ag_package = 1
-update_output_control = 1
-update_ag_package = 1
-create_tabfiles_for_pond_diversions = 1
+load_and_transfer_transient_files = 1
+update_starting_heads = 1
+update_starting_parameters = 1
+update_prms_control_for_gsflow = 0
+update_prms_params_for_gsflow = 0
+update_transient_model_for_smooth_running = 0
+update_one_cell_lakes = 0
+update_modflow_for_ag_package = 0
+update_prms_params_for_ag_package = 0
+update_output_control = 0
+update_ag_package = 0
+create_tabfiles_for_pond_diversions = 0
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -258,14 +258,14 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     # set file names and paths --------------------------------------------------------------------####
 
     # name files
-    mf_ss_name_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.nam"
+    mf_ss_name_file = r"..\..\archived_models\22_20220319\mf_dataset\rr_ss.nam"
     mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
 
     # steady state heads file
-    mf_ss_heads_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.hds"
+    mf_ss_heads_file = r"..\..\archived_models\22_20220319\mf_dataset\rr_ss.hds"
 
     # csv with best steady state params
-    best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223_newgf.csv"
+    best_ss_input_params = r"..\..\archived_models\22_20220319\input_param_20211223_newgf.csv"
 
     # directory with transient model input files
     tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
@@ -280,7 +280,7 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     Sim.gage_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\gage_hru.csv"
     Sim.gage_measurement_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\gage_steady_state.csv"
     Sim.input_file = best_ss_input_params
-    Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids_20220307.dat"
+    Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids_20220318.dat"
     Sim.average_rain_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\average_daily_rain_m.dat"
     Sim.surf_geo_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\surface_geology.txt"
     Sim.subbasins_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\subbasins.txt"
@@ -591,39 +591,8 @@ if update_transient_model_for_smooth_running == 1:
 
     # update UPW -------------------------------------------------------------------####
 
-    # # decrease horizontal and vertical K in all layers for zone containing (or adjacent to) problem grid cell (HRU 83888) in layer 3
-    #
-    # # get zone names
-    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
-    # zones = load_txt_3d(K_zones_file)
-    #
-    # # extract hk and vka
-    # hk = mf_tr.upw.hk.array
-    # vka = mf_tr.upw.vka.array
-    #
-    # # identify zones that need to change
-    # zones_to_change = [190, 231]
-    #
-    # # create mask
-    # mask = np.isin(zones, zones_to_change)
-    #
-    # # make changes to hk and vka
-    # change_factor = 100
-    # hk[mask] = hk[mask] / change_factor
-    # vka[mask] = vka[mask] / change_factor
-    #
-    # # store changes
-    # mf_tr.upw.hk = hk
-    # mf_tr.upw.vka = vka
-    #
-    # # write upw file
-    # mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
-    # mf_tr.upw.write_file()
-
-
-
     # TODO: use the code below to update UPW initial K param values
-    # increase horizontal and vertical K in weathered bedrock for layer 2
+    # increase initial horizontal and vertical K in weathered bedrock for layer 2
 
     # set constants for geologic zones
     inactive = 0
@@ -645,7 +614,7 @@ if update_transient_model_for_smooth_running == 1:
     geo_zones_old = grid_all_old['zones']
 
     # get zone names
-    K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
+    K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220318.dat")
     K_zones = load_txt_3d(K_zones_file)
 
     # extract hk and vka
@@ -660,7 +629,7 @@ if update_transient_model_for_smooth_running == 1:
     mask = np.isin(K_zones, zones_to_change)
 
     # make changes to hk and vka
-    change_factor = 100
+    change_factor = 10
     hk[mask] = hk[mask] * change_factor
     vka[mask] = vka[mask] * change_factor
 
@@ -696,6 +665,7 @@ if update_transient_model_for_smooth_running == 1:
 
     # assign SY values for geological zones
     sy_bedrock = 0.03
+    sy_bedrock_highly_weathered = 0.06
     sy_sonoma_volcanics = 0.07
     sy_consolidated_sediments = 0.15
     sy_unconsolidated_sediments = 0.2
@@ -739,6 +709,39 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
     mf_tr.upw.write_file()
 
+
+
+    # update parameters (HK, VKA, SY) in region with UZF wave errors  ---------------#
+
+    # get zone names
+    K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220318.dat")
+    zones = load_txt_3d(K_zones_file)
+
+    # extract hk, vka, and sy
+    hk = mf_tr.upw.hk.array
+    vka = mf_tr.upw.vka.array
+    sy = mf_tr.upw.sy.array
+
+    # identify zones that need to change
+    zones_to_change = [490, 491, 509]
+
+    # create mask
+    mask = np.isin(zones, zones_to_change)
+
+    # make changes to hk and vka
+    change_factor = 1000
+    hk[mask] = hk[mask] * change_factor
+    vka[mask] = vka[mask] * change_factor
+    sy[mask] = sy_bedrock_highly_weathered
+
+    # store changes
+    mf_tr.upw.hk = hk
+    mf_tr.upw.vka = vka
+    mf_tr.upw.sy = sy
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
 
 
 
@@ -818,7 +821,7 @@ if update_transient_model_for_smooth_running == 1:
     upland_mask = iuzfbnd > 1
 
     # increase vks
-    vks_upland_scaling_factor = 1
+    vks_upland_scaling_factor = 10
     vks = mf_tr.uzf.vks.array
     vks[upland_mask] = vks[upland_mask] * vks_upland_scaling_factor
     mf_tr.uzf.vks = vks
@@ -857,6 +860,9 @@ if update_transient_model_for_smooth_running == 1:
 
     # update ntrail2 ---------------------------#
     mf_tr.uzf.ntrail2 = 10
+
+    # update nuztop ---------------------------#
+    mf_tr.uzf.nuztop = 4       # this way, recharge is added to the top active layer (taking dry cells into account)
 
     # write uzf file --------------------------#
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
@@ -2054,6 +2060,7 @@ if create_tabfiles_for_pond_diversions == 1:
     sfr.tabfiles_dict = tabfiles_dict
 
     # write updated sfr file
+    mf_tr.sfr = sfr
     mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
     mf_tr.sfr.write_file()
 
