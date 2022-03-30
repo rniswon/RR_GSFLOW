@@ -21,10 +21,10 @@ import make_utm_proj as mup
 # ==============================
 # Script settings
 # ==============================
-create_model_grid_shp = 0
+create_model_grid_shp = 1
 create_wells_shp = 0
-create_sfr_shp = 0
-create_ag_shp = 1
+create_sfr_shp = 1
+create_ag_shp = 0
 create_prms_param_shp = 0
 
 
@@ -55,8 +55,8 @@ ag_package_file = os.path.join(mf_tr_model_input_file_dir, "rr_tr.ag")
 
 # load transient modflow model
 mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt")
+                                   model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                   verbose=True, forgive=False, version="mfnwt")
 
 # set model coordinate info
 xll = 465900
@@ -99,6 +99,7 @@ if create_model_grid_shp == 1:
                   "irunbnd": uzf.irunbnd.array,
                   "vks": uzf.vks.array,
                   "surfk": uzf.surfk.array,
+                  "thti": uzf.thti.array,
                   "finf": uzf.finf.array[0,0,:,:],
                   "lakarr_01": lak.lakarr.array[0,0,:,:],
                   "lakarr_02": lak.lakarr.array[0,1,:,:],

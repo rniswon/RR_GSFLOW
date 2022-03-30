@@ -4,6 +4,8 @@ import pandas as pd
 import gsflow
 import flopy
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+
 
 
 # ---- Settings -------------------------------------------####
@@ -63,7 +65,7 @@ for i in heads_idx:
 
     # plot heads: layer 1
     plt.figure(figsize=(4.5, 6), dpi=150)
-    plt.imshow(heads_lyr1)
+    plt.imshow(heads_lyr1, norm=LogNorm())
     plt.colorbar()
     plt.title(file_name_pretty + ": layer 1")
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr1.png')
@@ -71,7 +73,7 @@ for i in heads_idx:
 
     # plot heads: layer 2
     plt.figure(figsize=(4.5, 6), dpi=150)
-    plt.imshow(heads_lyr2)
+    plt.imshow(heads_lyr2, norm=LogNorm())
     plt.colorbar()
     plt.title(file_name_pretty + ": layer 2")
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr2.png')
@@ -79,7 +81,7 @@ for i in heads_idx:
 
     # plot heads: layer 3
     plt.figure(figsize=(4.5, 6), dpi=150)
-    plt.imshow(heads_lyr3)
+    plt.imshow(heads_lyr3, norm=LogNorm())
     plt.colorbar()
     plt.title(file_name_pretty + ": layer 3")
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr3.png')

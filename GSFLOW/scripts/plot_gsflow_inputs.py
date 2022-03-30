@@ -4,6 +4,7 @@ import pandas as pd
 import gsflow
 import flopy
 import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
 
 
 # ---- Settings -------------------------------------------####
@@ -54,24 +55,24 @@ def plot_gsflow_input_array_3d(mf, arr, file_name, file_name_pretty):
     arr_lyr3[mask_lyr3] = np.nan
 
     # plot array: layer 1
-    plt.figure(figsize=(4.5, 6), dpi=150)
-    plt.imshow(arr_lyr1)
+    plt.figure(figsize=(6, 6), dpi=150)
+    plt.imshow(arr_lyr1, norm=LogNorm())
     plt.colorbar()
     plt.title(file_name_pretty + ": layer 1")
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'gsflow_inputs', file_name + '_lyr1.png')
     plt.savefig(file_path)
 
     # plot array: layer 2
-    plt.figure(figsize=(4.5, 6), dpi=150)
-    plt.imshow(arr_lyr2)
+    plt.figure(figsize=(6, 6), dpi=150)
+    plt.imshow(arr_lyr2, norm=LogNorm())
     plt.colorbar()
     plt.title(file_name_pretty + ": layer 2")
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'gsflow_inputs', file_name + '_lyr2.png')
     plt.savefig(file_path)
 
     # plot array: layer 3
-    plt.figure(figsize=(4.5, 6), dpi=150)
-    plt.imshow(arr_lyr3)
+    plt.figure(figsize=(6, 6), dpi=150)
+    plt.imshow(arr_lyr3, norm=LogNorm())
     plt.colorbar()
     plt.title(file_name_pretty + ": layer 3")
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'gsflow_inputs', file_name + '_lyr3.png')
@@ -91,8 +92,8 @@ def plot_gsflow_input_array_1d_uzf(mf, arr, file_name, file_name_pretty):
     arr[mask] = np.nan
 
     # plot array
-    plt.figure(figsize=(4.5, 6), dpi=150)
-    plt.imshow(arr)
+    plt.figure(figsize=(6, 6), dpi=150)
+    plt.imshow(arr, norm=LogNorm())
     plt.colorbar()
     plt.title(file_name_pretty)
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'gsflow_inputs', file_name + '.png')

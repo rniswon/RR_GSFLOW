@@ -1,5 +1,0 @@
-light_zone_budget_file_output.csv csv2
-../../output/output.model1/yucaipa.cbc
-Yucaipa
-zones_bud.zon
-A
