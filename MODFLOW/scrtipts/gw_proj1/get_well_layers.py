@@ -34,11 +34,11 @@ rural_domestic_wells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rura
 # set file path to updated rural domestic wells file
 rural_domestic_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master_20220327.csv")
 
-# set file path to municipal and industrial wells file
-m_and_i_wells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model.csv")
-
-# set file path to updated municipal and industrial wells file
-m_and_i_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model_20220327.csv")
+# # set file path to municipal and industrial wells file
+# m_and_i_wells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model.csv")
+#
+# # set file path to updated municipal and industrial wells file
+# m_and_i_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model_20220327.csv")
 
 
 
@@ -51,8 +51,8 @@ well_dwr = pd.read_csv(well_dwr_file)
 # read in rural domestic wells file
 rural_domestic_wells = pd.read_csv(rural_domestic_wells_file)
 
-# read in municipal and industrial wells file
-m_and_i_wells = pd.read_csv(m_and_i_wells_file)
+# # read in municipal and industrial wells file
+# m_and_i_wells = pd.read_csv(m_and_i_wells_file)
 
 # load transient modflow model
 mf = gsflow.modflow.Modflow.load(os.path.basename(mf_nam_file),
@@ -224,8 +224,8 @@ def estimate_well_layer(model_well_df, well_dwr, model_well_df_type):
 
     # determine well distance cutoffs (maybe several cutoffs that are each tried in turn)
     # TODO: try different cutoffs so that get smallest cutoff for which all wells get assigned a well elevation
-    #well_dist_cutoff = [10, 100, 1000, 10000]  # these are in meters
-    well_dist_cutoff = [1000]  # these are in meters
+    well_dist_cutoff = [10, 100, 1000, 10000]  # these are in meters
+    #well_dist_cutoff = [1000]  # these are in meters
 
     # loop through each model well
     well_dwr['dist_to_model_well'] = np.nan
@@ -385,16 +385,16 @@ rural_domestic_wells.to_csv(rural_domestic_wells_updated_file, index=False)
 
 
 
-# Get well layers: municipal and industrial wells -----------------------------------------------####
-
-well_dwr_use_m_and_i = ['Water Supply Public', 'Water Supply', 'Water Supply Industrial', 'Other  Geothermal Heat Exchange',
-                        'Dewatering', 'Other  Construction', 'Other  Power Generation', 'Other  Geotechnical', 'Other  Soil Gas Monitoring',
-                        'Other  HEAT EXCHANGER', ' Industrial', 'Other  Geophysical Exploration', 'Other  Vapor Sampling Well',
-                        'Other  Vapor point', 'Other  Sulfate Injection Well', 'Other  Soil Vapor Monitoring', 'Other  Soil Vapor Well',
-                        'Other  Ozone Sparge Well', 'Other SOIL VAPOR WELL', 'Other  Soil Vapor Extraction', 'Other  Soil Vapor',
-                        'Other  Air Conditioning', 'Other  Bottled Water', 'Water Supply Unknown', 'Other  Air Sparge','Other Geothermal Heat Exchange',
-                        'Water Supply Not Specified']
-well_dwr_m_and_i = get_dwr_well_data(well_dwr, well_dwr_use_m_and_i)
-m_and_i_wells = get_m_and_i_well_coord(m_and_i_wells)
-m_and_i_wells = estimate_well_layer(m_and_i_wells, well_dwr_m_and_i, "municipal and industrial")
-m_and_i_wells.to_csv(m_and_i_wells_updated_file, index=False)
+# # Get well layers: municipal and industrial wells -----------------------------------------------####
+#
+# well_dwr_use_m_and_i = ['Water Supply Public', 'Water Supply', 'Water Supply Industrial', 'Other  Geothermal Heat Exchange',
+#                         'Dewatering', 'Other  Construction', 'Other  Power Generation', 'Other  Geotechnical', 'Other  Soil Gas Monitoring',
+#                         'Other  HEAT EXCHANGER', ' Industrial', 'Other  Geophysical Exploration', 'Other  Vapor Sampling Well',
+#                         'Other  Vapor point', 'Other  Sulfate Injection Well', 'Other  Soil Vapor Monitoring', 'Other  Soil Vapor Well',
+#                         'Other  Ozone Sparge Well', 'Other SOIL VAPOR WELL', 'Other  Soil Vapor Extraction', 'Other  Soil Vapor',
+#                         'Other  Air Conditioning', 'Other  Bottled Water', 'Water Supply Unknown', 'Other  Air Sparge','Other Geothermal Heat Exchange',
+#                         'Water Supply Not Specified']
+# well_dwr_m_and_i = get_dwr_well_data(well_dwr, well_dwr_use_m_and_i)
+# m_and_i_wells = get_m_and_i_well_coord(m_and_i_wells)
+# m_and_i_wells = estimate_well_layer(m_and_i_wells, well_dwr_m_and_i, "municipal and industrial")
+# m_and_i_wells.to_csv(m_and_i_wells_updated_file, index=False)

@@ -41,15 +41,15 @@ import flopy.utils.binaryfile as bf
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 1
-update_prms_params_for_gsflow = 1
+update_prms_control_for_gsflow = 0
+update_prms_params_for_gsflow = 0
 update_transient_model_for_smooth_running = 1
-update_one_cell_lakes = 1
-update_modflow_for_ag_package = 1
-update_prms_params_for_ag_package = 1
-update_output_control = 1
-update_ag_package = 1
-create_tabfiles_for_pond_diversions = 1
+update_one_cell_lakes = 0
+update_modflow_for_ag_package = 0
+update_prms_params_for_ag_package = 0
+update_output_control = 0
+update_ag_package = 0
+create_tabfiles_for_pond_diversions = 0
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -465,7 +465,7 @@ if update_transient_model_for_smooth_running == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                        load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK", "WEL", "SFR"],
+                                        load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK", "WEL", "SFR", "GHB"],
                                         verbose=True, forgive=False, version="mfnwt")
 
     # load gsflow model
@@ -500,6 +500,14 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem = np.isin(K_zones, K_zones_problem)
     mask_K_zones_not_problem = np.invert(mask_K_zones_problem)
 
+    # identify zones that need to change to address spatial distribution of recharge
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    mask_lowland = iuzfbnd == 1
+    mask_upland = iuzfbnd > 1
+
+    # create 3D version of upland and lowland masks
+    mask_lowland_3d = np.stack([mask_lowland, mask_lowland, mask_lowland])
+    mask_upland_3d = np.stack([mask_upland, mask_upland, mask_upland])
 
 
 
@@ -522,6 +530,8 @@ if update_transient_model_for_smooth_running == 1:
 
     # update WEL -------------------------------------------------------------------####
 
+
+    # REMOVE PROBLEM WELLS
     # # extract well package
     # wel = mf_tr.wel
     #
@@ -550,6 +560,27 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
     # mf_tr.wel.write_file()
 
+
+    # # PLACE ALL WELLS IN LAYER 3
+    # # extract well package
+    # wel = mf_tr.wel
+    #
+    # # identify and remove problem wells
+    # nper = mf_tr.nper
+    # for per in range(nper):
+    #
+    #     # extract stress period data
+    #     spd = pd.DataFrame(wel.stress_period_data.data[per])
+    #
+    #     # place all wells in layer 3
+    #     spd['k'] = 2   # place all wells in layer 3 (note that have to subtract 1 because flopy is 0-based)  # TODO: update for experiments
+    #
+    #     # convert back to recarray and store in well package
+    #     wel.stress_period_data.data[per] = spd.to_records(index=False)
+    #
+    # # write well file
+    # mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
+    # mf_tr.wel.write_file()
 
 
 
@@ -626,7 +657,7 @@ if update_transient_model_for_smooth_running == 1:
     vka = mf_tr.upw.vka.array
 
     # make changes to hk and vka for entire watershed: area without UZF problem
-    change_factor = 1       # TODO: update for experiments
+    change_factor = 0.25       # TODO: update for experiments
     hk[mask_K_zones_not_problem] = hk[mask_K_zones_not_problem] * change_factor
     vka[mask_K_zones_not_problem] = vka[mask_K_zones_not_problem] * change_factor
 
@@ -720,10 +751,6 @@ if update_transient_model_for_smooth_running == 1:
 
     # update UPW parameters (HK, VKA, SY) in region with UZF wave errors  ---------------#
 
-    # # get zone names
-    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220318.dat")
-    # zones = load_txt_3d(K_zones_file)
-
     # extract hk, vka, and sy
     hk = mf_tr.upw.hk.array
     vka = mf_tr.upw.vka.array
@@ -743,6 +770,31 @@ if update_transient_model_for_smooth_running == 1:
     # write upw file
     mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
     mf_tr.upw.write_file()
+
+
+
+    # update UPW: to improve recharge spatial distribution -------------------------------------------------------------------####
+
+    # extract hk and vka
+    hk = mf_tr.upw.hk.array
+    vka = mf_tr.upw.vka.array
+
+    # make changes related to spatial redistribution of recharge
+    change_factor_upland = 1.2
+    change_factor_lowland = 0.6
+    hk[mask_K_zones_not_problem & mask_upland_3d] = hk[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
+    vka[mask_K_zones_not_problem & mask_upland_3d] = vka[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
+    hk[mask_K_zones_not_problem & mask_lowland_3d] = hk[mask_K_zones_not_problem & mask_lowland_3d] * change_factor_lowland
+    vka[mask_K_zones_not_problem & mask_lowland_3d] = vka[mask_K_zones_not_problem & mask_lowland_3d] * change_factor_lowland
+
+    # store changes
+    mf_tr.upw.hk = hk
+    mf_tr.upw.vka = vka
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
+
 
 
 
@@ -788,7 +840,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
 
     # scale vks: area without UZF problem
-    vks_scaling_factor = 0.025       # NOTE: worked when it was 0.1     # TODO: update for experiments
+    vks_scaling_factor = 0.1       # TODO: update for experiments
     vks[mask_K_zones_not_problem_lyr2] = vks[mask_K_zones_not_problem_lyr2] * vks_scaling_factor
 
     # scale vks: area with UZF problem
@@ -822,17 +874,16 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
-    # update vks: in upland areas ------------------------------------#
+    # update vks: to improve spatial distribution of recharge ------------------------------------#
 
-    # identify upland areas
-    # NOTE: defining upland areas as areas that don't have layer 1 as their top layer
-    iuzfbnd = mf_tr.uzf.iuzfbnd.array
-    upland_mask = iuzfbnd > 1
-
-    # increase vks
-    vks_upland_scaling_factor = 1
+    # extract vks
     vks = mf_tr.uzf.vks.array
-    vks[upland_mask] = vks[upland_mask] * vks_upland_scaling_factor
+
+    # change vks
+    change_factor_upland = 1.2
+    change_factor_lowland = 0.6
+    vks[mask_K_zones_not_problem[1,:,:] & mask_upland] = vks[mask_K_zones_not_problem[1,:,:] & mask_upland] * change_factor_upland
+    vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] = vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] * change_factor_lowland
     mf_tr.uzf.vks = vks
 
 
@@ -873,6 +924,10 @@ if update_transient_model_for_smooth_running == 1:
     thtr = thts - sy_iuzfbnd
     thti = thtr + (sy_scaling_factor * sy_iuzfbnd)
     mf_tr.uzf.thti = thti
+
+    # adjust thti
+    mf_tr.uzf.thti = mf_tr.uzf.thti.array/2    #TODO: update for experiments
+
 
 
 
@@ -964,6 +1019,117 @@ if update_transient_model_for_smooth_running == 1:
     # write sfr file
     mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
     mf_tr.sfr.write_file()
+
+
+
+
+    # update SFR: update streambed K ---------------------------------------------------------------####
+
+    # # extract SFR package
+    # sfr = mf_tr.sfr
+    #
+    # # update streambed K
+    # reach_data = pd.DataFrame(sfr.reach_data)
+    # change_factor = 0.5          # try reducing by a factor of 2   #TODO: update for experiments
+    # reach_data['strhc1'] = reach_data['strhc1'] * change_factor
+    #
+    # # store updated reach data
+    # mf_tr.sfr.reach_data = reach_data.to_records(index=False)
+    #
+    # # write sfr file
+    # mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    # mf_tr.sfr.write_file()
+
+
+    # update GHB -------------------------------------------------------------------####
+
+    # extract GHB
+    ghb = mf_tr.ghb
+    ghb_spd = ghb.stress_period_data.get_dataframe()
+    ghb_spd_sp1 = ghb_spd[ghb_spd['per'] == 0]   # extract stress period 1 (because doesn't vary across stress periods)
+
+    # create an array of GHB presence/absence for each layer
+    nlay = mf_tr.modelgrid.nlay
+    ghb_arr = np.zeros_like(mf_tr.bas6.ibound.array)
+    ghb_head_arr = np.zeros_like(ghb_arr)
+    ghb_neighbor_arr = np.zeros_like(ghb_arr)
+    for idx, ghb_cell in ghb_spd_sp1.iterrows():
+
+        # get layer, row, and column indices of ghb_cell
+        lay_idx = int(ghb_cell['k'])
+        row_idx = int(ghb_cell['i'])
+        col_idx = int(ghb_cell['j'])
+
+        # flag this cell and store head value
+        ghb_arr[lay_idx, row_idx, col_idx] = 1
+        ghb_head_arr[lay_idx, row_idx, col_idx] = ghb_cell['bhead']
+
+        # identify neighbor indices
+        row_up_idx = row_idx - 1
+        row_down_idx = row_idx - 1
+        col_left_idx = col_idx - 1
+        col_right_idx = col_idx + 1
+
+        # flag neighbors
+        ghb_neighbor_arr[lay_idx, row_up_idx, col_idx] = 1
+        ghb_neighbor_arr[lay_idx, row_down_idx, col_idx] = 1
+        ghb_neighbor_arr[lay_idx, row_idx, col_left_idx] = 1
+        ghb_neighbor_arr[lay_idx, row_idx, col_right_idx] = 1
+
+
+    # loop through ghb neighbors and identify number of ghb cells they are adjacent to
+    ghb_neighbor_cells = np.where(ghb_neighbor_arr)
+    for i in list(range(len(ghb_neighbor_cells[0]))):
+
+        # get layer, row, and column indices of ghb neighbor cell
+        lay_idx = ghb_neighbor_cells[0][i]
+        row_idx = ghb_neighbor_cells[1][i]
+        col_idx = ghb_neighbor_cells[2][i]
+
+        # identify neighbor indices
+        row_up_idx = row_idx - 1
+        row_down_idx = row_idx - 1
+        col_left_idx = col_idx - 1
+        col_right_idx = col_idx + 1
+
+        # get neighbor flag values and sum up neighbor flags
+        neighbor_up = ghb_arr[lay_idx, row_up_idx, col_idx]
+        neighbor_down = ghb_arr[lay_idx, row_down_idx, col_idx]
+        neighbor_left = ghb_arr[lay_idx, row_idx, col_left_idx]
+        neighbor_right = ghb_arr[lay_idx, row_idx, col_right_idx]
+
+        # calculate number of ghb cells each ghb neighbor is adjacent to
+        neighbor_sum = neighbor_up + neighbor_down + neighbor_left + neighbor_right
+
+        # store
+        ghb_neighbor_arr[lay_idx, row_idx, col_idx] = neighbor_sum
+
+    # set to 0 all grid cells outside of active model domain
+    ibound = mf_tr.bas6.ibound.array
+    mask = ibound > 0
+    ghb_neighbor_arr[mask] = 0
+    xx=1
+
+    # identify neighbors with more than one ghb cell adjacent
+    neighbors_multi_ghb = np.where(ghb_neighbor_arr > 1)
+
+    # average the reference heads for ghb cells when multiple ghb cells are adjacent to the same non-ghb cell
+    for i in list(range(len(neighbors_multi_ghb[0]))):
+
+        # get layer, row, and column indices
+        lay_idx = neighbors_multi_ghb[0][i]
+        row_idx = neighbors_multi_ghb[1][i]
+        col_idx = neighbors_multi_ghb[2][i]
+
+        # identify neighbor indices
+        row_up_idx = row_idx - 1
+        row_down_idx = row_idx - 1
+        col_left_idx = col_idx - 1
+        col_right_idx = col_idx + 1
+
+
+    # make sure the GHB neighbors will not cause oscillations
+
 
 
 
