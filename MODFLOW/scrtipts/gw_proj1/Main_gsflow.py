@@ -41,15 +41,15 @@ import flopy.utils.binaryfile as bf
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 1
-update_prms_params_for_gsflow = 1
+update_prms_control_for_gsflow = 0
+update_prms_params_for_gsflow = 0
 update_transient_model_for_smooth_running = 1
-update_one_cell_lakes = 1
-update_modflow_for_ag_package = 1
-update_prms_params_for_ag_package = 1
-update_output_control = 1
-update_ag_package = 1
-create_tabfiles_for_pond_diversions = 1
+update_one_cell_lakes = 0
+update_modflow_for_ag_package = 0
+update_prms_params_for_ag_package = 0
+update_output_control = 0
+update_ag_package = 0
+create_tabfiles_for_pond_diversions = 0
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -258,14 +258,14 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     # set file names and paths --------------------------------------------------------------------####
 
     # name files
-    mf_ss_name_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.nam"
+    mf_ss_name_file = r"..\..\archived_models\22_20220319\mf_dataset\rr_ss.nam"
     mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
 
     # steady state heads file
-    mf_ss_heads_file = r"..\..\archived_models\20_20211223\results\mf_dataset\rr_ss.hds"
+    mf_ss_heads_file = r"..\..\archived_models\22_20220319\mf_dataset\rr_ss.hds"
 
     # csv with best steady state params
-    best_ss_input_params = r"..\..\archived_models\20_20211223\input_param_20211223_newgf.csv"
+    best_ss_input_params = r"..\..\archived_models\22_20220319\input_param_20211223_newgf.csv"
 
     # directory with transient model input files
     tr_model_input_file_dir = r"..\..\..\GSFLOW\modflow\input"
@@ -280,7 +280,7 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
     Sim.gage_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\gage_hru.csv"
     Sim.gage_measurement_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\gage_steady_state.csv"
     Sim.input_file = best_ss_input_params
-    Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids_20220307.dat"
+    Sim.K_zones_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\K_zone_ids_20220318.dat"
     Sim.average_rain_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\average_daily_rain_m.dat"
     Sim.surf_geo_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\surface_geology.txt"
     Sim.subbasins_file = r"..\..\modflow_calibration\ss_calibration\slave_dir\misc_files\subbasins.txt"
@@ -465,12 +465,50 @@ if update_transient_model_for_smooth_running == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                        load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK", "WEL"],
+                                        load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK", "WEL", "SFR", "GHB"],
                                         verbose=True, forgive=False, version="mfnwt")
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
+
+    # get new geological zones
+    grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
+    grid_all_new = np.load(grid_file, allow_pickle=True).all()
+    geo_zones_new = grid_all_new['zones']
+
+    # get old geological zones
+    grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
+    grid_all_old = np.load(grid_file, allow_pickle=True).all()
+    geo_zones_old = grid_all_old['zones']
+
+    # set constants for geologic zones
+    inactive = 0
+    frac_brk = 14
+    sonoma_volc = 15
+    cons_sed = 16
+    uncons_sed = 17
+    chan_dep_lyr1 = 18
+    chan_dep_lyr2 = 19
+
+    # get K zone ids
+    K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220318.dat")
+    K_zones = load_txt_3d(K_zones_file)
+
+    # identify zones that need to change to address UZF wave error
+    K_zones_problem = [490, 491, 509, 180, 181, 134]
+    mask_K_zones_problem = np.isin(K_zones, K_zones_problem)
+    mask_K_zones_not_problem = np.invert(mask_K_zones_problem)
+
+    # identify zones that need to change to address spatial distribution of recharge
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    mask_lowland = iuzfbnd == 1
+    mask_upland = iuzfbnd > 1
+
+    # create 3D version of upland and lowland masks
+    mask_lowland_3d = np.stack([mask_lowland, mask_lowland, mask_lowland])
+    mask_upland_3d = np.stack([mask_upland, mask_upland, mask_upland])
+
 
 
     # update NWT -------------------------------------------------------------------####
@@ -492,33 +530,57 @@ if update_transient_model_for_smooth_running == 1:
 
     # update WEL -------------------------------------------------------------------####
 
-    # extract well package
-    wel = mf_tr.wel
 
-    # identify grid cell with problem wells
-    well_lay = 3
-    well_row = 332
-    well_col = 145
+    # REMOVE PROBLEM WELLS
+    # # extract well package
+    # wel = mf_tr.wel
+    #
+    # # identify grid cell with problem wells
+    # well_lay = 3
+    # well_row = 332
+    # well_col = 145
+    #
+    # # identify and remove problem wells
+    # nper = mf_tr.nper
+    # for per in range(nper):
+    #
+    #     # extract stress period data
+    #     spd = pd.DataFrame(wel.stress_period_data.data[per])
+    #
+    #     # identify problem wells
+    #     mask = (spd['k'] == (well_lay-1)) & (spd['i'] == (well_row-1)) & (spd['j'] == (well_col-1))
+    #
+    #     # remove problem wells
+    #     spd_updated = spd[~mask]
+    #
+    #     # convert back to recarray and store in well package
+    #     wel.stress_period_data.data[per] = spd_updated.to_records(index=False)
+    #
+    # # write well file
+    # mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
+    # mf_tr.wel.write_file()
 
-    # identify and remove problem wells
-    nper = mf_tr.nper
-    for per in range(nper):
 
-        # extract stress period data
-        spd = pd.DataFrame(wel.stress_period_data.data[per])
-
-        # identify problem wells
-        mask = (spd['k'] == (well_lay-1)) & (spd['i'] == (well_row-1)) & (spd['j'] == (well_col-1))
-
-        # remove problem wells
-        spd_updated = spd[~mask]
-
-        # convert back to recarray and store in well package
-        wel.stress_period_data.data[per] = spd_updated.to_records(index=False)
-
-    # write well file
-    mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
-    mf_tr.wel.write_file()
+    # # PLACE ALL WELLS IN LAYER 3
+    # # extract well package
+    # wel = mf_tr.wel
+    #
+    # # identify and remove problem wells
+    # nper = mf_tr.nper
+    # for per in range(nper):
+    #
+    #     # extract stress period data
+    #     spd = pd.DataFrame(wel.stress_period_data.data[per])
+    #
+    #     # place all wells in layer 3
+    #     spd['k'] = 2   # place all wells in layer 3 (note that have to subtract 1 because flopy is 0-based)  # TODO: update for experiments
+    #
+    #     # convert back to recarray and store in well package
+    #     wel.stress_period_data.data[per] = spd.to_records(index=False)
+    #
+    # # write well file
+    # mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "pumping_with_rural.wel")
+    # mf_tr.wel.write_file()
 
 
 
@@ -531,41 +593,96 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.add_external(starting_heads, 60, True)
     # mf_tr.write_name_file()
 
-    # update bas file to use external files (binary) in transient model generation code
-    # TODO: find out whether this is actually better when interacting with the model through flopy
+    # # extract ibound
+    # ibound = mf_tr.bas6.ibound.array
+    # ibound_lyr1 = ibound[0, :, :]
+    # ibound_lyr2 = ibound[1, :, :]
+    # ibound_lyr3 = ibound[2, :, :]
+    #
+    # # extract dis elevations
+    # botm = mf_tr.dis.botm.array
+    # botm_lyr1 = botm[0, :, :]
+    # botm_lyr2 = botm[1, :, :]
+    # botm_lyr3 = botm[2, :, :]
+    #
+    # # extract initial heads
+    # strt = mf_tr.bas6.strt.array
+    # strt_lyr1 = strt[0, :, :]
+    # strt_lyr2 = strt[1, :, :]
+    # strt_lyr3 = strt[2, :, :]
+    #
+    # # identify active grid cells with initial heads below bottom of grid cell
+    # diff_lyr1 = strt_lyr1 - botm_lyr1
+    # mask_lyr1 = (ibound_lyr1 > 0) & (diff_lyr1 < 0)
+    # diff_lyr2 = strt_lyr2 - botm_lyr2
+    # mask_lyr2 = (ibound_lyr2 > 0) & (diff_lyr2 < 0)
+    # diff_lyr3 = strt_lyr3 - botm_lyr3
+    # mask_lyr3 = (ibound_lyr3 > 0) & (diff_lyr3 < 0)
+    #
+    # # # find the max diff
+    # # max_diff_lyr1 = np.max(np.abs(diff_lyr1[mask_lyr1]))
+    # # max_diff_lyr2 = np.max(np.abs(diff_lyr2[mask_lyr2]))
+    # # #max_diff_lyr3 = np.max(np.abs(diff_lyr3[mask_lyr3]))
+    #
+    # # # raise the entire initial head array for each layer by the max diff
+    # # strt_lyr1_new = strt_lyr1 + max_diff_lyr1
+    # # strt_lyr2_new = strt_lyr2 + max_diff_lyr2
+    # # #strt_lyr3_new = strt_lyr3 + max_diff_lyr3
+    # # strt_lyr3_new = strt_lyr3
+    #
+    # # raise the initial heads for these grid cells to not have dry grid cells for initial heads
+    # strt_lyr1_new = np.copy(strt_lyr1)
+    # strt_lyr2_new = np.copy(strt_lyr2)
+    # strt_lyr3_new = np.copy(strt_lyr3)
+    # strt_lyr1_new[mask_lyr1] = strt_lyr1[mask_lyr1] + diff_lyr1[mask_lyr1]
+    # strt_lyr2_new[mask_lyr2] = strt_lyr2[mask_lyr2] + diff_lyr2[mask_lyr2]
+    # strt_lyr3_new[mask_lyr3] = strt_lyr3[mask_lyr3] + diff_lyr3[mask_lyr3]
+    #
+    # # store the new initial heads
+    # strt = np.stack([strt_lyr1_new, strt_lyr2_new, strt_lyr3_new])
+    # mf_tr.bas6.strt = strt
+    #
+    # # write file
+    # mf_tr.bas6.fn_path = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "rr_tr.bas")
+    # mf_tr.bas6.write_file()
+
+
 
 
 
     # update UPW -------------------------------------------------------------------####
 
-    # # decrease horizontal and vertical K in all layers for zone containing (or adjacent to) problem grid cell (HRU 83888) in layer 3
-    #
-    # # get zone names
-    # K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
-    # zones = load_txt_3d(K_zones_file)
-    #
-    # # extract hk and vka
-    # hk = mf_tr.upw.hk.array
-    # vka = mf_tr.upw.vka.array
-    #
-    # # identify zones that need to change
-    # zones_to_change = [190, 231]
-    #
-    # # create mask
-    # mask = np.isin(zones, zones_to_change)
-    #
-    # # make changes to hk and vka
-    # change_factor = 100
-    # hk[mask] = hk[mask] / change_factor
-    # vka[mask] = vka[mask] / change_factor
-    #
-    # # store changes
-    # mf_tr.upw.hk = hk
-    # mf_tr.upw.vka = vka
-    #
-    # # write upw file
-    # mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
-    # mf_tr.upw.write_file()
+    # extract hk and vka
+    hk = mf_tr.upw.hk.array
+    vka = mf_tr.upw.vka.array
+
+    # make changes to hk and vka for entire watershed: area without UZF problem
+    change_factor = 0.25       # TODO: update for experiments
+    hk[mask_K_zones_not_problem] = hk[mask_K_zones_not_problem] * change_factor
+    vka[mask_K_zones_not_problem] = vka[mask_K_zones_not_problem] * change_factor
+
+    # make changes to hk and vka for entire watershed: area with UZF problem
+    change_factor = 1        # NOTE: worked when this was set to 1
+    hk[mask_K_zones_problem] = hk[mask_K_zones_problem] * change_factor
+    vka[mask_K_zones_problem] = vka[mask_K_zones_problem] * change_factor
+
+    # identify K zones with weathered bedrock in layer 2
+    mask_lyr2_bedrock = (geo_zones_new == frac_brk) & (geo_zones_old != frac_brk)
+    zones_to_change = np.unique(K_zones[mask_lyr2_bedrock])
+
+    # make changes to hk and vka in K zones with weathered bedrock in layer 2
+    mask_lyr2_bedrock = np.isin(K_zones, zones_to_change)
+    change_factor = 10
+    hk[mask_lyr2_bedrock] = hk[mask_lyr2_bedrock] * change_factor
+    vka[mask_lyr2_bedrock] = vka[mask_lyr2_bedrock] * change_factor
+
+    # store changes
+    mf_tr.upw.hk = hk
+    mf_tr.upw.vka = vka
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
 
 
 
@@ -591,26 +708,22 @@ if update_transient_model_for_smooth_running == 1:
 
     # assign SY values for geological zones
     sy_bedrock = 0.03
+    sy_bedrock_highly_weathered = 0.06
     sy_sonoma_volcanics = 0.07
     sy_consolidated_sediments = 0.15
     sy_unconsolidated_sediments = 0.2
     sy_channel_deposits = 0.2
 
-    # read in geological zones
-    geo_zones_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
-    geo_zones = np.load(geo_zones_file, allow_pickle=True).all()
-    geo_zones = geo_zones['zones']
-
     # extract SY
     sy = mf_tr.upw.sy.array
 
     # assign SY for geological zones
-    sy[geo_zones == 14] = sy_bedrock
-    sy[geo_zones == 15] = sy_sonoma_volcanics
-    sy[geo_zones == 16] = sy_consolidated_sediments
-    sy[geo_zones == 17] = sy_unconsolidated_sediments
-    sy[geo_zones == 18] = sy_channel_deposits
-    sy[geo_zones == 19] = sy_channel_deposits
+    sy[geo_zones_new == 14] = sy_bedrock
+    sy[geo_zones_new == 15] = sy_sonoma_volcanics
+    sy[geo_zones_new == 16] = sy_consolidated_sediments
+    sy[geo_zones_new == 17] = sy_unconsolidated_sediments
+    sy[geo_zones_new == 18] = sy_channel_deposits
+    sy[geo_zones_new == 19] = sy_channel_deposits
 
     # # plot layer 1
     # plt.imshow(sy[0, :, :])
@@ -631,6 +744,54 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.upw.sy = sy
 
     # write file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
+
+
+
+    # update UPW parameters (HK, VKA, SY) in region with UZF wave errors  ---------------#
+
+    # extract hk, vka, and sy
+    hk = mf_tr.upw.hk.array
+    vka = mf_tr.upw.vka.array
+    sy = mf_tr.upw.sy.array
+
+    # make changes to hk and vka
+    change_factor = 10
+    hk[mask_K_zones_problem] = hk[mask_K_zones_problem] * change_factor
+    vka[mask_K_zones_problem] = vka[mask_K_zones_problem] * change_factor
+    sy[mask_K_zones_problem] = sy_bedrock_highly_weathered
+
+    # store changes
+    mf_tr.upw.hk = hk
+    mf_tr.upw.vka = vka
+    mf_tr.upw.sy = sy
+
+    # write upw file
+    mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
+    mf_tr.upw.write_file()
+
+
+
+    # update UPW: to improve recharge spatial distribution -------------------------------------------------------------------####
+
+    # extract hk and vka
+    hk = mf_tr.upw.hk.array
+    vka = mf_tr.upw.vka.array
+
+    # make changes related to spatial redistribution of recharge
+    change_factor_upland = 1.2
+    change_factor_lowland = 0.6
+    hk[mask_K_zones_not_problem & mask_upland_3d] = hk[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
+    vka[mask_K_zones_not_problem & mask_upland_3d] = vka[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
+    hk[mask_K_zones_not_problem & mask_lowland_3d] = hk[mask_K_zones_not_problem & mask_lowland_3d] * change_factor_lowland
+    vka[mask_K_zones_not_problem & mask_lowland_3d] = vka[mask_K_zones_not_problem & mask_lowland_3d] * change_factor_lowland
+
+    # store changes
+    mf_tr.upw.hk = hk
+    mf_tr.upw.vka = vka
+
+    # write upw file
     mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
     mf_tr.upw.write_file()
 
@@ -674,9 +835,17 @@ if update_transient_model_for_smooth_running == 1:
         mask = iuzfbnd == (k + 1)
         vks[mask] = kh_layer[mask]
 
-    # scale
-    vks_scaling_factor = 0.1
-    vks = vks * vks_scaling_factor
+    # create mask for layer 2
+    mask_K_zones_not_problem_lyr2 = mask_K_zones_not_problem[1,:,:]
+    mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
+
+    # scale vks: area without UZF problem
+    vks_scaling_factor = 0.1       # TODO: update for experiments
+    vks[mask_K_zones_not_problem_lyr2] = vks[mask_K_zones_not_problem_lyr2] * vks_scaling_factor
+
+    # scale vks: area with UZF problem
+    vks_scaling_factor = 0.1       # NOTE: worked when it was 0.1
+    vks[mask_K_zones_problem_lyr2] = vks[mask_K_zones_problem_lyr2] * vks_scaling_factor
 
     # note: only use this section interactively
     # # identify min vks value
@@ -705,29 +874,40 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
-    # update vks: in upland areas ------------------------------------#
+    # update vks: to improve spatial distribution of recharge ------------------------------------#
 
-    # identify upland areas
-    # NOTE: defining upland areas as areas that don't have layer 1 as their top layer
-    iuzfbnd = mf_tr.uzf.iuzfbnd.array
-    upland_mask = iuzfbnd > 1
-
-    # increase vks
-    vks_upland_scaling_factor = 1
+    # extract vks
     vks = mf_tr.uzf.vks.array
-    vks[upland_mask] = vks[upland_mask] * vks_upland_scaling_factor
+
+    # change vks
+    change_factor_upland = 1.2
+    change_factor_lowland = 0.6
+    vks[mask_K_zones_not_problem[1,:,:] & mask_upland] = vks[mask_K_zones_not_problem[1,:,:] & mask_upland] * change_factor_upland
+    vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] = vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] * change_factor_lowland
     mf_tr.uzf.vks = vks
 
 
 
-    # update thti ------------------------------#
+    # update UZF VKS: region with UZF wave errors ------------------------------------#
 
-    # OLD - can be deleted
-    # thts = mf_tr.uzf.thts.array
-    # sy = mf_tr.upw.sy.array[0,:,:]
-    # thtr = thts - sy
-    # small_value = 0.01 * thtr.min()
-    # mf_tr.uzf.thti = thtr + small_value
+    # extract vks
+    vks = mf_tr.uzf.vks.array
+
+    # create mask for layer 2
+    mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
+
+    # make changes to vks
+    change_factor = 10
+    vks[mask_K_zones_problem_lyr2] = vks[mask_K_zones_problem_lyr2] * change_factor
+
+    # store changes
+    mf_tr.uzf.vks = vks
+
+
+
+
+
+    # update thti ------------------------------#
 
     # set SY scaling factor
     sy_scaling_factor = 0.15
@@ -745,6 +925,34 @@ if update_transient_model_for_smooth_running == 1:
     thti = thtr + (sy_scaling_factor * sy_iuzfbnd)
     mf_tr.uzf.thti = thti
 
+    # adjust thti
+    mf_tr.uzf.thti = mf_tr.uzf.thti.array/2    #TODO: update for experiments
+
+
+
+
+    # update UZF THTI: region with UZF wave errors ------------------------------#
+
+    # create mask for layer 2
+    mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
+
+    # set SY scaling factor
+    sy_scaling_factor = 0.3
+
+    # get SY for the IUZFBND layers
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    sy = mf_tr.upw.sy.array
+    sy_iuzfbnd = sy[2, :, :]  # set everything to layer 3 values to start
+    sy_iuzfbnd[iuzfbnd == 1] = sy[0, :, :][iuzfbnd == 1]  # then update layer 1 values
+    sy_iuzfbnd[iuzfbnd == 2] = sy[1, :, :][iuzfbnd == 2]  # then update layer 2 values
+
+    # update thti in problem region
+    thts = mf_tr.uzf.thts.array
+    thtr = thts - sy_iuzfbnd
+    thti_old = mf_tr.uzf.thti.array
+    thti_new = thtr + (sy_scaling_factor * sy_iuzfbnd)
+    thti_old[mask_K_zones_problem_lyr2] = thti_new[mask_K_zones_problem_lyr2]
+    mf_tr.uzf.thti = thti_old
 
 
     # update nsets -----------------------------#
@@ -752,6 +960,9 @@ if update_transient_model_for_smooth_running == 1:
 
     # update ntrail2 ---------------------------#
     mf_tr.uzf.ntrail2 = 10
+
+    # update nuztop ---------------------------#
+    mf_tr.uzf.nuztop = 4       # this way, recharge is added to the top active layer (taking dry cells into account)
 
     # write uzf file --------------------------#
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
@@ -775,6 +986,151 @@ if update_transient_model_for_smooth_running == 1:
     # # write lake file
     # mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
     # mf_tr.lak.write_file()
+
+
+
+    # update SFR: reservoir outflow spillway elevations ---------------------------------------------------------------####
+
+    # extract sfr and lake packages
+    lak = mf_tr.lak
+    sfr = mf_tr.sfr
+
+    # assign spillway segments for the two reservoirs
+    spill_seg_lak01 = 446
+    spill_seg_lak02 = 448
+
+    # extract initial lake stage for the two reservoirs
+    init_stage_lak01 = float(lak.stages[0])
+    init_stage_lak02 = float(lak.stages[1])
+
+    # identify lake spillway and assign updated value: lake 1
+    reach_data = pd.DataFrame(sfr.reach_data)
+    mask = (reach_data['iseg'] == spill_seg_lak01) & (reach_data['ireach'] == 1)
+    reach_data.loc[mask, 'strtop'] = init_stage_lak01
+
+    # identify lake spillway and assign updated value: lake 2
+    reach_data = pd.DataFrame(sfr.reach_data)
+    mask = (reach_data['iseg'] == spill_seg_lak02) & (reach_data['ireach'] == 1)
+    reach_data.loc[mask, 'strtop'] = init_stage_lak02
+
+    # store updated reach data
+    mf_tr.sfr.reach_data = reach_data.to_records(index=False)
+
+    # write sfr file
+    mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    mf_tr.sfr.write_file()
+
+
+
+
+    # update SFR: update streambed K ---------------------------------------------------------------####
+
+    # # extract SFR package
+    # sfr = mf_tr.sfr
+    #
+    # # update streambed K
+    # reach_data = pd.DataFrame(sfr.reach_data)
+    # change_factor = 0.5          # try reducing by a factor of 2   #TODO: update for experiments
+    # reach_data['strhc1'] = reach_data['strhc1'] * change_factor
+    #
+    # # store updated reach data
+    # mf_tr.sfr.reach_data = reach_data.to_records(index=False)
+    #
+    # # write sfr file
+    # mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    # mf_tr.sfr.write_file()
+
+
+    # update GHB -------------------------------------------------------------------####
+
+    # extract GHB
+    ghb = mf_tr.ghb
+    ghb_spd = ghb.stress_period_data.get_dataframe()
+    ghb_spd_sp1 = ghb_spd[ghb_spd['per'] == 0]   # extract stress period 1 (because doesn't vary across stress periods)
+
+    # create an array of GHB presence/absence for each layer
+    nlay = mf_tr.modelgrid.nlay
+    ghb_arr = np.zeros_like(mf_tr.bas6.ibound.array)
+    ghb_head_arr = np.zeros_like(ghb_arr)
+    ghb_neighbor_arr = np.zeros_like(ghb_arr)
+    for idx, ghb_cell in ghb_spd_sp1.iterrows():
+
+        # get layer, row, and column indices of ghb_cell
+        lay_idx = int(ghb_cell['k'])
+        row_idx = int(ghb_cell['i'])
+        col_idx = int(ghb_cell['j'])
+
+        # flag this cell and store head value
+        ghb_arr[lay_idx, row_idx, col_idx] = 1
+        ghb_head_arr[lay_idx, row_idx, col_idx] = ghb_cell['bhead']
+
+        # identify neighbor indices
+        row_up_idx = row_idx - 1
+        row_down_idx = row_idx - 1
+        col_left_idx = col_idx - 1
+        col_right_idx = col_idx + 1
+
+        # flag neighbors
+        ghb_neighbor_arr[lay_idx, row_up_idx, col_idx] = 1
+        ghb_neighbor_arr[lay_idx, row_down_idx, col_idx] = 1
+        ghb_neighbor_arr[lay_idx, row_idx, col_left_idx] = 1
+        ghb_neighbor_arr[lay_idx, row_idx, col_right_idx] = 1
+
+
+    # loop through ghb neighbors and identify number of ghb cells they are adjacent to
+    ghb_neighbor_cells = np.where(ghb_neighbor_arr)
+    for i in list(range(len(ghb_neighbor_cells[0]))):
+
+        # get layer, row, and column indices of ghb neighbor cell
+        lay_idx = ghb_neighbor_cells[0][i]
+        row_idx = ghb_neighbor_cells[1][i]
+        col_idx = ghb_neighbor_cells[2][i]
+
+        # identify neighbor indices
+        row_up_idx = row_idx - 1
+        row_down_idx = row_idx - 1
+        col_left_idx = col_idx - 1
+        col_right_idx = col_idx + 1
+
+        # get neighbor flag values and sum up neighbor flags
+        neighbor_up = ghb_arr[lay_idx, row_up_idx, col_idx]
+        neighbor_down = ghb_arr[lay_idx, row_down_idx, col_idx]
+        neighbor_left = ghb_arr[lay_idx, row_idx, col_left_idx]
+        neighbor_right = ghb_arr[lay_idx, row_idx, col_right_idx]
+
+        # calculate number of ghb cells each ghb neighbor is adjacent to
+        neighbor_sum = neighbor_up + neighbor_down + neighbor_left + neighbor_right
+
+        # store
+        ghb_neighbor_arr[lay_idx, row_idx, col_idx] = neighbor_sum
+
+    # set to 0 all grid cells outside of active model domain
+    ibound = mf_tr.bas6.ibound.array
+    mask = ibound > 0
+    ghb_neighbor_arr[mask] = 0
+    xx=1
+
+    # identify neighbors with more than one ghb cell adjacent
+    neighbors_multi_ghb = np.where(ghb_neighbor_arr > 1)
+
+    # average the reference heads for ghb cells when multiple ghb cells are adjacent to the same non-ghb cell
+    for i in list(range(len(neighbors_multi_ghb[0]))):
+
+        # get layer, row, and column indices
+        lay_idx = neighbors_multi_ghb[0][i]
+        row_idx = neighbors_multi_ghb[1][i]
+        col_idx = neighbors_multi_ghb[2][i]
+
+        # identify neighbor indices
+        row_up_idx = row_idx - 1
+        row_down_idx = row_idx - 1
+        col_left_idx = col_idx - 1
+        col_right_idx = col_idx + 1
+
+
+    # make sure the GHB neighbors will not cause oscillations
+
+
 
 
     # update PRMS param to specific values ---------------------------------------------------------------####
@@ -1949,6 +2305,7 @@ if create_tabfiles_for_pond_diversions == 1:
     sfr.tabfiles_dict = tabfiles_dict
 
     # write updated sfr file
+    mf_tr.sfr = sfr
     mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
     mf_tr.sfr.write_file()
 
@@ -2344,6 +2701,42 @@ if do_checks == 1:
     for i in subbasin.columns:
         subbasin[[i]] = subbasin[[i]].astype(int)
     subbasin.to_csv(subbasin_file, header=False, index=False, sep='\t')
+
+
+
+    # get hru id for cell with a particular uzf id ---------------------------------####
+
+    # get number of rows and columns
+    ibound = mf_tr.bas6.ibound.array
+    num_lay, num_row, num_col = ibound.shape
+
+    # get hru id matrix
+    nhru = gs.prms.parameters.get_values("nhru")[0]
+    hru_id = np.array(list(range(1, nhru + 1)))
+    hru_id_mat = hru_id.reshape(num_row, num_col)
+
+    # get iuzfbnd
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+
+    # create a matrix of zeros like iuzfbnd
+    uzf_id_mat = np.zeros_like(iuzfbnd)
+
+    # loop through each value of iuzfbnd and, if it is non-zero, assign that grid cell to a uzf id
+    uzf_id = 1
+    for hru in list((range(1,nhru+1))):
+
+        # create mask
+        mask = hru_id_mat == hru
+
+        # fill in uzf id array
+        if iuzfbnd[mask] > 0:
+            uzf_id_mat[mask] = uzf_id
+            uzf_id = uzf_id + 1
+
+    # get row and col for a particular uzf id
+    row, col = np.where(uzf_id_mat == 32390)
+
+
 
 
 

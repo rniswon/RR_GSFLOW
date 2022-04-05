@@ -22,6 +22,9 @@ ss_name_file = os.path.join(repo_ws, "MODFLOW", "ss", "rr_ss.nam")
 grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj1", "grid_info.npy")
 grid_old_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
 
+# set problem grid cells file
+problem_cells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_problem_grid_cells.csv")
+
 # set constants for geologic zones
 inactive = 0
 frac_brk = 14
@@ -51,6 +54,30 @@ geo_zones_old = grid_old_all['zones']
 grid_all = np.load(grid_file, allow_pickle=True).all()
 geo_zones_new = grid_all['zones']
 
+# read in problem grid cells
+problem_cells = pd.read_csv(problem_cells_file)
+
+
+# Create mask with  problem grid cells ------------------------------------------------####
+
+hru_row = problem_cells['row']
+hru_col = problem_cells['col']
+problem_cells_grid = np.zeros_like(strt_old[0,:,:])
+for i in list(range(len(hru_row))):
+
+     # get row and col indices of problem cells
+     row = hru_row[i] - 1
+     col = hru_col[i] - 1
+
+     # set problem cells to value of 1 for masking
+     problem_cells_grid[row,  col] = 1
+
+# create mask
+mask_problem_cells = problem_cells_grid == 1
+mask_not_problem_cells = problem_cells_grid == 0
+
+
+
 
 # Make changes to starting heads: based on old starting heads ------------------------------------------------####
 
@@ -58,7 +85,7 @@ geo_zones_new = grid_all['zones']
 strt_new = strt_old
 
 # identify layer 2 grid cells that are now in layer 1 in both the old and new geologic frameworks
-mask_old = geo_zones_old[1,:,:] == chan_dep_lyr2
+mask_old = (geo_zones_old[1,:,:] == chan_dep_lyr2) & (mask_not_problem_cells)
 mask_new = geo_zones_new[0,:,:] == chan_dep_lyr2
 
 # update starting heads for these new layer 1 grid cells

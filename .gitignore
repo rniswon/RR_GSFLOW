@@ -5,6 +5,7 @@ PRMS/output/
 *.out
 *.go
 *.list
+*.bak
 */**/.idea/
 .idea/
 MODFLOW/modflow_calibration/ss_calibration/.idea/
@@ -38,11 +39,14 @@ GSFLOW/modflow/old
 GSFLOW/PRMS/old
 GSFLOW/PRMS/output/**
 GSFLOW/gis
+GSFLOW/gsflow_scratch/
 gsflow_scratch/
 gsflow_ag_scratch/
 MODFLOW/archived_models/**/*.hds
 MODFLOW/old/**/*.hds
-MODFLOW/modflow_calibration/**/*.hds
 GSFLOW/archive/2020/**/rr_tr.hds
+GSFLOW/archive/**/rr_tr.hds
 GSFLOW/results/
 **/wellcompletionreports_DWR.csv
+GSFLOW/scripts/ponds/input
+GSFLOW/scripts/ponds/output

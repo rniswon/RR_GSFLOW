@@ -15,15 +15,21 @@ repo_ws = os.path.join(script_ws, "..", "..", "..")
 
 # set K zone ids files
 K_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids.dat")
-K_zones_file_updated = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220307.dat")
+K_zones_file_updated = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_ids_20220318.dat")
 
 # set K zone names files
 K_zones_name_file = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_names.dat")
-K_zones_name_file_updated = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_names_20220307.dat")
+K_zones_name_file_updated = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zone_names_20220318.dat")
 
 # set geological framework files
-geo_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow_20220307.shp")
+geo_zones_file = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow_20220318.shp")
 geo_zones_old_file = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow.shp")
+
+# set problem grid cells file
+problem_cells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_problem_grid_cells.csv")
+
+# set output K zones shapefile path
+K_zones_shp_file_name = os.path.join(repo_ws, "MODFLOW", "init_files", "K_zones_20220318.shp")
 
 # set constants for geologic zones
 inactive = 0
@@ -80,7 +86,7 @@ def fix_K_zones(geo_zones_arr, K_zones_arr):
     mask_cells_wo_Kzones = (geo_zones_arr > 0) & (K_zones_arr == 0)
     cells_wo_Kzones = np.where(mask_cells_wo_Kzones)
 
-    # loop through cells without K  zones
+    # loop through cells without K zones
     num_cells_wo_Kzones = len(cells_wo_Kzones[0])
     for i in list(range(num_cells_wo_Kzones)):
 
@@ -127,6 +133,9 @@ K_zones_name = load_txt_3d(K_zones_name_file)
 # read in old and new geological framework
 geo_zones = geopandas.read_file(geo_zones_file)
 geo_zones_old = geopandas.read_file(geo_zones_old_file)
+
+# read in problem grid cells
+problem_cells = pd.read_csv(problem_cells_file)
 
 
 
@@ -178,12 +187,20 @@ mask = geo_zones_lyr1 == chan_dep_old_lyr2    # identify old layer 2 grid cells 
 K_zones_lyr1[mask] = K_zones_lyr2[mask]        # assign these grid cells to their old layer 2 zones
 K_zones_name_lyr1[mask] = K_zones_name_lyr2[mask]        # same assignment for K zone names
 
-
 # create K zones for new layer 2 weathered bedrock
 mask = (geo_zones_lyr2 == frac_brk) & (geo_zones_old_lyr2 != frac_brk)  # identify new layer 2 bedrock grid cells
 K_zones_lyr2[mask] = K_zones_lyr3[mask] + 300        # assign these grid cells to the K zone id from layer 3 but add 300 to that id to make sure ids are unique
 K_zones_name_lyr2[mask] = K_zones_name_lyr3[mask]        # similar assignment for K zone names but not adding 300 to create unique values in layer 2 because assuming these numbers are tied to an actual geological description
 
+# store new K zones
+K_zones[0,:,:] = K_zones_lyr1
+K_zones[1,:,:] = K_zones_lyr2
+K_zones[2,:,:] = K_zones_lyr3
+
+# store new K zone names
+K_zones_name[0,:,:] = K_zones_name_lyr1
+K_zones_name[1,:,:] = K_zones_name_lyr2
+K_zones_name[2,:,:] = K_zones_name_lyr3
 
 
 
@@ -196,39 +213,79 @@ K_zones = fix_K_zones(geo_zones_mat, K_zones)
 
 
 
+
+# Make sure problem grid cells in layer 1 are not assigned to a K zone ------------------------------------------------------------####
+
+hru_row = problem_cells['row']
+hru_col = problem_cells['col']
+problem_cells_grid = np.zeros_like(K_zones[0,:,:])
+for i in list(range(len(hru_row))):
+
+     # get row and col indices of problem cells
+     row = hru_row[i] - 1
+     col = hru_col[i] - 1
+
+     # set problem cells to value of 1 for masking
+     problem_cells_grid[row,  col] = 1
+
+# create mask
+mask_problem_cells = problem_cells_grid == 1
+mask_not_problem_cells = problem_cells_grid == 0
+
+# set to not a K zone
+K_zones[0,:,:][mask_problem_cells] = 0
+
+
+
+
 # Export new K zones ----------------------------------------------------------------####
-
-# store new K zones
-K_zones[0,:,:] = K_zones_lyr1
-K_zones[1,:,:] = K_zones_lyr2
-K_zones[2,:,:] = K_zones_lyr3
-
-# store new K zone names
-K_zones_name[0,:,:] = K_zones_name_lyr1
-K_zones_name[1,:,:] = K_zones_name_lyr2
-K_zones_name[2,:,:] = K_zones_name_lyr3
 
 # export new zones
 save_txt_3d(K_zones_file_updated, K_zones)
 save_txt_3d(K_zones_name_file_updated, K_zones_name)
 
 
+# Create K zones shapefile ----------------------------------------------------------------####
+
+# sort geo_zones shapefile by HRU ID
+geo_zones.sort_values(by="HRU_ID", inplace=True)
+
+# convert K zones into vectors sorted by HRU ID
+K_zones_lyr1 = K_zones[0,:,:]
+K_zones_lyr2 = K_zones[1,:,:]
+K_zones_lyr3 = K_zones[2,:,:]
+K_zones_lyr1 = np.reshape(K_zones_lyr1, newshape=len(geo_zones['HRU_ID']), order='C')
+K_zones_lyr2 = np.reshape(K_zones_lyr2, newshape=len(geo_zones['HRU_ID']), order='C')
+K_zones_lyr3 = np.reshape(K_zones_lyr3, newshape=len(geo_zones['HRU_ID']), order='C')
+
+# store in shapefile
+K_zones_shp = geo_zones
+K_zones_shp['Kzones_1'] = K_zones_lyr1
+K_zones_shp['Kzones_2'] = K_zones_lyr2
+K_zones_shp['Kzones_3'] = K_zones_lyr3
+
+# export shapefile
+K_zones_shp.to_file(K_zones_shp_file_name)
+
 
 # # Plot new K zones ----------------------------------------------------------------####
 #
 # # plot layer 1 zones
+# K_zones_lyr1 = K_zones[0,:,:]
 # mask = K_zones_lyr1 == 0
 # K_zones_lyr1[mask] = np.nan
 # plt.imshow(K_zones_lyr1)
 # plt.colorbar()
 #
 # # plot layer 2 zones
+# K_zones_lyr2 = K_zones[1,:,:]
 # mask = K_zones_lyr2 == 0
 # K_zones_lyr2[mask] = np.nan
 # plt.imshow(K_zones_lyr2)
 # plt.colorbar()
 #
 # # plot layer 3 zones
+# K_zones_lyr3 = K_zones[2,:,:]
 # mask = K_zones_lyr3 == 0
 # K_zones_lyr3[mask] = np.nan
 # plt.imshow(K_zones_lyr3)

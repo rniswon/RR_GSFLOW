@@ -14,10 +14,14 @@ repo_ws = os.path.join(script_ws, "..", "..", "..")
 
 # set file paths
 file_path_geo_old = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow.shp")
-file_path_geo_new = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow_20220307.shp")
+file_path_geo_new = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_gfm_grid_1.9_gsflow_20220318.shp")
+problem_cells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "RR_problem_grid_cells.csv")
 
 # read in geologic framework
 gf = geopandas.read_file(file_path_geo_old)
+
+# read in problem grid cells
+problem_cells = pd.read_csv(problem_cells_file)
 
 # set constants for geologic zones
 inactive = 0
@@ -59,6 +63,27 @@ gf.loc[mask, 'OF_zone'] = frac_brk      # set to fractured bedrock
 gf.loc[mask, 'OF_tk'] = frac_brk_lyr2_tk     # set thickness of layer 2 to fractured bedrock
 gf.loc[mask, 'Fbrk_tp'] = gf.loc[mask, 'OF_tp'] - gf.loc[mask, 'OF_tk']   # update top of layer 3 elevation
 gf.loc[mask, 'Bmt_nf'] = gf.loc[mask, 'Fbrk_tp'] - gf.loc[mask, 'Fbrk_tk']   # update bottom of layer 3 elevation
+
+# fix "problem grid cells" (i.e. layer 1 grid cells surrounded by inactive grid cells)
+hru_row = problem_cells['row'].values
+hru_col = problem_cells['col'].values
+for i in list(range(len(hru_row))):
+
+    # identify grid cells
+    mask = (gf['HRU_ROW'] == hru_row[i]) & (gf['HRU_COL'] == hru_col[i])
+
+    # set bottom of layer 1 to the land surface in "problem grid cells"
+    # (i.e. set  OF_tp = YF_tp)
+    gf.loc[mask, 'OF_tp'] = gf.loc[mask, 'YF_tp']
+
+    # set all "problem grid cells" to inactive in layer 1
+    # (i.e. recalculate YF_tk and OF_tk in these grid cells)
+    gf.loc[mask, 'YF_tk'] = gf.loc[mask, 'YF_tp'] - gf.loc[mask, 'OF_tp']
+    gf.loc[mask, 'OF_tk'] = gf.loc[mask, 'OF_tp'] - gf.loc[mask, 'Fbrk_tp']
+
+    # change zone in layer 1
+    gf.loc[mask, 'YF_zone'] = 0
+
 
 # export shapefile
 gf.to_file(file_path_geo_new)
