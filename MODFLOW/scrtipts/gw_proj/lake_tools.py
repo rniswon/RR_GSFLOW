@@ -40,8 +40,13 @@ def remove_lakes(mf, gs, lake_ids = [3,4]):
 
     stages = lak.stages[kept_lakes].astype(float).round(3)
     stage_range = lak.stage_range # empy in transient mf
+    try:
+        stage_range = stage_range[kept_lakes]
+    except:
+        pass
     tab_units = [lak.iunit_tab[i] for i in kept_lakes]
     drop_units = [lak.iunit_tab[i] for i in removed_lakes]
+
 
     #file names
     fn_unit = list(zip(mf.external_units, mf.external_fnames))
@@ -122,37 +127,38 @@ def remove_lakes(mf, gs, lake_ids = [3,4]):
 
     # prms changes
     # update nlake to include lake 12
-    gs.prms.parameters.set_values('nlake', [nlakes])
+    if not(gs is None):
+        gs.prms.parameters.set_values('nlake', [nlakes])
 
-    # update nlake_hrus
-    lak_arr_lyr0 = lakarr[0]
-    nlake_hrus = len(lak_arr_lyr0[lak_arr_lyr0 > 0])
-    gs.prms.parameters.set_values('nlake_hrus', [nlake_hrus])
+        # update nlake_hrus
+        lak_arr_lyr0 = lakarr[0]
+        nlake_hrus = len(lak_arr_lyr0[lak_arr_lyr0 > 0])
+        gs.prms.parameters.set_values('nlake_hrus', [nlake_hrus])
 
-    # update lake_hru_id
-    lake_hru_id = gs.prms.parameters.get_values('lake_hru_id')
-    # update hru_type to include lake 12
-    hru_type = gs.prms.parameters.get_values('hru_type')
-    hru_type = hru_type.reshape(mf.nrow, mf.ncol)
+        # update lake_hru_id
+        lake_hru_id = gs.prms.parameters.get_values('lake_hru_id')
+        # update hru_type to include lake 12
+        hru_type = gs.prms.parameters.get_values('hru_type')
+        hru_type = hru_type.reshape(mf.nrow, mf.ncol)
 
-    lake_hru_id = lake_hru_id.reshape(mf.nrow, mf.ncol)
-    old_lakarr = mf.lak.lakarr.array[0][0]
-    for ll in removed_lakes:
-        mask = old_lakarr == (ll + 1)
-        lake_hru_id[mask] = 0
-        hru_type[mask] = 1
+        lake_hru_id = lake_hru_id.reshape(mf.nrow, mf.ncol)
+        old_lakarr = mf.lak.lakarr.array[0][0]
+        for ll in removed_lakes:
+            mask = old_lakarr == (ll + 1)
+            lake_hru_id[mask] = 0
+            hru_type[mask] = 1
 
-    lak2chg = list(changed_old_new_map.keys())
-    for ik in lak2chg:
-        lake_hru_id[lake_hru_id==ik] = changed_old_new_map[ik]
+        lak2chg = list(changed_old_new_map.keys())
+        for ik in lak2chg:
+            lake_hru_id[lake_hru_id==ik] = changed_old_new_map[ik]
 
-    gs.prms.parameters.set_values('lake_hru_id', lake_hru_id.flatten() )
-    gs.prms.parameters.set_values('hru_type', hru_type.flatten())
+        gs.prms.parameters.set_values('lake_hru_id', lake_hru_id.flatten() )
+        gs.prms.parameters.set_values('hru_type', hru_type.flatten())
 
 
-    for par_file in gs.prms.parameters.parameter_files:
-        shutil.copy(src = par_file, dst=par_file+".b")
-    gs.prms.parameters.write()
+        for par_file in gs.prms.parameters.parameter_files:
+            shutil.copy(src = par_file, dst=par_file+".b")
+        gs.prms.parameters.write()
 
 
 
@@ -212,10 +218,10 @@ def remove_lakes(mf, gs, lake_ids = [3,4]):
 
 
 if __name__ == "__main__":
-    ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\windows"
-    fname = "rr_tr.nam"
+    ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\archived_models\21_20220311\mf_dataset"
+    fname = "rr_ss.nam"
 
-    undo_fix = 1
+    undo_fix = 0
     if undo_fix:
         fdst = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\windows" \
              r"\rr_tr.nam"
@@ -241,5 +247,6 @@ if __name__ == "__main__":
     model_files = get_mf_files(os.path.join(ws, fname))
     mf = flopy.modflow.Modflow.load(fname,model_ws=ws, load_only=['DIS', 'BAS6', 'SFR', 'LAK'] )
 
-    gs = gsflow.GsflowModel.load_from_file(os.path.join(ws, "gsflow_rr.control"), prms_only=True)
+    #gs = gsflow.GsflowModel.load_from_file(os.path.join(ws, "gsflow_rr.control"), prms_only=True)
+    gs = None
     remove_lakes(mf, gs, lake_ids=[3, 4,5,6,7,8,9,10,11])

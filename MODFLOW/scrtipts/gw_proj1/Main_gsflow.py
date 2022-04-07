@@ -43,13 +43,13 @@ update_starting_heads = 0
 update_starting_parameters = 0
 update_prms_control_for_gsflow = 0
 update_prms_params_for_gsflow = 0
-update_transient_model_for_smooth_running = 1
+update_transient_model_for_smooth_running = 0
 update_one_cell_lakes = 0
 update_modflow_for_ag_package = 0
 update_prms_params_for_ag_package = 0
 update_output_control = 0
-update_ag_package = 0
-create_tabfiles_for_pond_diversions = 0
+update_ag_package = 1
+create_tabfiles_for_pond_diversions = 1
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -910,7 +910,8 @@ if update_transient_model_for_smooth_running == 1:
     # update thti ------------------------------#
 
     # set SY scaling factor
-    sy_scaling_factor = 0.15
+    sy_scaling_factor_upland = 0.1
+    sy_scaling_factor_lowland = 0.01
 
     # get SY for the IUZFBND layers
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -922,11 +923,14 @@ if update_transient_model_for_smooth_running == 1:
     # set thti
     thts = mf_tr.uzf.thts.array
     thtr = thts - sy_iuzfbnd
-    thti = thtr + (sy_scaling_factor * sy_iuzfbnd)
+    thti_upland = thtr + (sy_scaling_factor_upland * sy_iuzfbnd)
+    thti_lowland = thtr + (sy_scaling_factor_lowland * sy_iuzfbnd)
+    thti = np.copy(thti_upland)
+    thti[mask_lowland] = thti_lowland[mask_lowland]
     mf_tr.uzf.thti = thti
 
     # adjust thti
-    mf_tr.uzf.thti = mf_tr.uzf.thti.array/2    #TODO: update for experiments
+    #mf_tr.uzf.thti = mf_tr.uzf.thti.array/2    #TODO: update for experiments
 
 
 
@@ -1041,94 +1045,165 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.sfr.write_file()
 
 
+
+
+
     # update GHB -------------------------------------------------------------------####
 
-    # extract GHB
+    # read in GHB groups
+    ghb_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ghb_hru_20220404.shp")
+    ghb_group_df = geopandas.read_file(ghb_file)
+
+    # get ghb groups
+    ghb_groups = ghb_group_df['ghb_group'].unique()
+    ghb_groups = ghb_groups[~ np.isnan(ghb_groups)].astype("int")
+
+    # extract GHB data
     ghb = mf_tr.ghb
     ghb_spd = ghb.stress_period_data.get_dataframe()
-    ghb_spd_sp1 = ghb_spd[ghb_spd['per'] == 0]   # extract stress period 1 (because doesn't vary across stress periods)
 
-    # create an array of GHB presence/absence for each layer
-    nlay = mf_tr.modelgrid.nlay
-    ghb_arr = np.zeros_like(mf_tr.bas6.ibound.array)
-    ghb_head_arr = np.zeros_like(ghb_arr)
-    ghb_neighbor_arr = np.zeros_like(ghb_arr)
-    for idx, ghb_cell in ghb_spd_sp1.iterrows():
+    # extract stress period data
+    ghb_spd0 = ghb_spd[ghb_spd['per'] == 0].copy()  # extract stress period data for per=0 since data doesn't change by stress period
 
-        # get layer, row, and column indices of ghb_cell
-        lay_idx = int(ghb_cell['k'])
-        row_idx = int(ghb_cell['i'])
-        col_idx = int(ghb_cell['j'])
+    # extract model elevations
+    botm = mf_tr.modelgrid.botm
 
-        # flag this cell and store head value
-        ghb_arr[lay_idx, row_idx, col_idx] = 1
-        ghb_head_arr[lay_idx, row_idx, col_idx] = ghb_cell['bhead']
+    # loop through ghb groups
+    for group in ghb_groups:
 
-        # identify neighbor indices
-        row_up_idx = row_idx - 1
-        row_down_idx = row_idx - 1
-        col_left_idx = col_idx - 1
-        col_right_idx = col_idx + 1
+        # subset ghb group data frame
+        mask_group = ghb_group_df['ghb_group'] == group
 
-        # flag neighbors
-        ghb_neighbor_arr[lay_idx, row_up_idx, col_idx] = 1
-        ghb_neighbor_arr[lay_idx, row_down_idx, col_idx] = 1
-        ghb_neighbor_arr[lay_idx, row_idx, col_left_idx] = 1
-        ghb_neighbor_arr[lay_idx, row_idx, col_right_idx] = 1
+        # identify rows and columns
+        # NOTE: subtracting 1 to match up with this_ghb_spd which is 0-based
+        rows = ghb_group_df.loc[mask_group, 'HRU_ROW'].values - 1
+        cols = ghb_group_df.loc[mask_group, 'HRU_COL'].values - 1
 
+        # identify group members
+        mask_ghb_spd = (ghb_spd0['i'].isin(rows)) & (ghb_spd0['j'].isin(cols))
 
-    # loop through ghb neighbors and identify number of ghb cells they are adjacent to
-    ghb_neighbor_cells = np.where(ghb_neighbor_arr)
-    for i in list(range(len(ghb_neighbor_cells[0]))):
+        # get head values and average
+        bhead = ghb_spd0.loc[mask_ghb_spd, 'bhead'].values
+        bhead_avg = np.mean(bhead)
 
-        # get layer, row, and column indices of ghb neighbor cell
-        lay_idx = ghb_neighbor_cells[0][i]
-        row_idx = ghb_neighbor_cells[1][i]
-        col_idx = ghb_neighbor_cells[2][i]
+        # make sure average head value is greater than bottom of all grid cells in group
+        group_df = ghb_spd0[mask_ghb_spd]
+        num_row = len(group_df.index)
+        grid_cell_botm = []
+        for k, i, j in zip(group_df.k, group_df.i, group_df.j):
+            grid_cell_botm.append(botm[k,i,j])
+        if bhead_avg < max(grid_cell_botm):
+            bhead_avg = max(grid_cell_botm)
 
-        # identify neighbor indices
-        row_up_idx = row_idx - 1
-        row_down_idx = row_idx - 1
-        col_left_idx = col_idx - 1
-        col_right_idx = col_idx + 1
-
-        # get neighbor flag values and sum up neighbor flags
-        neighbor_up = ghb_arr[lay_idx, row_up_idx, col_idx]
-        neighbor_down = ghb_arr[lay_idx, row_down_idx, col_idx]
-        neighbor_left = ghb_arr[lay_idx, row_idx, col_left_idx]
-        neighbor_right = ghb_arr[lay_idx, row_idx, col_right_idx]
-
-        # calculate number of ghb cells each ghb neighbor is adjacent to
-        neighbor_sum = neighbor_up + neighbor_down + neighbor_left + neighbor_right
-
-        # store
-        ghb_neighbor_arr[lay_idx, row_idx, col_idx] = neighbor_sum
-
-    # set to 0 all grid cells outside of active model domain
-    ibound = mf_tr.bas6.ibound.array
-    mask = ibound > 0
-    ghb_neighbor_arr[mask] = 0
-    xx=1
-
-    # identify neighbors with more than one ghb cell adjacent
-    neighbors_multi_ghb = np.where(ghb_neighbor_arr > 1)
-
-    # average the reference heads for ghb cells when multiple ghb cells are adjacent to the same non-ghb cell
-    for i in list(range(len(neighbors_multi_ghb[0]))):
-
-        # get layer, row, and column indices
-        lay_idx = neighbors_multi_ghb[0][i]
-        row_idx = neighbors_multi_ghb[1][i]
-        col_idx = neighbors_multi_ghb[2][i]
-
-        # identify neighbor indices
-        row_up_idx = row_idx - 1
-        row_down_idx = row_idx - 1
-        col_left_idx = col_idx - 1
-        col_right_idx = col_idx + 1
+        # store updated bhead
+        ghb_spd0.loc[mask_ghb_spd, 'bhead'] = bhead_avg
 
 
-    # make sure the GHB neighbors will not cause oscillations
+    # write out updated ghb
+    ipakcb = 55
+    ghb_spd_updated = {}
+    ghb_spd0_subset = ghb_spd0[['k', 'i', 'j', 'bhead', 'cond']]
+    ghb_spd_updated[0] = ghb_spd0_subset.values.tolist()
+    ghb = flopy.modflow.mfghb.ModflowGhb(mf_tr, ipakcb=ipakcb, stress_period_data=ghb_spd_updated, dtype=None,
+                                         no_print=False, options=None, extension='ghb')
+    mf_tr.ghb = ghb
+    mf_tr.ghb.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.ghb")
+    mf_tr.ghb.write_file()
+
+
+
+
+
+
+        # OLD
+    # # extract GHB
+    # ghb = mf_tr.ghb
+    # ghb_spd = ghb.stress_period_data.get_dataframe()
+    # ghb_spd_sp1 = ghb_spd[ghb_spd['per'] == 0]   # extract stress period 1 (because doesn't vary across stress periods)
+    #
+    # # create an array of GHB presence/absence for each layer
+    # nlay = mf_tr.modelgrid.nlay
+    # ghb_arr = np.zeros_like(mf_tr.bas6.ibound.array)
+    # ghb_head_arr = np.zeros_like(ghb_arr)
+    # ghb_neighbor_arr = np.zeros_like(ghb_arr)
+    # for idx, ghb_cell in ghb_spd_sp1.iterrows():
+    #
+    #     # get layer, row, and column indices of ghb_cell
+    #     lay_idx = int(ghb_cell['k'])
+    #     row_idx = int(ghb_cell['i'])
+    #     col_idx = int(ghb_cell['j'])
+    #
+    #     # flag this cell and store head value
+    #     ghb_arr[lay_idx, row_idx, col_idx] = 1
+    #     ghb_head_arr[lay_idx, row_idx, col_idx] = ghb_cell['bhead']
+    #
+    #     # identify neighbor indices
+    #     row_up_idx = row_idx - 1
+    #     row_down_idx = row_idx - 1
+    #     col_left_idx = col_idx - 1
+    #     col_right_idx = col_idx + 1
+    #
+    #     # flag neighbors
+    #     ghb_neighbor_arr[lay_idx, row_up_idx, col_idx] = 1
+    #     ghb_neighbor_arr[lay_idx, row_down_idx, col_idx] = 1
+    #     ghb_neighbor_arr[lay_idx, row_idx, col_left_idx] = 1
+    #     ghb_neighbor_arr[lay_idx, row_idx, col_right_idx] = 1
+    #
+    #
+    # # loop through ghb neighbors and identify number of ghb cells they are adjacent to
+    # ghb_neighbor_cells = np.where(ghb_neighbor_arr)
+    # for i in list(range(len(ghb_neighbor_cells[0]))):
+    #
+    #     # get layer, row, and column indices of ghb neighbor cell
+    #     lay_idx = ghb_neighbor_cells[0][i]
+    #     row_idx = ghb_neighbor_cells[1][i]
+    #     col_idx = ghb_neighbor_cells[2][i]
+    #
+    #     # identify neighbor indices
+    #     row_up_idx = row_idx - 1
+    #     row_down_idx = row_idx - 1
+    #     col_left_idx = col_idx - 1
+    #     col_right_idx = col_idx + 1
+    #
+    #     # get neighbor flag values and sum up neighbor flags
+    #     neighbor_up = ghb_arr[lay_idx, row_up_idx, col_idx]
+    #     neighbor_down = ghb_arr[lay_idx, row_down_idx, col_idx]
+    #     neighbor_left = ghb_arr[lay_idx, row_idx, col_left_idx]
+    #     neighbor_right = ghb_arr[lay_idx, row_idx, col_right_idx]
+    #
+    #     # calculate number of ghb cells each ghb neighbor is adjacent to
+    #     neighbor_sum = neighbor_up + neighbor_down + neighbor_left + neighbor_right
+    #
+    #     # store
+    #     ghb_neighbor_arr[lay_idx, row_idx, col_idx] = neighbor_sum
+    #
+    # # set to 0 all grid cells outside of active model domain
+    # ibound = mf_tr.bas6.ibound.array
+    # mask = ibound > 0
+    # ghb_neighbor_arr[mask] = 0
+    # xx=1
+    #
+    # # identify neighbors with more than one ghb cell adjacent
+    # neighbors_multi_ghb = np.where(ghb_neighbor_arr > 1)
+    #
+    # # average the reference heads for ghb cells when multiple ghb cells are adjacent to the same non-ghb cell
+    # for i in list(range(len(neighbors_multi_ghb[0]))):
+    #
+    #     # get layer, row, and column indices
+    #     lay_idx = neighbors_multi_ghb[0][i]
+    #     row_idx = neighbors_multi_ghb[1][i]
+    #     col_idx = neighbors_multi_ghb[2][i]
+    #
+    #     # identify neighbor indices
+    #     row_up_idx = row_idx - 1
+    #     row_down_idx = row_idx - 1
+    #     col_left_idx = col_idx - 1
+    #     col_right_idx = col_idx + 1
+    #
+    #     # get head values and average??
+    #
+    #
+    # # make sure the GHB neighbors will not cause oscillations
 
 
 

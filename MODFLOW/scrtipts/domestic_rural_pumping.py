@@ -5,7 +5,13 @@ import pandas as pd
 import geopandas
 from tqdm import tqdm
 
-if 0:
+# ------------- Dashboard
+load_raw_data = False
+compute_master_file = False
+compute_final_well_data = False
+remove_extra_wells_from_Mendocino = True
+
+if load_raw_data:
     sonoma_df = pd.read_csv(r"D:\Workspace\projects\RussianRiver\Data\Pumping\rural_pumping_6_24_2021\Russian_River_RuralPumping_2021\Outputs\Sonoma_russian_river_pumping_Calc.csv")
     mendo_df = pd.read_csv(r"D:\Workspace\projects\RussianRiver\Data\Pumping\rural_pumping_6_24_2021\Russian_River_RuralPumping_2021\Outputs\Mendocino_russian_river_pumping_Calc.csv")
 
@@ -68,21 +74,17 @@ def get_min_date(df):
     df_ = df[df['Unnamed: 0'] == df['Unnamed: 0'].min()]
     return df_
 
-
-
-compute_master_file = False
-compute_final_well_data = True
-
-if compute_master_file:
-    "Average annual water use"
-
-    df_2 = mendo_df.groupby(by= ['APN']).apply(get_min_date)
-    ddf = pd.concat([df_1, df_2])
-    ddf.to_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\init_files\rural_pumping_info.csv")
-
 def month_year_to_sp (year, month):
     sp = (year - 1990) * 12 + (month - 1)
     return sp+1
+
+def month_year_from_sp(sp):
+    year = 1990 + int((sp-1)/12)
+    month = np.mod(sp, 12)
+    if month == 0:
+        month = 12
+    return year, month
+
 
 def compute_flow(_df, monthly_fractions):
     years = _df['year'].unique()
@@ -114,6 +116,17 @@ def compute_flow(_df, monthly_fractions):
 
     return  df_new
 
+if compute_master_file:
+    "Average annual water use"
+
+    df_2 = mendo_df.groupby(by= ['APN']).apply(get_min_date)
+    ddf = pd.concat([df_1, df_2])
+    ddf.to_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\init_files\rural_pumping_info.csv")
+
+
+
+
+
 if compute_final_well_data:
     fn = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\init_files\rural_domestic_pmp.shp"
     monthly_fractions = pd.read_excel(r"D:\Workspace\projects\RussianRiver\Data\Pumping\rural_pumping_6_24_2021\Russian_River_RuralPumping_2021\Inputs\Monthly_pumping_rural_domestic.xlsx")
@@ -129,27 +142,115 @@ if compute_final_well_data:
 
     df_list = pd.concat(df_list)
     df_list.to_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\init_files\rural_domestic_master.csv", index=False)
+
+if remove_extra_wells_from_Mendocino:
+    #
+    rural_wells = pd.read_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\rural_domestic_old.csv")
+    rwells_shp = geopandas.read_file(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\rural_domestic_pmp.shp")
+    bdg_shp = geopandas.read_file(r"D:\Workspace\projects\RussianRiver\GIS\buiding_hru2.shp")
+    srv_areas_hrus = geopandas.read_file(r"D:\Workspace\projects\RussianRiver\GIS\all_pop_service_area.shp")
+    bdg_shp = bdg_shp[bdg_shp['Shape_Area']>70]
+
+    # make sure type is int
+    rwells_shp['HRU_COL'] = rwells_shp['HRU_COL'].astype(int)
+    rwells_shp['HRU_ROW'] = rwells_shp['HRU_ROW'].astype(int)
+    bdg_shp['HRU_COL'] = bdg_shp['HRU_COL'].astype(int)
+    bdg_shp['HRU_ROW'] = bdg_shp['HRU_ROW'].astype(int)
+    srv_areas_hrus['HRU_COL'] = srv_areas_hrus['HRU_COL'].astype(int)
+    srv_areas_hrus['HRU_ROW'] = srv_areas_hrus['HRU_ROW'].astype(int)
+
+    # select Menod wells
+    rwells_shp['rr_cc'] = list(zip(rwells_shp['HRU_ROW'], rwells_shp['HRU_COL']))
+    mendo_wells_shp = rwells_shp[~rwells_shp['APN'].str.contains("-")].copy()
+    srv_areas_hrus['rr_cc'] = list(zip(srv_areas_hrus['HRU_ROW'], srv_areas_hrus['HRU_COL']))
+    No_srv_areas_hrus = srv_areas_hrus[srv_areas_hrus['pwsid'] ==0]
+
+    # split the data base between Sonoma and Mendo
+    rural_wells['rr_cc'] = list(zip(rural_wells['row'], rural_wells['col']))
+    rural_wells.loc[rural_wells['rr_cc'].isin(mendo_wells_shp['rr_cc']), 'county'] = 'Mendo'
+    rural_wells.loc[~(rural_wells['rr_cc'].isin(mendo_wells_shp['rr_cc'])), 'county'] = 'Sonoma'
+
+    # add county to shp
+    rwells_shp.loc[~(rwells_shp['rr_cc'].isin(mendo_wells_shp['rr_cc'])), 'county'] = 'Sonoma'
+    rwells_shp.loc[rwells_shp['rr_cc'].isin(mendo_wells_shp['rr_cc']), 'county'] = 'Mendo'
+
+
+    rural_wells_mendo = rural_wells[rural_wells['county']=='Mendo']
+
+    #
+    bdg_shp['rr_cc'] = list(zip(bdg_shp['HRU_ROW'], bdg_shp['HRU_COL']))
+    new_menod_wells = rural_wells_mendo[rural_wells_mendo['rr_cc'].isin(bdg_shp['rr_cc'])]
+    new_menod_wells = new_menod_wells.copy()
+    removed_wells = rural_wells_mendo[~(rural_wells_mendo['rr_cc'].isin(bdg_shp['rr_cc']))]
+
+
+    # mask_out_wells = rwells_shp['rr_cc'].isin(removed_wells['rr_cc'])
+    # new_shapefile = rwells_shp[~mask_out_wells]
+
+    # find cells with buildings but without wells
+    yr, month = list(zip(*rural_wells['sp'].apply(month_year_from_sp)))
+    rural_wells['yr'] = yr
+    rural_wells['month'] = month
+    typical_moth_flow = rural_wells.groupby([ 'month']).median()
+    typical_moth_flow.reset_index(inplace=True)
+    typical_moth_flow = typical_moth_flow[['month', 'flows']]
+
+    #xx = mendo_wells_shp[mendo_wells_shp['rr_cc'].isin(No_srv_areas_hrus['rr_cc'])]
+    medo_building = bdg_shp[bdg_shp['HRU_ROW'] < 210]
+    all_possible_wells = list(set(mendo_wells_shp['rr_cc'].unique()).union(set(medo_building['rr_cc'].unique())))
+    new_additions = []
+    for well in tqdm(all_possible_wells):
+        if not(np.any(No_srv_areas_hrus['rr_cc'].isin([well]))):
+            continue
+        curr_cell_buildings = medo_building[medo_building['rr_cc'].isin([well])]
+        curr_cell_wells = new_menod_wells[new_menod_wells['rr_cc'].isin([well])]
+        number_of_existing_wells = len(curr_cell_wells['rr_cc'].unique())
+        number_of_buildings = len(curr_cell_buildings)
+        if (number_of_existing_wells>0) and (number_of_buildings>1) :
+            # the well exit just inflate if needed
+            flows = number_of_buildings*typical_moth_flow['flows'].values
+            flows = flows.tolist()
+            flows = 26 * flows
+            #curr_cell_wells['flows'] = flows
+            new_menod_wells.loc[new_menod_wells['rr_cc'].isin([well]), 'flows'] = flows
+            x= 1
+
+        elif(number_of_existing_wells==0) and (number_of_buildings>0) :
+            # add new well
+            cols = ['sp', 'flows', 'col', 'row', 'rr_cc', 'county']
+            rr_ccs = curr_cell_buildings['rr_cc'].values
+            for rr_cc in rr_ccs:
+                df_ = pd.DataFrame(columns=cols)
+                df_['sp'] = list(range(1,313))
+                flows = number_of_buildings * typical_moth_flow['flows'].values
+                flows = flows.tolist()
+                flows = 26 * flows
+                df_['flows'] = flows
+                df_['row'] = rr_cc[0]
+                df_['col'] = rr_cc[1]
+                df_['rr_cc'] = 312*[rr_cc]
+                df_['county'] = 'Mendo'
+                new_additions.append(df_.copy())
+        else:
+            pass # do no thing
+
+
+    # merge new mendo with old sonoma
+    old_sonoma_wells = rural_wells[~(rural_wells['county']=='Mendo')]
+    new_adds = pd.concat(new_additions)
+    df_final = pd.concat([old_sonoma_wells, new_menod_wells, new_adds ])
+
+
+    del (df_final['rr_cc'])
+    del(df_final['county'])
+    del (df_final['yr'])
+    del(df_final['month'])
+    df_final.to_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\rural_domestic_master.csv", index=False)
+
+
+
     x = 1
 
 
-    # df_monthly = pd.concat([mendo_df, sonoma_df])
-    # del(mendo_df)
-    # del(sonoma_df)
-    # df_monthly['Date'] = pd.to_datetime(df_monthly['Unnamed: 0'])
-    # df_monthly['year'] = df_monthly['Date'].dt.year
-    # df_monthly['month'] = df_monthly['Date'].dt.month
-    # df_monthly['sp'] = month_year_to_sp(df_monthly['year'] , df_monthly['month'])
-    #
-    # df_monthly['APN'] = df_monthly['APN'].astype(str)
-    # well_ids = df_monthly['APN'].unique()
-    #
-    # for well in well_ids:
-    #     col_row = df.loc[df['APN'] == str(well), ['HRU_COL', 'HRU_ROW']].values
-    #     df_monthly['APN']
-    #     c = 1
 
 
-
-    xx = 1
-
-xx = 1

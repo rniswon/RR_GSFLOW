@@ -62,7 +62,10 @@ DATA            1043  ..\modflow\output\mendo_lake_bdg.lak.out
 DATA            1044  ..\modflow\output\sonoma_lake_bdg.lak.out
 DATA            1045  ..\modflow\output\rubber_dam_lake_bdg.lak.out
 DATA(BINARY)      51  ..\modflow\output\rr_tr.hds REPLACE
+AG               121  ..\modflow\input\rr_tr.ag
 DATA            2000  ..\modflow\output\rr_tr_hru83891_2.uzf.out
 DATA            2001  ..\modflow\output\rr_tr_hru83891_3.uzf.out
+DATA            2002  ..\modflow\output\rr_tr_hrurow37_hrucol35_2.uzf.out
+DATA            2003  ..\modflow\output\rr_tr_hrurow37_hrucol35_3.uzf.out
 DATA(BINARY) 	3000  ..\modflow\output\uzf_recharge.out
 DATA(BINARY)	3001  ..\modflow\output\uzf_discharge.out

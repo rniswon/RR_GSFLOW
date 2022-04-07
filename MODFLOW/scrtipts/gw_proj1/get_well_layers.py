@@ -32,13 +32,13 @@ mf_nam_file = os.path.join(repo_ws, "MODFLOW", "tr", "rr_tr.nam")
 rural_domestic_wells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master.csv")
 
 # set file path to updated rural domestic wells file
-rural_domestic_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master_20220327.csv")
+rural_domestic_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master_20220403.csv")
 
 # # set file path to municipal and industrial wells file
 # m_and_i_wells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model.csv")
 #
 # # set file path to updated municipal and industrial wells file
-# m_and_i_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model_20220327.csv")
+# m_and_i_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model_20220403.csv")
 
 
 
@@ -224,7 +224,7 @@ def estimate_well_layer(model_well_df, well_dwr, model_well_df_type):
 
     # determine well distance cutoffs (maybe several cutoffs that are each tried in turn)
     # TODO: try different cutoffs so that get smallest cutoff for which all wells get assigned a well elevation
-    well_dist_cutoff = [10, 100, 1000, 10000]  # these are in meters
+    well_dist_cutoff = [10, 100, 1000, 10000, 50000]  # these are in meters
     #well_dist_cutoff = [1000]  # these are in meters
 
     # loop through each model well
@@ -356,7 +356,7 @@ def estimate_well_layer(model_well_df, well_dwr, model_well_df_type):
                 well_layer = 3
 
             # store well layer for all entries with this row/col combo
-            model_well_df.loc[model_well_mask_all, 'well_layer_dwr'] = well_layer + 1    # because well layers in the M&I and rural domestic data frames are 1-based
+            model_well_df.loc[model_well_mask_all, 'well_layer_dwr'] = well_layer    # because well layers in the M&I and rural domestic data frames are 1-based
 
     return model_well_df
 
