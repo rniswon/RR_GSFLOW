@@ -108,6 +108,10 @@ if __name__ == "__main__":
     data = np.stack(data, axis=0)
     data = np.average(data, axis=0)
 
+    # export recharge
+    file_name = os.path.join(repo_ws, "GSFLOW", "results", "tables", "netrech_all.txt")
+    np.savetxt(file_name, data, delimiter=",")
+
     # plot recharge
     data[data==0] = np.nan
     plt.figure(figsize=(6, 8), dpi=150)

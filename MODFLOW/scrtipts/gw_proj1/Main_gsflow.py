@@ -855,12 +855,26 @@ if update_transient_model_for_smooth_running == 1:
     # vks_too_low = vks[mask]
     # min_vks_too_low = vks_too_low.min()
 
+    # # adjust values that are too low - OLD VERSION
+    # vks_low_cutoff = [1e-6, 1e-5, 1e-4, 1e-3]
+    # vks_low_factor = [10000, 1000, 100, 10]
+    # for cutoff, factor in zip(vks_low_cutoff, vks_low_factor):
+    #     mask = (vks < cutoff) & (iuzfbnd > 0)
+    #     vks[mask] = vks[mask] * factor
+
+    # EXPERIMENT: update values in main stem of russian river that are too low (K zone 9 in layer 1)
+    K_zones_lyr1 = K_zones[0,:,:]
+    mask_Kzone_9_lyr1 = K_zones_lyr1 == 9
+    mask_Kzone_6_lyr1 = K_zones_lyr1 == 6
+    mask_Kzone_80_lyr1 = K_zones_lyr1 == 80
+    vks_Kzone6 = vks[mask_Kzone_6_lyr1].mean()
+    vks_Kzone80 = vks[mask_Kzone_80_lyr1].mean()
+    vks[mask_Kzone_9_lyr1] = np.mean([vks_Kzone6, vks_Kzone80])
+
     # adjust values that are too low
-    vks_low_cutoff = [1e-6, 1e-5, 1e-4, 1e-3]
-    vks_low_factor = [10000, 1000, 100, 10]
-    for cutoff, factor in zip(vks_low_cutoff, vks_low_factor):
-        mask = (vks < cutoff) & (iuzfbnd > 0)
-        vks[mask] = vks[mask] * factor
+    vks_low_cutoff = 0.4
+    mask = (vks < vks_low_cutoff) & (iuzfbnd > 0)
+    vks[mask] = vks_low_cutoff
 
     # note: only use this section interactively
     # check min vks again
@@ -905,13 +919,36 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
+    # # update UZF VKS: identify areas with 0 recharge and increase vks ------------------------------------#
+    #
+    # # EXPERIMENT
+    #
+    # # extract vks and ibound
+    # vks = mf_tr.uzf.vks.array
+    # iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    #
+    # # read in recharge
+    # file_name = os.path.join(repo_ws, "GSFLOW", "archive", "20220411_03", "results", "tables", "netrech_all.txt")
+    # recharge_avg = np.loadtxt(file_name, delimiter=",")
+    #
+    # # identify areas with 0 recharge in active grid cells
+    # mask_no_recharge = (iuzfbnd > 0) & (recharge_avg == 0)
+    #
+    # # increase vks in areas with 0 recharge
+    # change_factor = 10
+    # vks[mask_no_recharge] = vks[mask_no_recharge] * change_factor
+    #
+    # # store changes
+    # mf_tr.uzf.vks = vks
+
+
 
 
     # update thti ------------------------------#
 
     # set SY scaling factor
-    sy_scaling_factor_upland = 0.1
-    sy_scaling_factor_lowland = 0.01
+    sy_scaling_factor_upland = 0.15
+    sy_scaling_factor_lowland = 0.15
 
     # get SY for the IUZFBND layers
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -930,7 +967,7 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.thti = thti
 
     # adjust thti
-    #mf_tr.uzf.thti = mf_tr.uzf.thti.array/2    #TODO: update for experiments
+    mf_tr.uzf.thti = mf_tr.uzf.thti.array/2    #TODO: update for experiments
 
 
 
@@ -1115,7 +1152,7 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
-        # OLD
+    # OLD
     # # extract GHB
     # ghb = mf_tr.ghb
     # ghb_spd = ghb.stress_period_data.get_dataframe()
@@ -1210,8 +1247,9 @@ if update_transient_model_for_smooth_running == 1:
 
     # update PRMS param to specific values ---------------------------------------------------------------####
 
-    # PRMS param file: scale the UZF VKS by 0.5 and use this to replace ssr2gw_rate in the PRMS param file
-    vks_mod = mf_tr.uzf.vks.array * 0.5
+    # PRMS param file: scale the UZF VKS by a factor and use this to replace ssr2gw_rate in the PRMS param file
+    ssr2gw_rate_change_factor = 0.05         # originally set this to 0.5
+    vks_mod = mf_tr.uzf.vks.array * ssr2gw_rate_change_factor
     nhru = gs.prms.parameters.get_values("nhru")[0]
     vks_mod = vks_mod.reshape(1,nhru)[0]
     gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
@@ -1940,6 +1978,10 @@ if update_ag_package == 1:
     ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
     ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
 
+    # read in Kc table
+    kc_file = os.path.join(repo_ws, "MODFLOW", "init_files", "KC_sonoma shared.xlsx")
+    kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
+
 
     # As much as possible assign upper bounds to water demand that are consistent with local practices ---------------------------------------------------------#
     # NOTE: estimating max amounts of water needed to irrigate for each crop type in the model
@@ -1949,6 +1991,24 @@ if update_ag_package == 1:
     # Apples: 2.5 acre-ft/acre/year
     # Mixed pasture: 3.5 acre-ft/acre/year
     # all other: 1 acre-ft/acre/year
+
+    # calculate number of irrigated days per year for different crop types
+    irrig_cols = ['NotIrrigated_1', 'NotIrrigated_2', 'NotIrrigated_3', 'NotIrrigated_4',  'NotIrrigated_5',
+                  'NotIrrigated_6', 'NotIrrigated_7', 'NotIrrigated_8', 'NotIrrigated_9', 'NotIrrigated_10']
+    kc_data['NotIrrigated_sum'] = kc_data[irrig_cols].sum(axis=1)
+    kc_data['irrigated_months_per_year'] = 12 - kc_data['NotIrrigated_sum']
+    num_days_per_month = 31          # using the max number of days per month (across all months) because this is for Qmax, so don't need to be exact
+    kc_data['irrigated_days_per_year'] = kc_data['irrigated_months_per_year'] * num_days_per_month
+    mask = kc_data['irrigated_days_per_year'] > 365
+    kc_data.loc[mask, 'irrigated_days_per_year'] = 365
+    mask_grapes = kc_data['CropName2'] == "Grapes"
+    mask_apples = kc_data['CropName2'] == "Apples"
+    mask_pasture = kc_data['CropName2'] == "Mixed Pasture"
+    mask_other = ~kc_data['CropName2'].isin(["Grapes", "Apples", "Mixed Pasture"])
+    irrigated_days_per_year_dict = {'Grapes': kc_data.loc[mask_grapes, 'irrigated_days_per_year'].values[0],
+                                    'Apples': kc_data.loc[mask_apples, 'irrigated_days_per_year'].values[0],
+                                    'Mixed Pasture': kc_data.loc[mask_pasture, 'irrigated_days_per_year'].values[0],
+                                    'other': kc_data.loc[mask_other, 'irrigated_days_per_year'].values.mean()}
 
     # extract crop types
     crop_type = ag_data['crop_type'].unique().tolist()
@@ -1960,11 +2020,11 @@ if update_ag_package == 1:
                  'other': 1}
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
-    days_per_year = 365    #TODO: need to update this so that it is days_per_growing_season with different numbers of days for the different crops - extract from KC_sonoma shared
+    #days_per_year = 365    #TODO: need to update this so that it is days_per_growing_season with different numbers of days for the different crops - extract from KC_sonoma shared
     for key in Qmax_dict.keys():
 
         # convert to meters
-        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * (1/days_per_year) * -1   # multiplying by -1 to indicate pumping
+        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * (1/irrigated_days_per_year_dict[key]) * -1   # multiplying by -1 to indicate pumping
 
 
     # create a Qmax_crop column in ag_data based on crop_type
@@ -2209,7 +2269,7 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # convert to meters
         # not multiplying by -1 because interested in field water demand, not well pumping
-        # not converting to # days in a year, instead keeping as irrigation demand per growing season
+        # not converting to irrigation demand per year, instead keeping as irrigation demand per growing season
         Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft
 
 
@@ -2233,7 +2293,7 @@ if create_tabfiles_for_pond_diversions == 1:
         # fill in Qmax_crop column
         ag_data.loc[mask, 'Qmax_crop'] = Qmax
 
-    # create a Qmax_field column in ag_data, based on qmax_crop and field_area
+    # create a Qmax_field column in ag_data, based on Qmax_crop and field_area
     ag_data['Qmax_field'] = ag_data['Qmax_crop'] * ag_data['field_area']
 
 
@@ -2241,9 +2301,15 @@ if create_tabfiles_for_pond_diversions == 1:
     # Get volumetric water demand for each pond in terms of pond depth -------------------------------------------------------####
     # Calculate combined annual water demand of all fields except orphan fields that get water from a pond
 
+    # set a max pond depth
+    max_pond_depth_ft = 25     # units: feet
+    feet_to_inches = 12
+    max_pond_depth_in = max_pond_depth_ft * feet_to_inches
+
     # loop through ponds
     pond_list = pd.DataFrame(ag.pond_list)
     pond_list['max_demand_m3'] = 0
+    pond_list['pond_demand_m3'] = 0
     pond_list['pond_area_m2'] = 0
     pond_list['pond_depth_m'] = 0
     pond_list['pond_depth_in'] = 0
@@ -2267,7 +2333,40 @@ if create_tabfiles_for_pond_diversions == 1:
         pond_depth_m = max_demand_m3 / pond_area_m2
         pond_list.loc[pond_list_mask, 'pond_depth_m'] = pond_depth_m
         inches_per_meter = 39.3700787
-        pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_m * inches_per_meter
+        pond_depth_in = pond_depth_m * inches_per_meter
+        pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_in
+
+        # make sure pond not deeper than max pond depth
+        if pond_depth_in > max_pond_depth_in:
+
+            # reset pond values
+            pond_depth_in = max_pond_depth_in
+            pond_depth_m = pond_depth_in * (1/inches_per_meter)
+            pond_demand_m3 = pond_depth_m * pond_area_m2
+
+            # store updated pond values
+            pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_in
+            pond_list.loc[pond_list_mask, 'pond_depth_m'] = pond_depth_m
+            pond_list.loc[pond_list_mask, 'pond_demand_m3'] = pond_demand_m3
+
+        else:
+
+            # pond demand is equal to max demand if have the pond storage space for it
+            pond_demand_m3 = max_demand_m3
+            pond_list.loc[pond_list_mask, 'pond_demand_m3'] = pond_demand_m3
+
+
+        # Update QPOND in pond list
+        # NOTE: updating to represent 5-day filling period for pond demand
+        fraction_filled_per_day = 1/5
+        qpond = pond_demand_m3 * fraction_filled_per_day
+        pond_list.loc[pond_list_mask, 'q'] = qpond
+
+
+    # store and export updated pond list
+    ag.pond_list = pond_list[["hru_id", "q", "segid", "qfrac"]].to_records(index=False)
+    ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
+    ag.write_file()
 
 
 
@@ -2345,7 +2444,7 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # calculate daily irrigation demand during wettest month
         seg_mask = seg_df['segid'] == seg
-        daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'max_demand_m3'].values[0] / num_days_in_wettest_month
+        daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_month
 
         # create tabfile
         month_mask = this_tabfile['model_month'] == wettest_month
@@ -2394,6 +2493,9 @@ if create_tabfiles_for_pond_diversions == 1:
         fidw.write(new_line)
 
     fidw.close()
+
+
+
 
 
 

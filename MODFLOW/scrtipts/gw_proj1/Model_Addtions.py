@@ -92,7 +92,7 @@ def add_rural_domestic_pumping_to_well_pkg_01():
     fn = "rr_tr.nam"
 
     #domestic_wells_df = pd.read_csv(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_MODEL\RR_GSFLOW\MODFLOW\init_files\rural_domestic_master.csv")
-    domestic_wells_df = pd.read_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master_20220403.csv"))
+    domestic_wells_df = pd.read_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master_20220407.csv"))
     domestic_wells_df['sp']  = domestic_wells_df['sp' ] - 1
     domestic_wells_df['col'] = domestic_wells_df['col'] - 1
     domestic_wells_df['row'] = domestic_wells_df['row'] - 1

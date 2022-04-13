@@ -14,9 +14,9 @@ def map_hobs_obsname_to_date(mf_tr_name_file):
 
     # read in HOB input file
     mf = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
-                                       model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                       verbose=True, forgive=False, version="mfnwt",
-                                        load_only=["BAS6", "DIS", "HOB"])
+                                    model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                    verbose=True, forgive=False, version="mfnwt",
+                                    load_only=["BAS6", "DIS", "HOB"])
     hob = mf.hob
     obs_data = hob.obs_data
 

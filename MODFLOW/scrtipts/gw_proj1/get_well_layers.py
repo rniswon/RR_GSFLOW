@@ -32,7 +32,7 @@ mf_nam_file = os.path.join(repo_ws, "MODFLOW", "tr", "rr_tr.nam")
 rural_domestic_wells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master.csv")
 
 # set file path to updated rural domestic wells file
-rural_domestic_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master_20220403.csv")
+rural_domestic_wells_updated_file = os.path.join(repo_ws, "MODFLOW", "init_files", "rural_domestic_master_20220407.csv")
 
 # # set file path to municipal and industrial wells file
 # m_and_i_wells_file = os.path.join(repo_ws, "MODFLOW", "init_files", "Well_Info_ready_for_Model.csv")
