@@ -41,13 +41,13 @@ import flopy.utils.binaryfile as bf
 load_and_transfer_transient_files = 0
 update_starting_heads = 0
 update_starting_parameters = 0
-update_prms_control_for_gsflow = 0
-update_prms_params_for_gsflow = 0
-update_transient_model_for_smooth_running = 0
-update_one_cell_lakes = 0
-update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 0
-update_output_control = 0
+update_prms_control_for_gsflow = 1
+update_prms_params_for_gsflow = 1
+update_transient_model_for_smooth_running = 1
+update_one_cell_lakes = 1
+update_modflow_for_ag_package = 1
+update_prms_params_for_ag_package = 1
+update_output_control = 1
 update_ag_package = 1
 create_tabfiles_for_pond_diversions = 1
 do_checks = 0
@@ -406,7 +406,7 @@ if update_prms_params_for_gsflow == 1:
     # print
     print('Update PRMS parameters for GSFLOW')
 
-    # load transient modflow model, including ag package
+    # load transient modflow model
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                         load_only=["BAS6", "DIS", "SFR", "LAK"], verbose=True, forgive=False, version="mfnwt")
@@ -781,7 +781,7 @@ if update_transient_model_for_smooth_running == 1:
 
     # make changes related to spatial redistribution of recharge
     change_factor_upland = 1.2
-    change_factor_lowland = 0.6
+    change_factor_lowland = 0.8
     hk[mask_K_zones_not_problem & mask_upland_3d] = hk[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
     vka[mask_K_zones_not_problem & mask_upland_3d] = vka[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
     hk[mask_K_zones_not_problem & mask_lowland_3d] = hk[mask_K_zones_not_problem & mask_lowland_3d] * change_factor_lowland
@@ -895,7 +895,7 @@ if update_transient_model_for_smooth_running == 1:
 
     # change vks
     change_factor_upland = 1.2
-    change_factor_lowland = 0.6
+    change_factor_lowland = 0.8
     vks[mask_K_zones_not_problem[1,:,:] & mask_upland] = vks[mask_K_zones_not_problem[1,:,:] & mask_upland] * change_factor_upland
     vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] = vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] * change_factor_lowland
     mf_tr.uzf.vks = vks
@@ -916,6 +916,25 @@ if update_transient_model_for_smooth_running == 1:
 
     # store changes
     mf_tr.uzf.vks = vks
+
+
+
+    # update UZF VKS: increase in Ukiah Valley ------------------------------------#
+
+    # EXPERIMENT
+
+    # extract K zones for layer 2
+    K_zones_lyr2 = K_zones[1,:,:]
+    K_zones_ukiah_valley = [52, 59, 62]
+    mask_ukiah_valley = np.isin(K_zones_lyr2, K_zones_ukiah_valley)
+
+    # update vks
+    change_factor = 10
+    vks[mask_ukiah_valley] = vks[mask_ukiah_valley] * change_factor
+
+    # store changes
+    mf_tr.uzf.vks = vks
+
 
 
 
@@ -1322,7 +1341,7 @@ if update_one_cell_lakes == 1:
     Sim.tr_name_file = mf_tr_name_file
     Sim.one_cell_lake_id = range(3, 12, 1)  # lakes 3-11 are one-cell lakes  # TODO: extract this info from the lake package instead of hard-coding it here
     Sim.hru_lakes = r"..\..\init_files\hru_lakes.shp"
-    #Sim.ag_with_ponds = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
+    #Sim.ag_with_ponds = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg.csv")
     Sim.ag_package_file = os.path.join(tr_model_input_file_dir, "rr_tr.ag")
 
     # load transient modflow model, including ag package
@@ -1526,7 +1545,8 @@ if update_prms_params_for_ag_package == 1:
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
     # read in ag dataset csv file
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg.csv")
+    #ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_nopondwells.csv")
     ag_data = pd.read_csv(ag_dataset_file)
     ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
     ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
@@ -1642,7 +1662,7 @@ if update_prms_params_for_ag_package == 1:
 
 
     # pref_flow_den=0 for all HRUs that are irrigated -------------------------------------------------------------------------------------#
-    # note: getting irrigated HRUs from ag_dataset_w_ponds_w_ipuseg.csv
+    # note: getting irrigated HRUs from ag_dataset_w_ponds_w_iupseg.csv
 
     # get irrigated hrus and pref_flow_den values
     hru_irrig = ag_data['field_hru_id'].tolist()
@@ -1758,7 +1778,7 @@ if update_prms_params_for_ag_package == 1:
 
 
     # # Add ag_frac as a PRMS parameter ------------------------------------------------------#
-    # # NOTE: this extracts ag frac data from ag_dataset_w_ponds_w_ipuseg.csv AFTER extracting ag HRUs from the ag package
+    # # NOTE: this extracts ag frac data from ag_dataset_w_ponds_w_iupseg.csv AFTER extracting ag HRUs from the ag package
     #
     # ### irrwell ###
     #
@@ -1846,7 +1866,7 @@ if update_prms_params_for_ag_package == 1:
 
 
     # Add ag_frac as a PRMS parameter ------------------------------------------------------#
-    # NOTE: this extracts ag frac data from ag_dataset_w_ponds_w_ipuseg.csv only
+    # NOTE: this extracts ag frac data from ag_dataset_w_ponds_w_iupseg.csv only
 
     # create hru_id array
     nhru = gs.prms.parameters.get_values('nhru')[0]
@@ -1973,7 +1993,8 @@ if update_ag_package == 1:
     gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
 
     # read in ag dataset csv file
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg.csv")
+    #ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_nopondwells.csv")
     ag_data = pd.read_csv(ag_dataset_file)
     ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
     ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
@@ -2135,6 +2156,7 @@ if update_ag_package == 1:
 
     # read in ag well list data file
     well_list_data_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list.csv")
+    #well_list_data_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list_nopondwells.csv")
     well_list_data = pd.read_csv(well_list_data_file)
 
     # extract well list from ag package
@@ -2213,6 +2235,45 @@ if update_ag_package == 1:
 
 
 
+
+    # #  set Qmax to 0 from July to Dec for pond wells ---------------------------------------------------------#
+    # xx=1
+    #
+    # # identify pond wells (based on well id)
+    # # TODO: need to make sure that ag_data here has the updated well ids
+    # mask_pond_well = (ag_data['pod_type'] == "WELL") & (ag_data['well_type'] == "pond")
+    # pond_well_id = ag_data.loc[mask_pond_well, "well_id"].unique()
+    #
+    # # identify July to Dec stress periods (based on stress period id)
+    # nper = mf_tr.modeltime.nper
+    # sp = [i for i in range(nper)]
+    # num_years = 26
+    # months = [1,2,3,4,5,6,7,8,9,10,11,12] * num_years
+    # sp_df = pd.DataFrame({'months': months, 'sp': sp})
+    # july_to_dec = [7,8,9,10,11,12]
+    # mask_july_dec = sp_df['months'].isin(july_to_dec)
+    # july_to_dec_sp = sp_df.loc[mask_july_dec, 'sp'].values
+    #
+    # # loop through stress periods
+    # irrwell = ag.irrwell
+    # for key, recarray in irrwell.items():
+    #     xx=1
+    #
+    #     # if key is in july_to_dec_sp
+    #     if key in july_to_dec_sp:  # TODO: check if this is right
+    #
+    #         # if pond well
+    #         xx=1
+    #
+    #         # set Qmax to 0 for pond wells
+    #
+
+
+
+
+
+
+
     #  write updated ag package ---------------------------------------------------------#
 
     ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
@@ -2242,7 +2303,8 @@ if create_tabfiles_for_pond_diversions == 1:
     gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
 
     # read in ag dataset csv file
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_orphans.csv")  # because don't want to store water in ponds for orphan fields
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_w_orphans.csv")  # because don't want to store water in ponds for orphan fields
+    #ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_nopondwells_w_orphans.csv")
     ag_data = pd.read_csv(ag_dataset_file)
     ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1     # update pond HRUs to match changes made in generate_ag_package_transient.py
     ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1    # update pond HRUs to match changes made in generate_ag_package_transient.py

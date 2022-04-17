@@ -29,6 +29,7 @@ for iup_seg in unique_iupsegs:
         ag_dataset.loc[ag_dataset['div_seg'] == iup_seg, 'iupseg'] = existing_iupseg
 
 #ag_dataset.to_csv(r"..\..\MODFLOW\init_files\ag_dataset_w_ponds_w_ipuseg.csv")
-ag_dataset.to_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv"))
+ag_dataset.to_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg.csv"))
+#ag_dataset.to_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_nopondwells.csv"))
 
 xx = 1

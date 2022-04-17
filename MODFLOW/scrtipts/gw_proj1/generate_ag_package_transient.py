@@ -195,7 +195,7 @@ def generate_pond_list(df_diversion):
 
 def create_irrwell_stress_period(stress_period, df_wells, df_kcs):
     """
-    Method to create stress period data for a single stress peiod
+    Method to create stress period data for a single stress period
     for the irrwell block
 
     Parameters
@@ -223,6 +223,7 @@ def create_irrwell_stress_period(stress_period, df_wells, df_kcs):
     not_irrigated_col = 'NotIrrigated_{}'.format(int(month))
     uniqueCrops = df_wells['crop_type'].unique()
 
+    # remove unirrigated fields
     for crop in uniqueCrops:
         not_irrigated = df_kcs.loc[
             df_kcs['CropName2'].isin([crop]), not_irrigated_col
@@ -231,7 +232,12 @@ def create_irrwell_stress_period(stress_period, df_wells, df_kcs):
         if not_irrigated:
             df_wells = df_wells[~df_wells['crop_type'].isin([crop])]
 
+    # remove pond wells during July-Dec
+    july_to_dec = np.array([7,8,9,10,11,12])
+    if month in july_to_dec:
+        df_wells = df_wells[df_wells['well_type'] == "regular"]
 
+    # create irrwell data frame
     df_irr_wells['wellid'] = df_wells['well_id'].values
     df_irr_wells['numcell'] = 1
     # df_irr_wells['period'] = df_wells['irr_period'].values
@@ -718,6 +724,39 @@ def assign_orphan_fields_to_nearby_ponds(segments_with_pond_and_field, ag_datase
 
 
 
+def renumber_well_ids(ag_dataset, ag_dataset_wells):
+
+    # get well ids
+    well_ids = ag_dataset_wells['well_id'].unique()
+
+    # assign new well id
+    new_well_id = 0
+    ag_dataset_wells['new_well_id'] = 0
+    for well_id in well_ids:
+
+        # mask this well
+        mask_well = ag_dataset_wells['well_id'] == well_id
+
+        # assign new well id
+        ag_dataset_wells.loc[mask_well, 'new_well_id'] = new_well_id
+
+        # advance well id
+        new_well_id = new_well_id + 1
+
+    # replace well_id with new_well_id
+    ag_dataset_wells['well_id'] = ag_dataset_wells['new_well_id']
+    ag_dataset_wells.drop('new_well_id', axis=1, inplace=True)
+
+    # replace ag_dataset_wells in ag_dataset
+    ag_dataset_nopodwells = ag_dataset[~(ag_dataset['pod_type'] == 'WELL')].copy()
+    ag_dataset = pd.concat([ag_dataset_nopodwells, ag_dataset_wells])
+
+    return ag_dataset, ag_dataset_wells
+
+
+
+
+
 def main():
     # --------------------------------------------------------------
     # Read in files
@@ -729,7 +768,8 @@ def main():
     repo_ws = os.path.join(script_ws, "..", "..", "..")
 
     # read in ag dataset
-    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg.csv")
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg.csv")
+    #ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_nopondwells.csv")
     ag_dataset = pd.read_csv(ag_dataset_file)
 
     # read in crop kc
@@ -750,8 +790,10 @@ def main():
 
     # make sure that no diversions are supplying both a pond and a field directly
     # for diversions that are doing this, assign the "orphan" fields to the nearest pond supplied by that diversion
-    ag_dataset_w_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_orphans.csv")
-    ag_dataset_w_no_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_ipuseg_w_no_orphans.csv")
+    ag_dataset_w_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_w_orphans.csv")
+    #ag_dataset_w_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_nopondwells_w_orphans.csv")
+    ag_dataset_w_no_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_w_no_orphans.csv")
+    #ag_dataset_w_no_orphan_fields_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_nopondwells_w_no_orphans.csv")
     segments_with_pond_and_field, ag_dataset = identify_orphan_fields(ag_dataset, ag_dataset_w_orphan_fields_file)
     ag_dataset = assign_orphan_fields_to_nearby_ponds(segments_with_pond_and_field, ag_dataset, ponds_coord_df, fields_coord_df, ag_dataset_w_no_orphan_fields_file)
 
@@ -783,8 +825,10 @@ def main():
 
 
 
-    # adjust ag_dataset to use 0-based rather than 1-based field HRU values (becuase flopy assumes 0-based)
+    # adjust ag_dataset to use 0-based rather than 1-based field HRU and well id values (becuase flopy assumes 0-based)
     ag_dataset['field_hru_id'] = ag_dataset['field_hru_id'] - 1
+    ag_dataset['well_id'] = ag_dataset['well_id'] - 1
+
 
     # only keep ag field HRUs that have ag fraction >= a minimum value
     ag_frac_min_val = 0.01
@@ -813,6 +857,7 @@ def main():
     # generate well list and irrwell
     ag_dataset_wells = ag_dataset[ag_dataset['pod_type'] == 'WELL'].copy()
     ag_dataset_wells = ag_dataset_wells[~ag_dataset_wells.wrow.isin([0,])]
+    ag_dataset, ag_dataset_wells = renumber_well_ids(ag_dataset, ag_dataset_wells)
     ag_well_list = generate_well_list(ag_dataset_wells)
     irrwell_dict, numirrwells, maxcellswell = generate_irrwell(
         mf.nper, ag_dataset_wells, crop_kc_df
