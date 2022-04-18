@@ -781,7 +781,7 @@ if update_transient_model_for_smooth_running == 1:
 
     # make changes related to spatial redistribution of recharge
     change_factor_upland = 1.2
-    change_factor_lowland = 0.8
+    change_factor_lowland = 0.6
     hk[mask_K_zones_not_problem & mask_upland_3d] = hk[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
     vka[mask_K_zones_not_problem & mask_upland_3d] = vka[mask_K_zones_not_problem & mask_upland_3d] * change_factor_upland
     hk[mask_K_zones_not_problem & mask_lowland_3d] = hk[mask_K_zones_not_problem & mask_lowland_3d] * change_factor_lowland
@@ -895,7 +895,7 @@ if update_transient_model_for_smooth_running == 1:
 
     # change vks
     change_factor_upland = 1.2
-    change_factor_lowland = 0.8
+    change_factor_lowland = 0.6
     vks[mask_K_zones_not_problem[1,:,:] & mask_upland] = vks[mask_K_zones_not_problem[1,:,:] & mask_upland] * change_factor_upland
     vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] = vks[mask_K_zones_not_problem[1,:,:] & mask_lowland] * change_factor_lowland
     mf_tr.uzf.vks = vks
@@ -1170,100 +1170,6 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
-
-    # OLD
-    # # extract GHB
-    # ghb = mf_tr.ghb
-    # ghb_spd = ghb.stress_period_data.get_dataframe()
-    # ghb_spd_sp1 = ghb_spd[ghb_spd['per'] == 0]   # extract stress period 1 (because doesn't vary across stress periods)
-    #
-    # # create an array of GHB presence/absence for each layer
-    # nlay = mf_tr.modelgrid.nlay
-    # ghb_arr = np.zeros_like(mf_tr.bas6.ibound.array)
-    # ghb_head_arr = np.zeros_like(ghb_arr)
-    # ghb_neighbor_arr = np.zeros_like(ghb_arr)
-    # for idx, ghb_cell in ghb_spd_sp1.iterrows():
-    #
-    #     # get layer, row, and column indices of ghb_cell
-    #     lay_idx = int(ghb_cell['k'])
-    #     row_idx = int(ghb_cell['i'])
-    #     col_idx = int(ghb_cell['j'])
-    #
-    #     # flag this cell and store head value
-    #     ghb_arr[lay_idx, row_idx, col_idx] = 1
-    #     ghb_head_arr[lay_idx, row_idx, col_idx] = ghb_cell['bhead']
-    #
-    #     # identify neighbor indices
-    #     row_up_idx = row_idx - 1
-    #     row_down_idx = row_idx - 1
-    #     col_left_idx = col_idx - 1
-    #     col_right_idx = col_idx + 1
-    #
-    #     # flag neighbors
-    #     ghb_neighbor_arr[lay_idx, row_up_idx, col_idx] = 1
-    #     ghb_neighbor_arr[lay_idx, row_down_idx, col_idx] = 1
-    #     ghb_neighbor_arr[lay_idx, row_idx, col_left_idx] = 1
-    #     ghb_neighbor_arr[lay_idx, row_idx, col_right_idx] = 1
-    #
-    #
-    # # loop through ghb neighbors and identify number of ghb cells they are adjacent to
-    # ghb_neighbor_cells = np.where(ghb_neighbor_arr)
-    # for i in list(range(len(ghb_neighbor_cells[0]))):
-    #
-    #     # get layer, row, and column indices of ghb neighbor cell
-    #     lay_idx = ghb_neighbor_cells[0][i]
-    #     row_idx = ghb_neighbor_cells[1][i]
-    #     col_idx = ghb_neighbor_cells[2][i]
-    #
-    #     # identify neighbor indices
-    #     row_up_idx = row_idx - 1
-    #     row_down_idx = row_idx - 1
-    #     col_left_idx = col_idx - 1
-    #     col_right_idx = col_idx + 1
-    #
-    #     # get neighbor flag values and sum up neighbor flags
-    #     neighbor_up = ghb_arr[lay_idx, row_up_idx, col_idx]
-    #     neighbor_down = ghb_arr[lay_idx, row_down_idx, col_idx]
-    #     neighbor_left = ghb_arr[lay_idx, row_idx, col_left_idx]
-    #     neighbor_right = ghb_arr[lay_idx, row_idx, col_right_idx]
-    #
-    #     # calculate number of ghb cells each ghb neighbor is adjacent to
-    #     neighbor_sum = neighbor_up + neighbor_down + neighbor_left + neighbor_right
-    #
-    #     # store
-    #     ghb_neighbor_arr[lay_idx, row_idx, col_idx] = neighbor_sum
-    #
-    # # set to 0 all grid cells outside of active model domain
-    # ibound = mf_tr.bas6.ibound.array
-    # mask = ibound > 0
-    # ghb_neighbor_arr[mask] = 0
-    # xx=1
-    #
-    # # identify neighbors with more than one ghb cell adjacent
-    # neighbors_multi_ghb = np.where(ghb_neighbor_arr > 1)
-    #
-    # # average the reference heads for ghb cells when multiple ghb cells are adjacent to the same non-ghb cell
-    # for i in list(range(len(neighbors_multi_ghb[0]))):
-    #
-    #     # get layer, row, and column indices
-    #     lay_idx = neighbors_multi_ghb[0][i]
-    #     row_idx = neighbors_multi_ghb[1][i]
-    #     col_idx = neighbors_multi_ghb[2][i]
-    #
-    #     # identify neighbor indices
-    #     row_up_idx = row_idx - 1
-    #     row_down_idx = row_idx - 1
-    #     col_left_idx = col_idx - 1
-    #     col_right_idx = col_idx + 1
-    #
-    #     # get head values and average??
-    #
-    #
-    # # make sure the GHB neighbors will not cause oscillations
-
-
-
-
     # update PRMS param to specific values ---------------------------------------------------------------####
 
     # PRMS param file: scale the UZF VKS by a factor and use this to replace ssr2gw_rate in the PRMS param file
@@ -1272,6 +1178,7 @@ if update_transient_model_for_smooth_running == 1:
     nhru = gs.prms.parameters.get_values("nhru")[0]
     vks_mod = vks_mod.reshape(1,nhru)[0]
     gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
+
 
 
 
@@ -1316,6 +1223,7 @@ if update_transient_model_for_smooth_running == 1:
 
     # write prms param file -----------------------------------------------------------------------####
     gs.prms.parameters.write()
+
 
 
 
@@ -2184,92 +2092,6 @@ if update_ag_package == 1:
     # store
     well_list['k'] = well_list['k'].astype('int')
     ag.well_list = well_list.to_records()
-
-
-
-    #  remove fields with no ag from stress period data ---------------------------------------------------------#
-
-    # # create hru_id array
-    # nhru = gs.prms.parameters.get_values('nhru')[0]
-    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
-    #
-    # # get hru ids of fields with non-zero ag_frac
-    # ag_frac = gs.prms.parameters.get_values('ag_frac')
-    # mask = ag_frac > 0
-    # ag_fields = hru_id[mask]
-    #
-    # # get stress period data that contains field data
-    # irrwell = ag.irrwell
-    # irrpond = ag.irrpond
-    #
-    # # update fields in irrwell
-    # # (field HRU ID in irrwell: hru_id_well)
-    # for key, recarray in irrwell.items():
-    #
-    #     # convert recarray to data frame
-    #     df = pd.DataFrame(recarray)
-    #
-    #     # remove any records for fields (hru_id_well) not included in ag_frac_fields
-    #     mask = df['']
-    #
-    #     # update numcellpond
-    #
-    #     # store in irrwell
-    #     irrwell[key] = df.to_records()
-    #
-    #
-    # # update fields in irrpond
-    # # (field HRU ID in irrpond: hru_id_pond)
-    # for key, recarray in irrpond.items():
-    #
-    #     # convert recarray to data frame
-    #     df = pd.DataFrame(recarray)
-    #
-    #     # remove any records for fields (hru_id_pond) not included in ag_frac_fields
-    #
-    #     # update numcellwell
-    #
-    #     # store in irrwell
-    #     irrwell[key] = df.to_records()
-
-
-
-
-
-    # #  set Qmax to 0 from July to Dec for pond wells ---------------------------------------------------------#
-    # xx=1
-    #
-    # # identify pond wells (based on well id)
-    # # TODO: need to make sure that ag_data here has the updated well ids
-    # mask_pond_well = (ag_data['pod_type'] == "WELL") & (ag_data['well_type'] == "pond")
-    # pond_well_id = ag_data.loc[mask_pond_well, "well_id"].unique()
-    #
-    # # identify July to Dec stress periods (based on stress period id)
-    # nper = mf_tr.modeltime.nper
-    # sp = [i for i in range(nper)]
-    # num_years = 26
-    # months = [1,2,3,4,5,6,7,8,9,10,11,12] * num_years
-    # sp_df = pd.DataFrame({'months': months, 'sp': sp})
-    # july_to_dec = [7,8,9,10,11,12]
-    # mask_july_dec = sp_df['months'].isin(july_to_dec)
-    # july_to_dec_sp = sp_df.loc[mask_july_dec, 'sp'].values
-    #
-    # # loop through stress periods
-    # irrwell = ag.irrwell
-    # for key, recarray in irrwell.items():
-    #     xx=1
-    #
-    #     # if key is in july_to_dec_sp
-    #     if key in july_to_dec_sp:  # TODO: check if this is right
-    #
-    #         # if pond well
-    #         xx=1
-    #
-    #         # set Qmax to 0 for pond wells
-    #
-
-
-
 
 
 

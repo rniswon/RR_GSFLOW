@@ -724,7 +724,7 @@ def assign_orphan_fields_to_nearby_ponds(segments_with_pond_and_field, ag_datase
 
 
 
-def renumber_well_ids(ag_dataset, ag_dataset_wells):
+def renumber_well_ids(ag_dataset, ag_dataset_wells, ag_dataset_updated_well_ids_file):
 
     # get well ids
     well_ids = ag_dataset_wells['well_id'].unique()
@@ -750,6 +750,9 @@ def renumber_well_ids(ag_dataset, ag_dataset_wells):
     # replace ag_dataset_wells in ag_dataset
     ag_dataset_nopodwells = ag_dataset[~(ag_dataset['pod_type'] == 'WELL')].copy()
     ag_dataset = pd.concat([ag_dataset_nopodwells, ag_dataset_wells])
+
+    # export updated ag dataset
+    ag_dataset.to_csv(ag_dataset_updated_well_ids_file, index=False)
 
     return ag_dataset, ag_dataset_wells
 
@@ -857,7 +860,8 @@ def main():
     # generate well list and irrwell
     ag_dataset_wells = ag_dataset[ag_dataset['pod_type'] == 'WELL'].copy()
     ag_dataset_wells = ag_dataset_wells[~ag_dataset_wells.wrow.isin([0,])]
-    ag_dataset, ag_dataset_wells = renumber_well_ids(ag_dataset, ag_dataset_wells)
+    ag_dataset_updated_well_ids_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg_w_no_orphans_well_ids_renumbered.csv")
+    ag_dataset, ag_dataset_wells = renumber_well_ids(ag_dataset, ag_dataset_wells, ag_dataset_updated_well_ids_file)
     ag_well_list = generate_well_list(ag_dataset_wells)
     irrwell_dict, numirrwells, maxcellswell = generate_irrwell(
         mf.nper, ag_dataset_wells, crop_kc_df

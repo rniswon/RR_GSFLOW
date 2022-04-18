@@ -38,7 +38,7 @@ prms_warmup
 modflow_name
 1
 4
-rr_tr.nam
+rr_tr_ag.nam
 ####
 param_file
 2
@@ -690,20 +690,10 @@ hru_actet
 potet
 hru_ppt
 ####
-soilzone_module
-1
-4
-soilzone_ag
-####
-agriculture_canopy_flag
-1
-1
-1
-####
 nhruOutON_OFF
 1
 1
-1
+0
 ####
 nhruOutVars
 1
@@ -729,6 +719,16 @@ nhruOut_freq
 1
 1
 6
+####
+soilzone_module
+1
+4
+soilzone_ag
+####
+agriculture_canopy_flag
+1
+1
+1
 
 
 
