@@ -95,6 +95,32 @@ if __name__ == "__main__":
     # set file paths
     file_path_recharge = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "uzf_recharge.out")
     file_path_discharge = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "uzf_discharge.out")
+    xx=1
+
+    # settings
+    analyze_day_01_recharge = 1
+
+
+    # RECHARGE: after day 1 ---------------------------------------------####
+
+    if analyze_day_01_recharge == 1:
+
+        # read in and extract recharge
+        data = NetFlux(file_path_recharge)
+        data = data.data
+
+        # extract recharge on day 1: 1/1/1990
+        data = data[1,1]
+
+        # plot recharge
+        data[data==0] = np.nan
+        plt.figure(figsize=(6, 8), dpi=150)
+        im = plt.imshow(data, norm=LogNorm())
+        plt.colorbar(im)
+        plt.title("UZF recharge net flux: 1/1/1990,\ngrid cells with recharge = 0 set to nan")
+        file_name = 'netrech_19900101.jpg'
+        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "uzf_netrech_netdis", file_name)
+        plt.savefig(file_path)
 
 
     # RECHARGE: average over all stress periods ---------------------------------------------####
@@ -102,6 +128,8 @@ if __name__ == "__main__":
     # read in and extract recharge
     data = NetFlux(file_path_recharge)
     data = data.data
+    if analyze_day_01_recharge == 1:
+        data.pop((1,1))
 
     # average recharge over all stress periods
     data = list(data.values())
@@ -129,6 +157,8 @@ if __name__ == "__main__":
     # read in and extract recharge
     data = NetFlux(file_path_recharge)
     data = data.data
+    if analyze_day_01_recharge == 1:
+        data.pop((1,1))
     data = list(data.values())
     num_stress_period = len(data)
     data = np.stack(data, axis=0)
@@ -166,6 +196,8 @@ if __name__ == "__main__":
     # read in and extract discharge
     data = NetFlux(file_path_discharge)
     data = data.data
+    if analyze_day_01_recharge == 1:
+        data.pop((1,1))
 
     # average discharge over all stress periods
     data = list(data.values())
@@ -192,6 +224,8 @@ if __name__ == "__main__":
     # read in and extract discharge
     data = NetFlux(file_path_discharge)
     data = data.data
+    if analyze_day_01_recharge == 1:
+        data.pop((1,1))
     data = list(data.values())
     num_stress_period = len(data)
     data = np.stack(data, axis=0)

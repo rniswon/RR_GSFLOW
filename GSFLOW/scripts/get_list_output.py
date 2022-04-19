@@ -1,6 +1,7 @@
 import os
 import flopy
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # set workspaces
@@ -11,7 +12,7 @@ repo_ws = os.path.join(script_ws, "..", "..")
 file_path = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "rr_tr.list")
 lst = flopy.utils.MfListBudget(file_path)
 df_flux, df_vol = lst.get_dataframes(start_datetime="1-1-1990")
-
+incremental, cumulative = lst.get_budget()
 
 
 # Plot percent discrepancy --------------------------------------------------------------####
@@ -40,3 +41,9 @@ file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "list_output", f
 plt.savefig(file_path)
 
 
+
+
+# Plot budget for entire watershed --------------------------------------------------------------####
+
+# get cumulative budget
+test = pd.DataFrame(cumulative)

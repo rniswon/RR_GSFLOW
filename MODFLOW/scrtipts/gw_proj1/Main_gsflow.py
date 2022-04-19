@@ -757,7 +757,7 @@ if update_transient_model_for_smooth_running == 1:
     sy = mf_tr.upw.sy.array
 
     # make changes to hk and vka
-    change_factor = 10
+    change_factor = 5  # NOTE: worked when it  was 10
     hk[mask_K_zones_problem] = hk[mask_K_zones_problem] * change_factor
     vka[mask_K_zones_problem] = vka[mask_K_zones_problem] * change_factor
     sy[mask_K_zones_problem] = sy_bedrock_highly_weathered
@@ -872,7 +872,7 @@ if update_transient_model_for_smooth_running == 1:
     vks[mask_Kzone_9_lyr1] = np.mean([vks_Kzone6, vks_Kzone80])
 
     # adjust values that are too low
-    vks_low_cutoff = 0.4
+    vks_low_cutoff = 0.6
     mask = (vks < vks_low_cutoff) & (iuzfbnd > 0)
     vks[mask] = vks_low_cutoff
 
@@ -911,7 +911,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
 
     # make changes to vks
-    change_factor = 10
+    change_factor = 5   # NOTE: worked when it was 10
     vks[mask_K_zones_problem_lyr2] = vks[mask_K_zones_problem_lyr2] * change_factor
 
     # store changes
@@ -929,7 +929,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_ukiah_valley = np.isin(K_zones_lyr2, K_zones_ukiah_valley)
 
     # update vks
-    change_factor = 10
+    change_factor = 3   # NOTE: worked when it was 5
     vks[mask_ukiah_valley] = vks[mask_ukiah_valley] * change_factor
 
     # store changes
@@ -997,7 +997,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
 
     # set SY scaling factor
-    sy_scaling_factor = 0.3
+    sy_scaling_factor = 0.2  # NOTE: worked when it was 0.3
 
     # get SY for the IUZFBND layers
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -1173,7 +1173,7 @@ if update_transient_model_for_smooth_running == 1:
     # update PRMS param to specific values ---------------------------------------------------------------####
 
     # PRMS param file: scale the UZF VKS by a factor and use this to replace ssr2gw_rate in the PRMS param file
-    ssr2gw_rate_change_factor = 0.05         # originally set this to 0.5
+    ssr2gw_rate_change_factor = 0.03         # originally set this to 0.5
     vks_mod = mf_tr.uzf.vks.array * ssr2gw_rate_change_factor
     nhru = gs.prms.parameters.get_values("nhru")[0]
     vks_mod = vks_mod.reshape(1,nhru)[0]
