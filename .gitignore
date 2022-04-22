@@ -52,3 +52,5 @@ GSFLOW/results/
 **/wellcompletionreports_DWR.csv
 GSFLOW/scripts/ponds/input
 GSFLOW/scripts/ponds/output
+GSFLOW/worker_dir/modflow/output
+GSFLOW/worker_dir/PRMS/output

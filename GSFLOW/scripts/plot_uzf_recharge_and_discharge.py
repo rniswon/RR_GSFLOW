@@ -98,7 +98,7 @@ if __name__ == "__main__":
     xx=1
 
     # settings
-    analyze_day_01_recharge = 1
+    analyze_day_01_recharge = 0
 
 
     # RECHARGE: after day 1 ---------------------------------------------####

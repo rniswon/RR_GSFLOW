@@ -462,7 +462,7 @@ if update_transient_model_for_smooth_running == 1:
     # print
     print('Update transient model for smooth running')
 
-    # load transient modflow model, including ag package
+    # load transient modflow model
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                         load_only=["BAS6", "DIS", "NWT", "UPW", "UZF", "LAK", "WEL", "SFR", "GHB"],
@@ -757,7 +757,7 @@ if update_transient_model_for_smooth_running == 1:
     sy = mf_tr.upw.sy.array
 
     # make changes to hk and vka
-    change_factor = 5  # NOTE: worked when it  was 10
+    change_factor = 5  # NOTE: worked when it was 10 and 5
     hk[mask_K_zones_problem] = hk[mask_K_zones_problem] * change_factor
     vka[mask_K_zones_problem] = vka[mask_K_zones_problem] * change_factor
     sy[mask_K_zones_problem] = sy_bedrock_highly_weathered
@@ -872,7 +872,7 @@ if update_transient_model_for_smooth_running == 1:
     vks[mask_Kzone_9_lyr1] = np.mean([vks_Kzone6, vks_Kzone80])
 
     # adjust values that are too low
-    vks_low_cutoff = 0.6
+    vks_low_cutoff = 0.4
     mask = (vks < vks_low_cutoff) & (iuzfbnd > 0)
     vks[mask] = vks_low_cutoff
 
@@ -911,7 +911,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
 
     # make changes to vks
-    change_factor = 5   # NOTE: worked when it was 10
+    change_factor = 5   # NOTE: worked when it was 10 and 5
     vks[mask_K_zones_problem_lyr2] = vks[mask_K_zones_problem_lyr2] * change_factor
 
     # store changes
@@ -929,7 +929,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_ukiah_valley = np.isin(K_zones_lyr2, K_zones_ukiah_valley)
 
     # update vks
-    change_factor = 3   # NOTE: worked when it was 5
+    change_factor = 3   # NOTE: worked when it was 5 and 3
     vks[mask_ukiah_valley] = vks[mask_ukiah_valley] * change_factor
 
     # store changes
@@ -997,7 +997,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
 
     # set SY scaling factor
-    sy_scaling_factor = 0.2  # NOTE: worked when it was 0.3
+    sy_scaling_factor = 0.2  # NOTE: worked when it was 0.3 and 0.2
 
     # get SY for the IUZFBND layers
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -1173,7 +1173,7 @@ if update_transient_model_for_smooth_running == 1:
     # update PRMS param to specific values ---------------------------------------------------------------####
 
     # PRMS param file: scale the UZF VKS by a factor and use this to replace ssr2gw_rate in the PRMS param file
-    ssr2gw_rate_change_factor = 0.03         # originally set this to 0.5
+    ssr2gw_rate_change_factor = 0.05         # originally set this to 0.5
     vks_mod = mf_tr.uzf.vks.array * ssr2gw_rate_change_factor
     nhru = gs.prms.parameters.get_values("nhru")[0]
     vks_mod = vks_mod.reshape(1,nhru)[0]
@@ -1893,7 +1893,7 @@ if update_ag_package == 1:
     # load transient modflow model, including ag package
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                        load_only=["BAS6", "DIS", "AG"], verbose=True, forgive=False, version="mfnwt")
+                                        load_only=["BAS6", "DIS", "AG", "SFR"], verbose=True, forgive=False, version="mfnwt")
     ag = mf_tr.ag
 
     # load gsflow model
@@ -2094,12 +2094,46 @@ if update_ag_package == 1:
     ag.well_list = well_list.to_records()
 
 
+    #  update SFR FLOW for diversion segments ---------------------------------------------------------#
+
+    # identify AG diversion segments
+    div_segs = ag.segment_list
+
+    # filter ag data for diversion segments that don't fill ponds
+    ag_data_div = ag_data[ (ag_data['pod_type'] == 'DIVERSION') & (ag_data['pond_id'] == -1) ].copy()
+
+    # extract segment data
+    segment_data = pd.DataFrame(mf_tr.sfr.segment_data[0])
+
+    # loop through AG diversion segments
+    for div_seg in div_segs:
+
+        # filter by this div seg
+        df = ag_data_div[ ag_data_div['div_seg'] == div_seg ]
+
+        # sum to get max daily field demand
+        max_daily_field_demand_m3 = df['Qmax_field'].sum() * -1     # NOTE: multiplying by -1 because Qmax_field was multiplied by -1 earlier to get negative number to indicate pumping
+
+        # assign to segment data
+        seg_mask = segment_data['nseg'] == div_seg
+        segment_data.loc[seg_mask, 'flow'] = max_daily_field_demand_m3
 
 
-    #  write updated ag package ---------------------------------------------------------#
+    # store updated segment data in sfr package
+    mf_tr.sfr.segment_data = {0: segment_data.to_records(index=False)}
 
+
+    #  write updated ag and sfr packages ---------------------------------------------------------#
+
+    # write ag pacakge
     ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
     ag.write_file()
+
+    # write sfr package
+    mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    mf_tr.sfr.write_file()
+
+
 
 
 

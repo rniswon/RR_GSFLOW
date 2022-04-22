@@ -840,9 +840,36 @@ def main():
     # get BAS and DIS package from transient model
     model_ws = os.path.join(repo_ws, "MODFLOW", "TR")
     mf = Modflow.load(
-        "rr_tr.nam", version="mfnwt", load_only=["BAS6", "DIS"],
+        "rr_tr.nam", version="mfnwt", load_only=["BAS6", "DIS", "LAK"],
         model_ws=model_ws
     )
+
+
+
+    # remove fields that are in lake grid cells ------------------####
+
+    # identify lake grid cells
+    lak_arr = mf.lak.lakarr.array[0,0,:,:]
+    mask_lake = lak_arr > 0
+
+    # get hru id array
+    num_lay, num_row, num_col = mf.bas6.ibound.array.shape
+    nhru = num_row * num_col
+    hru_id = np.array(list(range(1, nhru + 1)))
+    hru_id_arr = hru_id.reshape(num_row, num_col)
+
+    # get hru ids of lake grid cells and subtract 1 to match up with 0-based field hru ids
+    hru_id_lake = hru_id_arr[mask_lake]-1
+
+    # identify fields in lake hrus
+    mask_field_in_lake = ag_dataset['field_hru_id'].isin(hru_id_lake)
+
+    # remove fields in lake hrus
+    ag_dataset = ag_dataset[~mask_field_in_lake].copy()
+
+    #--------------------------------------------------------####
+
+
 
     # generate pond list and irrpond
     ag_dataset_ponds = ag_dataset[ag_dataset['pod_type'] == "DIVERSION"].copy()
