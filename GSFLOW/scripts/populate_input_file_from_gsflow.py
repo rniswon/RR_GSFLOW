@@ -35,6 +35,8 @@ mf_name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows", "rr_tr_a
 # set hru file
 hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "hru_shp.csv")
 
+
+
 #-----------------------------------------------------------
 # Read in
 #-----------------------------------------------------------
@@ -55,8 +57,6 @@ K_zones = upw_utils.load_txt_3d(K_zone_file)
 hru_df = pd.read_csv(hru_file)
 
 
-xx=1
-
 
 #-------------------------------
 # Remove params
@@ -66,6 +66,9 @@ xx=1
 input_param = param_utils.remove_parm(input_param, 'spill_447')
 input_param = param_utils.remove_parm(input_param, 'spill_449')
 input_param = param_utils.remove_parm(input_param, 'spill_688')
+input_param = param_utils.remove_group(input_param, 'uzf_pet')
+input_param = param_utils.remove_group(input_param, 'uzf_finf')
+input_param = param_utils.remove_group(input_param, 'uzf_surfk')
 
 
 
@@ -76,18 +79,46 @@ input_param = param_utils.remove_parm(input_param, 'spill_688')
 xx=1
 
 # specific yield
+# note: K zones based on soil texture
 
 # specific storage
+# note: K zones based on soil texture
 
 # uzf surfdep
+# note: constant for the whole model
 
-# uzf extwc
+# uzf extdp
+# note: constant for the whole model
 
-# prms params used in San Antonio model calibration (table 8) - parameterize by subbasin
+# uzf surfk
+# note: make a scalar multiplier of vks
+
+# slowcoef_sq
+# note: distribute by subbasin
+
+# sat_threshold
+# note: distribute by subbasin
+
+# slowcoef_lin
+# note: distribute by subbasin
+
+# slowcoef_sq
+# note: distribute by subbasin
+
+# soil_moist_max
+# note: distribute by subbasin
+
+# soil_rechr_max_frac
+# note: distribute by subbasin
+
+# ssr2gw_rate
+# note: make a scalar multiplier of vks
 
 # jh_coef
+# note: distribute by subbasin
 
-# a general head boundary parameter - either conductance or reference head (need to divide into zones, Ayman has zones for this)
+# a general head boundary parameter - either conductance or reference head
+# note: use zones from GHB shapefile
 
 
 
@@ -106,7 +137,7 @@ for i, row in df_upw.iterrows():
     vals = np.mean(kh[mask])
     param_utils.change_par_value(input_param, nm, vals)
 
-# NOTE: don't need to update vka
+# note: don't need to update vka
 
 
 
@@ -124,31 +155,31 @@ for ii, iparam in vks_df.iterrows():
     val = np.mean(vks[mask])
     param_utils.change_par_value(input_param, nm, val)
 
-# surfk
-surfk_df = input_param[input_param['pargp'] == 'uzf_surfk']
-surfk = mf.uzf.surfk.array.copy()
-for ii, iparam in surfk_df.iterrows():
-    nm = iparam['parnme']
-    __, gzone, subzon = nm.split("_")    # first item is surface geology and second is subbasin
-    mask = np.logical_and(surf_geo == int(gzone), subbasins == int(subzon))
-    val = np.mean(surfk[mask])
-    param_utils.change_par_value(input_param, nm, val)
+# # surfk
+# surfk_df = input_param[input_param['pargp'] == 'uzf_surfk']
+# surfk = mf.uzf.surfk.array.copy()
+# for ii, iparam in surfk_df.iterrows():
+#     nm = iparam['parnme']
+#     __, gzone, subzon = nm.split("_")    # first item is surface geology and second is subbasin
+#     mask = np.logical_and(surf_geo == int(gzone), subbasins == int(subzon))
+#     val = np.mean(surfk[mask])
+#     param_utils.change_par_value(input_param, nm, val)
 
-# finf
-finf = mf.uzf.finf.array.copy()
-finf = finf[0,0,:,:]
-uniq_subbasins = np.unique(subbasins)
-for sub_i in uniq_subbasins:
-    if sub_i == 0:
-        continue
-    nm = 'finf_{}'.format(int(sub_i))
-    mask = subbasins == int(sub_i)
-    val = np.mean(finf[mask])
-    param_utils.change_par_value(input_param, nm, val)
+# # finf
+# finf = mf.uzf.finf.array.copy()
+# finf = finf[0,0,:,:]
+# uniq_subbasins = np.unique(subbasins)
+# for sub_i in uniq_subbasins:
+#     if sub_i == 0:
+#         continue
+#     nm = 'finf_{}'.format(int(sub_i))
+#     mask = subbasins == int(sub_i)
+#     val = np.mean(finf[mask])
+#     param_utils.change_par_value(input_param, nm, val)
 
-# pet
-pet = np.unique(mf.uzf.pet.array)[0]
-param_utils.change_par_value(input_param, 'pet_1', pet)
+# # pet
+# pet = np.unique(mf.uzf.pet.array)[0]
+# param_utils.change_par_value(input_param, 'pet_1', pet)
 
 
 
@@ -156,6 +187,7 @@ param_utils.change_par_value(input_param, 'pet_1', pet)
 # SFR: update params
 #------------------------------------------------------------
 
+# streambed K
 df_sfr = hru_df[hru_df['ISEG'] > 0]
 sub_ids = df_sfr['subbasin'].unique()
 sub_ids = np.sort(sub_ids)

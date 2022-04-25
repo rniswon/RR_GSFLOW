@@ -680,6 +680,9 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.upw.hk = hk
     mf_tr.upw.vka = vka
 
+    # EXPERIMENT: set vka=hk or vka=hk*0.5
+    mf_tr.upw.vka = hk * 0.5
+
     # write upw file
     mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
     mf_tr.upw.write_file()
@@ -767,6 +770,9 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.upw.vka = vka
     mf_tr.upw.sy = sy
 
+    # EXPERIMENT: set vka=hk or vka=hk*0.5
+    mf_tr.upw.vka = hk * 0.5
+
     # write upw file
     mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
     mf_tr.upw.write_file()
@@ -790,6 +796,9 @@ if update_transient_model_for_smooth_running == 1:
     # store changes
     mf_tr.upw.hk = hk
     mf_tr.upw.vka = vka
+
+    # EXPERIMENT: set vka=hk or vka=hk*0.5
+    mf_tr.upw.vka = hk * 0.5
 
     # write upw file
     mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
@@ -825,6 +834,44 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.iuzfbnd = iuzfbnd
 
 
+    # update iuzfbnd ------------------------------------#
+
+    # EXPERIMENT
+    # TODO: update iuzfbnd to deepest layer with head below cell top based on ss heads (i.e. initial heads for this transient model)
+    xx=1
+
+    # get ss heads (i.e. transient initial heads)
+    ss_heads = mf_tr.bas6.strt.array
+
+    # get model grid elevations
+    top_botm = mf_tr.modelgrid.top_botm
+
+    # create initial heads layer array
+    ss_heads_below_celltop = np.zeros_like(ss_heads)
+
+    # for each layer, identify whether heads are below cell top (1) or not (0)
+    num_lay = 3
+    for lyr in list(range(num_lay)):
+        mask = ss_heads[lyr,:,:] < top_botm[lyr,:,:]
+        ss_heads_below_celltop[lyr,:,:][mask] = 1
+
+    # identify deepest layer with heads below cell top for each grid cell
+    mask_lyr3 = ss_heads_below_celltop[2,:,:] == 1
+    mask_lyr2 = (ss_heads_below_celltop[2,:,:] == 0) & (ss_heads_below_celltop[1,:,:] == 1)
+    mask_lyr1 = (ss_heads_below_celltop[2,:,:] == 0) & (ss_heads_below_celltop[1,:,:] == 0) & (ss_heads_below_celltop[0,:,:] == 1)
+
+    # update iuzfbnd
+    iuzfbnd = mf_tr.uzf.iuzfbnd.array
+    mask_inactive = iuzfbnd == 0
+    iuzfbnd[mask_lyr1] = 1
+    iuzfbnd[mask_lyr2] = 2
+    iuzfbnd[mask_lyr3] = 3
+    iuzfbnd[mask_inactive] = 0
+
+    # store updated iuzfbnd
+    mf_tr.uzf.iuzfbnd = iuzfbnd
+
+
     # update vks: everywhere ------------------------------------#
 
     # set vks based on upw hk
@@ -840,7 +887,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
 
     # scale vks: area without UZF problem
-    vks_scaling_factor = 0.1       # TODO: update for experiments
+    vks_scaling_factor = 0.05       # TODO: update for experiments, note: worked when it was 0.1
     vks[mask_K_zones_not_problem_lyr2] = vks[mask_K_zones_not_problem_lyr2] * vks_scaling_factor
 
     # scale vks: area with UZF problem
@@ -911,7 +958,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_K_zones_problem_lyr2 = mask_K_zones_problem[1,:,:]
 
     # make changes to vks
-    change_factor = 5   # NOTE: worked when it was 10 and 5
+    change_factor = 3   # NOTE: worked when it was 10 and 5
     vks[mask_K_zones_problem_lyr2] = vks[mask_K_zones_problem_lyr2] * change_factor
 
     # store changes
@@ -929,7 +976,7 @@ if update_transient_model_for_smooth_running == 1:
     mask_ukiah_valley = np.isin(K_zones_lyr2, K_zones_ukiah_valley)
 
     # update vks
-    change_factor = 3   # NOTE: worked when it was 5 and 3
+    change_factor = 2   # NOTE: worked when it was 5 and 3
     vks[mask_ukiah_valley] = vks[mask_ukiah_valley] * change_factor
 
     # store changes
@@ -1022,7 +1069,8 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.ntrail2 = 10
 
     # update nuztop ---------------------------#
-    mf_tr.uzf.nuztop = 4       # this way, recharge is added to the top active layer (taking dry cells into account)
+    #mf_tr.uzf.nuztop = 4       # this way, recharge is added to the top active layer (taking dry cells into account)
+    mf_tr.uzf.nuztop = 2        # EXPERIMENT: recharge gets added to iuzfbnd layer
 
     # write uzf file --------------------------#
     mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
