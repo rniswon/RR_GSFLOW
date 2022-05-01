@@ -35,6 +35,7 @@ def add_sfr_parameters_to_input_file1(input_file = r"input_param.csv" ):
         df = add_param(df, nm, 1.0, gpname='sfr_ks', trans='none', comments='#')
     df.to_csv(input_file, index=None)
     pass
+
 def add_sfr_parameters_to_input_file2(input_file = r"input_param.csv" ):
     df = pd.read_csv(input_file, index_col=False)
     spillway = [447, 449]
@@ -89,7 +90,7 @@ def change_sfr_ss(Sim):
 def change_sfr_tr(Sim):
 
     # extract sfr package
-    sfr = Sim.mf_tr.sfr
+    sfr = Sim.mf.sfr
 
     # read in csv with new input parameters
     df = pd.read_csv(Sim.input_file, index_col=False)
@@ -102,15 +103,21 @@ def change_sfr_tr(Sim):
         Sim.hru_df = hru_df
 
     # update streambed hydraulic conductivity
-    df_sfr = hru_df[hru_df['ISEG'] > 0]
-    sub_ids = df_sfr['subbasin'].unique()
+    df_sfr = df[df['pargp'] == 'sfr_ks']
+    df_sfr = df_sfr.sort_values(by=['parnme'], inplace=False)
+    par_names = df_sfr['parnme'].unique()
+    hru_df_sfr = hru_df[hru_df['ISEG'] > 0]
+    sub_ids = hru_df_sfr['subbasin'].unique()
     sub_ids = np.sort(sub_ids)
     reach_data = sfr.reach_data.copy()
     reach_data = pd.DataFrame.from_records(reach_data)
     spillways = reach_data[reach_data['strhc1'] == 0.0]['iseg'].values
-    for id in sub_ids:
-        curr_sub = df_sfr[df_sfr['subbasin'] == id]
-        nm = "sfr_k_" + str(int(id))
+    for idx, id in enumerate(sub_ids):
+
+        par_name = par_names[idx]
+        curr_sub = hru_df_sfr[hru_df_sfr['subbasin'] == id]
+        #nm = "sfr_k_" + str(int(id))
+        nm = par_name
         val = df.loc[df['parnme'] == nm, 'parval1']
         rows = curr_sub['HRU_ROW'].values - 1
         cols = curr_sub['HRU_COL'].values - 1
@@ -126,13 +133,8 @@ def change_sfr_tr(Sim):
         reach_data.loc[par_filter, 'strhc1'] = val.values[0]
     reach_data.loc[reach_data['iseg'].isin(spillways), 'strhc1'] = 0
 
-    # update spillway elevations
-    # NOTE: these spillway segments are hard-coded, will need to update this code if make changes to them in the future
-    for spill_seg in [447, 449, 688]:
-        nm = 'spill_{}'.format(spill_seg)
-        val = df.loc[df['parnme'] == nm, 'parval1']
-        reach_data.loc[reach_data['iseg'] == spill_seg, 'strtop'] = val.values[0]
-    Sim.mf_tr.sfr.reach_data = reach_data.to_records()
+    # store
+    Sim.mf.sfr.reach_data = reach_data.to_records()
 
     # print message
     print("SFR Package is updated")

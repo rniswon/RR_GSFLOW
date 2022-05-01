@@ -252,10 +252,7 @@ def change_uzf_ss(Sim):
 def change_uzf_tr(Sim):
 
     # extract uzf package
-    uzf = Sim.mf_tr.uzf
-
-    # read vks zones
-    zones = np.loadtxt(Sim.vks_zones_file)
+    uzf = Sim.mf.uzf
 
     # read in csv with new input parameters
     df = pd.read_csv(Sim.input_file)
@@ -263,48 +260,36 @@ def change_uzf_tr(Sim):
     # load subbasins and surface geology
     subbasins = np.loadtxt(Sim.subbasins_file)
     surf_geo = np.loadtxt(Sim.surf_geo_file)
-    surf_geo[surf_geo == 0] = 3  # fix active location with surface geology
+    #surf_geo[surf_geo == 0] = 3  # fix active location with surface geology  # TODO: do we need this?
 
     # update vks
     vks = uzf.vks.array.copy()
     vks_df = df[df['pargp'] == 'uzf_vks']
     for ii, iparam in vks_df.iterrows():
         nm = iparam['parnme']
-        # first item is geozone and second is subbasin
-        __, gzone, subzon = nm.split("_")
+        __, gzone, subzon = nm.split("_")                  # first item is geozone and second is subbasin
         val = df.loc[df['parnme'] == nm, 'parval1']
         mask = np.logical_and(surf_geo == int(gzone), subbasins == int(subzon))
         vks[mask] = val.values[0]
-    Sim.mf_tr.uzf.vks = vks
+    Sim.mf.uzf.vks = vks
 
     # update surfk
-    surfk = uzf.surfk.array.copy()
     surfk_df = df[df['pargp'] == 'uzf_surfk']
-    for ii, iparam in surfk_df.iterrows():
-        nm = iparam['parnme']
-        # first item is geozone and second is subbasin
-        __, gzone, subzon = nm.split("_")
-        val = df.loc[df['parnme'] == nm, 'parval1']
-        mask = np.logical_and(surf_geo == int(gzone), subbasins == int(subzon))
-        surfk[mask] = val.values[0]
-    Sim.mf_tr.uzf.surfk = surfk
+    surfk_ratio_val = surfk_df['parval1'].values[0]
+    surfk = vks * surfk_ratio_val
+    Sim.mf.uzf.surfk = surfk
 
-    # load average rainfall
-    average_rain = np.loadtxt(Sim.average_rain_file)
+    # update surfdep
+    surfdep_df = df[df['pargp'] == 'uzf_surfdep']
+    surfdep_val = surfdep_df['parval1'].values[0]
+    Sim.mf.uzf.surfdep = surfdep_val
 
-    # update finf
-    uniq_subbasins = np.unique(subbasins)
-    for sub_i in uniq_subbasins:
-        if sub_i == 0:
-            continue
-        nm = 'finf_{}'.format(int(sub_i))
-        val = df.loc[df['parnme'] == nm, 'parval1']
-        average_rain[subbasins == sub_i] = average_rain[subbasins == sub_i] * val.values[0]
-    Sim.mf_tr.uzf.finf = average_rain
-
-    # update pet
-    val = df.loc[df['parnme'] == 'pet_1', 'parval1']
-    Sim.mf_tr.uzf.pet = val.values[0]
+    # update extdp
+    extdp = uzf.extdp.array
+    extdp_df = df[df['pargp'] == 'uzf_extdp']
+    extdp_val = extdp_df['parval1'].values[0]
+    extdp[:,:,:,:] = extdp_val
+    Sim.mf.uzf.extdp = extdp[0,0,:,:]
 
     # print message
     print("UZF Package is updated")

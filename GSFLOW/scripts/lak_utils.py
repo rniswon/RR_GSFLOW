@@ -108,7 +108,7 @@ def change_lak_ss(Sim):
 def change_lak_tr(Sim):
 
     # extract lake package
-    lak = Sim.mf_tr.lak
+    lak = Sim.mf.lak
 
     # read in csv with new input parameters
     df = pd.read_csv(Sim.input_file, index_col=False)
@@ -128,11 +128,11 @@ def change_lak_tr(Sim):
 
     # store updated lakebed leakance
     cc = {0:cc[0]}        #cc = {ix:i for ix,i in enumerate(cc)}
-    cc = Transient3d(Sim.mf_tr, Sim.mf_tr.modelgrid.shape, np.float32, cc, "bdlknc_")
+    cc = Transient3d(Sim.mf, Sim.mf.modelgrid.shape, np.float32, cc, "bdlknc_")
     lak.bdlknc = cc
 
     # comment out if we're using the code below
-    Sim.mf_tr.lak = lak
+    Sim.mf.lak = lak
 
     # TODO: figure out whether we need to use this for the transient model as well
     # read in steady state lake package data

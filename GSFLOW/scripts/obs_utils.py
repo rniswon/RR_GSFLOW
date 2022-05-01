@@ -6,7 +6,9 @@ def get_header():
     header = ['obsnme', 'simval', 'obsval', 'weight', 'obgnme', 'comments']
     return header
 
-
+def get_header_tr():
+    header = ['obs_group', 'obs_name', 'weight', 'obs_val', 'sim_val']
+    return header
 
 def add_obs(df, obsnams, simval, obsval, obsgnme, weight = 1.0, comments = '#'):
 

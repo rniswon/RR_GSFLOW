@@ -272,10 +272,16 @@ def change_upw_ss(Sim):
 def change_upw_tr(Sim):
 
     # extract upw package
-    upw = Sim.mf_tr.upw
+    upw = Sim.mf.upw
 
     # read in csv with new input parameters
     df = pd.read_csv(Sim.input_file, index_col=False)
+
+    # get K zones
+    zones = load_txt_3d(Sim.K_zones_file)
+
+
+    # update ks ---------------------------------------####
 
     # get current ks parameters
     ks = upw.hk.array.copy()
@@ -283,8 +289,6 @@ def change_upw_tr(Sim):
     # get new ks parameters
     df_upw = df[df['pargp'] == 'upw_ks']
 
-    # get zone names
-    zones = load_txt_3d(Sim.K_zones_file)
 
     # loop over zones and update ks
     for i, row in df_upw.iterrows():
@@ -292,6 +296,9 @@ def change_upw_tr(Sim):
         zone_id = float(nm.split("_")[1])
         mask = zones == zone_id
         ks[mask] = row['parval1']
+
+
+    # update vka ---------------------------------------####
 
     # get new vka parameters
     df_vka = df[df['pargp'] == 'upw_vka']
@@ -303,13 +310,52 @@ def change_upw_tr(Sim):
         layer_id = int(float(nm.split("_")[-1]))
         vka[layer_id - 1, :, :] = ks[layer_id - 1, :, :] * row['parval1']
 
+
+    # update sy ---------------------------------------####
+
+    # get current sy parameters
+    sy = upw.sy.array.copy()
+
+    # get new sy parameters
+    df_sy = df[df['pargp'] == 'upw_sy']
+
+    # loop over zones and update sy
+    for i, row in df_sy.iterrows():
+        nm = row['parnme']
+        zone_id = float(nm.split("_")[1])
+        mask = zones == zone_id
+        sy[mask] = row['parval1']
+
+
+
+    # update ss ---------------------------------------####
+
+    # get current ss parameters
+    ss = upw.ss.array.copy()
+
+    # get new sy parameters
+    df_ss = df[df['pargp'] == 'upw_ss']
+
+    # loop over zones and update ss
+    for i, row in df_ss.iterrows():
+        nm = row['parnme']
+        zone_id = float(nm.split("_")[1])
+        mask = zones == zone_id
+        ss[mask] = row['parval1']
+
+
+    # checks and storage ---------------------------------------####
+
     # make sure values aren't too low
+    # TODO: should I set limits for sy and ss?
     ks[ks <= 1e-5] = 1e-5
     vka[vka <= 1e-5] = 1e-5
 
     # update modflow object with new ks and vka parameters
-    Sim.mf_tr.upw.hk = ks
-    Sim.mf_tr.upw.vka = vka
+    Sim.mf.upw.hk = ks
+    Sim.mf.upw.vka = vka
+    Sim.mf.upw.sy = sy
+    Sim.mf.upw.ss = ss
 
     # print message
     print("UPW package is updated.")
@@ -317,8 +363,9 @@ def change_upw_tr(Sim):
 
 
 
+
 if __name__ == "__main__":
-    # allways make this inactive
+    # always make this inactive
     #generate_zone_files_from_shp()
     add_upw_parameters_to_input_file(input_file = r"input_param.csv" )
 

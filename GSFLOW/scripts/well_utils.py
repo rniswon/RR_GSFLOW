@@ -91,7 +91,7 @@ def change_well_tr(Sim):
     cols = [x - 1 for x in cols]
 
     # extract well package
-    well = Sim.mf_tr.wel
+    well = Sim.mf.wel
 
     # read in new pest parameters
     df = pd.read_csv(Sim.input_file, index_col=False)
@@ -107,6 +107,7 @@ def change_well_tr(Sim):
     for idx, param_row in df_well_param.iterrows():
 
         for (layer, row, col) in zip(layers, rows, cols):
+
             # identify wells in well package that need to be changed
             mask = (well_stress['k'] == layer) & (well_stress['i'] == row) & (well_stress['j'] == col) & (
                         well_stress['flux'] > 0)

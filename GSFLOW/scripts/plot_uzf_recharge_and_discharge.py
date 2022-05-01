@@ -95,7 +95,6 @@ if __name__ == "__main__":
     # set file paths
     file_path_recharge = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "uzf_recharge.out")
     file_path_discharge = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "uzf_discharge.out")
-    xx=1
 
     # settings
     analyze_day_01_recharge = 0

@@ -86,6 +86,105 @@ def generate_output_file_ss(Sim):
     pass
 
 
+def generate_output_file_tr(Sim):
+
+    # read in pest obs file
+
+
+    # heads -------------------------------------------####
+
+    # read in hob out file
+    df_hob = read_hob_out(Sim.mf)
+    for i, row in df_hob.iterrows():
+
+        # get data from hob out file
+        obs_nm = row['OBSERVATION NAME']
+        sim_val = row['SIMULATED EQUIVALENT']
+        obs_val = row['OBSERVED VALUE']
+
+        # store data in pest obs data frame
+
+
+
+
+    # streamflow -------------------------------------------####
+
+    # read in simulated streamflow (gage) files and create data frame
+
+    # match up simulated and obs streamflow data
+
+    # fill in simulated streamflow data into pest obs data frame
+
+
+
+    # pump change -------------------------------------------####
+
+    # calculate pump change for non-ag wells
+
+    # calculate pump change for ag wells
+
+    # fill in simulated pump change for non-ag wells
+
+    # fill in simulated pump change for ag wells
+
+
+
+    # store and export -------------------------------------------####
+
+    # Sim.df_obs = df_obs
+    # df_obs = df_obs[['simval', 'obsnme', 'obsval', 'weight', 'obgnme', 'comments']]
+    # df_obs.to_csv(Sim.output_file, index=None)
+
+
+
+
+    # old -------------------------------------------------####
+
+    # # get obs df header
+    # df_obs = pd.DataFrame(columns=obs_utils.get_header_tr())
+
+    # # hob
+    # df_hob = read_hob_out(Sim.mf)
+    # for i, row in df_hob.iterrows():
+    #     obs_nm = row['OBSERVATION NAME']
+    #     sim_val = row['SIMULATED EQUIVALENT']
+    #     obs_val = row['OBSERVED VALUE']
+    #     df_obs = obs_utils.add_obs(df = df_obs, obsnams = obs_nm, simval = sim_val,
+    #                                obsval = obs_val, obsgnme = 'HEADS', weight = 1.0, comments ='#')
+
+    # gages
+    gage_measurments = pd.read_csv(Sim.gage_measurement_file)
+    #gage_out_df  = compute_ss_local_baseflow(Sim)
+    compute_wateruse_per_subbasin(Sim)
+    gage_out_df = compute_ss_unimpaired_baseflow(Sim)
+    for i, row in gage_out_df.iterrows():
+        sim_val = row['flow']
+        if np.any(gage_measurments['gage_name'] == row['NWIS_ID']):
+            obs_val = gage_measurments.loc[gage_measurments['gage_name']== row['NWIS_ID'], 'ave_flow'].values[0]
+        else:
+            obs_val = -999
+
+        obs_val = float(obs_val)
+        ibasin = row['basin_id']
+        obs_nm = 'gflo_{}'.format(int(ibasin))
+        gage_name = row['Name']
+        df_obs = obs_utils.add_obs(df=df_obs, obsnams=obs_nm, simval=sim_val, obsval = obs_val,  obsgnme='GgFlo',
+                                   weight=1.0, comments=gage_name)
+
+    # change in pumping
+    pmp_chg = read_pump_reduc_file(Sim)
+    df_obs = obs_utils.add_obs(df=df_obs, obsnams='pmpchg', simval=pmp_chg, obsval=0.0,
+                               obsgnme='PmpCHG', weight=1.0, comments="# Total pump change")
+
+    # Sim.df_obs = df_obs
+    # df_obs = df_obs[['simval', 'obsnme', 'obsval', 'weight', 'obgnme', 'comments']]
+    # df_obs.to_csv(Sim.output_file, index=None)
+
+    pass
+
+
+
+
 def read_pump_reduc_file(Sim):
 
     # Get wel.out file name
