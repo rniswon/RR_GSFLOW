@@ -2,22 +2,24 @@ run_cluster = False
 
 if run_cluster == True:
     import os, sys
-    import flopy
-    import numpy as np
-    import pandas as pd
-    from collections.abc import Iterable
-    from param_utils import *
-else:
-    import os, sys
 
     fpath = os.path.abspath(os.path.dirname(__file__))
-    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
 
     # import flopy
     import numpy as np
     import pandas as pd
     # from collections.abc import Iterable
     from param_utils import *
+
+else:
+    import os, sys
+    import flopy
+    import numpy as np
+    import pandas as pd
+    from collections.abc import Iterable
+    from param_utils import *
+
 
 
 """

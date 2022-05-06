@@ -10,10 +10,14 @@ if run_cluster == True:
     import os, sys
 
     fpath = os.path.abspath(os.path.dirname(__file__))
-    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
 
     import pandas as pd
     import numpy as np
+    # import geopandas
+    import datetime as dt
+    from datetime import datetime
+    #from datetime import timedelta
     import flopy
     import sfr_utils
     import obs_utils
@@ -22,6 +26,10 @@ else:
     import os, sys
     import pandas as pd
     import numpy as np
+    # import geopandas
+    import datetime as dt
+    from datetime import datetime
+    #from datetime import timedelta
     import flopy
     import sfr_utils
     import obs_utils
@@ -89,101 +97,222 @@ def generate_output_file_ss(Sim):
 def generate_output_file_tr(Sim):
 
     # read in pest obs file
+    pest_obs_all = pd.read_csv(Sim.pest_obs_all)
 
 
     # heads -------------------------------------------####
 
     # read in hob out file
-    df_hob = read_hob_out(Sim.mf)
+    df_hob = read_hob_out_tr(Sim.mf)
     for i, row in df_hob.iterrows():
 
         # get data from hob out file
         obs_nm = row['OBSERVATION NAME']
         sim_val = row['SIMULATED EQUIVALENT']
-        obs_val = row['OBSERVED VALUE']
 
-        # store data in pest obs data frame
+        # store sim value in pest obs data frame
+        mask = pest_obs_all['obs_name'] == obs_nm
+        pest_obs_all.loc[mask, 'sim_val'] = sim_val
 
 
 
 
     # streamflow -------------------------------------------####
 
-    # read in simulated streamflow (gage) files and create data frame
+    # read in streamflow obs
+    gage_obs_df = pd.read_csv(Sim.gage_measurement_file)
+    #gage_hru_df = geopandas.read_file(Sim.gage_hru_file)
+    gage_hru_df = pd.read_csv(Sim.gage_hru_file)
 
-    # match up simulated and obs streamflow data
+
+    # read in simulated streamflow (gage) files and store in dictionary
+    sim_file_path = Sim.modflow_output_folder
+    sim_files = [x for x in os.listdir(sim_file_path) if x.endswith('.go')]
+    sim_dict = {}
+    for file in sim_files:
+
+        # read in gage file
+        gage_file = os.path.join(Sim.modflow_output_folder, file)
+        data = read_gage_tr(gage_file, Sim.start_date)
+        sim_df = pd.DataFrame.from_dict(data)
+        sim_df.date = pd.to_datetime(sim_df.date).dt.date  #TODO: why would we need this? - .values.astype(np.int64)
+        sim_df['gage_name'] = 'none'
+        sim_df['subbasin_id'] = 0
+        sim_df['gage_id'] = 0
+
+        # add gage name
+        gage_name = file.split(".")
+        gage_name = gage_name[0]
+        sim_df['gage_name'] = gage_name
+
+        # add subbasin id and gage id
+        mask = gage_hru_df['Gage_Name'] == gage_name
+        subbasin_id = gage_hru_df.loc[mask, 'subbasin'].values[0]
+        sim_df['subbasin_id'] = subbasin_id
+        gage_id = gage_hru_df.loc[mask, 'Name'].values[0]
+        sim_df['gage_id'] = gage_id
+
+        # create obs_name to match up with pest_obs_all data frame
+        site_id = sim_df['subbasin_id'].astype(str).str.zfill(2)
+        model_start_date = Sim.start_date
+        model_start_date = datetime.strptime(model_start_date, "%m-%d-%Y")
+        model_start_date = model_start_date.date()
+        sim_df['totim'] = (sim_df.date - model_start_date).dt.days + 1
+        date_id = sim_df['totim'].astype(str).str.zfill(4)
+        sim_df['obs_name'] = 'gflow_' + site_id + '.' + date_id
+
+        # convert flow units from m^3/day to ft^3/s
+        days_div_sec = 1/86400      # 1 day is 86400 seconds
+        ft3_div_m3 = 35.314667/1       # 35.314667 cubic feet in 1 cubic meter
+        sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
+
+        # store in dict
+        sim_dict.update({gage_id: sim_df})
+
+    # create data frame of all sim values
+    sim_df = pd.concat(sim_dict, ignore_index=True)
 
     # fill in simulated streamflow data into pest obs data frame
+    mask_gage_obs = pest_obs_all['obs_group'] == 'gage_flow'
+    pest_obs_gage_names = pest_obs_all.loc[mask_gage_obs, 'obs_name'].unique()
+    for obs_name in pest_obs_gage_names:
+
+        # get sim value for this obs
+        mask_gage_sim = sim_df['obs_name'] == obs_name
+        sim_val = sim_df.loc[mask_gage_sim, 'flow'].values[0]
+
+        # store sim value in pest obs df
+        mask_pest_obs_all = pest_obs_all['obs_name'] == obs_name
+        pest_obs_all.loc[mask_pest_obs_all, 'sim_val'] = sim_val
 
 
 
-    # pump change -------------------------------------------####
 
-    # calculate pump change for non-ag wells
+    # well package: read in and sum by stress period -------------------------------------------####
 
-    # calculate pump change for ag wells
+    # read in well file and sum by stress period
+    mf = flopy.modflow.Modflow.load(os.path.basename(Sim.name_file),
+                                    model_ws=os.path.dirname(Sim.name_file),  # can delete if code runs ok: model_ws=os.path.dirname(os.path.join(os.getcwd(), Sim.name_file))
+                                    load_only=["BAS6", "DIS", "WEL"],
+                                    verbose=True, forgive=False, version="mfnwt")
+    wel = mf.wel
+    wel_spd = wel.stress_period_data
+    wel_spd_df = wel_spd.get_dataframe()
 
-    # fill in simulated pump change for non-ag wells
+    # well file: calculate the total flux per stress period
+    sp = mf.modeltime.nper
+    nstp = mf.modeltime.nstp
+    wel_spd_df['flux_sp'] = np.nan
+    for i, sp in enumerate(list(range(sp))):
+        mask = wel_spd_df['per'] == sp
+        wel_spd_df.loc[mask, 'flux_sp'] = wel_spd_df.loc[mask, 'flux'] * nstp[i]
 
-    # fill in simulated pump change for ag wells
+    # well file: sum by stress period
+    wel_sp = wel_spd_df.groupby(['per'], as_index=False)[['flux_sp']].sum()
+    wel_sp['per'] = wel_sp['per'] + 1
+
+
+
+
+    # pump change: non-ag -------------------------------------------####
+
+    # read in pump reduction results
+    pump_red_nonag = flopy.utils.observationfile.get_reduced_pumping(Sim.pump_red_file_nonag)
+
+    # if pumping reduction file is not empty
+    if len(pump_red_nonag) > 0:
+
+        # pumping reduction: convert to data frame
+        pump_red_nonag = pd.DataFrame(pump_red_nonag)
+
+        # pumping reduction: sum by stress period
+        pump_red_nonag_sp = pump_red_nonag.groupby(['SP'], as_index=False)[['APPL.Q', 'ACT.Q']].sum()
+
+        # merge pumping reduction and well files
+        pump_red_nonag_wel_sp = pd.merge(pump_red_nonag_sp, wel_sp, how='left', left_on=['SP'], right_on=['per'])
+
+        # calculate fraction pumping reduction overall
+        fraction_reduced = (pump_red_nonag_wel_sp['APPL.Q'].sum() - pump_red_nonag_wel_sp['ACT.Q'].sum()) / pump_red_nonag_wel_sp['flux_sp'].sum()
+
+        # fill in simulated pump change in pest obs
+        mask = pest_obs_all['obs_name'] == 'pump_chg_nonag'
+        pest_obs_all.loc[mask, 'sim_val'] = fraction_reduced
+
+    else:
+
+        # fill in simulated pump change in pest obs
+        mask = pest_obs_all['obs_name'] == 'pump_chg_nonag'
+        pest_obs_all.loc[mask, 'sim_val'] = 0
+
+
+
+
+    # pump change: ag -------------------------------------------####
+
+    # read in pump reduction results
+    pump_red_ag = flopy.utils.observationfile.get_reduced_pumping(Sim.pump_red_file_ag)
+
+    # if pumping reduction file is not empty
+    if len(pump_red_ag) > 0:
+
+        # pumping reduction: convert to data frame
+        pump_red_ag = pd.DataFrame(pump_red_ag)
+
+        # pumping reduction: sum by stress period
+        pump_red_ag_sp = pump_red_ag.groupby(['SP'], as_index=False)[['APPL.Q', 'ACT.Q']].sum()
+
+        # merge pumping reduction and well files
+        pump_red_ag_wel_sp = pd.merge(pump_red_ag_sp, wel_sp, how='left', left_on=['SP'], right_on=['per'])
+
+        # calculate fraction pumping reduction overall
+        fraction_reduced = (pump_red_ag_wel_sp['APPL.Q'].sum() - pump_red_ag_wel_sp['ACT.Q'].sum()) / pump_red_ag_wel_sp['flux_sp'].sum()
+
+        # fill in simulated pump change
+        mask = pest_obs_all['obs_name'] == 'pump_chg_ag'
+        pest_obs_all.loc[mask, 'sim_val'] = fraction_reduced
+
+
+    else:
+
+        # fill in simulated pump change in pest obs
+        mask = pest_obs_all['obs_name'] == 'pump_chg_ag'
+        pest_obs_all.loc[mask, 'sim_val'] = 0
 
 
 
     # store and export -------------------------------------------####
 
-    # Sim.df_obs = df_obs
-    # df_obs = df_obs[['simval', 'obsnme', 'obsval', 'weight', 'obgnme', 'comments']]
-    # df_obs.to_csv(Sim.output_file, index=None)
+    # store pest obs
+    Sim.pest_obs_all_updated = pest_obs_all
 
-
-
-
-    # old -------------------------------------------------####
-
-    # # get obs df header
-    # df_obs = pd.DataFrame(columns=obs_utils.get_header_tr())
-
-    # # hob
-    # df_hob = read_hob_out(Sim.mf)
-    # for i, row in df_hob.iterrows():
-    #     obs_nm = row['OBSERVATION NAME']
-    #     sim_val = row['SIMULATED EQUIVALENT']
-    #     obs_val = row['OBSERVED VALUE']
-    #     df_obs = obs_utils.add_obs(df = df_obs, obsnams = obs_nm, simval = sim_val,
-    #                                obsval = obs_val, obsgnme = 'HEADS', weight = 1.0, comments ='#')
-
-    # gages
-    gage_measurments = pd.read_csv(Sim.gage_measurement_file)
-    #gage_out_df  = compute_ss_local_baseflow(Sim)
-    compute_wateruse_per_subbasin(Sim)
-    gage_out_df = compute_ss_unimpaired_baseflow(Sim)
-    for i, row in gage_out_df.iterrows():
-        sim_val = row['flow']
-        if np.any(gage_measurments['gage_name'] == row['NWIS_ID']):
-            obs_val = gage_measurments.loc[gage_measurments['gage_name']== row['NWIS_ID'], 'ave_flow'].values[0]
-        else:
-            obs_val = -999
-
-        obs_val = float(obs_val)
-        ibasin = row['basin_id']
-        obs_nm = 'gflo_{}'.format(int(ibasin))
-        gage_name = row['Name']
-        df_obs = obs_utils.add_obs(df=df_obs, obsnams=obs_nm, simval=sim_val, obsval = obs_val,  obsgnme='GgFlo',
-                                   weight=1.0, comments=gage_name)
-
-    # change in pumping
-    pmp_chg = read_pump_reduc_file(Sim)
-    df_obs = obs_utils.add_obs(df=df_obs, obsnams='pmpchg', simval=pmp_chg, obsval=0.0,
-                               obsgnme='PmpCHG', weight=1.0, comments="# Total pump change")
-
-    # Sim.df_obs = df_obs
-    # df_obs = df_obs[['simval', 'obsnme', 'obsval', 'weight', 'obgnme', 'comments']]
-    # df_obs.to_csv(Sim.output_file, index=None)
+    # export pest obs all
+    pest_obs_all.to_csv(Sim.model_output_file, index=False)
 
     pass
 
 
 
+
+def read_gage_tr(f, start_date="1-1-1970"):
+    dic = {'date': [], 'stage': [], 'flow': [], 'month': [], 'year': []}
+    m, d, y = [int(i) for i in start_date.split("-")]
+    start_date = dt.datetime(y, m, d) - dt.timedelta(seconds=1)
+    with open(f) as foo:
+        for ix, line in enumerate(foo):
+            if ix < 2:
+                continue
+            else:
+                t = line.strip().split()
+                date = start_date + dt.timedelta(days=float(t[0]))
+                stage = float(t[1])
+                flow = float(t[2])
+                dic['date'].append(date)
+                dic['year'].append(date.year)
+                dic['month'].append(date.month)
+                dic['stage'].append(stage)
+                dic['flow'].append(flow)
+
+    return dic
 
 def read_pump_reduc_file(Sim):
 
@@ -521,6 +650,56 @@ def read_hob_out(mf):
     df = pd.read_csv(hob_file, delim_whitespace=True )
 
     return df
+
+
+def read_hob_out_tr(mf):
+    """ Read hob.out
+    mf: flopy object
+
+    :return pandas dataframe
+    """
+
+    # read in -----------------------------------------------------------------------------####
+
+    found = 0
+    for i, file in enumerate(mf.external_fnames):
+        if "hob.out" in file:
+            found = 1
+            uniti = mf.get_output(file)
+            break
+    if found == 0:
+        ValueError("Cannot find hob output file.....")
+
+    # read hob file
+    hob_file = os.path.join(mf.model_ws, file)
+    df = pd.read_csv(hob_file, delim_whitespace=True )
+
+
+
+    # reformat obs name to match with pest obs names (padded with zeros) --------------------####
+
+    # get the site id and date id in separate columns
+    obsname_parts = df['OBSERVATION NAME'].str.split(pat='_', expand=True)
+    obsname_parts_idnum = obsname_parts.iloc[:, 1].str.split(pat='.', expand=True)
+    obsname_parts.iloc[:, 1] = obsname_parts_idnum.iloc[:, 0]
+
+    # pad site id with zeros
+    id_col = 1
+    max_val = obsname_parts.iloc[:, id_col].astype('int').max()
+    max_digits = len(str(max_val))
+    obsname_parts.iloc[:, id_col] = obsname_parts.iloc[:, id_col].str.zfill(max_digits)
+    obsname_parts = obsname_parts.astype(str) + '_'
+    obs_name = obsname_parts.sum(axis=1).str.rstrip('_')
+
+    # pad date id with zeros, join with site id, store in df_hob
+    mask = ~obsname_parts_idnum.iloc[:, 1].isnull()
+    date_id = obsname_parts_idnum.loc[mask, 1]
+    max_digits = len(str(date_id.astype('int').max()))
+    obs_name.loc[mask] = obs_name[mask] + '.' + date_id.str.zfill(max_digits)
+    df['OBSERVATION NAME'] = obs_name
+
+    return df
+
 
 def compute_subbasin_budgets(sim):
     columns = ['subbasin', 'rain', 'finf', 'recharge',

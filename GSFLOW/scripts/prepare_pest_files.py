@@ -26,13 +26,13 @@ pest_streamflow_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib
 pest_head_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_head.csv")
 
 # set pest file name
-pest_control_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "tr_mf.pst")
+pest_control_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "tr_mf.pst")
 
 # set tpl file name
-tpl_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "tplfile.tpl")
+tpl_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "tplfile.tpl")
 
 # set ins file name
-ins_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "insfile.ins")
+ins_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "insfile.ins")
 
 # set streamflow gage weights
 streamflow_gage_weights_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "streamflow_gage_weights.csv")
@@ -46,6 +46,8 @@ streamflow_gage_weights_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir"
 # -------------------------------------------------------------
 # Generate pst object
 # -------------------------------------------------------------
+
+print("Generate pest object, tpl file, and ins file")
 
 # Read in input param
 input_par = pd.read_csv(pest_input_param_file)
@@ -86,6 +88,9 @@ csv_to_tpl(csv_file = pest_input_param_file, name_col = 'parnme', par_col = 'par
 # Generate ins file
 def csv_to_ins(csv_file, name_col, obs_col, ins_file):
     df = pd.read_csv(csv_file)
+    mask_nan = ~df['obs_val'].isnull()
+    df = df[mask_nan]
+
     part1 = "l1"
     obs_is_last = False
     for icol, col in enumerate(df.columns):
@@ -111,13 +116,14 @@ csv_to_ins(csv_file = pest_all_obs_file_name, name_col = 'obs_name', obs_col = '
 
 
 
-# # ---- Create parameter dataframe --------------------------------------------------
+# ---- Create parameter dataframe --------------------------------------------------
+
+print("Generate parameter table")
 
 # Set K parameters and transformation
 kcond_param_groups = ['sfr_ks', 'upw_ks']
 pst.parameter_data['partrans'] = 'none'
 
-# TODO: which parameters should be log-transformed in code below?  it's just the K values for now
 
 # Assign initial parameter values
 for par in parnames:
@@ -141,29 +147,34 @@ for par in parnames:
 
     # Set parameter transformation and upper/lower bounds for upw_ss
     if grpnm.values[0] in 'upw_ss':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-10
-        pst.parameter_data.loc[mask, 'parubnd'] = 1e10
+        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-6
+        pst.parameter_data.loc[mask, 'parubnd'] = 1e-4
 
     # Set parameter transformation and upper/lower bounds for upw_sy
     if grpnm.values[0] in 'upw_sy':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0
-        pst.parameter_data.loc[mask, 'parubnd'] = 1
+        pst.parameter_data.loc[mask, 'parlbnd'] = 0.05
+        pst.parameter_data.loc[mask, 'parubnd'] = 0.2
 
     # Set parameter transformation and upper/lower bounds for upw_vka
     if grpnm.values[0] in 'upw_vka':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-10
-        pst.parameter_data.loc[mask, 'parubnd'] = 1e10
+        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-5
+        pst.parameter_data.loc[mask, 'parubnd'] = 1e3
 
-    # Set parameter transformation and upper/lower bounds for UZF vks and surfk
-    if grpnm.values[0] in ['uzf_vks', 'uzf_surfk']:
+    # Set parameter transformation and upper/lower bounds for UZF vks
+    if grpnm.values[0] in 'uzf_vks':
         pst.parameter_data.loc[mask, 'partrans'] = 'log'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1.0e-10
+        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-10
         pst.parameter_data.loc[mask, 'parubnd'] = 500
+
+    # Set parameter transformation and upper/lower bounds for surfk
+    if grpnm.values[0] in 'uzf_surfk':
+        pst.parameter_data.loc[mask, 'parlbnd'] = 0
+        pst.parameter_data.loc[mask, 'parubnd'] = 1
 
     # Set parameter transformation and upper/lower bounds for uzf_extdp
     if grpnm.values[0] in 'uzf_extdp':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.01   # TODO: what should the upper and lower bounds be here?
-        pst.parameter_data.loc[mask, 'parubnd'] = 100
+        pst.parameter_data.loc[mask, 'parlbnd'] = 0.3
+        pst.parameter_data.loc[mask, 'parubnd'] = 3
 
     # Set parameter transformation and upper/lower bounds for uzf_surfdep
     if grpnm.values[0] in 'uzf_surfdep':
@@ -172,15 +183,14 @@ for par in parnames:
 
     # Set parameter transformation and upper/lower bounds for ghb_bhead
     if grpnm.values[0] in 'ghb_head':
-        pst.parameter_data.loc[mask, 'partrans'] = 'log'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1.0e-5
-        pst.parameter_data.loc[mask, 'parubnd'] = 500.0
+        pst.parameter_data.loc[mask, 'parlbnd'] = 0.5
+        pst.parameter_data.loc[mask, 'parubnd'] = 2
 
     # Set parameter transformation and upper/lower bounds for lak_cd
-    if grpnm.values[0] in 'lak_cd':                            # TODO: should this be for all lakes? or just lake 12?
+    if grpnm.values[0] in 'lak_cd':
         pst.parameter_data.loc[mask, 'partrans'] = 'log'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.1
-        pst.parameter_data.loc[mask, 'parubnd'] = 10000
+        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-5
+        pst.parameter_data.loc[mask, 'parubnd'] = 1000
 
     # Set parameter transformation and upper/lower bounds for jh_coef
     if grpnm.values[0] in 'prms_jh_coef':
@@ -219,7 +229,6 @@ for par in parnames:
 
     # Set parameter transformation and upper/lower bounds for pond_recharge
     if par == "pond_recharge":
-        pst.parameter_data.loc[mask, 'partrans'] = 'log'
         pst.parameter_data.loc[mask, 'parlbnd'] = 1
         pst.parameter_data.loc[mask, 'parubnd'] = 100000
 
@@ -249,6 +258,8 @@ for par in parnames:
 
 # ---- Create observation dataframe --------------------------------------------------
 
+print("Generate observation table")
+
 # add obs value
 for obs in obsnames:
     obsval = output_obs.loc[output_obs['obs_name'] == obs, 'obs_val']
@@ -271,15 +282,19 @@ for obs in obsnames:
     obs_site_id = obs.split('.')[0]
     mask_pest_file = pst.observation_data['obsnme'] == obs
     mask_output_obs = output_obs['obs_name'] == obs
-    obsval = pst.observation_data.loc[mask_pest_file, 'obsval']
+    obsval = pst.observation_data.loc[mask_pest_file, 'obsval'].values[0]
 
     if obs_site_id in df_weights['site_id'].values:  # i.e. if it's a streamflow gage obs
 
         # assign weight
+        # TODO: if obsval = 0, then set weight to 0.01?
         if obs in zero_weight_gage:
             weight = 0
         else:
-            weight = 1.0/((obsval * 0.01)**0.5)   # TODO: why is the weight squared?  is that correct?  # For gage weights, assume the weight equals 1% of the observed value
+            if obsval == 0:
+                weight = 0.0001
+            else:
+                weight = (1.0/((obsval * 0.01)**0.5))/50   # TODO: why is the weight squared?  is that correct?  # For gage weights, assume the weight equals 1% of the observed value
 
         # store weight
         pst.observation_data.loc[mask_pest_file, 'weight'] = weight
@@ -287,15 +302,17 @@ for obs in obsnames:
 
 
 # set weights for change in pumping
-mask_pest_file = pst.observation_data['obsgnme'] == 'pump_chg'
+mask_pest_file = pst.observation_data['obgnme'] == 'pump_chg'
 mask_output_obs = output_obs['obs_group'] == 'pump_chg'
-weight_pump_chg = 1.0 / ((235000 * 5.0 / 100) ** 0.5)    # TODO: where did this come from?  is this what we want for the transient model?
+weight_pump_chg = (1.0 / ((235000 * 5.0 / 100) ** 0.5)) * 1e6    # TODO: where did this come from?  is this what we want for the transient model?
 pst.observation_data.loc[mask_pest_file, 'weight'] = weight_pump_chg
 output_obs.loc[mask_output_obs, 'weight'] = weight_pump_chg
 
 
 
 # ---- Write updated pest obs file --------------------------------------------------
+
+print("Export updated pest obs all file")
 
 # export
 file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_all.csv")
@@ -305,6 +322,8 @@ output_obs.to_csv(file_name, index=False)
 
 
 # ---- Create pest control file --------------------------------------------------
+
+print("Generate and export pest control file")
 
 # Assign file names for PEST control file
 pst.model_input_data['pest_file'] = [r'tplfile.tpl']

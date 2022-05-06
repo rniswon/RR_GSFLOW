@@ -31,6 +31,10 @@ gage_and_other_flows_file_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "
 # set gage hru file path
 gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.shp')
 
+# set output files
+pest_obs_head_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_head.csv")
+pest_obs_streamflow_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_streamflow.csv")
+pest_obs_all_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_all.csv")
 
 
 
@@ -40,7 +44,7 @@ gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'ga
 #-----------------------------------------------------------
 
 # create observed groundwater heads data frame
-def map_hobs_obsname_to_date(mf_tr_name_file):
+def map_hobs_obsname_to_date(mf_tr_name_file, pest_obs_head_file_name):
 
     # read in HOB input file
     mf = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
@@ -112,12 +116,11 @@ def map_hobs_obsname_to_date(mf_tr_name_file):
     hobs_df = hobs_df[['date', 'obs_site', 'totim', 'irefsp', 'toffset', 'obsname', 'hobs', 'weight', 'obs_group']]
 
     # export
-    file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_head.csv")
-    hobs_df.to_csv(file_name, index=False)
+    hobs_df.to_csv(pest_obs_head_file_name, index=False)
 
     return hobs_df
 
-hob_df = map_hobs_obsname_to_date(mf_name_file)
+hob_df = map_hobs_obsname_to_date(mf_name_file, pest_obs_head_file_name)
 
 
 
@@ -167,7 +170,7 @@ for gage_id in gage_ids:
 
     # create obsname for pest
     date_id = gage_and_other_flows['totim'].astype(str)
-    gage_and_other_flows['obs_name'] = 'gflow_' + gage_and_other_flows['subbasin_id'].astype(str) + '.' + date_id.str.zfill(4)
+    gage_and_other_flows['obs_name'] = 'gflow_' + gage_and_other_flows['subbasin_id'].astype(str).str.zfill(2) + '.' + date_id.str.zfill(4)
     mask = gage_and_other_flows['gage_name'] == 'none'
     gage_and_other_flows.loc[mask, 'obs_name'] = 'none'
 
@@ -179,8 +182,7 @@ for gage_id in gage_ids:
     gage_and_other_flows = gage_and_other_flows[['totim',  'date' , 'year', 'month', 'day', 'gage_id', 'gage_name', 'subbasin_id', 'obs_name', 'flow_cfs', 'weight', 'obs_group']]
 
     # export
-    file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_streamflow.csv")
-    gage_and_other_flows.to_csv(file_name, index=False)
+    gage_and_other_flows.to_csv(pest_obs_streamflow_file_name, index=False)
 
 
 
@@ -224,5 +226,4 @@ pest_all_obs = pd.concat([pest_head_obs, pest_gage_obs, pump_change_df])
 pest_all_obs['sim_val'] = -999
 
 # export
-file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_all.csv")
-pest_all_obs.to_csv(file_name, index=False)
+pest_all_obs.to_csv(pest_obs_all_file_name, index=False)

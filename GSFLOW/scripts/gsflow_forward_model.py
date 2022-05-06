@@ -1,21 +1,48 @@
 # ----------------------------------------------
 # Setup
 # ----------------------------------------------
+run_cluster = False
 
-import os, sys
-import pandas as pd
-import numpy as np
-import gsflow
-import flopy
+if run_cluster == True:
 
-import uzf_utils
-import sfr_utils
-import upw_utils
-import lak_utils
-import well_utils
-import output_utils
-import prms_utils
-import ghb_utils
+    import os, sys
+
+    fpath = os.path.abspath(os.path.dirname(__file__))
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
+
+    import pandas as pd
+    import numpy as np
+    import gsflow
+    import flopy
+    import time
+
+    import uzf_utils
+    import sfr_utils
+    import upw_utils
+    import lak_utils
+    import well_utils
+    import output_utils
+    import prms_utils
+    import ghb_utils
+
+
+else:
+
+    import os, sys
+    import pandas as pd
+    import numpy as np
+    import gsflow
+    import flopy
+    import time
+
+    import uzf_utils
+    import sfr_utils
+    import upw_utils
+    import lak_utils
+    import well_utils
+    import output_utils
+    import prms_utils
+    import ghb_utils
 
 
 # ----------------------------------------------
@@ -26,7 +53,9 @@ import ghb_utils
 script_ws = os.path.abspath(os.path.dirname(__file__))
 
 # set repo work space
-repo_ws = os.path.join(script_ws, "..", "..")
+repo_ws = os.path.join(script_ws, "..", "..", "..")
+
+
 
 
 
@@ -45,20 +74,31 @@ def run(input_file = None, real_no=-999, output_file = None):
     """
 
     # ----------------------------------------------
-    # Set file names
+    # Set file names and paths
     # ----------------------------------------------
     class Sim():
         pass
+    Sim.repo_ws = repo_ws
+    Sim.script_ws = script_ws
     Sim.name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows", "rr_tr.nam")
     Sim.prms_control = os.path.join(repo_ws, "GSFLOW", "worker_dir", 'windows', 'prms_rr.control')
     Sim.hru_shp_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "hru_shp.csv")
-    Sim.gage_file = os.path.join("GSFLOW", "worker_dir", "calib_files", 'gage_hru.shp')
+    #Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.shp')
+    Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.txt')
+    Sim.pest_obs_all = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_all.csv")
     Sim.gage_measurement_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_streamflow.csv")
     Sim.subbasins_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "subbasins.txt")
     Sim.surf_geo_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "surface_geology.txt")
     Sim.grid_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "grid_info.npy")
     Sim.K_zones_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "K_zone_ids_20220318.dat")
-    Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "ghb_hru_20220404.shp")
+    #Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "ghb_hru_20220404.shp")
+    Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "ghb_hru_20220404.txt")
+    Sim.pump_red_file_nonag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "pumping_reduction.out")
+    Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "pumping_reduction_ag.out")
+    Sim.model_output_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "model_output.csv")
+    Sim.modflow_output_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output")
+    Sim.windows_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows")
+
 
     if not(input_file is None):
         Sim.input_file = input_file
@@ -76,6 +116,16 @@ def run(input_file = None, real_no=-999, output_file = None):
             Sim.output_file = os.path.basename(output_file) + "_{}.csv".format(real_no)
         else:
             Sim.output_file = r"model_output_{}.csv".format(real_no)
+
+
+    # ----------------------------------------------
+    # Set constants
+    # ----------------------------------------------
+
+    # set start and end dates of modeling period
+    Sim.start_date = "01-01-1990"
+    Sim.end_date = "12-31-2015"
+
 
 
     # ----------------------------------------------
@@ -127,6 +177,16 @@ def run(input_file = None, real_no=-999, output_file = None):
     #         prms_soil_moist_max,  prms_soil_rechr_max_frac, prms_ssr2gw_rate
     prms_utils.change_prms_param(Sim)
 
+    # change file paths for export of updated model input files
+    # TODO: figure out why these files aren't being written to these file paths
+    Sim.mf.upw.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.upw")
+    Sim.mf.uzf.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.uzf")
+    Sim.mf.lak.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.lak")
+    Sim.mf.sfr.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.sfr")
+    Sim.mf.wel.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.wel")
+    Sim.mf.ghb.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.ghb")
+
+
     # write updated parameters
     Sim.mf.upw.write_file()
     Sim.mf.uzf.write_file()
@@ -145,8 +205,9 @@ def run(input_file = None, real_no=-999, output_file = None):
     # ----------------------------------------------
 
     base_folder = os.getcwd()
-    windows_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows")
+    windows_folder = Sim.windows_folder
     os.chdir(windows_folder)
+    print("Starting model run")
     os.system(r'run.bat')
     os.chdir(base_folder)
     print("Finished model run")
@@ -200,10 +261,18 @@ def run(input_file = None, real_no=-999, output_file = None):
 # ----------------------------------------------
 if __name__ == '__main__':
 
+    time_start = time.time()
     print("Starting model run")
+
     input_param_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "input_param.csv")
     run(input_file= input_param_file)
     #shutil.copyfile(r"model_output - Copy.csv", "model_output.csv")
     #run_simple_in_out('input_param.dat', 'model_output.dat', 'input_param.csv', 'model_output.csv')
+
     print("End of model run")
+    time_end = time.time()
+    seconds_per_hour = 3600
+    total_time_hr = (time_end - time_start)/seconds_per_hour
+    print("Total run time: ", total_time_hr, "hours")
+
     pass

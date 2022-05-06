@@ -4,7 +4,7 @@ if run_cluster == True:
     import os, sys
 
     fpath = os.path.abspath(os.path.dirname(__file__))
-    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
 
     import flopy
     import numpy as np
@@ -20,7 +20,7 @@ else:
     import numpy as np
     import pandas as pd
     from collections.abc import Iterable
-    import geopandas
+    #import geopandas
     from param_utils import *
     import copy
 

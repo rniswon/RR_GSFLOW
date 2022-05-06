@@ -4,7 +4,7 @@ if run_cluster == True:
     import os, sys
 
     fpath = os.path.abspath(os.path.dirname(__file__))
-    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
 
     import numpy as np
     import pandas as pd
@@ -76,7 +76,6 @@ def change_prms_param(Sim):
         month_list.append(this_month)
     month_arr = np.concatenate(month_list, axis=0)
 
-
     # update jh_coef
     max_digits_month = 2
     for month in list(range(1, num_months+1)):
@@ -141,7 +140,7 @@ def change_prms_param(Sim):
     ssr2gw_rate = df_ssr2gw_rate['parval1'].values[0] * vks_arr
     Sim.gs.prms.parameters.set_values("ssr2gw_rate", ssr2gw_rate)
 
-
-
+    # print message
+    print("PRMS parameters are updated")
 
 

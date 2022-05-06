@@ -1,5 +1,22 @@
-import pandas as pd
-from collections.abc import Iterable
+run_cluster = False
+
+if run_cluster == True:
+
+    import os, sys
+
+    fpath = os.path.abspath(os.path.dirname(__file__))
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
+
+    import pandas as pd
+    from collections.abc import Iterable
+
+else:
+
+    import os, sys
+    import pandas as pd
+    from collections.abc import Iterable
+
+
 
 def remove_group(df, gpname):
    df = df[df['pargp'] != gpname]

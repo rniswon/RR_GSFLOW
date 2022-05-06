@@ -4,7 +4,7 @@ if run_cluster == True:
     import os, sys
 
     fpath = os.path.abspath(os.path.dirname(__file__))
-    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
 
     import flopy
     import numpy as np
@@ -350,6 +350,8 @@ def change_upw_tr(Sim):
     # TODO: should I set limits for sy and ss?
     ks[ks <= 1e-5] = 1e-5
     vka[vka <= 1e-5] = 1e-5
+    sy[sy <= 1e-6] = 1e-6
+    ss[ss <= 0.05] = 0.05
 
     # update modflow object with new ks and vka parameters
     Sim.mf.upw.hk = ks

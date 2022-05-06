@@ -4,7 +4,7 @@ if run_cluster == True:
     import os, sys
 
     fpath = os.path.abspath(os.path.dirname(__file__))
-    os.environ["HOME"] = os.path.join(fpath, "..", "..", "Miniconda3")
+    os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
 
     import numpy as np
     import pandas as pd
@@ -14,7 +14,7 @@ if run_cluster == True:
     # from scipy import ndimage
     # import matplotlib.pyplot as plt
     from scipy.signal import convolve2d
-    import geopandas
+    # import geopandas
 
 else:
     import os, sys
@@ -26,7 +26,7 @@ else:
     from scipy import ndimage
     import matplotlib.pyplot as plt
     from scipy.signal import convolve2d
-    import geopandas
+    # import geopandas
 
 
 
@@ -46,7 +46,8 @@ def change_ghb_tr(Sim):
     df_ghb = df[df['pargp'] == 'ghb_bhead']
 
     # get GHB zones
-    zones = geopandas.read_file(Sim.ghb_file)
+    #zones = geopandas.read_file(Sim.ghb_file)
+    zones = pd.read_csv(Sim.ghb_file)
 
     # loop through GHB cells
     for i, row in zones.iterrows():
@@ -58,11 +59,12 @@ def change_ghb_tr(Sim):
 
         # get bhead value for this ghb_id
         par_name = 'bhead_factor_' + str(ghb_id)
-        bhead_factor = df_ghb['parnme'] == par_name
+        mask = df_ghb['parnme'] == par_name
+        bhead_factor = df_ghb.loc[mask, 'parval1'].values[0]
 
         # identify and update ghb cell
         mask = (ghb_spd0['i'] == hru_row_idx)  & (ghb_spd0['j'] == hru_col_idx)
-        ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead']  * bhead_factor
+        ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead'] * bhead_factor
 
         # store
         ipakcb = Sim.mf.ghb.ipakcb
