@@ -1,10 +1,12 @@
 import os, sys
 import numpy as np
 import pandas as pd
-import gsflow
-import flopy
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+import gsflow
+import flopy
+from flopy.export.utils import export_contourf
+
 
 
 
@@ -18,8 +20,7 @@ repo_ws = os.path.join(script_ws, "..", "..")
 
 
 
-
-# ---- Plot final transient heads -------------------------------------------####
+# ---- Read in model -------------------------------------------####
 
 # load transient modflow model
 mf_tr_name_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr.nam")
@@ -34,11 +35,19 @@ ibound_lyr1 = ibound[0,:,:]
 ibound_lyr2 = ibound[1,:,:]
 ibound_lyr3 = ibound[2,:,:]
 
+
+
+# ---- Plot transient heads: colormap -------------------------------------------####
+
 # get simulated heads after running model and plot: for start and end of model run period
 mf_tr_heads_file = os.path.join(repo_ws, "GSFLOW",  "modflow", "output", "rr_tr.hds")
 heads_file = os.path.join(os.getcwd(), mf_tr_heads_file)
 heads_all = flopy.utils.HeadFile(heads_file).get_alldata()
 heads_idx = [0, len(heads_all)-1]
+heads_lyr1_list = []
+heads_lyr2_list = []
+heads_lyr3_list = []
+ts_list = []
 for i in heads_idx:
 
     # extract heads
@@ -58,6 +67,11 @@ for i in heads_idx:
     mask_lyr3 = ibound_lyr3 == 0
     heads_lyr3[mask_lyr3] = np.nan
 
+    # store
+    ts_list.append(ts)
+    heads_lyr1_list.append(heads_lyr1)
+    heads_lyr2_list.append(heads_lyr2)
+    heads_lyr3_list.append(heads_lyr3)
 
     # plotting prep
     file_name = "sim_tr_heads_ts" + str(ts+1)
@@ -86,3 +100,57 @@ for i in heads_idx:
     plt.title(file_name_pretty + ": layer 3")
     file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr3.png')
     plt.savefig(file_path)
+
+
+
+# ---- Plot difference in sim heads over time: colormap -------------------------------------------####
+
+# calculate difference in sim heads
+diff_lyr1 = heads_lyr1_list[1] - heads_lyr1_list[0]
+diff_lyr2 = heads_lyr2_list[1] - heads_lyr2_list[0]
+diff_lyr3 = heads_lyr3_list[1] - heads_lyr3_list[0]
+
+# plotting prep
+file_name = "sim_tr_heads_diff_ts" + str(ts_list[1] + 1) + '_minus_ts' + str(ts_list[0] + 1)
+file_name_pretty = "Difference in simulated heads: \ntime step " + str(ts_list[1] + 1) + ' minus time step ' + str(ts_list[0] + 1)
+
+# plot heads difference: layer 1
+plt.figure(figsize=(4.5, 6), dpi=150)
+plt.imshow(diff_lyr1, norm=LogNorm())
+plt.colorbar()
+plt.title(file_name_pretty + "\nlayer 1")
+file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr1.png')
+plt.savefig(file_path)
+
+# plot heads difference: layer 2
+plt.figure(figsize=(4.5, 6), dpi=150)
+plt.imshow(diff_lyr2, norm=LogNorm())
+plt.colorbar()
+plt.title(file_name_pretty + "\nlayer 2")
+file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr2.png')
+plt.savefig(file_path)
+
+# plot heads difference: layer 3
+plt.figure(figsize=(4.5, 6), dpi=150)
+plt.imshow(diff_lyr3, norm=LogNorm())
+plt.colorbar()
+plt.title(file_name_pretty + "\nlayer 3")
+file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr3.png')
+plt.savefig(file_path)
+
+
+
+# ---- Plot transient heads: contours -------------------------------------------####
+
+# set contour intervals
+levels = np.arange(10, 30, 0.5)
+
+fig = plt.figure(figsize=(8, 8))
+ax = fig.add_subplot(1, 1, 1, aspect="equal")
+ax.set_title("contour_array()")
+mapview = flopy.plot.PlotMapView(model=mf_tr)
+contour_set = mapview.contour_array(heads_lyr2_list[0], masked_values=[999.0], levels=levels, filled=True)
+
+file_name = "sim_gw_head_contours_ts_" + str(ts+1)
+file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr2.shp')
+export_contourf(file_path, contour_set)

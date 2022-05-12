@@ -39,7 +39,9 @@ streamflow_gage_weights_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir"
 
 # # Set fixed parameters
 # fix_parms = []
-# fix_param_group = []
+fix_param_group = ["prms_jh_coef", "uzf_vks", "prms_soil_rechr_max_frac", "prms_slowcoef_sq", "prms_soil_moist_max", "prms_sat_threshold",
+                   "prms_slowcoef_lin", "sfr_ks", "ghb_bhead", "lak_cd", "uzf_surfk", "prms_ssr2gw_rate", "uzf_surfdep", "uzf_extdp"]
+
 
 
 
@@ -126,6 +128,8 @@ pst.parameter_data['partrans'] = 'none'
 
 
 # Assign initial parameter values
+lower_bound_buffer = 0.1
+upper_bound_buffer = 0.1
 for par in parnames:
 
     # Identify the parameter
@@ -133,7 +137,13 @@ for par in parnames:
 
     # Get initial val and grp name
     val = input_par.loc[input_par['parnme'] == par, 'parval1']
+    init_val = val.values[0]
     grpnm = input_par.loc[input_par['parnme'] == par, 'pargp']
+
+    # # Get min and max values for that group
+    # grpnm_mask = input_par['pargp'] == grpnm.values[0]
+    # min_param_val_group = input_par.loc[grpnm_mask, 'parval1'].min()
+    # max_param_val_group = input_par.loc[grpnm_mask, 'parval1'].max()
 
     # Set initial values
     pst.parameter_data.loc[ mask, 'parval1'] = val.values[0]
@@ -141,105 +151,268 @@ for par in parnames:
 
     # Set parameter transformation and upper/lower bounds for kcond_params
     if grpnm.values[0] in kcond_param_groups:
+
+        lower_bound = 1.0e-5
+        upper_bound = 500.0
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
         pst.parameter_data.loc[mask, 'partrans'] = 'log'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1.0e-5
-        pst.parameter_data.loc[mask, 'parubnd'] = 500.0
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
 
     # Set parameter transformation and upper/lower bounds for upw_ss
     if grpnm.values[0] in 'upw_ss':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-6
-        pst.parameter_data.loc[mask, 'parubnd'] = 1e-4
+
+        lower_bound = 1e-6
+        upper_bound = 1e-4
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
 
     # Set parameter transformation and upper/lower bounds for upw_sy
     if grpnm.values[0] in 'upw_sy':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.05
-        pst.parameter_data.loc[mask, 'parubnd'] = 0.2
 
-    # Set parameter transformation and upper/lower bounds for upw_vka
+        lower_bound = 0.05
+        upper_bound = 0.2
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for upw_vka multiplier
     if grpnm.values[0] in 'upw_vka':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-5
-        pst.parameter_data.loc[mask, 'parubnd'] = 1e3
 
-    # Set parameter transformation and upper/lower bounds for UZF vks
+        lower_bound = 1e-5
+        upper_bound = 1e3
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for uzf vks
     if grpnm.values[0] in 'uzf_vks':
-        pst.parameter_data.loc[mask, 'partrans'] = 'log'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-10
-        pst.parameter_data.loc[mask, 'parubnd'] = 500
 
-    # Set parameter transformation and upper/lower bounds for surfk
+        lower_bound = 1e-10
+        upper_bound = 500
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'partrans'] = 'log'
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for uzf surfk multiplier
     if grpnm.values[0] in 'uzf_surfk':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0
-        pst.parameter_data.loc[mask, 'parubnd'] = 1
+
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
 
     # Set parameter transformation and upper/lower bounds for uzf_extdp
     if grpnm.values[0] in 'uzf_extdp':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.3
-        pst.parameter_data.loc[mask, 'parubnd'] = 3
+
+        lower_bound = 0.3
+        upper_bound = 3
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
 
     # Set parameter transformation and upper/lower bounds for uzf_surfdep
     if grpnm.values[0] in 'uzf_surfdep':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.001   # TODO: what should the upper and lower bounds be here?
-        pst.parameter_data.loc[mask, 'parubnd'] = 1000
 
-    # Set parameter transformation and upper/lower bounds for ghb_bhead
+        lower_bound = 0.001                  # TODO: what should the upper and lower bounds be here?
+        upper_bound = 1000
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for ghb_bhead multiplier
     if grpnm.values[0] in 'ghb_head':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.5
-        pst.parameter_data.loc[mask, 'parubnd'] = 2
+
+        lower_bound = 0.5
+        upper_bound = 2
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
 
     # Set parameter transformation and upper/lower bounds for lak_cd
     if grpnm.values[0] in 'lak_cd':
+
+        lower_bound = 1e-5
+        upper_bound = 1000
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
         pst.parameter_data.loc[mask, 'partrans'] = 'log'
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1e-5
-        pst.parameter_data.loc[mask, 'parubnd'] = 1000
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
 
-    # Set parameter transformation and upper/lower bounds for jh_coef
+
+    # Set parameter transformation and upper/lower bounds for jh_coef multiplier
     if grpnm.values[0] in 'prms_jh_coef':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.005
-        pst.parameter_data.loc[mask, 'parubnd'] = 0.06
 
-    # Set parameter transformation and upper/lower bounds for sat_threshold
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for sat_threshold multiplier
     if grpnm.values[0] in 'prms_sat_threshold':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1
-        pst.parameter_data.loc[mask, 'parubnd'] = 999
 
-    # Set parameter transformation and upper/lower bounds for slowcoef_lin
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for slowcoef_lin multiplier
     if grpnm.values[0] in 'prms_slowcoef_lin':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.001
-        pst.parameter_data.loc[mask, 'parubnd'] = 0.5
 
-    # Set parameter transformation and upper/lower bounds for slowcoef_sq
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for slowcoef_sq multiplier
     if grpnm.values[0] in 'prms_slowcoef_sq':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.001
-        pst.parameter_data.loc[mask, 'parubnd'] = 1
 
-    # Set parameter transformation and upper/lower bounds for soil_moist_max
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for soil_moist_max multiplier
     if grpnm.values[0] in 'prms_soil_moist_max':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.001
-        pst.parameter_data.loc[mask, 'parubnd'] = 10
 
-    # Set parameter transformation and upper/lower bounds for soil_rechr_max_frac
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for soil_rechr_max_frac multiplier
     if grpnm.values[0] in 'prms_soil_rechr_max_frac':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.00001
-        pst.parameter_data.loc[mask, 'parubnd'] = 1
 
-    # Set parameter transformation and upper/lower bounds for ssr2gw_rate
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # Set parameter transformation and upper/lower bounds for ssr2gw_rate multiplier
     if grpnm.values[0] in 'prms_ssr2gw_rate':
-        pst.parameter_data.loc[mask, 'parlbnd'] = 0.0001
-        pst.parameter_data.loc[mask, 'parubnd'] = 999
+
+        lower_bound = 1e-5
+        upper_bound = 10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
 
     # Set parameter transformation and upper/lower bounds for pond_recharge
     if par == "pond_recharge":
-        pst.parameter_data.loc[mask, 'parlbnd'] = 1
-        pst.parameter_data.loc[mask, 'parubnd'] = 100000
 
-    # Make sure init values are within lower and upper bounds
-    val = pst.parameter_data.loc[mask, 'parval1'].values[0]
-    minval = pst.parameter_data.loc[mask, 'parlbnd'].values[0]
-    maxval = pst.parameter_data.loc[mask, 'parubnd'] .values[0]
-    if val > maxval:
-        pst.parameter_data.loc[mask, 'parval1'] = maxval
-    if val <minval:
-        pst.parameter_data.loc[mask, 'parval1'] = minval
+        lower_bound = 1
+        upper_bound = 100000
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
+    # # Make sure init values are within lower and upper bounds
+    # # NOTE: this artificially changes init values, I'm changing the upper/lower bounds above instead
+    # val = pst.parameter_data.loc[mask, 'parval1'].values[0]
+    # minval = pst.parameter_data.loc[mask, 'parlbnd'].values[0]
+    # maxval = pst.parameter_data.loc[mask, 'parubnd'] .values[0]
+    # if val > maxval:
+    #     pst.parameter_data.loc[mask, 'parval1'] = maxval
+    # if val <minval:
+    #     pst.parameter_data.loc[mask, 'parval1'] = minval
 
 
 
@@ -247,11 +420,11 @@ for par in parnames:
 # for par in fix_parms:
 #     mask = pst.parameter_data['parnme'] == par
 #     pst.parameter_data.loc[mask, 'partrans'] = 'fixed'
-#
-# # Set fixed parameters by parameter group
-# for par_grp in fix_param_group:
-#     mask = pst.parameter_data['pargp'] == par_grp
-#     pst.parameter_data.loc[mask, 'partrans'] = 'fixed'
+
+# Set fixed parameters by parameter group
+for par_grp in fix_param_group:
+    mask = pst.parameter_data['pargp'] == par_grp
+    pst.parameter_data.loc[mask, 'partrans'] = 'fixed'
 
 
 

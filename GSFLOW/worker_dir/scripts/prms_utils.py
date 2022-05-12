@@ -91,7 +91,7 @@ def change_prms_param(Sim):
             nm = row['parnme']
             sub = float(nm.split("_")[2])
             mask = (month_arr == month) & (subbasins_by_hru_and_month == sub)
-            jh_coef[mask] = row['parval1']
+            jh_coef[mask] = jh_coef[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("jh_coef", jh_coef)
 
     # update sat_threshold
@@ -99,7 +99,7 @@ def change_prms_param(Sim):
         nm = row['parnme']
         sub = float(nm.split("_")[-1])
         mask = subbasins == sub
-        sat_threshold[mask] = row['parval1']
+        sat_threshold[mask] = sat_threshold[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("sat_threshold", sat_threshold)
 
     # update slowcoef_lin
@@ -107,7 +107,7 @@ def change_prms_param(Sim):
         nm = row['parnme']
         sub = float(nm.split("_")[-1])
         mask = subbasins == sub
-        slowcoef_lin[mask] = row['parval1']
+        slowcoef_lin[mask] = slowcoef_lin[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("slowcoef_lin", slowcoef_lin)
 
     # update slowcoef_sq
@@ -115,7 +115,7 @@ def change_prms_param(Sim):
         nm = row['parnme']
         sub = float(nm.split("_")[-1])
         mask = subbasins == sub
-        slowcoef_sq[mask] = row['parval1']
+        slowcoef_sq[mask] = slowcoef_sq[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("slowcoef_sq", slowcoef_sq)
 
     # update soil_moist_max
@@ -123,7 +123,7 @@ def change_prms_param(Sim):
         nm = row['parnme']
         sub = float(nm.split("_")[-1])
         mask = subbasins == sub
-        soil_moist_max[mask] = row['parval1']
+        soil_moist_max[mask] = soil_moist_max[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("soil_moist_max", soil_moist_max)
 
     # update soil_rechr_max_frac
@@ -131,7 +131,7 @@ def change_prms_param(Sim):
         nm = row['parnme']
         sub = float(nm.split("_")[-1])
         mask = subbasins == sub
-        soil_rechr_max_frac[mask] = row['parval1']
+        soil_rechr_max_frac[mask] = soil_rechr_max_frac[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("soil_rechr_max_frac", soil_rechr_max_frac)
 
     # update ssr2gw_rate

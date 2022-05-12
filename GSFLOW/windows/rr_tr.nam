@@ -178,3 +178,9 @@ DATA            5104  ..\modflow\input\ag_diversions\div_seg_634.txt
 DATA            5105  ..\modflow\input\ag_diversions\div_seg_637.txt
 DATA            5106  ..\modflow\input\ag_diversions\div_seg_640.txt
 DATA            5107  ..\modflow\input\ag_diversions\div_seg_641.txt
+DATA			6000  ..\modflow\output\div_seg_451_flow.out
+DATA			6001  ..\modflow\output\div_seg_517_flow.out
+DATA			6002  ..\modflow\output\div_seg_638_flow.out
+DATA			6003  ..\modflow\output\div_seg_451_et.out
+DATA			6004  ..\modflow\output\div_seg_517_et.out
+DATA			6005  ..\modflow\output\div_seg_638_et.out

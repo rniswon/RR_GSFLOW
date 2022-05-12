@@ -104,7 +104,7 @@ num_row, num_col = iuzfbnd.shape
 # specific yield
 # note: K zones based on soil texture
 df_upw = input_param[input_param['pargp'] == 'upw_ks']
-sy = mf.upw.sy.array
+sy = mf.upw.sy.array.copy()
 K_zones_unique = np.unique(K_zones)
 K_zones_unique = K_zones_unique[K_zones_unique > 0]
 for zone in K_zones_unique:
@@ -126,7 +126,7 @@ for zone in K_zones_unique:
 # specific storage
 # note: K zones based on soil texture
 df_upw = input_param[input_param['pargp'] == 'upw_ks']
-ss = mf.upw.ss.array
+ss = mf.upw.ss.array.copy()
 K_zones_unique = np.unique(K_zones)
 K_zones_unique = K_zones_unique[K_zones_unique > 0]
 for zone in K_zones_unique:
@@ -159,9 +159,9 @@ input_param = param_utils.add_param(input_param, 'extdp' , extdp_val, 'uzf_extdp
 # note: make a scalar multiplier of vks
 surfk = mf.uzf.surfk.array
 vks = mf.uzf.vks.array
-surfk_ratio_array = surfk/vks
-surfk_ratio = np.mean(surfk_ratio_array[mask_active_cells])
-input_param = param_utils.add_param(input_param, 'surfk_ratio' , surfk_ratio, 'uzf_surfk', trans = 'none', comments = '#')
+surfk_mult_array = surfk/vks
+surfk_mult = np.mean(surfk_mult_array[mask_active_cells])
+input_param = param_utils.add_param(input_param, 'surfk_mult' , surfk_mult, 'uzf_surfk', trans = 'none', comments = '#')
 
 # slowcoef_sq
 # note: distribute by subbasin
@@ -171,9 +171,8 @@ uniq_subbasins = np.unique(subbasins)
 for sub_i in uniq_subbasins:
     if sub_i == 0:
         continue
-    nm = 'slowcoef_sq_{}'.format(int(sub_i))
-    mask = subbasins == int(sub_i)
-    val = np.mean(slowcoef_sq_arr[mask])
+    nm = 'slowcoef_sq_mult_{}'.format(int(sub_i))
+    val = 1   # set all multipliers to 1 to start
     input_param = param_utils.add_param(input_param, nm, val, 'prms_slowcoef_sq', trans = 'none', comments = '#')
 
 # sat_threshold
@@ -184,9 +183,8 @@ uniq_subbasins = np.unique(subbasins)
 for sub_i in uniq_subbasins:
     if sub_i == 0:
         continue
-    nm = 'sat_threshold_{}'.format(int(sub_i))
-    mask = subbasins == int(sub_i)
-    val = np.mean(sat_threshold_arr[mask])
+    nm = 'sat_threshold_mult_{}'.format(int(sub_i))
+    val = 1  # set all multipliers to 1 to start
     input_param = param_utils.add_param(input_param, nm, val, 'prms_sat_threshold', trans = 'none', comments = '#')
 
 # slowcoef_lin
@@ -197,23 +195,9 @@ uniq_subbasins = np.unique(subbasins)
 for sub_i in uniq_subbasins:
     if sub_i == 0:
         continue
-    nm = 'slowcoef_lin_{}'.format(int(sub_i))
-    mask = subbasins == int(sub_i)
-    val = np.mean(slowcoef_lin_arr[mask])
+    nm = 'slowcoef_lin_mult_{}'.format(int(sub_i))
+    val = 1
     input_param = param_utils.add_param(input_param, nm, val, 'prms_slowcoef_lin', trans = 'none', comments = '#')
-
-# slowcoef_sq
-# note: distribute by subbasin
-slowcoef_sq = gs.prms.parameters.get_values("slowcoef_sq")
-slowcoef_sq_arr = slowcoef_sq.reshape(num_row, num_col)
-uniq_subbasins = np.unique(subbasins)
-for sub_i in uniq_subbasins:
-    if sub_i == 0:
-        continue
-    nm = 'slowcoef_sq_{}'.format(int(sub_i))
-    mask = subbasins == int(sub_i)
-    val = np.mean(slowcoef_sq_arr[mask])
-    input_param = param_utils.add_param(input_param, nm, val, 'prms_slowcoef_sq', trans = 'none', comments = '#')
 
 # soil_moist_max
 # note: distribute by subbasin
@@ -223,9 +207,8 @@ uniq_subbasins = np.unique(subbasins)
 for sub_i in uniq_subbasins:
     if sub_i == 0:
         continue
-    nm = 'soil_moist_max_{}'.format(int(sub_i))
-    mask = subbasins == int(sub_i)
-    val = np.mean(soil_moist_max_arr[mask])
+    nm = 'soil_moist_max_mult_{}'.format(int(sub_i))
+    val = 1  # set all multipliers to 1 to start
     input_param = param_utils.add_param(input_param, nm, val, 'prms_soil_moist_max', trans = 'none', comments = '#')
 
 # soil_rechr_max_frac
@@ -236,9 +219,8 @@ uniq_subbasins = np.unique(subbasins)
 for sub_i in uniq_subbasins:
     if sub_i == 0:
         continue
-    nm = 'soil_rechr_max_frac_{}'.format(int(sub_i))
-    mask = subbasins == int(sub_i)
-    val = np.mean(soil_rechr_max_frac_arr[mask])
+    nm = 'soil_rechr_max_frac_mult_{}'.format(int(sub_i))
+    val = 1  # set all multipliers to 1 to start
     input_param = param_utils.add_param(input_param, nm, val, 'prms_soil_rechr_max_frac', trans = 'none', comments = '#')
 
 # ssr2gw_rate
@@ -246,9 +228,9 @@ for sub_i in uniq_subbasins:
 vks = mf.uzf.vks.array
 ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
 ssr2gw_rate_arr = ssr2gw_rate.reshape(num_row, num_col)
-ssr2gw_rate_ratio_array = ssr2gw_rate_arr/vks
-ssr2gw_rate_ratio = np.mean(ssr2gw_rate_ratio_array[mask_active_cells])
-input_param = param_utils.add_param(input_param, 'ssr2gw_rate_ratio' , ssr2gw_rate_ratio, 'prms_ssr2gw_rate', trans = 'none', comments = '#')
+ssr2gw_rate_mult_array = ssr2gw_rate_arr/vks
+ssr2gw_rate_mult = np.mean(ssr2gw_rate_mult_array[mask_active_cells])
+input_param = param_utils.add_param(input_param, 'ssr2gw_rate_mult' , ssr2gw_rate_mult, 'prms_ssr2gw_rate', trans = 'none', comments = '#')
 
 # jh_coef
 # note: distribute by subbasin (for each month)
@@ -267,13 +249,12 @@ for month in list(range(1,nmonths+1)):
     jh_coef_month = jh_coef[idx_start:idx_end]
     jh_coef_month_arr = jh_coef_month.reshape(num_row, num_col)
 
-    # get mean values per subbasin
+    # add parameter per subbasin
     for sub_i in uniq_subbasins:
         if sub_i == 0:
             continue
-        nm = 'jh_coef_' + str(int(month)) + '_' + str(int(sub_i))
-        mask = subbasins == int(sub_i)
-        val = np.mean(jh_coef_month_arr[mask])
+        nm = 'jh_coef_mult_' + str(int(month)) + '_' + str(int(sub_i))
+        val = 1   # set all multipliers to 1 to start
         input_param = param_utils.add_param(input_param, nm, val, 'prms_jh_coef', trans='none', comments='#')
 
 
@@ -284,8 +265,8 @@ for month in list(range(1,nmonths+1)):
 ghb_id = ghb_df['ghb_id_01'].unique()
 for id in ghb_id:
     xx=1
-    nm = 'bhead_factor_' + str(int(id))
-    val = 1  # set all factors to 1 to start
+    nm = 'bhead_mult_' + str(int(id))
+    val = 1  # set all multipliers to 1 to start
     input_param = param_utils.add_param(input_param, nm, val, 'ghb_bhead', trans='none', comments='#')
 
 
@@ -305,7 +286,20 @@ for i, row in df_upw.iterrows():
     vals = np.mean(kh[mask])
     param_utils.change_par_value(input_param, nm, vals)
 
-# note: don't need to update vka
+# update vka
+vka = mf.upw.vka.array.copy()
+hk = mf.upw.hk.array.copy()
+df_upw = input_param[input_param['pargp'] == 'upw_vka']
+lyr_idx = 0
+for i, row in df_upw.iterrows():
+    nm = row['parnme']
+    vka_ratio_array = vka[lyr_idx,:,:]/hk[lyr_idx,:,:]
+    lyr_idx = lyr_idx + 1
+    vals = np.mean(vka_ratio_array[mask_active_cells])
+    param_utils.change_par_value(input_param, nm, vals)
+
+
+
 
 
 
