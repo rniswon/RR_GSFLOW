@@ -78,7 +78,7 @@ for file in mf_files.keys():
             div_seg = df['SEGMENT'].values[0]
 
             # initialise the subplot function using number of rows and columns
-            fig, ax = plt.subplots(2, 1, figsize=(6,6), dpi=150)
+            fig, ax = plt.subplots(3, 1, figsize=(6,8), dpi=150)
 
             # plot ETww
             ax[0].plot(df['TIME'], df['ETww'])
@@ -91,6 +91,13 @@ for file in mf_files.keys():
             ax[1].set_title('ETa: diversion segment '+ str(div_seg))
             ax[1].set_xlabel('Time step')
             ax[1].set_ylabel('ETa')
+
+            # plot ETww-ETa
+            diff = df['ETww'] - df['ETa']
+            ax[1].plot(df['TIME'], diff)
+            ax[1].set_title('ETww - ETa: diversion segment '+ str(div_seg))
+            ax[1].set_xlabel('Time step')
+            ax[1].set_ylabel('ETww - ETa')
 
             # add spacing between subplots
             fig.tight_layout()

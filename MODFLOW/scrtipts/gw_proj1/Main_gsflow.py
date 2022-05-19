@@ -38,9 +38,9 @@ import flopy.utils.binaryfile as bf
 # Script settings
 # ==============================
 
-load_and_transfer_transient_files = 0
-update_starting_heads = 0
-update_starting_parameters = 0
+load_and_transfer_transient_files = 1
+update_starting_heads = 1
+update_starting_parameters = 1
 update_prms_control_for_gsflow = 1
 update_prms_params_for_gsflow = 1
 update_transient_model_for_smooth_running = 1
@@ -189,6 +189,21 @@ if load_and_transfer_transient_files == 1:
         shutil.rmtree(mf_dir_output)
     os.mkdir(mf_dir_output)
 
+    # copy over pumping_with_rural.wel
+    original = os.path.join(repo_ws, "MODFLOW", "tr", "pumping_with_rural.wel")
+    target = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "pumping_with_rural.wel")
+    shutil.copyfile(original, target)
+
+    # copy over pumping_with_rural.zip
+    original = os.path.join(repo_ws, "MODFLOW", "tr", "pumping_with_rural.zip")
+    target = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "pumping_with_rural.zip")
+    shutil.copyfile(original, target)
+
+    # copy over rr_tr.ag
+    original = os.path.join(repo_ws, "MODFLOW", "tr", "rr_tr.ag")
+    target = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "rr_tr.ag")
+    shutil.copyfile(original, target)
+
     # copy prms files and windows files (i.e. prms control, model run batch file)
     prms_folders_to_copy = ['windows', 'PRMS']
     for folder in prms_folders_to_copy:
@@ -244,6 +259,31 @@ if load_and_transfer_transient_files == 1:
             fidw.write(pp)
         fidw.write("\n")
     fidw.close()
+
+    # add file names to name file
+    fidw = open(dst, 'a')
+    fidw.write("AG               121  " + os.path.join(r'..\modflow\input', 'rr_tr.ag'))
+    fidw.write("\n")
+    fidw.write("DATA            1046  ..\modflow\output\pumping_reduction_ag.out")
+    fidw.write("\n")
+    fidw.close()
+
+
+    # replace rr_tr.wel with pumping_with_rural.wel in name file
+    f = open(dst, "r")
+    l = f.readlines()
+    f.close()
+    old_well_file = "rr_tr.wel"
+    new_well_file = "pumping_with_rural.wel"
+    f = open(dst, "w")
+    for i in l:
+        if old_well_file in i:
+            i_new = i.replace(old_well_file, new_well_file)
+            f.write(i_new)
+        else:
+            f.write(i)
+    f.close()
+
 
     # todo: fix lak reuse stress data
 
@@ -519,7 +559,7 @@ if update_transient_model_for_smooth_running == 1:
     # update nwt package values to those suggested by Rich
     mf_tr.nwt.headtol = 0.5
     mf_tr.nwt.fluxtol = 200000
-    mf_tr.nwt.maxiterout = 50
+    mf_tr.nwt.maxiterout = 100
     mf_tr.nwt.dbdtheta = 0.85
     mf_tr.nwt.backflag = 0
     mf_tr.nwt.iacl = 1
@@ -1010,6 +1050,17 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.vks = vks
 
 
+    # # update VKS: EXPERIMENT ------------------------------#
+    #
+    # # extract vks
+    # vks = mf_tr.uzf.vks.array
+    #
+    # # update vks
+    # vks = vks/3
+    #
+    # # store changes
+    # mf_tr.uzf.vks = vks
+
 
 
     # update thti ------------------------------#
@@ -1086,45 +1137,73 @@ if update_transient_model_for_smooth_running == 1:
 
     # update LAK ---------------------------------------------------------------####
 
-    # OLD
-    # # LAK: change the multipliers on lakebed leakance to 0.001
-    # mf_tr.lak.bdlknc.cnstnt = 0.001
-    #
-    # # write lake file
-    # mf_tr.lak.write_file()
+    # read in observed lake stages
+    obs_lake_stage_file = obs_lake_stage_file = os.path.join(repo_ws, "MODFLOW", "init_files", "LakeMendocino_LakeSonoma_Elevation.xlsx")
+    obs_lake_stage = pd.read_excel(obs_lake_stage_file, sheet_name='stages', na_values="--", parse_dates=['date'])
+    ft_to_meters = 0.3048
+    obs_lake_stage['lake_mendocino_stage_feet_NGVD29'] = obs_lake_stage['lake_mendocino_stage_feet_NGVD29'] * ft_to_meters
+    obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] = obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] * ft_to_meters
 
-    # # update nssitr
-    # mf_tr.lak.nssitr = 100
-    #
-    # # write lake file
-    # mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
-    # mf_tr.lak.write_file()
+    # get initial lake stage for reservoirs (stage on 1/1/1990)
+    mask = obs_lake_stage['date'] == datetime(1990, 1, 1)
+    initial_stage_m_lake1 = obs_lake_stage.loc[mask, 'lake_mendocino_stage_feet_NGVD29'].values[0]
+    initial_stage_m_lake2 = obs_lake_stage.loc[mask, 'lake_sonoma_stage_feet_NGVD29'].values[0]
+
+    # set initial lake stage for the reservoirs to the observed stage on 1/1/1990
+    mf_tr.lak.stages[0] = str(initial_stage_m_lake1)  # lake mendocino
+    mf_tr.lak.stages[1] = str(initial_stage_m_lake2)  # lake sonoma
+
+    # write lake file
+    mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
+    mf_tr.lak.write_file()
 
 
 
-    # update SFR: reservoir outflow spillway elevations ---------------------------------------------------------------####
+    # update SFR: reservoir outflow gate and spillway elevations ---------------------------------------------------------------####
 
     # extract sfr and lake packages
     lak = mf_tr.lak
     sfr = mf_tr.sfr
 
-    # assign spillway segments for the two reservoirs
-    spill_seg_lak01 = 446
-    spill_seg_lak02 = 448
+    # assign gate and spillway segments for the two reservoirs
+    # TODO: extract this from the  SFR file instead of hard-coding
+    gate_seg_lak01 = 446
+    spillway_seg_lak01 = 447
+    gate_seg_lak02 = 448
+    spillway_seg_lak02 = 449
 
-    # extract initial lake stage for the two reservoirs
-    init_stage_lak01 = float(lak.stages[0])
-    init_stage_lak02 = float(lak.stages[1])
+    # get min and max lake elevations (meters) for the two reservoirs
+    # TODO: extract this from lake bathymetry file instead of hard-coding
+    min_stage_lak01 = 193.55
+    max_stage_lak01 = 233.17
+    min_stage_lak02 = 67.36
+    max_stage_lak02 = 155.45
 
-    # identify lake spillway and assign updated value: lake 1
+    # assign buffer for deadpool storage in reservoirs
+    deadpool_buffer = 5 # meters
+
+    # get reach data
     reach_data = pd.DataFrame(sfr.reach_data)
-    mask = (reach_data['iseg'] == spill_seg_lak01) & (reach_data['ireach'] == 1)
-    reach_data.loc[mask, 'strtop'] = init_stage_lak01
 
-    # identify lake spillway and assign updated value: lake 2
-    reach_data = pd.DataFrame(sfr.reach_data)
-    mask = (reach_data['iseg'] == spill_seg_lak02) & (reach_data['ireach'] == 1)
-    reach_data.loc[mask, 'strtop'] = init_stage_lak02
+    # identify lake gate and assign updated value equal to min lake elev plus a buffer: lake 1
+    mask = (reach_data['iseg'] == gate_seg_lak01) & (reach_data['ireach'] == 1)
+    reach_data.loc[mask, 'strtop'] = min_stage_lak01 + deadpool_buffer
+    # TODO: update the layer for this seg
+
+    # identify lake gate and assign updated value equal to min lake elev plus a buffer: lake 2
+    mask = (reach_data['iseg'] == gate_seg_lak02) & (reach_data['ireach'] == 1)
+    reach_data.loc[mask, 'strtop'] = min_stage_lak02 + deadpool_buffer
+    # TODO: update the layer for this seg
+
+    # identify lake spillway segment and assign updated value equal to max lake elev: lake 1
+    mask = (reach_data['iseg'] == spillway_seg_lak01) & (reach_data['ireach'] == 1)
+    reach_data.loc[mask, 'strtop'] = max_stage_lak01
+    # TODO: update the layer for this seg
+
+    # identify lake spillway segment and assign updated value equal to max lake elev: lake 2
+    mask = (reach_data['iseg'] == spillway_seg_lak02) & (reach_data['ireach'] == 1)
+    reach_data.loc[mask, 'strtop'] = max_stage_lak02
+    # TODO: update the layer for this seg
 
     # store updated reach data
     mf_tr.sfr.reach_data = reach_data.to_records(index=False)
@@ -1680,7 +1759,7 @@ if update_prms_params_for_ag_package == 1:
 
 
 
-
+    # NOTE: this is incorrect, used up until 5/17/22
     # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
 
     # get jh_coef

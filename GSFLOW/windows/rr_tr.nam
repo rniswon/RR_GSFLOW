@@ -254,3 +254,7 @@ DATA			6072  ..\modflow\output\div_seg_636_et.out
 DATA			6073  ..\modflow\output\div_seg_638_et.out
 DATA			6074  ..\modflow\output\div_seg_639_et.out
 DATA			6075  ..\modflow\output\div_seg_642_et.out
+DATA            7000  ..\modflow\output\lake_1_outflow_seg_446.out
+DATA            7001  ..\modflow\output\lake_1_outflow_seg_447.out
+DATA            7002  ..\modflow\output\lake_2_outflow_seg_448.out
+DATA            7003  ..\modflow\output\lake_2_outflow_seg_449.out
