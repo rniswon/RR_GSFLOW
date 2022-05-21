@@ -94,10 +94,10 @@ for file in mf_files.keys():
 
             # plot ETww-ETa
             diff = df['ETww'] - df['ETa']
-            ax[1].plot(df['TIME'], diff)
-            ax[1].set_title('ETww - ETa: diversion segment '+ str(div_seg))
-            ax[1].set_xlabel('Time step')
-            ax[1].set_ylabel('ETww - ETa')
+            ax[2].plot(df['TIME'], diff)
+            ax[2].set_title('ETww - ETa: diversion segment '+ str(div_seg))
+            ax[2].set_xlabel('Time step')
+            ax[2].set_ylabel('ETww - ETa')
 
             # add spacing between subplots
             fig.tight_layout()

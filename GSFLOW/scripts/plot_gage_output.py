@@ -422,6 +422,22 @@ if __name__ == "__main__":
 
         # DAILY PLOTS  -------------------------------------------------####
 
+        # plot cumulative flows (based on daily flows)
+        obs_flow_cumul = sim_obs_daily['obs_flow'].cumsum()
+        sim_flow_cumul = sim_obs_daily['sim_flow'].cumsum()
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.plot(sim_obs_daily.date, obs_flow_cumul, label = 'Observed')
+        plt.plot(sim_obs_daily.date, sim_flow_cumul, label = 'Simulated', linestyle='dotted')
+        plt.title('Cumulative streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Date')
+        plt.ylabel('Cumulative streamflow (cubic feet)')
+        plt.legend()
+        file_name = 'cumul_streamflow_' + str(subbasin_id).zfill(2) + '.jpg'
+        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumul", file_name)
+        plt.savefig(file_path)
+
+
         # plot all daily flows on one page: time series
         #TODO: make the dates on the x-axis not overlap
         #fig, ax = plt.subplots(figsize=(20, 8))

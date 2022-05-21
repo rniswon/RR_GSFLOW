@@ -57,6 +57,7 @@ GSFLOW MODFLOW to PRMS          gsflow_mf2prms      2021-06-10
 GSFLOW Output Budget Summary    gsflow_budget       2021-09-28
 GSFLOW Output CSV Summary       gsflow_sum          2021-09-28
 Output Summary                  subbasin            2021-08-13
+Output Summary                  nhru_summary        2021-08-13
 ==============================================================
 GSFLOW MODFLOW main             gsflow_modflow      2021-09-28
 UZF-NWT Package                 gwf2uzf1_NWT        2021-03-02
@@ -79,5 +80,5 @@ Lake area:               4937.1656    Fraction lakes:          0.0063
 DPRST area:                4866.89    Fraction DPRST:          0.0062
 
 
-Execution elapsed time  130 minutes 39.75 seconds
+Execution elapsed time  108 minutes 15.66 seconds
 

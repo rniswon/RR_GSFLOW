@@ -384,7 +384,7 @@ if update_starting_parameters == 1:
     sfr_utils.change_sfr_tr(Sim)
 
     # update well parameters
-    well_utils.change_well_tr(Sim)
+    #well_utils.change_well_tr(Sim)
 
     # change file paths for export of updated model input files
     # TODO: figure out why these files aren't being written to these file paths
@@ -392,14 +392,14 @@ if update_starting_parameters == 1:
     Sim.mf_tr.upw.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.upw")
     Sim.mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
     Sim.mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
-    Sim.mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.wel")
+    #Sim.mf_tr.wel.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.wel")
 
     # export updated transient model input files
     Sim.mf_tr.lak.write_file()
     Sim.mf_tr.upw.write_file()
     Sim.mf_tr.uzf.write_file()
     Sim.mf_tr.sfr.write_file()
-    Sim.mf_tr.wel.write_file()
+    #Sim.mf_tr.wel.write_file()
 
 
 
@@ -524,6 +524,9 @@ if update_transient_model_for_smooth_running == 1:
     grid_file = os.path.join(repo_ws, "MODFLOW", "scrtipts", "gw_proj", "grid_info.npy")
     grid_all_old = np.load(grid_file, allow_pickle=True).all()
     geo_zones_old = grid_all_old['zones']
+
+    # get updated iupseg for ag div segments
+    ag_div_segment_iupseg_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_div_segments_iupseg_updated.xlsx")
 
     # set constants for geologic zones
     inactive = 0
@@ -1176,8 +1179,8 @@ if update_transient_model_for_smooth_running == 1:
     # TODO: extract this from lake bathymetry file instead of hard-coding
     min_stage_lak01 = 193.55
     max_stage_lak01 = 233.17
-    min_stage_lak02 = 67.36
-    max_stage_lak02 = 155.45
+    min_stage_lak02 = 130  # note: min lake stage is actually 67.36 m, but setting it higher because sim and obs stages not matching up when it is set lower
+    max_stage_lak02 = 147
 
     # assign buffer for deadpool storage in reservoirs
     deadpool_buffer = 5 # meters
@@ -1192,7 +1195,7 @@ if update_transient_model_for_smooth_running == 1:
 
     # identify lake gate and assign updated value equal to min lake elev plus a buffer: lake 2
     mask = (reach_data['iseg'] == gate_seg_lak02) & (reach_data['ireach'] == 1)
-    reach_data.loc[mask, 'strtop'] = min_stage_lak02 + deadpool_buffer
+    reach_data.loc[mask, 'strtop'] = min_stage_lak02 #+ deadpool_buffer
     # TODO: update the layer for this seg
 
     # identify lake spillway segment and assign updated value equal to max lake elev: lake 1
@@ -1211,6 +1214,40 @@ if update_transient_model_for_smooth_running == 1:
     # write sfr file
     mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
     mf_tr.sfr.write_file()
+
+
+
+
+    # update SFR: change iupseg for ag diversion segments --------------------------------------------####
+
+    # extract sfr package
+    sfr = mf_tr.sfr
+
+    # extract segment table
+    seg_data = pd.DataFrame(sfr.segment_data[0])
+
+    # read in file with updated ag diversion segment iupseg
+    ag_div_segment_iupseg_df = pd.read_excel(ag_div_segment_iupseg_file)
+
+    # loop through ag diversion segments and assign updated iupseg value
+    ag_div = ag_div_segment_iupseg_df['ag_div']
+    for div in ag_div:
+
+        # get updated iupseg for this diversion
+        mask = ag_div_segment_iupseg_df['ag_div'] == div
+        iupseg_updated = ag_div_segment_iupseg_df.loc[mask, 'ag_div_iupseg_main_stem'].values[0]
+
+        # update iupseg in seg_data
+        mask = seg_data['nseg'] == div
+        seg_data.loc[mask, 'iupseg'] = iupseg_updated
+
+    # store updated segment data
+    mf_tr.sfr.segment_data[0] = seg_data.to_records(index=False)
+
+    # write sfr file
+    mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    mf_tr.sfr.write_file()
+
 
 
 
@@ -1759,61 +1796,61 @@ if update_prms_params_for_ag_package == 1:
 
 
 
-    # NOTE: this is incorrect, used up until 5/17/22
-    # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
-
-    # get jh_coef
-    jh_coef = gs.prms.parameters.get_values('jh_coef')
-
-    # create data frame of jh_coef with nhru rows for each month
-    nhru = gs.prms.parameters.get_values('nhru')[0]
-    jh_coef_df = pd.DataFrame()
-    for idx, coef in enumerate(jh_coef):
-        col_name = "month_" + str(idx+1)
-        jh_coef_df[col_name] = [coef for val in range(nhru)]
-
-    # read in Kc values
-    kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
-    kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
-
-    # get list of unique crop types
-    crop_type = ag_data['crop_type'].unique().tolist()
-
-    # create array of hru ids
-    nhru = gs.prms.parameters.get_values('nhru')[0]
-    hru_id = np.asarray(list(range(1,(nhru+1), 1)))
-
-    # loop through months and crop types
-    num_months = 12
-    months = list(range(1,num_months + 1))
-    for month in months:
-
-        for crop in crop_type:
-
-            # get Kc for this month and crop type
-            kc_col = "KC_" + str(month)
-            kc_row = kc_data['CropName2'] == crop
-            kc = kc_data[kc_col][kc_row].values[0]
-
-            # identify hru ids of this crop
-            ag_mask = ag_data['crop_type'] == crop
-            crop_hru = ag_data['field_hru_id'][ag_mask].values
-
-            # create mask of these hru_ids in parameter file
-            param_mask = np.isin(hru_id, crop_hru)
-
-            # change jh_coef values for hru_ids with this crop in this month
-            col_name = "month_" + str(month)
-            jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
-
-
-    # format jh_coef_df for param file
-    jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
-    jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
-
-    # change jh_coef in parameter file
-    gs.prms.parameters.remove_record("jh_coef")
-    gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
+    # # NOTE: this is incorrect, used up until 5/17/22
+    # # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
+    #
+    # # get jh_coef
+    # jh_coef = gs.prms.parameters.get_values('jh_coef')
+    #
+    # # create data frame of jh_coef with nhru rows for each month
+    # nhru = gs.prms.parameters.get_values('nhru')[0]
+    # jh_coef_df = pd.DataFrame()
+    # for idx, coef in enumerate(jh_coef):
+    #     col_name = "month_" + str(idx+1)
+    #     jh_coef_df[col_name] = [coef for val in range(nhru)]
+    #
+    # # read in Kc values
+    # kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
+    # kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
+    #
+    # # get list of unique crop types
+    # crop_type = ag_data['crop_type'].unique().tolist()
+    #
+    # # create array of hru ids
+    # nhru = gs.prms.parameters.get_values('nhru')[0]
+    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
+    #
+    # # loop through months and crop types
+    # num_months = 12
+    # months = list(range(1,num_months + 1))
+    # for month in months:
+    #
+    #     for crop in crop_type:
+    #
+    #         # get Kc for this month and crop type
+    #         kc_col = "KC_" + str(month)
+    #         kc_row = kc_data['CropName2'] == crop
+    #         kc = kc_data[kc_col][kc_row].values[0]
+    #
+    #         # identify hru ids of this crop
+    #         ag_mask = ag_data['crop_type'] == crop
+    #         crop_hru = ag_data['field_hru_id'][ag_mask].values
+    #
+    #         # create mask of these hru_ids in parameter file
+    #         param_mask = np.isin(hru_id, crop_hru)
+    #
+    #         # change jh_coef values for hru_ids with this crop in this month
+    #         col_name = "month_" + str(month)
+    #         jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
+    #
+    #
+    # # format jh_coef_df for param file
+    # jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
+    # jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
+    #
+    # # change jh_coef in parameter file
+    # gs.prms.parameters.remove_record("jh_coef")
+    # gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
 
 
 
