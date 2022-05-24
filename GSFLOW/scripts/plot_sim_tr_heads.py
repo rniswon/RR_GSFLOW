@@ -140,17 +140,17 @@ plt.savefig(file_path)
 
 
 
-# ---- Plot transient heads: contours -------------------------------------------####
-
-# set contour intervals
-levels = np.arange(10, 30, 0.5)
-
-fig = plt.figure(figsize=(8, 8))
-ax = fig.add_subplot(1, 1, 1, aspect="equal")
-ax.set_title("contour_array()")
-mapview = flopy.plot.PlotMapView(model=mf_tr)
-contour_set = mapview.contour_array(heads_lyr2_list[0], masked_values=[999.0], levels=levels, filled=True)
-
-file_name = "sim_gw_head_contours_ts_" + str(ts+1)
-file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr2.shp')
-export_contourf(file_path, contour_set)
+# # ---- Plot transient heads: contours -------------------------------------------####
+#
+# # set contour intervals
+# levels = np.arange(10, 30, 0.5)
+#
+# fig = plt.figure(figsize=(8, 8))
+# ax = fig.add_subplot(1, 1, 1, aspect="equal")
+# ax.set_title("contour_array()")
+# mapview = flopy.plot.PlotMapView(model=mf_tr)
+# contour_set = mapview.contour_array(heads_lyr2_list[0], masked_values=[999.0], levels=levels, filled=True)
+#
+# file_name = "sim_gw_head_contours_ts_" + str(ts+1)
+# file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'sim_heads', file_name + '_lyr2.shp')
+# export_contourf(file_path, contour_set)

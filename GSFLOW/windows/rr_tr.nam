@@ -290,3 +290,5 @@ DATA            7038  ..\modflow\output\ag_iupseg_365.out
 DATA            7039  ..\modflow\output\mendo_inflow_seg64_rch3.out	
 DATA            7040  ..\modflow\output\mendo_inflow_seg70_rch9.out	
 DATA            7041  ..\modflow\input\redwood_valley_demand_test.dat
+DATA(BINARY) 	3000  ..\modflow\output\uzf_recharge.out
+DATA(BINARY)	3001  ..\modflow\output\uzf_discharge.out

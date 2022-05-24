@@ -559,13 +559,34 @@ if update_transient_model_for_smooth_running == 1:
 
     # update NWT -------------------------------------------------------------------####
 
-    # update nwt package values to those suggested by Rich
-    mf_tr.nwt.headtol = 0.5
+    # update nwt package values to those suggested by Rich: dataset 1
+    mf_tr.nwt.headtol = 0.25
     mf_tr.nwt.fluxtol = 200000
     mf_tr.nwt.maxiterout = 100
+    mf_tr.nwt.thickfact = 1e-7
+    mf_tr.nwt.linmeth = 2
+    mf_tr.nwt.iprnwt = 1
+    mf_tr.nwt.ibotav = 1
+    mf_tr.nwt.options = ['SPECIFIED']
     mf_tr.nwt.dbdtheta = 0.85
-    mf_tr.nwt.backflag = 0
+    mf_tr.nwt.dbdkappa = 1e-5
+    mf_tr.nwt.dbdgamma = 0
+    mf_tr.nwt.momfact = 0.1
+    mf_tr.nwt.backflag = 1
+    mf_tr.nwt.maxbackiter = 50
+    mf_tr.nwt.backtol = 3
+    mf_tr.nwt.backreduce = 0.7
+
+    # update nwt package values to those suggested by Rich: dataset 2
     mf_tr.nwt.iacl = 1
+    mf_tr.nwt.norder = 0
+    mf_tr.nwt.level = 7
+    mf_tr.nwt.north = 7
+    mf_tr.nwt.iredsys = 0
+    mf_tr.nwt.rrctols = 0
+    mf_tr.nwt.idroptol = 1
+    mf_tr.nwt.epsrn = 0.001
+    mf_tr.nwt.hclosexmd = 0.00015
     mf_tr.nwt.mxiterxmd = 20
 
     # write nwt file
@@ -913,6 +934,11 @@ if update_transient_model_for_smooth_running == 1:
     iuzfbnd[mask_lyr3] = 3
     iuzfbnd[mask_inactive] = 0
 
+    # set iuzfbnd to 0 for lake cells
+    lakes_lyr1 = mf_tr.lak.lakarr.array[0,0,:,:]
+    mask_lakes = lakes_lyr1 > 0
+    iuzfbnd[mask_lakes] = 0
+
     # store updated iuzfbnd
     mf_tr.uzf.iuzfbnd = iuzfbnd
 
@@ -1053,7 +1079,7 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.vks = vks
 
 
-    # # update VKS: EXPERIMENT ------------------------------#
+    # # update VKS: EXPERIMENT 20220523 ------------------------------#
     #
     # # extract vks
     # vks = mf_tr.uzf.vks.array
@@ -1344,6 +1370,7 @@ if update_transient_model_for_smooth_running == 1:
     # PRMS param file: scale the UZF VKS by a factor and use this to replace ssr2gw_rate in the PRMS param file
     ssr2gw_rate_change_factor = 0.05         # originally set this to 0.5
     vks_mod = mf_tr.uzf.vks.array * ssr2gw_rate_change_factor
+    #vks_mod = vks_mod.copy()/5     # EXPERIMENT 20220523
     nhru = gs.prms.parameters.get_values("nhru")[0]
     vks_mod = vks_mod.reshape(1,nhru)[0]
     gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
@@ -1393,6 +1420,24 @@ if update_transient_model_for_smooth_running == 1:
     # write prms param file -----------------------------------------------------------------------####
     gs.prms.parameters.write()
 
+
+
+    # # update VKS: EXPERIMENT 20220523 -----------------------------------------------------------------------#
+    #
+    # # NOTE: doing it down here so that it doesn't affect the ssr2gw_rate value
+    #
+    # # extract vks
+    # vks = mf_tr.uzf.vks.array
+    #
+    # # update vks
+    # vks = vks * 0.05
+    #
+    # # store changes
+    # mf_tr.uzf.vks = vks
+    #
+    # # write uzf file
+    # mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
+    # mf_tr.uzf.write_file()
 
 
 
@@ -1796,61 +1841,61 @@ if update_prms_params_for_ag_package == 1:
 
 
 
-    # # NOTE: this is incorrect, used up until 5/17/22
-    # # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
-    #
-    # # get jh_coef
-    # jh_coef = gs.prms.parameters.get_values('jh_coef')
-    #
-    # # create data frame of jh_coef with nhru rows for each month
-    # nhru = gs.prms.parameters.get_values('nhru')[0]
-    # jh_coef_df = pd.DataFrame()
-    # for idx, coef in enumerate(jh_coef):
-    #     col_name = "month_" + str(idx+1)
-    #     jh_coef_df[col_name] = [coef for val in range(nhru)]
-    #
-    # # read in Kc values
-    # kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
-    # kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
-    #
-    # # get list of unique crop types
-    # crop_type = ag_data['crop_type'].unique().tolist()
-    #
-    # # create array of hru ids
-    # nhru = gs.prms.parameters.get_values('nhru')[0]
-    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
-    #
-    # # loop through months and crop types
-    # num_months = 12
-    # months = list(range(1,num_months + 1))
-    # for month in months:
-    #
-    #     for crop in crop_type:
-    #
-    #         # get Kc for this month and crop type
-    #         kc_col = "KC_" + str(month)
-    #         kc_row = kc_data['CropName2'] == crop
-    #         kc = kc_data[kc_col][kc_row].values[0]
-    #
-    #         # identify hru ids of this crop
-    #         ag_mask = ag_data['crop_type'] == crop
-    #         crop_hru = ag_data['field_hru_id'][ag_mask].values
-    #
-    #         # create mask of these hru_ids in parameter file
-    #         param_mask = np.isin(hru_id, crop_hru)
-    #
-    #         # change jh_coef values for hru_ids with this crop in this month
-    #         col_name = "month_" + str(month)
-    #         jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
-    #
-    #
-    # # format jh_coef_df for param file
-    # jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
-    # jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
-    #
-    # # change jh_coef in parameter file
-    # gs.prms.parameters.remove_record("jh_coef")
-    # gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
+    # NOTE: this is incorrect, used up until 5/17/22
+    # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
+
+    # get jh_coef
+    jh_coef = gs.prms.parameters.get_values('jh_coef')
+
+    # create data frame of jh_coef with nhru rows for each month
+    nhru = gs.prms.parameters.get_values('nhru')[0]
+    jh_coef_df = pd.DataFrame()
+    for idx, coef in enumerate(jh_coef):
+        col_name = "month_" + str(idx+1)
+        jh_coef_df[col_name] = [coef for val in range(nhru)]
+
+    # read in Kc values
+    kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
+    kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
+
+    # get list of unique crop types
+    crop_type = ag_data['crop_type'].unique().tolist()
+
+    # create array of hru ids
+    nhru = gs.prms.parameters.get_values('nhru')[0]
+    hru_id = np.asarray(list(range(1,(nhru+1), 1)))
+
+    # loop through months and crop types
+    num_months = 12
+    months = list(range(1,num_months + 1))
+    for month in months:
+
+        for crop in crop_type:
+
+            # get Kc for this month and crop type
+            kc_col = "KC_" + str(month)
+            kc_row = kc_data['CropName2'] == crop
+            kc = kc_data[kc_col][kc_row].values[0]
+
+            # identify hru ids of this crop
+            ag_mask = ag_data['crop_type'] == crop
+            crop_hru = ag_data['field_hru_id'][ag_mask].values
+
+            # create mask of these hru_ids in parameter file
+            param_mask = np.isin(hru_id, crop_hru)
+
+            # change jh_coef values for hru_ids with this crop in this month
+            col_name = "month_" + str(month)
+            jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
+
+
+    # format jh_coef_df for param file
+    jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
+    jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
+
+    # change jh_coef in parameter file
+    gs.prms.parameters.remove_record("jh_coef")
+    gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
 
 
 

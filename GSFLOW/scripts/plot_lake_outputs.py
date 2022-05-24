@@ -140,9 +140,9 @@ def plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_s
 
 
 
-# ---- Function to plot lake budget: stages, evap, runoff, GW inflow/outflow, SW inflow/outflow ----------------------------####
+# ---- Function to plot lake budget components: stages, evap, runoff, GW inflow/outflow, SW inflow/outflow ----------------------------####
 
-def plot_lake_budget(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02):
+def plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02):
 
     # add date column to sim lake budget
     sim_lake_budget['date'] = pd.date_range(start="1989-12-31",end="2015-12-31")
@@ -295,9 +295,197 @@ def examine_lake_mendo(specified_outflows, subbasin_2_gage, mendo_inflow_seg64_r
 
 
 
+# ---- Function to plot annual lake budget components ---------------------------------------####
+
+def plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name):
+
+    # add date and year columns to sim lake budget
+    sim_lake_budget['date'] = pd.date_range(start="1989-12-31",end="2015-12-31")
+    sim_lake_budget['year'] = sim_lake_budget['date'].dt.year
+
+    # calculate annual sums for budget components
+    sim_lake_budget_annual = sim_lake_budget.groupby(['year'])['Volume', 'Precip.', 'Evap.', 'LAK-Runoff', 'UZF-Runoff', 'GW-Inflw', 'GW-Outflw', 'LAK-to-UZF', 'SW-Inflw', 'SW-Outflw', 'Withdrawal', 'Lake-Inflx'].sum().reset_index()
+    sim_lake_budget_annual = sim_lake_budget_annual[ sim_lake_budget_annual['year'] > 1989]
+
+    # initialise the subplot function using number of rows and columns
+    fig, ax = plt.subplots(6, 2, figsize=(8, 12), dpi=150)
+
+    # plot volume
+    ax[0,0].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['Volume'])
+    ax[0,0].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['Volume'])
+    ax[0,0].set_title('Volume: ' + lake_name)
+    ax[0,0].set_xlabel('Year')
+    ax[0,0].set_ylabel('Volume (m^3)')
+
+    # plot precip
+    ax[1,0].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['Precip.'])
+    ax[1,0].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['Precip.'])
+    ax[1,0].set_title('Precipitation: ' + lake_name)
+    ax[1,0].set_xlabel('Year')
+    ax[1,0].set_ylabel('Precipitation (m^3)')
+
+    # plot evaporation
+    ax[2,0].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['Evap.'])
+    ax[2,0].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['Evap.'])
+    ax[2,0].set_title('Evaporation: ' + lake_name)
+    ax[2,0].set_xlabel('Year')
+    ax[2,0].set_ylabel('Evaporation (m^3)')
+
+    # plot SW inflow
+    ax[3,0].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['SW-Inflw'])
+    ax[3,0].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['SW-Inflw'])
+    ax[3,0].set_title('SW-Inflw: ' + lake_name)
+    ax[3,0].set_xlabel('Year')
+    ax[3,0].set_ylabel('SW-Inflow (m^3)')
+
+    # plot SW outflow
+    ax[4,0].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['SW-Outflw'])
+    ax[4,0].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['SW-Outflw'])
+    ax[4,0].set_title('SW-Outflw: ' + lake_name)
+    ax[4,0].set_xlabel('Year')
+    ax[4,0].set_ylabel('SW-Outflow (m^3)')
+
+    # plot LAK-Runoff
+    ax[5,0].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['LAK-Runoff'])
+    ax[5,0].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['LAK-Runoff'])
+    ax[5,0].set_title('LAK-Runoff: ' + lake_name)
+    ax[5,0].set_xlabel('Year')
+    ax[5,0].set_ylabel('LAK-Runoff (m^3)')
+
+    # plot GW inflow
+    ax[0,1].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['GW-Inflw'])
+    ax[0,1].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['GW-Inflw'])
+    ax[0,1].set_title('GW-Inflw: ' + lake_name)
+    ax[0,1].set_xlabel('Year')
+    ax[0,1].set_ylabel('GW-Inflow (m^3)')
+
+    # plot GW outflow
+    ax[1,1].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['GW-Outflw'])
+    ax[1,1].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['GW-Outflw'])
+    ax[1,1].set_title('GW-Outflw: ' + lake_name)
+    ax[1,1].set_xlabel('Year')
+    ax[1,1].set_ylabel('GW-Outflow (m^3)')
+
+    # plot UZF-Runoff
+    ax[2,1].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['UZF-Runoff'])
+    ax[2,1].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['UZF-Runoff'])
+    ax[2,1].set_title('UZF-Runoff: ' + lake_name)
+    ax[2,1].set_xlabel('Year')
+    ax[2,1].set_ylabel('UZF-Runoff (m^3)')
+
+    # plot LAK-to-UZF
+    ax[3,1].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['LAK-to-UZF'])
+    ax[3,1].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['LAK-to-UZF'])
+    ax[3,1].set_title('LAK-to-UZF: ' + lake_name)
+    ax[3,1].set_xlabel('Year')
+    ax[3,1].set_ylabel('LAK-to-UZF (m^3)')
+
+    # plot withdrawal
+    ax[4,1].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['Withdrawal'])
+    ax[4,1].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['Withdrawal'])
+    ax[4,1].set_title('Withdrawal: ' + lake_name)
+    ax[4,1].set_xlabel('Year')
+    ax[4,1].set_ylabel('Withdrawal')
+
+    # plot lake influx
+    ax[5,1].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['Lake-Inflx'])
+    ax[5,1].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['Lake-Inflx'])
+    ax[5,1].set_title('Lake-Inflx: ' + lake_name)
+    ax[5,1].set_xlabel('Year')
+    ax[5,1].set_ylabel('Lake-Inflx')
+
+    # add spacing between subplots
+    fig.tight_layout()
+
+    # export
+    file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "lakes", out_file_name)
+    plt.savefig(file_path)
 
 
-# ---- Plot: lake 1 ----------------------------------------------------####
+
+
+# ---- Function to plot annual lake budget components ---------------------------------------####
+
+
+def plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name):
+
+    # add date and year columns to sim lake budget
+    sim_lake_budget['date'] = pd.date_range(start="1989-12-31",end="2015-12-31")
+    sim_lake_budget['year'] = sim_lake_budget['date'].dt.year
+
+    # calculate annual sums for budget components
+    sim_lake_budget_annual = sim_lake_budget.groupby(['year'])['Volume', 'Precip.', 'Evap.', 'LAK-Runoff', 'UZF-Runoff', 'GW-Inflw', 'GW-Outflw', 'LAK-to-UZF', 'SW-Inflw', 'SW-Outflw', 'Withdrawal', 'Lake-Inflx'].sum().reset_index()
+    sim_lake_budget_annual = sim_lake_budget_annual[ sim_lake_budget_annual['year'] > 1989]
+
+    # initialise the subplot function using number of rows and columns
+    fig, ax = plt.subplots(6, 1, figsize=(8, 12), dpi=150)
+
+    # plot volume
+    ax[0].plot(sim_lake_budget_annual['year'], sim_lake_budget_annual['Volume'])
+    ax[0].scatter(sim_lake_budget_annual['year'], sim_lake_budget_annual['Volume'])
+    ax[0].set_title('Volume: ' + lake_name)
+    ax[0].set_xlabel('Year')
+    ax[0].set_ylabel('Volume (m^3)')
+
+    # plot difference in SW
+    sw_diff = sim_lake_budget_annual['SW-Inflw'] - sim_lake_budget_annual['SW-Outflw']
+    ax[1].plot(sim_lake_budget_annual['year'], sw_diff)
+    ax[1].scatter(sim_lake_budget_annual['year'], sw_diff)
+    ax[1].axhline(y=0, color='r', linestyle='-')
+    ax[1].set_title('SW-Inflw - SW-Outflw: ' + lake_name)
+    ax[1].set_xlabel('Year')
+    ax[1].set_ylabel('SW-Inflw - SW-Outflw (m^3)')
+
+    # plot difference in GW
+    gw_diff = sim_lake_budget_annual['GW-Inflw'] - sim_lake_budget_annual['GW-Outflw']
+    ax[2].plot(sim_lake_budget_annual['year'], gw_diff)
+    ax[2].scatter(sim_lake_budget_annual['year'], gw_diff)
+    ax[2].axhline(y=0, color='r', linestyle='-')
+    ax[2].set_title('GW-Inflw - GW-Outflw: ' + lake_name)
+    ax[2].set_xlabel('Year')
+    ax[2].set_ylabel('GW-Inflw - GW-Outflw: (m^3)')
+
+    # plot precip-evap
+    precip_evap_diff = sim_lake_budget_annual['Precip.'] - sim_lake_budget_annual['Evap.']
+    ax[3].plot(sim_lake_budget_annual['year'], precip_evap_diff)
+    ax[3].scatter(sim_lake_budget_annual['year'], precip_evap_diff)
+    ax[3].axhline(y=0, color='r', linestyle='-')
+    ax[3].set_title('Precipitation - Evaporation: ' + lake_name)
+    ax[3].set_xlabel('Year')
+    ax[3].set_ylabel('Precipitation - Evaporation (m^3)')
+
+    # plot difference in SW inflow + LAK-runoff - SW outflow
+    sw_runoff_diff = sim_lake_budget_annual['SW-Inflw'] + sim_lake_budget_annual['LAK-Runoff'] - sim_lake_budget_annual['SW-Outflw']
+    ax[4].plot(sim_lake_budget_annual['year'], sw_runoff_diff)
+    ax[4].scatter(sim_lake_budget_annual['year'], sw_runoff_diff)
+    ax[4].axhline(y=0, color='r', linestyle='-')
+    ax[4].set_title('SW-Inflw + LAK-Runoff - SW-Outflw: ' + lake_name)
+    ax[4].set_xlabel('Year')
+    ax[4].set_ylabel('SW-Inflw + LAK-Runoff - SW-Outflw (m^3)')
+
+    # plot P + SWin + GWin + runoff - E - SWout - GWout
+    all_diff = sim_lake_budget_annual['Precip.'] + sim_lake_budget_annual['SW-Inflw'] + sim_lake_budget_annual['GW-Inflw'] + sim_lake_budget_annual['LAK-Runoff'] - - sim_lake_budget_annual['Evap.'] - sim_lake_budget_annual['SW-Outflw'] - sim_lake_budget_annual['GW-Outflw']
+    ax[5].plot(sim_lake_budget_annual['year'], all_diff)
+    ax[5].scatter(sim_lake_budget_annual['year'], all_diff)
+    ax[5].axhline(y=0, color='r', linestyle='-')
+    ax[5].set_title('P + SWin + GWin + runoff - E - SWout - GWout: ' + lake_name)
+    ax[5].set_xlabel('Year')
+    ax[5].set_ylabel('P + SWin + GWin + runoff - E - SWout - GWout (m^3)')
+
+    # add spacing between subplots
+    fig.tight_layout()
+
+    # export
+    file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "lakes", out_file_name)
+    plt.savefig(file_path)
+
+
+
+
+
+
+
+# ---- Plot: lake 1 -------------------------------------------------------------------####
 
 # plot lake outflows
 specified_outflows = lake_1_release
@@ -307,15 +495,25 @@ lake_id = 1
 out_file_name = 'specified_vs_sim_outflows_lake_1.jpg'
 plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name)
 
-
-# plot lake budget
+# plot lake budget - daily
 sim_lake_budget = lake_1_budget
 obs_lake_col = 'lake_mendocino_stage_feet_NGVD29'
 lake_name = 'Lake Mendocino'
 out_file_name_01 = 'budget_lake_1_group_1.jpg'
 out_file_name_02 = 'budget_lake_1_group_2.jpg'
-plot_lake_budget(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02)
+plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02)
 
+# plot lake budget - annual
+sim_lake_budget = lake_1_budget
+lake_name = 'Lake Mendocino'
+out_file_name = 'budget_lake_1_annual.jpg'
+plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name)
+
+# plot lake budget - annual diff
+sim_lake_budget = lake_1_budget
+lake_name = 'Lake Mendocino'
+out_file_name = 'budget_diff_lake_1_annual.jpg'
+plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name)
 
 # plot lake investigation
 specified_outflows = lake_1_release
@@ -338,11 +536,22 @@ lake_id = 2
 out_file_name = 'specified_vs_sim_outflows_lake_2.jpg'
 plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name)
 
-
-# plot lake budget
+# plot lake budget - daily
 sim_lake_budget = lake_2_budget
 obs_lake_col = 'lake_sonoma_stage_feet_NGVD29'
 lake_name = 'Lake Sonoma'
 out_file_name_01 = 'budget_lake_2_group_1.jpg'
 out_file_name_02 = 'budget_lake_2_group_2.jpg'
-plot_lake_budget(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02)
+plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02)
+
+# plot lake budget - annual
+sim_lake_budget = lake_2_budget
+lake_name = 'Lake Sonoma'
+out_file_name = 'budget_lake_2_annual.jpg'
+plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name)
+
+# plot lake budget - annual diff
+sim_lake_budget = lake_2_budget
+lake_name = 'Lake Sonoma'
+out_file_name = 'budget_diff_lake_2_annual.jpg'
+plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name)
