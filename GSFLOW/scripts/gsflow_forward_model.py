@@ -9,6 +9,7 @@ if run_cluster == True:
 
     fpath = os.path.abspath(os.path.dirname(__file__))
     os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
+    os.environ["HOMEPATH"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
 
     import pandas as pd
     import numpy as np

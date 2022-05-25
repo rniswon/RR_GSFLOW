@@ -277,8 +277,8 @@ def change_uzf_tr(Sim):
 
     # update surfk
     surfk_df = df[df['pargp'] == 'uzf_surfk']
-    surfk_ratio_val = surfk_df['parval1'].values[0]
-    surfk = vks * surfk_ratio_val
+    surfk_mult_val = surfk_df['parval1'].values[0]
+    surfk = vks * surfk_mult_val
     Sim.mf.uzf.surfk = surfk
 
     # update surfdep

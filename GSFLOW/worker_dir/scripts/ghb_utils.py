@@ -58,13 +58,13 @@ def change_ghb_tr(Sim):
         ghb_id = row['ghb_id_01']
 
         # get bhead value for this ghb_id
-        par_name = 'bhead_factor_' + str(ghb_id)
+        par_name = 'bhead_mult_' + str(ghb_id)
         mask = df_ghb['parnme'] == par_name
-        bhead_factor = df_ghb.loc[mask, 'parval1'].values[0]
+        bhead_mult = df_ghb.loc[mask, 'parval1'].values[0]
 
         # identify and update ghb cell
         mask = (ghb_spd0['i'] == hru_row_idx)  & (ghb_spd0['j'] == hru_col_idx)
-        ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead'] * bhead_factor
+        ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead'] * bhead_mult
 
         # store
         ipakcb = Sim.mf.ghb.ipakcb
