@@ -42,6 +42,7 @@ GSFLOW/PRMS/old
 GSFLOW/PRMS/output/**
 GSFLOW/gis
 GSFLOW/gsflow_scratch/
+GSFLOW/scratch/
 gsflow_scratch/
 gsflow_ag_scratch/
 MODFLOW/archived_models/**/*.hds

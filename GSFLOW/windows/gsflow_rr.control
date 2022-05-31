@@ -699,7 +699,36 @@ agriculture_canopy_flag
 1
 1
 1
-
+####
+nhruOutON_OFF
+1
+1
+1
+####
+nhruOutVars
+1
+1
+1
+####
+nhruOutVars
+1
+1
+1
+####
+nhruOutVar_names
+1
+4
+potet
+####
+nhruOutBaseFileName
+1
+4
+../PRMS/output/nhru_
+####
+nhruOut_freq
+1
+1
+4
 
 
 
