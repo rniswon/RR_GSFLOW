@@ -7,7 +7,7 @@ from gsflow.modflow import ModflowAg
 import gsflow
 
 #hru_param = geopandas.read_file(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\hru_shp_sfr.shp")
-ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version_with_ag\windows"
+ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\windows"
 #mf = flopy.modflow.Modflow.load("rr_tr.nam", model_ws= ws, load_only=['DIS', 'BAS6', 'UPW', 'AG'])
 
 def grid_to_shp(mf, xoff = 465900.0, yoff = 4238700, epsg= 26910 ):
@@ -18,7 +18,36 @@ def grid_to_shp(mf, xoff = 465900.0, yoff = 4238700, epsg= 26910 ):
 def generate_ag_gis():
     mf = flopy.modflow.Modflow.load("rr_tr.nam", model_ws=ws, load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
     ag_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\modflow\input\rr_tr.ag"
-    ag = ModflowAg.load(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\modflow\input\rr_tr.ag", mf, nper=36)
+    ag = ModflowAg.load(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\modflow\input\rr_tr.ag", mf, nper=36)
+    ag.fn_path = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\windows\rr_trXXX.ag"
+    #ag.write_file()
+    npr = list(ag.irrdiversion.keys())
+    dfs = []
+    for p in npr:
+        data = ag.irrdiversion[p]
+        df = pd.DataFrame(data)
+
+        for row_i, r_data in df.iterrows():
+            hru_ids = []
+
+            for c in df.columns:
+
+                if "hru_id" in c:
+                    if r_data[c] != 0:
+                        hru_ids.append(r_data[c])
+            df_ = pd.DataFrame()
+            df_['hru_id'] = hru_ids
+            df_['seg_id'] = r_data['segid']
+            df_['pr'] = p
+            dfs.append(df_.copy())
+
+
+
+
+
+
+
+    x = 1
     grid = mf.modelgrid
     from flopy.utils.geometry import Polygon, Point
     wells = ag.well_list
@@ -37,6 +66,7 @@ def generate_ag_gis():
 
     fname = r"D:\Workspace\projects\RussianRiver\Data\Archive_RR\ancillary\data\pumping\agricultural_pumping\ag_ponds.shp"
     ponds = ag.pond_list
+
     pond_geom = []
     for hru_id in ponds.hru_id:
         lay, row, col = grid.get_lrc(hru_id+1)[0]
@@ -81,7 +111,7 @@ def generate_grid_gis():
     mf = flopy.modflow.Modflow.load("rr_tr.nam", model_ws=ws, load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
 
     xoff = 465900.0
-    yoff = 4238700
+    yoff = 4238700 - 300
     epsg = 26910
     grid = mf.modelgrid
     grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)
@@ -90,6 +120,15 @@ def generate_grid_gis():
     thick3D =mf.modelgrid.thick.copy()
     ib2d = np.sum(ib3D, axis=0)
     ib2d[ib2d > 0] = 1
+
+    # produce sfr file:
+    sfr_shp_file = os.path.join(output_ws, r"sfr.shp")
+    mf.sfr.export(sfr_shp_file, epsg=epsg)
+    sfr_shp = geopandas.read_file(sfr_shp_file)
+    seg_data = pd.DataFrame(mf.sfr.segment_data[0])
+    sfr_shp = sfr_shp.merge(seg_data, left_on='iseg', right_on='nseg')
+    del (sfr_shp['nseg'])
+    sfr_shp.to_file(sfr_shp_file)
 
     parms = {}
     # dis
@@ -331,9 +370,9 @@ def generate_gsflow_shapefile(control_file = '', mf_namefile = '', output_ws = '
         mf.bas6.export(os.path.join(output_ws, 'gsflow_data2.shp'), epsg = epsg, array_dict = parms)
 
 xx = 1
-generate_ag_gis()
+#generate_ag_gis()
 #generate_contour_ss()
-#generate_grid_gis()
+generate_grid_gis()
 
 
 
