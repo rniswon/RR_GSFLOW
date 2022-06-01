@@ -1079,16 +1079,16 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.vks = vks
 
 
-    # # update VKS: EXPERIMENT 20220523 ------------------------------#
-    #
-    # # extract vks
-    # vks = mf_tr.uzf.vks.array
-    #
-    # # update vks
-    # vks = vks/3
-    #
-    # # store changes
-    # mf_tr.uzf.vks = vks
+    # update VKS: EXPERIMENT 20220517 ------------------------------#
+
+    # extract vks
+    vks = mf_tr.uzf.vks.array
+
+    # update vks
+    vks = vks/3
+
+    # store changes
+    mf_tr.uzf.vks = vks
 
 
 
@@ -1370,7 +1370,9 @@ if update_transient_model_for_smooth_running == 1:
     # PRMS param file: scale the UZF VKS by a factor and use this to replace ssr2gw_rate in the PRMS param file
     ssr2gw_rate_change_factor = 0.05         # originally set this to 0.5
     vks_mod = mf_tr.uzf.vks.array * ssr2gw_rate_change_factor
-    #vks_mod = vks_mod.copy()/5     # EXPERIMENT 20220523
+    # vks_mod = vks_mod.copy()/5     # EXPERIMENT 20220523
+    # mask_too_low = vks_mod < 0.01   # EXPERIMENT 20220527
+    # vks_mod[mask_too_low] = 0.01    # EXPERIMENT 20220527
     nhru = gs.prms.parameters.get_values("nhru")[0]
     vks_mod = vks_mod.reshape(1,nhru)[0]
     gs.prms.parameters.set_values("ssr2gw_rate", vks_mod)
@@ -1673,6 +1675,9 @@ if update_prms_params_for_ag_package == 1:
     ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
     ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1  # update pond HRUs to match changes made in generate_ag_package_transient.py
 
+    # read in PET ratios for AG HRUs
+    pet_ratio_by_hru_file = os.path.join(repo_ws, "MODFLOW", "init_files", "pet_ratio_by_hru.csv")
+
     # TODO to incorporate ag package into GSFLOW --> change only for ag cells
     # 1) cov_type should not be bare soil (cov_type=0).  soil_type should be set to soil_type=1 or higher, depending on the crop
     # 2) soil_moist_max is greater than daily max PET (>1inch)
@@ -1841,61 +1846,115 @@ if update_prms_params_for_ag_package == 1:
 
 
 
-    # NOTE: this is incorrect, used up until 5/17/22
-    # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
+
+    # Adjust jh_coef using PET ratio based on CIMIS ref ET data, crop coefficients, and PRMS PET (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
+
+    # read in PET ratio file
+    pet_ratio_by_hru = pd.read_csv(pet_ratio_by_hru_file)
 
     # get jh_coef
     jh_coef = gs.prms.parameters.get_values('jh_coef')
 
     # create data frame of jh_coef with nhru rows for each month
     nhru = gs.prms.parameters.get_values('nhru')[0]
+    hru_id = list(range(1,(nhru+1), 1))
     jh_coef_df = pd.DataFrame()
+    jh_coef_df['hru_id'] = hru_id
     for idx, coef in enumerate(jh_coef):
         col_name = "month_" + str(idx+1)
         jh_coef_df[col_name] = [coef for val in range(nhru)]
 
-    # read in Kc values
-    kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
-    kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
-
-    # get list of unique crop types
-    crop_type = ag_data['crop_type'].unique().tolist()
-
-    # create array of hru ids
-    nhru = gs.prms.parameters.get_values('nhru')[0]
-    hru_id = np.asarray(list(range(1,(nhru+1), 1)))
-
-    # loop through months and crop types
+    # loop through months
     num_months = 12
     months = list(range(1,num_months + 1))
     for month in months:
 
-        for crop in crop_type:
+        # get column names for this month
+        ratio_col = 'ratio_' + str(month)
+        month_col = 'month_' + str(month)
 
-            # get Kc for this month and crop type
-            kc_col = "KC_" + str(month)
-            kc_row = kc_data['CropName2'] == crop
-            kc = kc_data[kc_col][kc_row].values[0]
+        # loop through AG HRUs
+        ag_hrus = pet_ratio_by_hru['hru_id'].values
+        for ag_hru in ag_hrus:
 
-            # identify hru ids of this crop
-            ag_mask = ag_data['crop_type'] == crop
-            crop_hru = ag_data['field_hru_id'][ag_mask].values
+            # get ratio from pet ratio by hru df
+            pet_ratio_mask = pet_ratio_by_hru['hru_id'] == ag_hru
+            ratio_val = pet_ratio_by_hru.loc[pet_ratio_mask, ratio_col].values[0]
 
-            # create mask of these hru_ids in parameter file
-            param_mask = np.isin(hru_id, crop_hru)
-
-            # change jh_coef values for hru_ids with this crop in this month
-            col_name = "month_" + str(month)
-            jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
-
+            # calculate updated jh_coef and store in jh_coef df
+            jh_coef_mask = jh_coef_df['hru_id'] == ag_hru
+            jh_coef_val = jh_coef_df.loc[jh_coef_mask, month_col].values[0]
+            jh_coef_val_updated = jh_coef_val * ratio_val
+            jh_coef_df.loc[jh_coef_mask, month_col] = jh_coef_val_updated    # ORIGINAL
+            #jh_coef_df.loc[jh_coef_mask, month_col] = jh_coef_val_updated/4   # EXPERIMENT
 
     # format jh_coef_df for param file
-    jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
+    jh_coef_nhru_nmonths = pd.melt(jh_coef_df, id_vars='hru_id')
     jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
 
     # change jh_coef in parameter file
     gs.prms.parameters.remove_record("jh_coef")
     gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
+
+
+
+
+
+    # # NOTE: this is incorrect, used up until 5/17/22 (and after that a bit, in experiments)
+    # # Set jh_coef = (Kc)(jh_coef) where the Kc used is chosen by month and crop type (also make sure jh_coef is dimensioned by nmonth and nhru) --------------------####
+    #
+    # # get jh_coef
+    # jh_coef = gs.prms.parameters.get_values('jh_coef')
+    #
+    # # create data frame of jh_coef with nhru rows for each month
+    # nhru = gs.prms.parameters.get_values('nhru')[0]
+    # jh_coef_df = pd.DataFrame()
+    # for idx, coef in enumerate(jh_coef):
+    #     col_name = "month_" + str(idx+1)
+    #     jh_coef_df[col_name] = [coef for val in range(nhru)]
+    #
+    # # read in Kc values
+    # kc_file = os.path.join("../../init_files/KC_sonoma shared.xlsx")
+    # kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
+    #
+    # # get list of unique crop types
+    # crop_type = ag_data['crop_type'].unique().tolist()
+    #
+    # # create array of hru ids
+    # nhru = gs.prms.parameters.get_values('nhru')[0]
+    # hru_id = np.asarray(list(range(1,(nhru+1), 1)))
+    #
+    # # loop through months and crop types
+    # num_months = 12
+    # months = list(range(1,num_months + 1))
+    # for month in months:
+    #
+    #     for crop in crop_type:
+    #
+    #         # get Kc for this month and crop type
+    #         kc_col = "KC_" + str(month)
+    #         kc_row = kc_data['CropName2'] == crop
+    #         kc = kc_data[kc_col][kc_row].values[0]
+    #
+    #         # identify hru ids of this crop
+    #         ag_mask = ag_data['crop_type'] == crop
+    #         crop_hru = ag_data['field_hru_id'][ag_mask].values
+    #
+    #         # create mask of these hru_ids in parameter file
+    #         param_mask = np.isin(hru_id, crop_hru)
+    #
+    #         # change jh_coef values for hru_ids with this crop in this month
+    #         col_name = "month_" + str(month)
+    #         jh_coef_df[col_name][param_mask] = jh_coef_df[col_name][param_mask] * kc
+    #
+    #
+    # # format jh_coef_df for param file
+    # jh_coef_nhru_nmonths = pd.melt(jh_coef_df)
+    # jh_coef_nhru_nmonths = jh_coef_nhru_nmonths['value'].values
+    #
+    # # change jh_coef in parameter file
+    # gs.prms.parameters.remove_record("jh_coef")
+    # gs.prms.parameters.add_record(name = "jh_coef", values = jh_coef_nhru_nmonths, dimensions = [["nhru", nhru], ["nmonths", num_months]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])
 
 
 
