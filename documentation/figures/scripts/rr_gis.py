@@ -144,18 +144,18 @@ def generate_grid_gis():
 
     mf.bas6.export(os.path.join(output_ws, 'dis.shp'), epsg=epsg, array_dict=parms)
 
-    for i in range(mf.dis.nlay):
-        name = 'hk_{}'.format(i+1)
-        parms[name] = hk[i,:,:]*ib3D[i,:,:]
-
-        name = 'vka_{}'.format(i + 1)
-        parms[name] = vka[i, :, :]*ib3D[i,:,:]
-
-        name = 'sy_{}'.format(i + 1)
-        parms[name] = sy[i, :, :]*ib3D[i,:,:]
-
-        name = 'ss_{}'.format(i + 1)
-        parms[name] = ss[i, :, :] * ib3D[i, :, :]
+    # for i in range(mf.dis.nlay):
+    #     name = 'hk_{}'.format(i+1)
+    #     parms[name] = hk[i,:,:]*ib3D[i,:,:]
+    #
+    #     name = 'vka_{}'.format(i + 1)
+    #     parms[name] = vka[i, :, :]*ib3D[i,:,:]
+    #
+    #     name = 'sy_{}'.format(i + 1)
+    #     parms[name] = sy[i, :, :]*ib3D[i,:,:]
+    #
+    #     name = 'ss_{}'.format(i + 1)
+    #     parms[name] = ss[i, :, :] * ib3D[i, :, :]
 
 
 def generate_contour_ss():
