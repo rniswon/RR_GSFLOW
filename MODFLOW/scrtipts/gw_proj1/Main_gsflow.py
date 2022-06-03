@@ -409,9 +409,9 @@ if update_starting_parameters == 1:
 
 if update_prms_control_for_gsflow == 1:
 
-    # print
-    print('Update PRMS control for GSFLOW')
-
+    # # print
+    # print('Update PRMS control for GSFLOW')
+    #
     # # load gsflow model
     # gsflow_control = os.path.join(model_folder, 'windows', 'gsflow_rr.control')
     # gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
@@ -1079,16 +1079,16 @@ if update_transient_model_for_smooth_running == 1:
     # mf_tr.uzf.vks = vks
 
 
-    # update VKS: EXPERIMENT 20220517 ------------------------------#
-
-    # extract vks
-    vks = mf_tr.uzf.vks.array
-
-    # update vks
-    vks = vks/3
-
-    # store changes
-    mf_tr.uzf.vks = vks
+    # # update VKS: EXPERIMENT 20220517 ------------------------------#
+    #
+    # # extract vks
+    # vks = mf_tr.uzf.vks.array
+    #
+    # # update vks
+    # vks = vks/3
+    #
+    # # store changes
+    # mf_tr.uzf.vks = vks
 
 
 
@@ -2096,6 +2096,16 @@ if update_prms_params_for_ag_package == 1:
     # Q: what to do for soil_rechr_max? others?
 
 
+    # Set dprst_seep_rate_open=0 ------------------------------------------------------------------------#
+
+    dprst_seep_rate_open = 0
+    gs.prms.parameters.add_record(name = "dprst_seep_rate_open", values = [dprst_seep_rate_open],
+                                  dimensions = [["one",1]], datatype = 2,
+                                  file_name = gs.prms.parameters.parameter_files[1])
+
+
+
+
     # write prms param file
     gs.prms.parameters.write()
 
@@ -2270,7 +2280,9 @@ if update_ag_package == 1:
         Qmax_well = ag_data[mask]['Qmax_field'].sum()     # TODO: add up all fields irrigated by a well to get the Qmax for that well?  check that this is the right approach
 
         # store Qmax for this well
-        rec[3] = Qmax_well
+        rec[3] = Qmax_well   # ORIGINAL
+        #rec[3] = 0    # EXPERIMENT
+
 
 
     # save well list
@@ -2367,6 +2379,7 @@ if update_ag_package == 1:
     ag.well_list = well_list.to_records()
 
 
+
     #  update SFR FLOW for diversion segments ---------------------------------------------------------#
 
     # identify AG diversion segments
@@ -2389,7 +2402,8 @@ if update_ag_package == 1:
 
         # assign to segment data
         seg_mask = segment_data['nseg'] == div_seg
-        segment_data.loc[seg_mask, 'flow'] = max_daily_field_demand_m3
+        segment_data.loc[seg_mask, 'flow'] = max_daily_field_demand_m3   # ORIGINAL
+        #segment_data.loc[seg_mask, 'flow'] = 0      # EXPERIMENT
 
 
     # store updated segment data in sfr package
@@ -2448,11 +2462,20 @@ if create_tabfiles_for_pond_diversions == 1:
     # extract crop types
     crop_type = ag_data['crop_type'].unique().tolist()
 
+    # AFTER EXPERIMENT: GO BACK TO THIS VERSION
     # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
     Qmax_dict = {'Grapes': 1,
                  'Apples': 2.5,
                  'Mixed Pasture': 3.5,
                  'other': 1}
+
+    # # EXPERIMENT
+    # # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    # Qmax_dict = {'Grapes': 0.5,
+    #              'Apples': 0.5,
+    #              'Mixed Pasture': 0.5,
+    #              'other': 0.5}
+
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
     #days_per_year = 365
@@ -2551,7 +2574,9 @@ if create_tabfiles_for_pond_diversions == 1:
         # NOTE: updating to represent 5-day filling period for pond demand
         fraction_filled_per_day = 1/5
         qpond = pond_demand_m3 * fraction_filled_per_day
-        pond_list.loc[pond_list_mask, 'q'] = qpond
+        pond_list.loc[pond_list_mask, 'q'] = qpond     # ORIGINAL
+        #pond_list.loc[pond_list_mask, 'q'] = 0        # EXPERIMENT
+
 
 
     # store and export updated pond list
@@ -2639,7 +2664,8 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # create tabfile
         month_mask = this_tabfile['model_month'] == wettest_month
-        this_tabfile.loc[month_mask, 'daily_demand_m3'] = daily_irrig_demand_wettest_month
+        this_tabfile.loc[month_mask, 'daily_demand_m3'] = daily_irrig_demand_wettest_month   # ORIGINAL
+        #this_tabfile.loc[month_mask, 'daily_demand_m3'] = 0   # EXPERIMENT
         this_tabfile = this_tabfile[['model_time_step', 'daily_demand_m3']]
 
         # store number of lines in the tabfile

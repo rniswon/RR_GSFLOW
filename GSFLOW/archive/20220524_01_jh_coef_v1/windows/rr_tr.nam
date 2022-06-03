@@ -12,7 +12,7 @@ LAK              119  ..\modflow\input\rr_tr.lak
 WEL               20  ..\modflow\input\pumping_with_rural.wel
 HOB               39  ..\modflow\input\rr_tr.hob
 GAGE             120  ..\modflow\input\rr_tr.gage
-OC                14  ..\modflow\input\rr_tr.oc
+OC                14  ..\modflow\input\rr_tr_heavy.oc
 NWT               32  ..\modflow\input\rr_tr.nwt
 DATA            1001  ..\modflow\input\Potter_Valley_inflow.dat
 DATA            1002  ..\modflow\input\Mendo_Lake_release.dat

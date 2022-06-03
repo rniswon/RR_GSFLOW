@@ -57,9 +57,9 @@ runoff 22
  Data File time period: 1990/01/01 00:00:00 to 2015/12/31 00:00:00
 Simulation time period: 1990/01/01 00:00:00 to 2015/12/31 00:00:00
 ====================================================================
-Basin Definition                basin               2022-05-25
+Basin Definition                basin               2022-02-10
 Cascading Flow                  cascade             2021-11-19
-Common States and Fluxes        climateflow         2022-05-25
+Common States and Fluxes        climateflow         2022-05-10
 Potential Solar Radiation       soltab              2021-09-07
 Time Series Data                obs                 2022-01-12
 Timestep Control                prms_time           2022-04-21
@@ -70,15 +70,15 @@ Transpiration Distribution      transp_tindex       2021-09-07
 Potential Evapotranspiration    potet_jh            2021-11-19
 Canopy Interception             intcp               2022-05-09
 Snow Dynamics                   snowcomp            2022-04-27
-Surface Runoff                  srunoff_smidx       2022-05-26
-Soilzone Computations           soilzone            2022-05-26
-Soilzone Computations           soilzone_ag         2022-05-26
+Surface Runoff                  srunoff_smidx       2022-05-09
+Soilzone Computations           soilzone            2022-05-10
+Soilzone Computations           soilzone_ag         2022-05-10
 GSFLOW PRMS to MODFLOW          gsflow_prms2mf      2022-04-07
 GSFLOW MODFLOW to PRMS          gsflow_mf2prms      2022-02-18
 GSFLOW Output Budget Summary    gsflow_budget       2022-04-27
 GSFLOW Output CSV Summary       gsflow_sum          2022-04-22
 Output Summary                  subbasin            2022-04-21
-Output Summary                  nhru_summary        2021-11-23
+Output Summary                  nsub_summary        2021-11-23
 ==============================================================
 GSFLOW MODFLOW main             gsflow_modflow      2022-05-10
 UZF-NWT Package                 gwf2uzf1_NWT        2021-03-02
@@ -102,5 +102,5 @@ DPRST area:                4866.89    Fraction DPRST:          0.0062
 Agriculture area:         14299.98    Fraction AG:             0.0182
 
 
-Execution elapsed time -791 minutes -8.95 seconds
+Execution elapsed time  138 minutes  6.59 seconds
 
