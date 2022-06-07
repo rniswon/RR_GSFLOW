@@ -1,5 +1,5 @@
-zone_budget_output.csv csv2
-rr_tr.cbc
+../../archive/20220601_05/modflow/output/zone_budget_output.csv csv2
+../../archive/20220601_05/modflow/output/rr_tr.cbc
 russian_river
 zone_bud_subbasins.zon
 A

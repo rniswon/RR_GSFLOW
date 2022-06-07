@@ -39,7 +39,7 @@ for file in mf_files.keys():
         # get ag pond diversion segment id
         tmp = basename.split(sep='.')
         tmp = tmp[0].split(sep='_')
-        iupseg = tmp[2]
+        pond_div = tmp[2]
 
         # get data frame
         df = pd.read_csv(fn, delim_whitespace=True, skiprows=[0], header=None)
@@ -52,26 +52,26 @@ for file in mf_files.keys():
 
         # plot flow
         ax[0].plot(df['date'], df['midpt_flow'])
-        ax[0].set_title('Streamflow: segment ' + str(iupseg))
+        ax[0].set_title('Streamflow: segment ' + str(pond_div))
         ax[0].set_xlabel('Date')
         ax[0].set_ylabel('Streamflow (cmd)')
 
         # plot flow on log scale
         ax[1].plot(df['date'], df['midpt_flow'])
         ax[1].set_yscale('log')
-        ax[1].set_title('Streamflow: segment ' + str(iupseg))
+        ax[1].set_title('Streamflow: segment ' + str(pond_div))
         ax[1].set_xlabel('Date')
         ax[1].set_ylabel('Streamflow (cmd)')
 
         # plot stage
         ax[2].plot(df['date'], df['stage'])
-        ax[2].set_title('Stage: segment ' + str(iupseg))
+        ax[2].set_title('Stage: segment ' + str(pond_div))
         ax[2].set_xlabel('Date')
         ax[2].set_ylabel('Stage (m)')
 
         # plot depth
         ax[3].plot(df['date'], df['depth'])
-        ax[3].set_title('Depth: segment ' + str(iupseg))
+        ax[3].set_title('Depth: segment ' + str(pond_div))
         ax[3].set_xlabel('Date')
         ax[3].set_ylabel('Depth (m)')
 
@@ -79,6 +79,6 @@ for file in mf_files.keys():
         fig.tight_layout()
 
         # export
-        file_name = 'ag_pond_div_' + str(iupseg) + '.jpg'
+        file_name = 'ag_pond_div_' + str(pond_div) + '.jpg'
         file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "ag_pond_diversions", file_name)
         plt.savefig(file_path)
