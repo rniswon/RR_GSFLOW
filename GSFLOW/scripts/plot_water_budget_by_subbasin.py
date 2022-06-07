@@ -1,5 +1,8 @@
 #---- Notes ---------------------------------------------------------####
 
+# TODO: add simulated and observed streamflow to the surface water budget plots
+# TODO: add groundwater storage to the groundwater budget plots
+
 # From Josh
 # I wrote some code awhile back for FloPy that allows the user to get data in a pandas dataframe from zonebudget.
 # You'll need to run zonebudget first.
@@ -387,9 +390,9 @@ for sub in subs:
                              hue='variable',
                              style='variable',
                              data=df)
-    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'surface water budget')
+    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'surface water budget, annual sum')
     this_plot.set_xlabel('Year')
-    this_plot.set_ylabel('Value')
+    this_plot.set_ylabel('Volume (m^3)')
     file_name = 'surface_water_budget_' + str(sub) + '.png'
     file_path = os.path.join(plot_folder, file_name)
     fig = this_plot.get_figure()
@@ -406,9 +409,9 @@ for sub in subs:
                              hue='variable',
                              style='variable',
                              data=df)
-    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'agricultural water use')
+    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'agricultural water use, annual sum')
     this_plot.set_xlabel('Year')
-    this_plot.set_ylabel('Value')
+    this_plot.set_ylabel('Volume (m^3)')
     file_name = 'ag_water_use_' + str(sub) + '.png'
     file_path = os.path.join(plot_folder, file_name)
     fig = this_plot.get_figure()
@@ -425,9 +428,9 @@ for sub in subs:
                              hue='variable',
                              style='variable',
                              data=df)
-    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'groundwater budget')
+    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'groundwater budget, annual sum')
     this_plot.set_xlabel('Year')
-    this_plot.set_ylabel('Value')
+    this_plot.set_ylabel('Volume (m^3)')
     file_name = 'groundwater_budget_' + str(sub) + '.png'
     file_path = os.path.join(plot_folder, file_name)
     fig = this_plot.get_figure()
@@ -447,9 +450,9 @@ for sub in subs:
                              hue_order = selected_vars,
                              style='variable',
                              data=df)
-    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'subbasin lateral transfers')
+    this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'subbasin lateral transfers, annual sum')
     this_plot.set_xlabel('Year')
-    this_plot.set_ylabel('Value')
+    this_plot.set_ylabel('Volume (m^3)')
     file_name = 'subbasin_lateral_transfer_' + str(sub) + '.png'
     file_path = os.path.join(plot_folder, file_name)
     fig = this_plot.get_figure()
