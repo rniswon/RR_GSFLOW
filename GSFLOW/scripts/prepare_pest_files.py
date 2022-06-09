@@ -469,9 +469,11 @@ for obs in obsnames:
             else:
                 weight = (1.0/((obsval * 0.01)**0.5))/50   # TODO: why is the weight squared?  is that correct?  # For gage weights, assume the weight equals 1% of the observed value
 
-        # store weight
-        pst.observation_data.loc[mask_pest_file, 'weight'] = weight
-        output_obs.loc[mask_output_obs, 'weight'] = weight
+        # store weight if current weight is non-zero (zero weights intentionally set in generate_pest_obs_df.py)
+        current_weight = output_obs.loc[mask_output_obs, 'weight']
+        if current_weight > 0:
+            pst.observation_data.loc[mask_pest_file, 'weight'] = weight
+            output_obs.loc[mask_output_obs, 'weight'] = weight
 
 
 # set weights for change in pumping

@@ -23,10 +23,13 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set modflow name file
-mf_name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows", "rr_tr.nam")
+mf_name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows", "rr_tr.nam")   # TODO: go back to this
 
-# set file to streamflow gage file
+# set file for streamflow gage file
 gage_and_other_flows_file_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "RR_gage_and_other_flows.csv")
+
+# set file for lake stages
+obs_lake_stage_file = os.path.join(repo_ws, "MODFLOW", "init_files", "LakeMendocino_LakeSonoma_Elevation.xlsx")
 
 # set gage hru file path
 gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.shp')
@@ -115,6 +118,13 @@ def map_hobs_obsname_to_date(mf_tr_name_file, pest_obs_head_file_name):
     # reorder columns to match up with pest control file
     hobs_df = hobs_df[['date', 'obs_site', 'totim', 'irefsp', 'toffset', 'obsname', 'hobs', 'weight', 'obs_group']]
 
+    # set weight to 0 for first year of calibration period
+    hobs_df['date'] = pd.to_datetime(hobs_df['date'])
+    hobs_df['year'] = hobs_df['date'].dt.year
+    calib_first_year = 1990
+    mask_year = hobs_df['year'] == calib_first_year
+    hobs_df.loc[mask_year, 'weight'] = 0
+
     # export
     hobs_df.to_csv(pest_obs_head_file_name, index=False)
 
@@ -168,23 +178,30 @@ for gage_id in gage_ids:
     gage_and_other_flows.loc[gage_and_other_flows_mask, 'subbasin_id'] = subbasin_id
     gage_and_other_flows.loc[gage_and_other_flows_mask, 'gage_name'] = gage_name
 
-    # create obsname for pest
-    date_id = gage_and_other_flows['totim'].astype(str)
-    gage_and_other_flows['obs_name'] = 'gflow_' + gage_and_other_flows['subbasin_id'].astype(str).str.zfill(2) + '.' + date_id.str.zfill(4)
-    mask = gage_and_other_flows['gage_name'] == 'none'
-    gage_and_other_flows.loc[mask, 'obs_name'] = 'none'
+# create obsname for pest
+date_id = gage_and_other_flows['totim'].astype(str)
+gage_and_other_flows['obs_name'] = 'gflow_' + gage_and_other_flows['subbasin_id'].astype(str).str.zfill(2) + '.' + date_id.str.zfill(4)
+mask = gage_and_other_flows['gage_name'] == 'none'
+gage_and_other_flows.loc[mask, 'obs_name'] = 'none'
 
-    # create weight and obs group columns
-    gage_and_other_flows['weight'] = 1
-    gage_and_other_flows['obs_group'] = 'gage_flow'
+# create weight and obs group columns
+gage_and_other_flows['weight'] = 1
+gage_and_other_flows['obs_group'] = 'gage_flow'
 
-    # reorder
-    gage_and_other_flows = gage_and_other_flows[['totim',  'date' , 'year', 'month', 'day', 'gage_id', 'gage_name', 'subbasin_id', 'obs_name', 'flow_cfs', 'weight', 'obs_group']]
+# reorder
+gage_and_other_flows = gage_and_other_flows[['totim',  'date' , 'year', 'month', 'day', 'gage_id', 'gage_name', 'subbasin_id', 'obs_name', 'flow_cfs', 'weight', 'obs_group']]
 
-    # export
-    gage_and_other_flows.to_csv(pest_obs_streamflow_file_name, index=False)
+# set weight to 0 for first year of calibration period
+calib_first_year = 1990
+mask_year = gage_and_other_flows['year'] == calib_first_year
+gage_and_other_flows.loc[mask_year, 'weight'] = 0
 
+# set weight to 0 for subbasin 16
+mask_subbasin16 = gage_and_other_flows['subbasin_id'] == 16
+gage_and_other_flows.loc[mask_subbasin16, 'weight'] = 0
 
+# export
+gage_and_other_flows.to_csv(pest_obs_streamflow_file_name, index=False)
 
 
 
@@ -204,6 +221,55 @@ pump_change_df = pd.DataFrame({'obs_group': ['pump_chg','pump_chg'],
 
 
 
+#-------------------------------------------------------------------------
+# Prepare lake stages
+#-------------------------------------------------------------------------
+
+# read in observed lake stages
+obs_lake_stage = pd.read_excel(obs_lake_stage_file, sheet_name='stages', na_values="--", parse_dates=['date'])
+
+# reformat
+ft_to_meters = 0.3048
+obs_lake_stage['lake_mendocino'] = obs_lake_stage['lake_mendocino_stage_feet_NGVD29'] * ft_to_meters
+obs_lake_stage['lake_sonoma'] = obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] * ft_to_meters
+obs_lake_stage = obs_lake_stage.drop('lake_mendocino_stage_feet_NGVD29', 1)
+obs_lake_stage = obs_lake_stage.drop('lake_sonoma_stage_feet_NGVD29', 1)
+obs_lake_stage = obs_lake_stage.melt(id_vars = 'date', var_name = 'lake_name', value_name = 'obs_val')
+obs_lake_stage['year'] = obs_lake_stage['date'].dt.year
+obs_lake_stage['date'] = pd.to_datetime(obs_lake_stage['date']).dt.date
+
+# add obs_group column
+xx=1
+obs_lake_stage['obs_group'] = 'lake_stage'
+
+# add weight column
+obs_lake_stage['weight'] = 1
+mask_1990 = obs_lake_stage['year'] == 1990
+obs_lake_stage.loc[mask_1990, 'weight'] = 0
+
+# add a column for totim
+model_start_date = '1990-01-01'
+model_start_date = datetime.strptime(model_start_date, "%Y-%m-%d")
+model_start_date = model_start_date.date()
+obs_lake_stage['totim'] = (obs_lake_stage['date'] - model_start_date).dt.days + 1
+
+
+
+
+# add obs_name column
+# date_id = gage_and_other_flows['totim'].astype(str)
+# gage_and_other_flows['obs_name'] = 'gflow_' + gage_and_other_flows['subbasin_id'].astype(str).str.zfill(2) + '.' + date_id.str.zfill(4)
+
+
+
+#-------------------------------------------------------------------------
+# Prepare heads drawdown
+#-------------------------------------------------------------------------
+
+
+
+
+
 
 #-------------------------------------------------------------------------
 # Combine all pest obs into one data frame
@@ -213,7 +279,7 @@ pump_change_df = pd.DataFrame({'obs_group': ['pump_chg','pump_chg'],
 pest_head_obs = hob_df[['obs_group', 'obsname', 'weight', 'hobs']]
 pest_head_obs.columns = ['obs_group', 'obs_name', 'weight', 'obs_val']
 
-# get relevant gaged streamflow df columns and rename, filter obs to keep only those at subbasins
+# get relevant gaged streamflow df columns and rename, filter obs to keep only those at subbasin outlets
 pest_gage_obs = gage_and_other_flows[['obs_group', 'obs_name', 'weight', 'flow_cfs']]
 pest_gage_obs.columns = ['obs_group', 'obs_name', 'weight', 'obs_val']
 mask = ~(pest_gage_obs['obs_name'] == 'none')

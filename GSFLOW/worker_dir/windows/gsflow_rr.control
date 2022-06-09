@@ -644,7 +644,7 @@ nsubOutON_OFF
 nsubOutVars
 1
 1
-4
+6
 ####
 nsubOut_freq
 1
@@ -652,12 +652,14 @@ nsubOut_freq
 1
 ####
 nsubOutVar_names
-4
+6
 4
 hru_ppt
 potet
 hru_actet
 recharge
+ssres_flow
+sroff
 ####
 nsubOutBaseFileName
 1

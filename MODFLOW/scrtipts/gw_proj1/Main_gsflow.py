@@ -2571,13 +2571,12 @@ if create_tabfiles_for_pond_diversions == 1:
             pond_list.loc[pond_list_mask, 'pond_demand_m3'] = pond_demand_m3
 
 
-        # # NOTE: only need to do this if not using pond tabfiles, but we are using pond tabfiles so commenting out
-        # # Update QPOND in pond list
-        # # NOTE: updating to represent 5-day filling period for pond demand
-        # fraction_filled_per_day = 1/5
-        # qpond = pond_demand_m3 * fraction_filled_per_day
-        # pond_list.loc[pond_list_mask, 'q'] = qpond     # ORIGINAL
-        # #pond_list.loc[pond_list_mask, 'q'] = 0        # EXPERIMENT
+        # Update QPOND in pond list
+        # NOTE: updating to represent 5-day filling period for pond demand
+        fraction_filled_per_day = 1/5
+        qpond = pond_demand_m3 * fraction_filled_per_day
+        pond_list.loc[pond_list_mask, 'q'] = qpond     # ORIGINAL
+        #pond_list.loc[pond_list_mask, 'q'] = 0        # EXPERIMENT
 
     # # NOTE: only need to do this if not using pond tabfiles, but we are using pond tabfiles so commenting out
     # # store and export updated pond list
@@ -2716,8 +2715,6 @@ if create_tabfiles_for_pond_diversions == 1:
 
     # Update ag pond list to use pond tabfiles -------------------------------------------------------####
 
-    xx=1
-
     # add columns to pond list
     pond_list['tabpondunit'] = -999
     pond_list['tabpondval'] = -999
@@ -2737,15 +2734,17 @@ if create_tabfiles_for_pond_diversions == 1:
         pond_list.loc[mask_pond_list, 'tabpondval'] = num_lines
 
     # export pond list csv (until get ag package export working)
-    pond_list_19a = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid"]]
+    pond_list_19a = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid", "qfrac"]]
     pond_list_19a = pond_list_19a.sort_values(by='tabpondunit')
+    pond_list_19a['hru_id'] = pond_list_19a['hru_id'] + 1
     pond_list_file_path = os.path.join(repo_ws, "MODFLOW", "init_files", "pond_list_19a.csv")
     pond_list_19a.to_csv(pond_list_file_path, index=False)
 
 
     # Update ag options to use pond tabfiles -------------------------------------------------------####
 
-    ag.options.tabfilepond = True
+    # TODO: why aren't these outputting to the ag file?
+    ag.options.tabfilespond = True
     ag.options.numtabpond = len(pond_div_segs)
     ag.options.maxvalpond = pond_list_19a['tabpondval'].max()
 
@@ -2753,7 +2752,8 @@ if create_tabfiles_for_pond_diversions == 1:
     # Export ag file -------------------------------------------------------------------------####
 
     # store and export updated pond list
-    ag.pond_list = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid"]].to_records(index=False)
+    ag.pond_list = pond_list[["hru_id", "q", "segid", "qfrac"]].to_records(index=False)    # TODO: delete this once fix the error caused by the line below and the non-printing of the section above
+    #ag.pond_list = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid", "qfrac"]].to_records(index=False)    # TODO: uncomment this once fix the error caused by it in the write_file() function below
     ag.file_name[0] = os.path.join("..", "modflow", "input", "rr_tr.ag")
     ag.write_file()   # TODO: figure out why this has a "ValueError: no field of name q"
 
