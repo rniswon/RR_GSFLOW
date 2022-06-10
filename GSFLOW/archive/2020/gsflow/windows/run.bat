@@ -1,2 +1,0 @@
-gsflow_2_beta.exe gsflow_rr.control
-pause
