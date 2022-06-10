@@ -1,1 +1,0 @@
-Same as 20220315_02 except stopping it early so that it doesn't crash so we get final heads to plot

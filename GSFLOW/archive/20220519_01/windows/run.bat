@@ -1,2 +1,0 @@
-..\..\..\bin\gsflow_20220429.exe gsflow_rr.control
-pause

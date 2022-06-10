@@ -39,6 +39,13 @@ pest_obs_head_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_f
 pest_obs_streamflow_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_streamflow.csv")
 pest_obs_all_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_all.csv")
 
+# set model time period
+model_start_date = '1990-01-01'
+model_start_date = datetime.strptime(model_start_date, "%Y-%m-%d")
+model_start_date = model_start_date.date()
+model_end_date = '2015-12-31'
+model_end_date = datetime.strptime(model_end_date, "%Y-%m-%d")
+model_end_date = model_end_date.date()
 
 
 
@@ -47,7 +54,7 @@ pest_obs_all_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_fi
 #-----------------------------------------------------------
 
 # create observed groundwater heads data frame
-def map_hobs_obsname_to_date(mf_tr_name_file, pest_obs_head_file_name):
+def map_hobs_obsname_to_date(mf_tr_name_file, pest_obs_head_file_name, model_start_date):
 
     # read in HOB input file
     mf = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
@@ -81,8 +88,6 @@ def map_hobs_obsname_to_date(mf_tr_name_file, pest_obs_head_file_name):
         this_totim = row[1]['totim']  # TODO: why do I need this index here?
 
         # get date
-        model_start_date = '1990-01-01'
-        model_start_date = datetime.strptime(model_start_date, "%Y-%m-%d")
         hob_date = model_start_date + timedelta(days=this_totim)
 
         # store date
@@ -130,7 +135,7 @@ def map_hobs_obsname_to_date(mf_tr_name_file, pest_obs_head_file_name):
 
     return hobs_df
 
-hob_df = map_hobs_obsname_to_date(mf_name_file, pest_obs_head_file_name)
+hob_df = map_hobs_obsname_to_date(mf_name_file, pest_obs_head_file_name, model_start_date)
 
 
 
@@ -150,9 +155,6 @@ gage_hru_df = gage_hru_df[['subbasin', 'Name', 'Gage_Name']]
 gage_hru_df['Name'] = gage_hru_df['Name'].astype(str)
 
 # add a column for totim
-model_start_date = '1990-01-01'
-model_start_date = datetime.strptime(model_start_date, "%Y-%m-%d")
-model_start_date = model_start_date.date()
 gage_and_other_flows['totim'] = (gage_and_other_flows.date - model_start_date).dt.days + 1   # note: adding 1 because totim is 1-based
 
 # convert to long format
@@ -238,8 +240,18 @@ obs_lake_stage = obs_lake_stage.melt(id_vars = 'date', var_name = 'lake_name', v
 obs_lake_stage['year'] = obs_lake_stage['date'].dt.year
 obs_lake_stage['date'] = pd.to_datetime(obs_lake_stage['date']).dt.date
 
+# cut data frame to date range
+mask = (obs_lake_stage['date'] >= model_start_date) & (obs_lake_stage['date'] <= model_end_date)
+obs_lake_stage = obs_lake_stage[mask]
+
+# add lake id column
+obs_lake_stage['lake_id'] = -999
+mask_lake1 = obs_lake_stage['lake_name'] == 'lake_mendocino'
+mask_lake2 = obs_lake_stage['lake_name'] == 'lake_sonoma'
+obs_lake_stage.loc[mask_lake1, 'lake_id'] = 1
+obs_lake_stage.loc[mask_lake2, 'lake_id'] = 2
+
 # add obs_group column
-xx=1
 obs_lake_stage['obs_group'] = 'lake_stage'
 
 # add weight column
@@ -248,23 +260,41 @@ mask_1990 = obs_lake_stage['year'] == 1990
 obs_lake_stage.loc[mask_1990, 'weight'] = 0
 
 # add a column for totim
-model_start_date = '1990-01-01'
-model_start_date = datetime.strptime(model_start_date, "%Y-%m-%d")
-model_start_date = model_start_date.date()
 obs_lake_stage['totim'] = (obs_lake_stage['date'] - model_start_date).dt.days + 1
 
-
-
-
 # add obs_name column
-# date_id = gage_and_other_flows['totim'].astype(str)
-# gage_and_other_flows['obs_name'] = 'gflow_' + gage_and_other_flows['subbasin_id'].astype(str).str.zfill(2) + '.' + date_id.str.zfill(4)
+date_id = obs_lake_stage['totim'].astype(str)
+obs_lake_stage['obs_name'] = 'lake_' + obs_lake_stage['lake_id'].astype(str).str.zfill(2) + '.' + date_id.str.zfill(4)
+
+
+
 
 
 
 #-------------------------------------------------------------------------
 # Prepare heads drawdown
 #-------------------------------------------------------------------------
+
+xx=1
+
+
+# calculate drawdown for each site
+hob_df['drawdown'] = -999
+obs_sites  = hob_df['obs_site'].unique()
+for site in obs_sites:
+
+    # create data frame for this site
+    df = hob_df[hob_df['obs_site'] == site]
+
+    # sort df by date
+    df = df.sort_values(by='date', axis=0)
+
+    # calculate diff
+    diff = np.diff(df['hobs'])
+    diff = np.insert(diff, 0, np.nan, axis=0)
+    hob_df['drawdown'] = diff
+
+
 
 
 

@@ -1,1 +1,0 @@
-Same as 20220315_02 except made sure we didn't start with any initial heads below the bottom of a grid cell
