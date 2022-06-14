@@ -188,6 +188,7 @@ def generate_output_file_tr(Sim):
 
 
 
+
     # well package: read in and sum by stress period -------------------------------------------####
 
     # read in well file and sum by stress period
@@ -214,7 +215,86 @@ def generate_output_file_tr(Sim):
 
 
 
-    # pump change: non-ag -------------------------------------------####
+
+    # lake stage ---------------------------------------------------------####
+
+    # read in simulated lake stages and store in list
+    lake_1_budget = pd.read_fwf(Sim.lake_1_budget_file, skiprows=[0])
+    lake_2_budget = pd.read_fwf(Sim.lake_2_budget_file, skiprows=[0])
+    lake_dict = {'lake_01': lake_1_budget, 'lake_02': lake_2_budget}
+
+    # loop through lakes
+    for lake_id, lake_df in lake_dict.items():
+
+        # update column name
+        lake_df.columns.values[0] = 'totim'
+        lake_df['totim'] = lake_df['totim'].astype(int)
+
+        # add obs_site
+        lake_df['obs_site'] = lake_id
+
+        # create obs_name to match up with pest_obs_all data frame
+        lake_df['date_id'] = lake_df['totim'].astype(str).str.zfill(4)
+        lake_df['obs_name'] = lake_id + '.' + lake_df['date_id']
+
+        # fill in simulated lake stage into pest obs data frame
+        obs_names = pest_obs_all['obs_name'].str.split('.', expand=True)
+        pest_obs_lake_ids = obs_names.loc[:,0]
+        mask_lake_obs = pest_obs_lake_ids == lake_id
+        pest_obs_lake_stage_names = pest_obs_all.loc[mask_lake_obs, 'obs_name'].unique()
+
+        # loop through obs names
+        for obs_name in pest_obs_lake_stage_names:
+
+            # get sim value for this obs
+            mask_lake_sim = lake_df['obs_name'] == obs_name
+            sim_val = lake_df.loc[mask_lake_sim, 'Stage(H)'].values[0]
+
+            # store sim value in pest obs df
+            mask_pest_obs_all = pest_obs_all['obs_name'] == obs_name
+            pest_obs_all.loc[mask_pest_obs_all, 'sim_val'] = sim_val
+
+
+
+    # drawdown -----------------------------------------------------------####
+
+    # read in hob out file
+    df_hob = read_hob_out_tr(Sim.mf)
+
+    # sort, get site ids from pest_obs_all
+    pest_obs_all = pest_obs_all.sort_values(by=['obs_group', 'obs_name'], axis=0)
+    obs_names_pest = pest_obs_all['obs_name'].str.split('.', expand=True)
+    site_ids_pest = obs_names_pest.loc[:, 0]
+
+    # create drawdown obs names, site ids, and sim drawdown columns in df_hob
+    df_hob['obs_name_dd'] = df_hob['OBSERVATION NAME'].str.replace('HO_', 'dd_')
+    obs_names_hob = df_hob['OBSERVATION NAME'].str.split('.', expand=True)
+    df_hob['site_ids_head'] = obs_names_hob.loc[:, 0]
+    df_hob['site_ids_dd'] = df_hob['site_ids_head'].str.replace('HO_', 'dd_')
+    df_hob['drawdown'] = -999
+
+    # loop through drawdown site ids
+    mask_drawdown_pest = pest_obs_all['obs_group'] == 'drawdown'
+    site_ids = site_ids_pest[mask_drawdown_pest].unique()
+    for site_id in site_ids:
+
+        # create data frame for this site
+        df = df_hob[df_hob['site_ids_dd'] == site_id]
+
+        # sort df by date
+        df = df.sort_values(by='obs_name_dd', axis=0)
+
+        # calculate diff and store
+        diff = np.diff(df['SIMULATED EQUIVALENT'])
+
+        # store drawdown values in pest_obs_all
+        mask_site_pest = site_ids_pest == site_id
+        pest_obs_all.loc[mask_site_pest, 'sim_val'] = diff
+
+
+
+
+    # pump change: non-ag ------------------------------------------------####
 
     # read in pump reduction results
     pump_red_nonag = flopy.utils.observationfile.get_reduced_pumping(Sim.pump_red_file_nonag)

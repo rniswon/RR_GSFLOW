@@ -37,6 +37,8 @@ gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'ga
 # set output files
 pest_obs_head_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_head.csv")
 pest_obs_streamflow_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_streamflow.csv")
+pest_obs_lake_stage_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_lake_stage.csv")
+pest_obs_drawdown_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_drawdown.csv")
 pest_obs_all_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_all.csv")
 
 # set model time period
@@ -266,21 +268,19 @@ obs_lake_stage['totim'] = (obs_lake_stage['date'] - model_start_date).dt.days + 
 date_id = obs_lake_stage['totim'].astype(str)
 obs_lake_stage['obs_name'] = 'lake_' + obs_lake_stage['lake_id'].astype(str).str.zfill(2) + '.' + date_id.str.zfill(4)
 
-
-
+# export
+obs_lake_stage.to_csv(pest_obs_lake_stage_file_name, index=False)
 
 
 
 #-------------------------------------------------------------------------
-# Prepare heads drawdown
+# Prepare drawdown
 #-------------------------------------------------------------------------
-
-xx=1
-
 
 # calculate drawdown for each site
 hob_df['drawdown'] = -999
 obs_sites  = hob_df['obs_site'].unique()
+site_dfs = []
 for site in obs_sites:
 
     # create data frame for this site
@@ -289,14 +289,26 @@ for site in obs_sites:
     # sort df by date
     df = df.sort_values(by='date', axis=0)
 
-    # calculate diff
+    # calculate diff and store
     diff = np.diff(df['hobs'])
     diff = np.insert(diff, 0, np.nan, axis=0)
-    hob_df['drawdown'] = diff
+    df.loc[:,'drawdown'] = diff
 
+    # store df in list
+    site_dfs.append(df)
 
+# concat all site dfs
+hob_df_drawdown = pd.concat(site_dfs)
 
+# change obs site and name to reflect drawdown
+hob_df_drawdown['obs_site'] = hob_df_drawdown['obs_site'].str.replace('HO_', 'dd_')
+hob_df_drawdown['obsname'] = hob_df_drawdown['obsname'].str.replace('HO_', 'dd_')
 
+# change obs_group
+hob_df_drawdown['obs_group'] = 'drawdown'
+
+# export
+hob_df_drawdown.to_csv(pest_obs_drawdown_file_name, index=False)
 
 
 
@@ -315,11 +327,19 @@ pest_gage_obs.columns = ['obs_group', 'obs_name', 'weight', 'obs_val']
 mask = ~(pest_gage_obs['obs_name'] == 'none')
 pest_gage_obs = pest_gage_obs[mask]
 
+# get relevant lake stage df columns
+pest_lake_obs = obs_lake_stage[['obs_group', 'obs_name', 'weight', 'obs_val']]
+
+# get relevant drawdown df columns
+pest_drawdown_obs = hob_df_drawdown[['obs_group', 'obsname', 'weight', 'drawdown']]
+pest_drawdown_obs.columns = ['obs_group', 'obs_name', 'weight', 'obs_val']
+
 # combine all obs into one df
-pest_all_obs = pd.concat([pest_head_obs, pest_gage_obs, pump_change_df])
+pest_all_obs = pd.concat([pest_head_obs, pest_gage_obs, pump_change_df, pest_lake_obs, pest_drawdown_obs])
 
 # add a column for simulated values
 pest_all_obs['sim_val'] = -999
 
 # export
 pest_all_obs.to_csv(pest_obs_all_file_name, index=False)
+

@@ -1022,7 +1022,7 @@ ss_525,none,9.99999883788405e-06,upw_ss,14120
 ss_530,none,9.999999747378752e-06,upw_ss,14170
 ss_531,none,9.99999883788405e-06,upw_ss,14180
 ss_533,none,1.0000000656873453e-05,upw_ss,14210
-ssr2gw_rate_mult,none,0.05000000483592306,prms_ssr2gw_rate,#
+ssr2gw_rate_mult,none,0.13044786952215956,prms_ssr2gw_rate,#
 surfdep,none,1.0,uzf_surfdep,#
 surfk_mult,none,0.0005859995726495981,uzf_surfk,#
 sy_001,none,0.20000004768371582,upw_sy,111

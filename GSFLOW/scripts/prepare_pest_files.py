@@ -42,6 +42,10 @@ streamflow_gage_weights_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir"
 fix_param_group = ["prms_jh_coef", "uzf_vks", "prms_soil_rechr_max_frac", "prms_slowcoef_sq", "prms_soil_moist_max", "prms_sat_threshold",
                    "prms_slowcoef_lin", "sfr_ks", "ghb_bhead", "lak_cd", "uzf_surfk", "prms_ssr2gw_rate", "uzf_surfdep", "uzf_extdp"]
 
+# set factors used to equalize pest phi groups
+drawdown_group_equalization_factor = 10.5
+lake_stage_group_equalization_factor = 1.6
+gage_flow_group_equalization_factor = 1.6
 
 
 
@@ -442,7 +446,19 @@ for obs in obsnames:
     pst.observation_data.loc[mask, 'obgnme'] = obgnme.values[0]
 
 # set groundwater level weights
-# for now just assume that weights for groundwater levels are the same and equal to 1, which is what they're automatically set to
+# for now just assume that weights for groundwater levels are the same and equal to 1, which is what they're automatically set to (except for first year set to 0 in generate_pest_obs_df.py)
+
+# set drawdown weights
+mask_pest_file = pst.observation_data['obgnme'] == 'drawdown'
+mask_output_obs = output_obs['obs_group'] == 'drawdown'
+pst.observation_data.loc[mask_pest_file, 'weight'] = pst.observation_data.loc[mask_pest_file, 'weight'] * drawdown_group_equalization_factor
+output_obs.loc[mask_output_obs, 'weight'] = output_obs.loc[mask_output_obs, 'weight'] * drawdown_group_equalization_factor
+
+# set lake stage weights
+mask_pest_file = pst.observation_data['obgnme'] == 'lake_stage'
+mask_output_obs = output_obs['obs_group'] == 'lake_stage'
+pst.observation_data.loc[mask_pest_file, 'weight'] = pst.observation_data.loc[mask_pest_file, 'weight'] * lake_stage_group_equalization_factor
+output_obs.loc[mask_output_obs, 'weight'] = output_obs.loc[mask_output_obs, 'weight'] * lake_stage_group_equalization_factor
 
 # set gage weights
 df_weights = pd.read_csv(streamflow_gage_weights_file_name)
@@ -465,12 +481,12 @@ for obs in obsnames:
             weight = 0
         else:
             if obsval == 0:
-                weight = 0.0001
+                weight = 0.0001 * gage_flow_group_equalization_factor
             else:
-                weight = (1.0/((obsval * 0.01)**0.5))/50   # TODO: why is the weight squared?  is that correct?  # For gage weights, assume the weight equals 1% of the observed value
+                weight = ((1.0/((obsval * 0.01)**0.5))/50) * gage_flow_group_equalization_factor  # TODO: why is the weight squared?  is that correct?  # For gage weights, assume the weight equals 1% of the observed value
 
         # store weight if current weight is non-zero (zero weights intentionally set in generate_pest_obs_df.py)
-        current_weight = output_obs.loc[mask_output_obs, 'weight']
+        current_weight = output_obs.loc[mask_output_obs, 'weight'].values[0]
         if current_weight > 0:
             pst.observation_data.loc[mask_pest_file, 'weight'] = weight
             output_obs.loc[mask_output_obs, 'weight'] = weight

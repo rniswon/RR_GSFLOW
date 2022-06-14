@@ -37,7 +37,7 @@ obs_lake_stage_file = os.path.join(repo_ws, "MODFLOW", "init_files", "LakeMendoc
 subbasin_3_gage_file = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "EF_RUSSIAN_R_NR_UKIAH.go")
 
 # set file for redwood valley demand
-redwood_valley_demand_file = os.path.join(repo_ws, "MODFLOW", "init_files", "redwood_valley_demand_test.xlsx")
+redwood_valley_demand_file = os.path.join(repo_ws, "MODFLOW", "init_files", "redwood_valley_demand.xlsx")
 
 # set files for lake mendo surface inflows
 subbasin_2_gage_file = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "EF_RUSSIAN_R_NR_CALPELLA.go")

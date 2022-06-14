@@ -50,6 +50,7 @@ update_prms_params_for_ag_package = 1
 update_output_control = 1
 update_ag_package = 1
 create_tabfiles_for_pond_diversions = 1
+update_model_outputs = 1
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -202,6 +203,11 @@ if load_and_transfer_transient_files == 1:
     # copy over rr_tr.ag
     original = os.path.join(repo_ws, "MODFLOW", "tr", "rr_tr.ag")
     target = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "rr_tr.ag")
+    shutil.copyfile(original, target)
+
+    # copy over redwood valley demand
+    original = os.path.join(repo_ws, "MODFLOW", "tr", "redwood_valley_demand_test.dat")
+    target = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "redwood_valley_demand.dat")
     shutil.copyfile(original, target)
 
     # copy prms files and windows files (i.e. prms control, model run batch file)
@@ -1405,13 +1411,15 @@ if update_transient_model_for_smooth_running == 1:
 
         if len(soil_param) > 1:
 
-            # set soil param values to min value in active HRUs that are currently set to 0
-            mask = (hru_type == 1) & (soil_param == 0)
+            # set soil param values to min value in active HRUs that are currently set to values below the min value
+            #mask = (hru_type == 1) & (soil_param == 0)            # NOTE: had this until 6/13/22
+            mask = (hru_type == 1) & (soil_param < min_val)        # NOTE: switched to this on 6/13/22
             soil_param[mask] = min_val
 
         else:
 
-            soil_param = [min_val]
+            if soil_param < min_val:               # NOTE: mistakenly, didn't have this if statement before 6/13/22, so was setting all soil param values with length of 1 to the min value
+                soil_param = [min_val]
 
         # store in prms parameter object
         gs.prms.parameters.set_values(soil_param_name, soil_param)
@@ -2759,6 +2767,43 @@ if create_tabfiles_for_pond_diversions == 1:
 
 
 
+
+
+# ===========================================
+# Update model outputs
+# ===========================================
+
+if update_model_outputs == 1:
+
+    # NOTE: make sure not to duplicate settings from sections above
+
+    # ---- Load model ----------------------------------------------------------####
+
+    # load modflow
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        load_only=["BAS6", "DIS", "AG", "SFR", "UZF", "GAG"], verbose=True, forgive=False, version="mfnwt")
+
+    # load prms
+    prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
+
+
+    # ---- Update ag file -----------------------------------------------------####
+
+    # ---- Update gage file -----------------------------------------------------####
+
+    # ---- Update gsflow control file -----------------------------------------------------####
+
+    # ---- Update name file -----------------------------------------------------####
+
+    # ---- Update prms param file -----------------------------------------------------####
+
+    # ---- Update sfr file -----------------------------------------------------####
+
+    # ---- Update uzf file -----------------------------------------------------####
+
+    pass
 
 
 

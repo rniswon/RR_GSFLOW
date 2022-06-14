@@ -64,7 +64,6 @@ DATA            1045  ..\modflow\output\rubber_dam_lake_bdg.lak.out
 DATA(BINARY)      51  ..\modflow\output\rr_tr.hds REPLACE
 AG               121  ..\modflow\input\rr_tr.ag
 DATA            1046  ..\modflow\output\pumping_reduction_ag.out
-
 DATA            5000  ..\modflow\input\ag_diversions\div_seg_450.txt
 DATA            5001  ..\modflow\input\ag_diversions\div_seg_452.txt
 DATA            5002  ..\modflow\input\ag_diversions\div_seg_453.txt

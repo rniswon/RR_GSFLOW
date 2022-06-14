@@ -99,6 +99,8 @@ def run(input_file = None, real_no=-999, output_file = None):
     Sim.model_output_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "model_output.csv")
     Sim.modflow_output_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output")
     Sim.windows_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows")
+    Sim.lake_1_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "mendo_lake_bdg.lak.out")
+    Sim.lake_2_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "sonoma_lake_bdg.lak.out")
 
 
     if not(input_file is None):
