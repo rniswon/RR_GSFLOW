@@ -38,19 +38,19 @@ import flopy.utils.binaryfile as bf
 # Script settings
 # ==============================
 
-load_and_transfer_transient_files = 1
-update_starting_heads = 1
-update_starting_parameters = 1
-update_prms_control_for_gsflow = 1
+load_and_transfer_transient_files = 0
+update_starting_heads = 0
+update_starting_parameters = 0
+update_prms_control_for_gsflow = 0
 update_prms_params_for_gsflow = 1
-update_transient_model_for_smooth_running = 1
-update_one_cell_lakes = 1
-update_modflow_for_ag_package = 1
-update_prms_params_for_ag_package = 1
-update_output_control = 1
-update_ag_package = 1
-create_tabfiles_for_pond_diversions = 1
-update_model_outputs = 1
+update_transient_model_for_smooth_running = 0
+update_one_cell_lakes = 0
+update_modflow_for_ag_package = 0
+update_prms_params_for_ag_package = 0
+update_output_control = 0
+update_ag_package = 0
+create_tabfiles_for_pond_diversions = 0
+update_model_outputs = 0
 do_checks = 0
 do_recharge_experiments = 0
 
@@ -206,7 +206,7 @@ if load_and_transfer_transient_files == 1:
     shutil.copyfile(original, target)
 
     # copy over redwood valley demand
-    original = os.path.join(repo_ws, "MODFLOW", "tr", "redwood_valley_demand_test.dat")
+    original = os.path.join(repo_ws, "MODFLOW", "tr", "redwood_valley_demand.dat")
     target = os.path.join(repo_ws, "GSFLOW", "modflow", "input", "redwood_valley_demand.dat")
     shutil.copyfile(original, target)
 
@@ -218,6 +218,11 @@ if load_and_transfer_transient_files == 1:
         if os.path.isdir(dst):
             shutil.rmtree(dst)
         shutil.copytree(src, dst)
+
+    # delete scripts folder from new PRMS folder
+    # TODO: check that this is working as expected
+    prms_scripts_folder = os.path.join(model_folder, 'PRMS', 'scripts')
+    shutil.rmtree(prms_scripts_folder)
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
@@ -458,11 +463,100 @@ if update_prms_params_for_gsflow == 1:
     # load transient modflow model
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                        load_only=["BAS6", "DIS", "SFR", "LAK"], verbose=True, forgive=False, version="mfnwt")
+                                        load_only=["BAS6", "DIS", "SFR", "LAK", "AG"], verbose=True, forgive=False, version="mfnwt")
 
     # load gsflow model
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
+
+    # read in ag dataset csv file and move 2 ponds
+    # Note: moving the two ponds over because they cannot be combined with other existing
+    # pond in the hru. Other pond has a seperate iseg for diversion that is not
+    # in the same tributary system.
+    ag_dataset_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_w_ponds_w_iupseg.csv")
+    ag_data = pd.read_csv(ag_dataset_file)
+    ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1
+    ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1
+
+
+
+    #---- get data from ag package and prep for ag param ------------------------------------------------------------------------------####
+
+    # get pond hru ids from pond list
+    ag = mf_tr.ag
+    pond_list = pd.DataFrame(ag.pond_list)
+    pond_hru = pond_list['hru_id'].unique()
+
+    # filter ag dataset to get these ponds and their areas
+    mask = ag_data['pond_hru'].isin(pond_hru)
+    ag_data_ponds= ag_data[mask].copy()
+
+    # calculate pond frac (i.e. fraction of pond)
+    grid_cell_length_m = 300   # meters
+    grid_cell_width_m = 300    # meters
+    grid_cell_area_m2 = grid_cell_length_m * grid_cell_width_m
+    ag_data_ponds['pond_frac'] = ag_data_ponds['pond_area_m2'] / grid_cell_area_m2
+
+    # add column for pond depth
+    ag_data_ponds['pond_depth'] = 132
+
+    # add two rows to include ponds near rubber dam in ag_data_ponds data frame
+    hru_ponds_near_rubber_dam = [84899, 84900, 84901]
+    hru_ponds_near_rubber_dam = [x-1 for x in hru_ponds_near_rubber_dam]   # convert from 1-based to 0-based
+    ag_data_ponds = ag_data_ponds.append(pd.Series(), ignore_index=True)
+    ag_data_ponds = ag_data_ponds.append(pd.Series(), ignore_index=True)
+    ag_data_ponds = ag_data_ponds.append(pd.Series(), ignore_index=True)
+    mask_ponds_near_rubber_dam = ag_data_ponds['pond_hru'].isnull()
+    ag_data_ponds.loc[mask_ponds_near_rubber_dam, 'pond_hru'] = hru_ponds_near_rubber_dam
+    ag_data_ponds.loc[mask_ponds_near_rubber_dam, 'pond_frac'] = 0.8633       # calculated manually in ArcGIS
+    ag_data_ponds.loc[mask_ponds_near_rubber_dam, 'pond_depth'] = 208    # calculated from LIDAR
+
+    # add columns for pervious and impervious surface runoff fraction
+    ag_data_ponds['ro_perv_frac'] = 0.2
+    ag_data_ponds['ro_imperv_frac'] = 0.2
+
+
+    #---- update dprst_frac, dprst_depth_avg, sro_to_dprst_perv, sro_to_dprst_imperv --------------------------------------------------####
+
+    # get prms param
+    dprst_frac = gs.prms.parameters.get_values('dprst_frac')
+    dprst_depth_avg = gs.prms.parameters.get_values('dprst_depth_avg')
+    sro_to_dprst_perv = gs.prms.parameters.get_values('sro_to_dprst_perv')
+    sro_to_dprst_imperv = gs.prms.parameters.get_values('sro_to_dprst_imperv')
+
+    # set all prms param to 0
+    dprst_frac = np.zeros(shape=np.shape(dprst_frac), dtype='float', order='C')
+    dprst_depth_avg = np.zeros(shape=np.shape(dprst_depth_avg), dtype='float', order='C')
+    sro_to_dprst_perv = np.zeros(shape=np.shape(sro_to_dprst_perv), dtype='float', order='C')
+    sro_to_dprst_imperv = np.zeros(shape=np.shape(sro_to_dprst_imperv), dtype='float', order='C')
+
+    # fill in prms param values for ponds
+    pond_hrus = ag_data_ponds['pond_hru'].unique().astype(int)
+    for pond_hru in pond_hrus:
+
+        # get param values from ag_data_ponds
+        mask_pond = ag_data_ponds['pond_hru'] == pond_hru
+        pond_frac = ag_data_ponds.loc[mask_pond, 'pond_frac'].values[0]
+        pond_depth = ag_data_ponds.loc[mask_pond, 'pond_depth'].values[0]
+        ro_perv_frac = ag_data_ponds.loc[mask_pond, 'ro_perv_frac'].values[0]
+        ro_imperv_frac = ag_data_ponds.loc[mask_pond, 'ro_imperv_frac'].values[0]
+
+        # update param
+        # note: can use pond_hru as hru index because both are 0-based
+        dprst_frac[pond_hru] = pond_frac
+        dprst_depth_avg[pond_hru] = pond_depth
+        sro_to_dprst_perv[pond_hru] = ro_perv_frac
+        sro_to_dprst_imperv[pond_hru] = ro_imperv_frac
+
+        # store param
+        gs.prms.parameters.set_values("dprst_frac", dprst_frac)
+        gs.prms.parameters.set_values("dprst_depth_avg", dprst_depth_avg)
+        gs.prms.parameters.set_values("sro_to_dprst_perv", sro_to_dprst_perv)
+        gs.prms.parameters.set_values("sro_to_dprst_imperv", sro_to_dprst_imperv)
+
+
+
+    #---- update other parameters ------------------------------------------------------------------------------####
 
     # get and set nss
     nss = mf_tr.sfr.nss
@@ -491,8 +585,10 @@ if update_prms_params_for_gsflow == 1:
     hru_type = gs.prms.parameters.get_values('hru_type')
     hru_type[idx_lake12] = 2
 
+
     # write prms parameter file
     gs.prms.parameters.write()
+
 
 
 
@@ -2084,18 +2180,49 @@ if update_prms_params_for_ag_package == 1:
 
 
 
-    # Make sure the sum of percent_imperv and ag_frac aren’t greater than 1 ------------------------------------------------------#
+    # Make sure the ag_frac + dprst_frac + percent_imperv <= 1 ------------------------------------------------------#
 
-    # get percent_imperv and ag_frac
+    # get percent_imperv, ag_frac, and dprst_frac
     percent_imperv = gs.prms.parameters.get_values('hru_percent_imperv')
     ag_frac = gs.prms.parameters.get_values('ag_frac')
+    dprst_frac = gs.prms.parameters.get_values('dprst_frac')
 
-    # create mask
-    mask = (percent_imperv + ag_frac) > 1
+    # create masks
+    all_frac = percent_imperv + ag_frac + dprst_frac
+    ag_dprst_frac = ag_frac + dprst_frac
+    mask_all_frac = all_frac > 1
+    mask_ag_dprst_frac = ag_dprst_frac > 1
 
-    # change percent_imperv
-    percent_imperv[mask] = 1 - ag_frac[mask]
+    # make changes for ag_frac + dprst_frac > 1
+    if mask_ag_dprst_frac.sum() > 0:
+
+        # set percent_imperv to 0
+        percent_imperv[mask_ag_dprst_frac] = 0
+
+        # reduce dprst_frac
+        dprst_frac[mask_ag_dprst_frac] = 1 - ag_frac[mask_ag_dprst_frac]
+
+    # check to make sure no non-zero dprst_frac values are < 100 m^2 (dprst_frac = 0.00111)
+    mask_small_pond = (dprst_frac > 0) & (dprst_frac < 0.00111)
+    if mask_small_pond.sum() > 0:
+        print("dprst_frac < 0.00111 for grid cells with non-zero values")
+    else:
+        print("dprst_frac size is fine")
+
+    # update all_frac mask
+    all_frac = percent_imperv + ag_frac + dprst_frac
+    mask_all_frac = all_frac > 1
+
+    #  make changes for ag_frac + dprst_frac + percent_imperv > 1
+    percent_imperv[mask_all_frac] = 1 - (ag_frac[mask_all_frac] + dprst_frac[mask_all_frac])
+
+    # store parameters
     gs.prms.parameters.set_values('hru_percent_imperv', percent_imperv)
+    gs.prms.parameters.set_values('ag_frac', ag_frac)
+    gs.prms.parameters.set_values('dprst_frac', dprst_frac)
+
+
+
 
 
     # In general, you must go through all your HRUs that are used for Ag and make sure they are parameterized to represent Ag (soil_type, veg_type,
@@ -2708,7 +2835,7 @@ if create_tabfiles_for_pond_diversions == 1:
     mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
     mf_tr.sfr.write_file()
 
-    #add diversion segments to NAM file and export updated name file
+    # add diversion segments to NAM file and export updated name file
     dst = os.path.join(mf_tr_name_file)
     fidw = open(dst, 'a')
     for i, row in div_seg_sfr.iterrows():
@@ -2777,33 +2904,218 @@ if update_model_outputs == 1:
 
     # NOTE: make sure not to duplicate settings from sections above
 
-    # ---- Load model ----------------------------------------------------------####
+    # ---- Set file names to use to update model inputs ----------------------------------------####
+
+    #  set modflow transient name file
+    mf_name_file = os.path.join(repo_ws, 'GSFLOW', 'windows', 'rr_tr.nam')
+
+    # set gage file path
+    #gage_file_path = os.path.join(repo_ws, 'GSFLOW', 'modflow', 'input', 'rr_tr.gage')
+
+    # ag file options tabfiles
+    ag_file_options_tabfiles_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "ag_file_options_tabfiles.txt")
+
+    # ag file time series
+    ag_file_time_series_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "ag_file_time_series.txt")
+
+    # gage file ag iupseg
+    gage_file_ag_iupseg_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "gage_file_ag_iupseg.txt")
+
+    # gage file lake flows
+    gage_file_lake_flows_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "gage_file_lake_flows.txt")
+
+    # gage file pond div
+    gage_file_pond_div_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "gage_file_pond_div.txt")
+
+    # gsflow control file
+    gsflow_control_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "gsflow_control_file.txt")
+
+    # name file ag iupseg
+    name_file_ag_iupseg_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "name_file_ag_iupseg.txt")
+
+    # name file ag time series
+    name_file_ag_time_series_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "name_file_ag_time_series.txt")
+
+    # name file lake flows
+    name_file_lake_flows_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "name_file_lake_flows.txt")
+
+    # name file pond div
+    name_file_pond_div_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "name_file_pond_div.txt")
+
+    # name file uzf netflux
+    name_file_uzf_netflux_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "name_file_uzf_netflux.txt")
+
+    # prms param file streams
+    prms_param_file_streams_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "prms_param_file_streams.txt")
+
+    # sfr file redwood demand
+    sfr_file_redwood_demand_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "sfr_file_redwood_demand.txt")
+
+    # uzf file options netflux
+    uzf_file_options_netflux_file = os.path.join(repo_ws, "MODFLOW", "init_files", "model_output_controls", "uzf_file_options_netflux.txt")
+
+
+
+
+
+    # ---- Load model ------------------------------------------------------------------------####
 
     # load modflow
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                        load_only=["BAS6", "DIS", "AG", "SFR", "UZF", "GAG"], verbose=True, forgive=False, version="mfnwt")
+                                        load_only=["BAS6", "DIS", "AG", "SFR", "UZF", "GAGE"], verbose=True, forgive=False, version="mfnwt")
 
     # load prms
     prms_control = os.path.join(model_folder, 'windows', 'prms_rr.control')
     gs = gsflow.GsflowModel.load_from_file(control_file = prms_control)
 
+    xx=1
 
-    # ---- Update ag file -----------------------------------------------------####
 
-    # ---- Update gage file -----------------------------------------------------####
+    # ---- Update ag file -----------------------------------------------------------------####
+
+
+
+    # ---- Update gage file -------------------------------------------------------------####
+
+    # get gage file
+    gage_df = pd.DataFrame(mf_tr.gage.gage_data)
+
+    # loop through gage file text file paths
+    gage_file_addition_text_file_paths = [gage_file_ag_iupseg_file,
+                                          gage_file_lake_flows_file,
+                                          gage_file_pond_div_file]
+    for file_path in gage_file_addition_text_file_paths:
+
+        # read in
+        df = pd.read_csv(file_path, delimiter=' ', header=None)
+        df.columns = gage_df.columns.values
+
+        # concatenate data frames
+        gage_list = [gage_df, df]
+        gage_df = pd.concat(gage_list).reset_index(drop=True)
+
+    # store gage data frame
+    mf_tr.gage.gage_data = gage_df.to_numpy()
+
+    # update numgage
+    num_gage = len(gage_df.index)
+    mf_tr.gage.numgage = num_gage
+
+    # write out updated gage file
+    mf_tr.gage.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.gage")
+    mf_tr.gage.write_file()   # TODO: figure out why I'm getting this error here: IndexError: only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices
+
+
+
 
     # ---- Update gsflow control file -----------------------------------------------------####
 
-    # ---- Update name file -----------------------------------------------------####
+
+
+    # ---- Update name file -------------------------------------------------------------####
+
+    # create list with all file paths to text files containing name file additions
+    name_file_addition_text_file_paths = [name_file_ag_time_series_file,
+                                          name_file_pond_div_file,
+                                          name_file_ag_iupseg_file,
+                                          name_file_lake_flows_file,
+                                          name_file_uzf_netflux_file]
+
+    # loop through text files
+    mf_nam = open(mf_name_file, 'a')
+    for file_path in name_file_addition_text_file_paths:
+
+        # read in text file with additions
+        text_file = open(file_path, 'r')
+        text_file_lines = text_file.readlines()
+
+        # loop through lines in the text file
+        mf_nam.write("\n")
+        for line in text_file_lines:
+
+            # update name file
+            new_line = line
+            mf_nam.write(new_line)
+
+        # close text file with additions
+        text_file.close()
+
+    # close name file
+    mf_nam.close()
+
+
+
 
     # ---- Update prms param file -----------------------------------------------------####
 
-    # ---- Update sfr file -----------------------------------------------------####
+    # update nreach
+    gs.prms.parameters.set_values('nreach', [3752])
 
-    # ---- Update uzf file -----------------------------------------------------####
+    # update nseg
+    gs.prms.parameters.set_values('nsegment', [690])
 
-    pass
+    # write updated prms param file
+    gs.prms.parameters.write()
+
+
+
+
+    # ---- Update sfr file -------------------------------------------------------------####
+
+    # get sfr package
+    sfr = mf_tr.sfr
+
+    # update options
+    sfr.numtab = sfr.numtab + 1
+
+    # update dataset 1c
+    sfr.nstrm = sfr.nstrm + 1
+    sfr.nss = sfr.nss + 1
+
+    # update reach data
+    reach_data = pd.DataFrame(sfr.reach_data)
+    # TODO: need to add a new line
+    sfr.reach_data = reach_data.to_records(index=False)
+
+    # update dataset 5
+    # note: maybe this is done automatically by flopy when the segment data is updated?
+
+    # update segment data
+    segment_data = pd.DataFrame(sfr.segment_data)
+    # TODO: need to add a new line
+    sfr.segment_data = segment_data.to_records(index=False)
+
+    # update tabfile list
+    tabfiles_dict = sfr.tabfiles_dict
+    tabfiles_dict[690] = {'numval': 9496, 'inuit': 7041}
+    sfr.tabfiles_dict = tabfiles_dict
+
+    # write sfr file
+    mf_tr.sfr = sfr
+    mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    mf_tr.sfr.write_file()
+
+
+
+
+    # ---- Update uzf file -------------------------------------------------------------####
+
+    # get uzf
+    uzf = mf_tr.uzf
+
+    # update options
+    uzf.netflux = True
+    uzf.unitrch = 3000
+    uzf.unitdis = 3001
+
+    # write uzf file
+    mf_tr.uzf = uzf
+    mf_tr.uzf.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.uzf")
+    mf_tr.uzf.write_file()
+
+
+
 
 
 
