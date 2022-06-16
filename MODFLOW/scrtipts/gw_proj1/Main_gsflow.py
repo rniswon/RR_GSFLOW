@@ -38,18 +38,18 @@ import flopy.utils.binaryfile as bf
 # Script settings
 # ==============================
 
-load_and_transfer_transient_files = 0
-update_starting_heads = 0
-update_starting_parameters = 0
-update_prms_control_for_gsflow = 0
+load_and_transfer_transient_files = 1
+update_starting_heads = 1
+update_starting_parameters = 1
+update_prms_control_for_gsflow = 1
 update_prms_params_for_gsflow = 1
-update_transient_model_for_smooth_running = 0
-update_one_cell_lakes = 0
-update_modflow_for_ag_package = 0
-update_prms_params_for_ag_package = 0
-update_output_control = 0
-update_ag_package = 0
-create_tabfiles_for_pond_diversions = 0
+update_transient_model_for_smooth_running = 1
+update_one_cell_lakes = 1
+update_modflow_for_ag_package = 1
+update_prms_params_for_ag_package = 1
+update_output_control = 1
+update_ag_package = 1
+create_tabfiles_for_pond_diversions = 1
 update_model_outputs = 0
 do_checks = 0
 do_recharge_experiments = 0
@@ -2180,7 +2180,7 @@ if update_prms_params_for_ag_package == 1:
 
 
 
-    # Make sure the ag_frac + dprst_frac + percent_imperv <= 1 ------------------------------------------------------#
+    # Make sure the ag_frac + dprst_frac + percent_imperv < 1 ------------------------------------------------------#
 
     # get percent_imperv, ag_frac, and dprst_frac
     percent_imperv = gs.prms.parameters.get_values('hru_percent_imperv')
@@ -2190,10 +2190,10 @@ if update_prms_params_for_ag_package == 1:
     # create masks
     all_frac = percent_imperv + ag_frac + dprst_frac
     ag_dprst_frac = ag_frac + dprst_frac
-    mask_all_frac = all_frac > 1
-    mask_ag_dprst_frac = ag_dprst_frac > 1
+    mask_all_frac = all_frac >= 1
+    mask_ag_dprst_frac = ag_dprst_frac >= 1
 
-    # make changes for ag_frac + dprst_frac > 1
+    # make changes for ag_frac + dprst_frac >= 1
     if mask_ag_dprst_frac.sum() > 0:
 
         # set percent_imperv to 0
@@ -2211,10 +2211,14 @@ if update_prms_params_for_ag_package == 1:
 
     # update all_frac mask
     all_frac = percent_imperv + ag_frac + dprst_frac
-    mask_all_frac = all_frac > 1
+    mask_all_frac = all_frac >= 1
 
     #  make changes for ag_frac + dprst_frac + percent_imperv > 1
     percent_imperv[mask_all_frac] = 1 - (ag_frac[mask_all_frac] + dprst_frac[mask_all_frac])
+
+    # make sure we don't have any grid cells with all imperv
+    mask_all_imperv = percent_imperv == 1
+    percent_imperv[mask_all_imperv] = 0.98
 
     # store parameters
     gs.prms.parameters.set_values('hru_percent_imperv', percent_imperv)
