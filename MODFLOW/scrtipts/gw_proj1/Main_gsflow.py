@@ -1006,7 +1006,7 @@ if update_transient_model_for_smooth_running == 1:
     # update iuzfbnd ------------------------------------#
 
     # EXPERIMENT
-    # TODO: update iuzfbnd to deepest layer with head below cell top based on ss heads (i.e. initial heads for this transient model)
+    # update iuzfbnd to deepest layer with head below cell top based on ss heads (i.e. initial heads for this transient model)
 
     # get ss heads (i.e. transient initial heads)
     ss_heads = mf_tr.bas6.strt.array
@@ -1026,7 +1026,8 @@ if update_transient_model_for_smooth_running == 1:
     # identify deepest layer with heads below cell top for each grid cell
     mask_lyr3 = ss_heads_below_celltop[2,:,:] == 1
     mask_lyr2 = (ss_heads_below_celltop[2,:,:] == 0) & (ss_heads_below_celltop[1,:,:] == 1)
-    mask_lyr1 = (ss_heads_below_celltop[2,:,:] == 0) & (ss_heads_below_celltop[1,:,:] == 0) & (ss_heads_below_celltop[0,:,:] == 1)
+    #mask_lyr1 = (ss_heads_below_celltop[2,:,:] == 0) & (ss_heads_below_celltop[1,:,:] == 0) & (ss_heads_below_celltop[0,:,:] == 1)  # old, delete this
+    mask_lyr1 = (ss_heads_below_celltop[2,:,:] == 0) & (ss_heads_below_celltop[1,:,:] == 0)
 
     # update iuzfbnd
     iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -1035,6 +1036,14 @@ if update_transient_model_for_smooth_running == 1:
     iuzfbnd[mask_lyr2] = 2
     iuzfbnd[mask_lyr3] = 3
     iuzfbnd[mask_inactive] = 0
+
+    # if ibound is inactive in selected layer then set layer number to the next deepest layer that has an active ibound
+    ibound = mf_tr.bas6.ibound.array
+    lyrs = [1,2,3]
+    for lyr in lyrs:
+        lyr_idx = lyr-1
+        mask = (iuzfbnd == lyr) & (ibound[lyr_idx,:,:] == 0)
+        iuzfbnd[mask] = lyr + 1
 
     # set iuzfbnd to 0 for lake cells
     lakes_lyr1 = mf_tr.lak.lakarr.array[0,0,:,:]
@@ -1284,6 +1293,10 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.lak.stages[0] = str(initial_stage_m_lake1)  # lake mendocino
     mf_tr.lak.stages[1] = str(initial_stage_m_lake2)  # lake sonoma
 
+    # update lake convergence
+    mf_tr.lak.nssitr = 150
+    mf_tr.lak.sscncr = 1e-7
+
     # write lake file
     mf_tr.lak.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.lak")
     mf_tr.lak.write_file()
@@ -1522,6 +1535,20 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
+    # update PRMS param: make sure soil_moist_init_frac not greater than max value ---------------------------------------------####
+
+    # get soil param values
+    soil_moist_init_frac = gs.prms.parameters.get_values("soil_moist_init_frac")
+
+    # set values greater than max value to max value
+    max_val = 0.98
+    mask = soil_moist_init_frac > max_val
+    soil_moist_init_frac[mask] = max_val
+
+    # store in prms parameter object
+    gs.prms.parameters.set_values("soil_moist_init_frac", soil_moist_init_frac)
+
+
 
     # write prms param file -----------------------------------------------------------------------####
     gs.prms.parameters.write()
@@ -1590,7 +1617,7 @@ if update_one_cell_lakes == 1:
     # their water as seepage. ET is greater than PPT too. I am not sure what to
     # do with these lakes right now, maybe we should reduce the JH_coef values
     # for the HRUs containing these lakes to reduce the ET. Or we may just want
-    # to use depression storage since they don't see to have much storage.
+    # to use depression storage since they don't seem to have much storage.
 
     # After conversation with Rich and Ayman:
     # Decided to keep one-cell lakes but make the changes below so that they behave more like streams
@@ -1674,7 +1701,7 @@ if update_one_cell_lakes == 1:
             nseg = seg_data.loc[seg_mask, 'nseg'].values
 
             # get row and column of nseg (with reach 1) in reach_data
-            reach_mask = (reach_data['iseg'].isin(nseg) & reach_data['ireach'] == 1)
+            reach_mask = (reach_data['iseg'].isin(nseg)) & (reach_data['ireach'] == 1)
             hru_row = reach_data.loc[reach_mask, 'i'].values + 1
             hru_col = reach_data.loc[reach_mask, 'j'].values + 1
 
@@ -1698,6 +1725,20 @@ if update_one_cell_lakes == 1:
             # set spillway elevation (i.e. strtop) of outseg segment equal to min lake elevation plus a buffer to ensure the lake doesn't empty
             reach_mask = reach_data['iseg'].isin(nseg)
             reach_data.loc[reach_mask, 'strtop'] = elev_outseg
+
+            # identify the outflow segment with the smaller slope
+            reach_mask_nseg1 = (reach_data['iseg'] == nseg[0]) & (reach_data['ireach'] == 1)
+            reach_mask_nseg2 = (reach_data['iseg'] == nseg[1]) & (reach_data['ireach'] == 1)
+            seg_mask_nseg1 = seg_data['nseg'] == nseg[0]
+            seg_mask_nseg2 = seg_data['nseg'] == nseg[1]
+            slope_nseg1 = reach_data.loc[reach_mask_nseg1, 'slope'].values[0]
+            slope_nseg2 = reach_data.loc[reach_mask_nseg2, 'slope'].values[0]
+            if slope_nseg1 < slope_nseg2:
+                seg_data.loc[seg_mask_nseg1, 'flow'] = 1e-5
+                seg_data.loc[seg_mask_nseg2, 'flow'] = 0
+            elif slope_nseg2 < slope_nseg1:
+                seg_data.loc[seg_mask_nseg2, 'flow'] = 1e-5
+                seg_data.loc[seg_mask_nseg1, 'flow'] = 0
 
         # update sfr package
         Sim.mf_tr.sfr.reach_data = reach_data.to_records()
