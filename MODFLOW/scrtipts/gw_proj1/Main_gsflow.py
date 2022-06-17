@@ -2216,9 +2216,11 @@ if update_prms_params_for_ag_package == 1:
     #  make changes for ag_frac + dprst_frac + percent_imperv > 1
     percent_imperv[mask_all_frac] = 1 - (ag_frac[mask_all_frac] + dprst_frac[mask_all_frac])
 
-    # make sure we don't have any grid cells with all imperv
+    # make sure we don't have any grid cells with all imperv or all dprst_frac
     mask_all_imperv = percent_imperv == 1
     percent_imperv[mask_all_imperv] = 0.98
+    mask_all_dprst = dprst_frac == 1
+    dprst_frac[mask_all_dprst] = 0.98
 
     # store parameters
     gs.prms.parameters.set_values('hru_percent_imperv', percent_imperv)
