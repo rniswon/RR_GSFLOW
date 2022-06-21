@@ -77,6 +77,9 @@ mf_tr_name_file = r"..\..\..\GSFLOW\windows\rr_tr.nam"
 # Set constants
 # ==============================
 ag_frac_min_val = 0.01
+ag_frac_min_val_01 = 0.1
+ag_frac_min_val_02 = 0.05
+
 
 
 
@@ -1689,6 +1692,12 @@ if update_one_cell_lakes == 1:
         elev_top = dis.top.array
         elev_botm = dis.botm.array
 
+        # set lake min elevations
+        # TODO: extract from modflow bathymetry file input files
+        lake_id = [3,4,5,6,7,8,9,10,11]
+        lake_min_elev_list = [305.13, 235.81, 201.37, 158.32, 124.36, 111.29, 70.41, 154.84, 140]
+        lake_min_elev_df = pd.DataFrame({'lake_id': lake_id, 'lake_min_elev': lake_min_elev_list})
+
         # for each one-cell lake
         for i in list(Sim.one_cell_lake_id):
 
@@ -1712,19 +1721,33 @@ if update_one_cell_lakes == 1:
             lak_row = lak_idx[1][0]
             lak_col = lak_idx[2][0]
 
-            # get min lake elevation (i.e. elev of lake bottom grid cell) and calculate desired lake elev
-            lake_min_elev = elev_botm[lak_lyr.max(),lak_row, lak_col]
-            lake_buffer = 3
+            # get min lake elevation and calculate desired lake elev
+            #lake_min_elev = elev_botm[lak_lyr.max(),lak_row, lak_col]  # method 1: using elev of lake bottom grid cell
+            mask_lake_id = lake_min_elev_df['lake_id'] == i     # method 2: using min lake elev from lake bathymetry file
+            lake_min_elev = lake_min_elev_df.loc[mask_lake_id, 'lake_min_elev'].values[0]   # method 2: using min lake elev from lake bathymetry file
+            lake_buffer = 15
             lake_elev = lake_min_elev + lake_buffer
 
             # calculate desired elevation of spillway/gate
             reach_len = reach_data.loc[reach_mask, 'rchlen']
             slope = reach_data.loc[reach_mask, 'slope']
             elev_outseg = lake_elev - (slope * (0.5 * reach_len))
+            elev_outseg[0] = lake_elev  # to make sure the steep sloped outflow segment is not below the bottom of the lake
 
             # set spillway elevation (i.e. strtop) of outseg segment equal to min lake elevation plus a buffer to ensure the lake doesn't empty
             reach_mask = reach_data['iseg'].isin(nseg)
             reach_data.loc[reach_mask, 'strtop'] = elev_outseg
+
+            # get hru row and col for these outflow segments
+            outseg_row = reach_data.loc[reach_mask, 'i'].values
+            outseg_col = reach_data.loc[reach_mask, 'j'].values
+            for row,col,elev_out in zip(outseg_row,  outseg_col, elev_outseg):
+                if elev_out >= elev_botm[0, row, col]:
+                    reach_data.loc[reach_mask, 'k'] = 0
+                elif elev_out >= elev_botm[1, row, col]:
+                    reach_data.loc[reach_mask, 'k'] = 1
+                elif elev_out >= elev_botm[2, row, col]:
+                    reach_data.loc[reach_mask, 'k'] = 2
 
             # identify the outflow segment with the smaller slope
             reach_mask_nseg1 = (reach_data['iseg'] == nseg[0]) & (reach_data['ireach'] == 1)
@@ -1740,8 +1763,15 @@ if update_one_cell_lakes == 1:
                 seg_data.loc[seg_mask_nseg2, 'flow'] = 1e-5
                 seg_data.loc[seg_mask_nseg1, 'flow'] = 0
 
+            # update outflow segment width
+            lake_outflow_seg_width = 5
+            seg_data.loc[seg_mask, 'width1'] = lake_outflow_seg_width
+            seg_data.loc[seg_mask, 'width2'] = lake_outflow_seg_width
+
+
         # update sfr package
-        Sim.mf_tr.sfr.reach_data = reach_data.to_records()
+        Sim.mf_tr.sfr.reach_data = reach_data.to_records(index=False)
+        mf_tr.sfr.segment_data[0] = seg_data.to_records(index=False)
 
         # write sfr package file
         Sim.mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
@@ -2211,10 +2241,18 @@ if update_prms_params_for_ag_package == 1:
         # identify field hru id
         mask = hru_id == field_hru_id_val
 
-        # fill in ag frac value if greater than min value
+        # TODO: uncomment after experiment
+        # # fill in ag frac value if greater than min value: ORIGINAL
         # if field_fac_val >= ag_frac_min_val:
         #     ag_frac[mask] = field_fac_val
-        ag_frac[mask] = field_fac_val
+        # #ag_frac[mask] = field_fac_val
+
+        # TODO: comment after experiment
+        # fill in ag frac value if greater than min value: EXPERIMENT 6/21/22
+        if field_fac_val >= ag_frac_min_val_01:
+            ag_frac[mask] = field_fac_val
+        elif (field_fac_val <= ag_frac_min_val_01) & (field_fac_val >= ag_frac_min_val_02):
+            ag_frac[mask] = 0.1
 
     # add ag_frac as PRMS parameter
     gs.prms.parameters.add_record(name = "ag_frac", values = ag_frac, dimensions = [["nhru", nhru]], datatype = 2, file_name = gs.prms.parameters.parameter_files[0])

@@ -838,7 +838,8 @@ def main():
 
 
     # only keep ag field HRUs that have ag fraction >= a minimum value
-    ag_frac_min_val = 0.01
+    #ag_frac_min_val = 0.01  # ORIGINAL
+    ag_frac_min_val = 0.05  # EXPERIMENT 6/21/22
     ag_dataset = ag_dataset[ag_dataset['field_fac'] >= ag_frac_min_val].copy().reset_index()
 
     # get BAS and DIS package from transient model
