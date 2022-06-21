@@ -28,7 +28,8 @@ well_dwr_file = os.path.join(repo_ws, "MODFLOW", "init_files", "wellcompletionre
 mf_nam_file = os.path.join(repo_ws, "MODFLOW", "tr", "rr_tr.nam")
 
 # set output file csv
-ag_package_well_list_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list.csv")
+#ag_package_well_list_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list.csv")
+ag_package_well_list_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list_test.csv")
 #ag_package_well_list_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list_nopondwells.csv")
 
 
