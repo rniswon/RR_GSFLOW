@@ -2241,17 +2241,17 @@ if update_prms_params_for_ag_package == 1:
         # identify field hru id
         mask = hru_id == field_hru_id_val
 
-        # TODO: uncomment after experiment
+        # TODO: uncomment after experiment, if want to keep the original
         # # fill in ag frac value if greater than min value: ORIGINAL
         # if field_fac_val >= ag_frac_min_val:
         #     ag_frac[mask] = field_fac_val
         # #ag_frac[mask] = field_fac_val
 
-        # TODO: comment after experiment
+        # TODO: comment after experiment, if want to keep the original
         # fill in ag frac value if greater than min value: EXPERIMENT 6/21/22
         if field_fac_val >= ag_frac_min_val_01:
             ag_frac[mask] = field_fac_val
-        elif (field_fac_val <= ag_frac_min_val_01) & (field_fac_val >= ag_frac_min_val_02):
+        elif (field_fac_val < ag_frac_min_val_01) & (field_fac_val >= ag_frac_min_val_02):
             ag_frac[mask] = 0.1
 
     # add ag_frac as PRMS parameter
@@ -2569,7 +2569,7 @@ if update_ag_package == 1:
 
     # read in ag well list data file
     #well_list_data_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list.csv")
-    well_list_data_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list_test.csv")
+    well_list_data_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list.csv")
     #well_list_data_file = os.path.join(repo_ws, "MODFLOW", "init_files", "ag_package_well_list_nopondwells.csv")
     well_list_data = pd.read_csv(well_list_data_file)
 
