@@ -290,6 +290,13 @@ DATA            7003  ..\modflow\output\lake_2_outflow_seg_449.out
 DATA            7039  ..\modflow\output\mendo_inflow_seg64_rch3.out	
 DATA            7040  ..\modflow\output\mendo_inflow_seg70_rch9.out
 DATA            7041  ..\modflow\input\redwood_valley_demand.dat
+DATA            7042  ..\modflow\output\lake_3_inflow.out
+DATA            7043  ..\modflow\output\lake_4_inflow.out
+DATA            7044  ..\modflow\output\lake_5_inflow.out
+DATA            7045  ..\modflow\output\lake_6_inflow.out
+DATA            7046  ..\modflow\output\lake_7_inflow.out
+DATA            7047  ..\modflow\output\lake_9_inflow.out
+DATA            7048  ..\modflow\output\lake_10_inflow.out
 DATA            6100  ..\modflow\output\pond_div_450.txt
 DATA            6101  ..\modflow\output\pond_div_452.txt
 DATA            6102  ..\modflow\output\pond_div_453.txt
