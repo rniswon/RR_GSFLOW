@@ -689,7 +689,7 @@ soilzone_module
 4
 soilzone_ag
 ####
-agriculture_canopy_flag
+agriculture_soilzone_flag
 1
 1
 1
@@ -698,7 +698,9 @@ PRMS_land_iteration_flag
 1
 1
 1
-
-
-
+####
+agriculture_dprst_flag
+1
+1
+1
 
