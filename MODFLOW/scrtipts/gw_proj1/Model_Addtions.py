@@ -138,6 +138,8 @@ def add_rural_domestic_pumping_to_well_pkg_01():
     mf.wel.write_file()
     xx = 1
 
+def add_return_flow_recharge():
+    pass
 
 add_rural_domestic_pumping_to_well_pkg_01()
 
