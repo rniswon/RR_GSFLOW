@@ -665,22 +665,22 @@ if update_transient_model_for_smooth_running == 1:
     # update NWT -------------------------------------------------------------------####
 
     # update nwt package values to those suggested by Rich: dataset 1
-    mf_tr.nwt.headtol = 0.25
+    mf_tr.nwt.headtol = 0.35
     mf_tr.nwt.fluxtol = 200000
     mf_tr.nwt.maxiterout = 100
-    mf_tr.nwt.thickfact = 1e-7
+    mf_tr.nwt.thickfact = 1e-8
     mf_tr.nwt.linmeth = 2
     mf_tr.nwt.iprnwt = 1
     mf_tr.nwt.ibotav = 1
     mf_tr.nwt.options = ['SPECIFIED']
-    mf_tr.nwt.dbdtheta = 0.85
+    mf_tr.nwt.dbdtheta = 0.92
     mf_tr.nwt.dbdkappa = 1e-5
     mf_tr.nwt.dbdgamma = 0
     mf_tr.nwt.momfact = 0.1
     mf_tr.nwt.backflag = 1
     mf_tr.nwt.maxbackiter = 50
-    mf_tr.nwt.backtol = 3
-    mf_tr.nwt.backreduce = 0.7
+    mf_tr.nwt.backtol = 1.4
+    mf_tr.nwt.backreduce = 0.8
 
     # update nwt package values to those suggested by Rich: dataset 2
     mf_tr.nwt.iacl = 1
@@ -690,8 +690,8 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.nwt.iredsys = 0
     mf_tr.nwt.rrctols = 0
     mf_tr.nwt.idroptol = 1
-    mf_tr.nwt.epsrn = 0.001
-    mf_tr.nwt.hclosexmd = 0.00015
+    mf_tr.nwt.epsrn = 0.01
+    mf_tr.nwt.hclosexmd = 0.0015
     mf_tr.nwt.mxiterxmd = 20
 
     # write nwt file
@@ -1553,6 +1553,15 @@ if update_transient_model_for_smooth_running == 1:
 
 
 
+    # update PRMS param again: ssr2gw_rate --------------------------------------------------------------####
+
+    ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
+    ssr2gw_rate_change_factor = 0.27
+    ssr2gw_rate = ssr2gw_rate * ssr2gw_rate_change_factor
+    gs.prms.parameters.set_values("ssr2gw_rate", ssr2gw_rate)
+
+
+
     # write prms param file -----------------------------------------------------------------------####
     gs.prms.parameters.write()
 
@@ -2228,9 +2237,12 @@ if update_prms_params_for_ag_package == 1:
     nhru = gs.prms.parameters.get_values('nhru')[0]
     hru_id = np.asarray(list(range(1,(nhru+1), 1)))
 
+    # group field_fac by field_hru_id before summing
+    ag_data_grouped = ag_data.groupby(['field_hru_id'])['field_fac'].sum().reset_index()
+
     # get field hru ids and field_fac (i.e. ag_frac) values
-    field_hru_id = ag_data['field_hru_id'].values.tolist()
-    field_fac = ag_data['field_fac'].values.tolist()
+    field_hru_id = ag_data_grouped['field_hru_id'].values.tolist()
+    field_fac = ag_data_grouped['field_fac'].values.tolist()
 
     # create ag_frac array
     ag_frac = np.zeros(nhru)

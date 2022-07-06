@@ -840,7 +840,10 @@ def main():
     # only keep ag field HRUs that have ag fraction >= a minimum value
     #ag_frac_min_val = 0.01  # ORIGINAL
     ag_frac_min_val = 0.05  # EXPERIMENT 6/21/22
-    ag_dataset = ag_dataset[ag_dataset['field_fac'] >= ag_frac_min_val].copy().reset_index()
+    ag_data_grouped = ag_dataset.groupby(['field_hru_id'])['field_fac'].sum().reset_index()
+    mask_ag_frac_large = ag_data_grouped['field_fac'] >= ag_frac_min_val
+    field_hru_ag_frac_large = ag_data_grouped.loc[mask_ag_frac_large, 'field_hru_id']
+    ag_dataset = ag_dataset[ag_dataset['field_hru_id'].isin(field_hru_ag_frac_large)].copy().reset_index()
 
     # get BAS and DIS package from transient model
     model_ws = os.path.join(repo_ws, "MODFLOW", "TR")
