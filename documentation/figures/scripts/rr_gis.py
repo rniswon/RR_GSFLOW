@@ -5,14 +5,58 @@ import flopy
 import numpy as np
 from gsflow.modflow import ModflowAg
 import gsflow
+import contextily as cx
 
-#hru_param = geopandas.read_file(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\hru_shp_sfr.shp")
-ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\windows"
-#mf = flopy.modflow.Modflow.load("rr_tr.nam", model_ws= ws, load_only=['DIS', 'BAS6', 'UPW', 'AG'])
+import gis_utils
+# =========================
+# Global Variables
+# =========================
 
-def grid_to_shp(mf, xoff = 465900.0, yoff = 4238700, epsg= 26910 ):
-    grid = mf.modelgrid
-    grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)
+# (1) File names
+hru_param_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\hru_shp_sfr.shp"
+ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220622_01\windows"
+output_ws = r"..\gis"
+figs_ws = r"..\figs"
+rural_domestic_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\rural_domestic_master.csv"
+
+
+# (2) Georeferencing
+xoff = 465900.0
+yoff = 4238400
+epsg= 26910
+
+
+# (3) load gsflow
+control_file = os.path.join(ws, r"gsflow_rr.control")
+gs = gsflow.GsflowModel.load_from_file(control_file=control_file, model_ws=ws, mf_load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
+mf = gs.mf
+grid = mf.modelgrid
+grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)
+
+
+# =========================
+# rural domestic pumping
+# =========================
+rural_df = pd.read_csv(rural_domestic_file)
+rural_df = rural_df.groupby(by = ['row', 'col']).mean()
+rural_df.reset_index(inplace = True)
+del(rural_df['sp'])
+rural_df['row'] = rural_df['row'] - 1
+rural_df['col'] = rural_df['col'] - 1
+rur_shp = gis_utils.row_col_to_shp(df=rural_df,mf = mf, row_c='row', col_c = 'col', epsg=epsg)
+rur_shp_file = os.path.join(output_ws, r"rural_pumping.shp")
+rur_shp.to_file(rur_shp_file)
+
+fig_file = os.path.join(figs_ws, 'rural_wells.pdf')
+gis_utils.plot_scatter_map(rur_shp, legend_column = 'flows', cmap = 'jet', title = 'Self Supplied Wells',
+                           figfile = fig_file, log_scale = False, proj_latlon = True,
+                           legend_kwds = {'label':'Average Pumping '} )
+
+xx = 1
+
+
+
+
 
 
 def generate_ag_gis():
@@ -43,16 +87,12 @@ def generate_ag_gis():
 
 
 
-
-
-
-
     x = 1
     grid = mf.modelgrid
     from flopy.utils.geometry import Polygon, Point
     wells = ag.well_list
     well_geom = []
-    xoff = 465900.0; yoff = 4238700; epsg = 26910
+    xoff = 465900.0; yoff = 4238400; epsg = 26910
     grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)
     from flopy.export.shapefile_utils import recarray2shp
     fname = r"D:\Workspace\projects\RussianRiver\Data\Archive_RR\ancillary\data\pumping\agricultural_pumping\ag_wells.shp"
@@ -100,27 +140,8 @@ def generate_ag_gis():
     segments = ag.segment_list
     xx = 1
 
-def generate_grid_gis():
-    import matplotlib.pyplot as plt
-    import matplotlib as mpl
-    mpl.rcParams['lines.linewidth'] = 0.5
 
-    import contextily as cx
-    import geopandas
-    output_ws = r"D:\Workspace\projects\RussianRiver\Data\gis_from_model"
-    mf = flopy.modflow.Modflow.load("rr_tr.nam", model_ws=ws, load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
-
-    xoff = 465900.0
-    yoff = 4238700 - 300
-    epsg = 26910
-    grid = mf.modelgrid
-    grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)
-
-    ib3D = mf.bas6.ibound.array.copy()
-    thick3D =mf.modelgrid.thick.copy()
-    ib2d = np.sum(ib3D, axis=0)
-    ib2d[ib2d > 0] = 1
-
+def sfr_2_shp(mf):
     # produce sfr file:
     sfr_shp_file = os.path.join(output_ws, r"sfr.shp")
     mf.sfr.export(sfr_shp_file, epsg=epsg)
@@ -129,6 +150,16 @@ def generate_grid_gis():
     sfr_shp = sfr_shp.merge(seg_data, left_on='iseg', right_on='nseg')
     del (sfr_shp['nseg'])
     sfr_shp.to_file(sfr_shp_file)
+
+def generate_grid_gis():
+
+
+    ib3D = mf.bas6.ibound.array.copy()
+    thick3D =mf.modelgrid.thick.copy()
+    ib2d = np.sum(ib3D, axis=0)
+    ib2d[ib2d > 0] = 1
+
+
 
     parms = {}
     # dis
@@ -170,7 +201,7 @@ def generate_contour_ss():
     hds = flopy.utils.HeadFile(hds_file)
 
     xoff = 465900.0;
-    yoff = 4238700;
+    yoff = 4238400;
     epsg = 26910
     grid = mf.modelgrid
     grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)
