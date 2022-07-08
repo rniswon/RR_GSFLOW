@@ -19,7 +19,7 @@ repo_ws = os.path.join(script_ws, "..", "..")
 mf_tr_name_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr.nam")
 mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                     model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                    load_only=["BAS6", "DIS", "UPW", "UZF"],
+                                    load_only=["BAS6", "DIS", "UPW", "UZF", "SFR", "AG"],
                                     verbose=True, forgive=False, version="mfnwt")
 
 # load gsflow model
@@ -100,6 +100,85 @@ def plot_gsflow_input_array_1d_uzf(mf, arr, file_name, file_name_pretty):
     plt.savefig(file_path)
 
 
+def generate_ag_gis(mf, file_name_ag_wells, file_name_ag_div, file_name_ag_ponds):
+
+    # NOTE: function by Ayman
+    #mf = flopy.modflow.Modflow.load("rr_tr.nam", model_ws=ws, load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
+    #ag_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\modflow\input\rr_tr.ag"
+    #ag = ModflowAg.load(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\modflow\input\rr_tr.ag", mf, nper=36)
+    #ag.fn_path = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\windows\rr_trXXX.ag"
+    #ag.write_file()
+
+    # prep
+    ag = mf.ag
+    npr = list(ag.irrdiversion.keys())
+    dfs = []
+    for p in npr:
+        data = ag.irrdiversion[p]
+        df = pd.DataFrame(data)
+
+        for row_i, r_data in df.iterrows():
+            hru_ids = []
+
+            for c in df.columns:
+
+                if "hru_id" in c:
+                    if r_data[c] != 0:
+                        hru_ids.append(r_data[c])
+            df_ = pd.DataFrame()
+            df_['hru_id'] = hru_ids
+            df_['seg_id'] = r_data['segid']
+            df_['pr'] = p
+            dfs.append(df_.copy())
+
+
+    # plot ag wells
+    x = 1
+    grid = mf.modelgrid
+    from flopy.utils.geometry import Polygon, Point
+    wells = ag.well_list
+    well_geom = []
+    xoff = 465900.0; yoff = 4238400; epsg = 26910
+    grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)
+    from flopy.export.shapefile_utils import recarray2shp
+    fname = file_name_ag_wells
+    for row, col in zip(wells.i, wells.j):
+        vertices = grid.get_cell_vertices(row, col)
+        vertices = np.array(vertices)
+        center = vertices.mean(axis = 0)
+        well_geom.append(Point(center[0],center[1]))
+    recarray2shp(wells, geoms=well_geom, shpname=fname, epsg=grid.epsg)
+
+    # plot ag ponds
+    fname = file_name_ag_ponds
+    ponds = ag.pond_list
+    pond_geom = []
+    for hru_id in ponds.hru_id:
+        lay, row, col = grid.get_lrc(hru_id+1)[0]
+        vertices = grid.get_cell_vertices(row, col)
+        vertices = np.array(vertices)
+        center = vertices.mean(axis = 0)
+        pond_geom.append(Point(center[0],center[1]))
+    recarray2shp(ponds, geoms=pond_geom, shpname=fname, epsg=grid.epsg)
+
+    # plot ag diversions
+    fname = file_name_ag_div
+    reach_data = pd.DataFrame(mf.sfr.reach_data)
+    seg_data = pd.DataFrame(mf.sfr.segment_data[0])
+    seg_list = ag.segment_list
+    seg_info = []
+    seg_geom = []
+    for seg in seg_list:
+        seg_info.append(seg_data[seg_data['nseg'] == seg])
+        row_col = reach_data.loc[reach_data['iseg'] == seg, ['i', 'j']].values
+        vertices = grid.get_cell_vertices(row_col[0][0], row_col[0][1])
+        vertices = np.array(vertices)
+        center = vertices.mean(axis=0)
+        seg_geom.append(Point(center[0], center[1]))
+    seg_info = pd.concat(seg_info)
+    seg_info = seg_info.to_records()
+    recarray2shp(seg_info, geoms=seg_geom, shpname=fname, epsg=grid.epsg)
+
 
 
 
@@ -158,3 +237,11 @@ nlay, nrow, ncol = mf_tr.bas6.ibound.array.shape
 ssr2gw_rate_arr = ssr2gw_rate.reshape(nrow, ncol)
 plot_gsflow_input_array_1d_uzf(mf_tr, ssr2gw_rate_arr, "ssr2gw_rate", "PRMS ssr2gw_rate")
 
+
+
+# ---- Plot AG parameters -------------------------------------------####
+
+file_name_ag_wells = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'gsflow_inputs', 'ag_wells.shp')
+file_name_ag_div = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'gsflow_inputs', 'ag_div.shp')
+file_name_ag_ponds = os.path.join(repo_ws, 'GSFLOW', 'results', 'plots', 'gsflow_inputs', 'ag_ponds.shp')
+generate_ag_gis(mf_tr, file_name_ag_wells, file_name_ag_div, file_name_ag_ponds)

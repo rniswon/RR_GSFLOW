@@ -31,7 +31,13 @@ actet_file = os.path.join(model_ws, "PRMS", "output", "nsub_hru_actet.csv")
 # set recharge file
 recharge_file = os.path.join(model_ws, "PRMS", "output", "nsub_recharge.csv")
 
-# set subbasin arera table
+# set surface runoff file
+sroff_file = os.path.join(model_ws, "PRMS", "output", "nsub_sroff.csv")
+
+# set subsurface reservoir flow file
+ssres_flow_file = os.path.join(model_ws, "PRMS", "output", "nsub_ssres_flow.csv")
+
+# set subbasin area table
 subbasin_areas_file = os.path.join(model_ws, "scripts", "inputs_for_scripts", "subbasin_areas.txt")
 
 # set file name for daily budget table
@@ -133,6 +139,40 @@ for sub in subs:
     recharge.loc[mask_sub, 'recharge'] = recharge.loc[mask_sub, 'recharge'] * sub_area
 
 
+# read in surface runoff file, reformat, convert units
+sroff = pd.read_csv(sroff_file)
+sroff['totim'] = sroff.index.values + 1
+sroff = pd.melt(sroff, id_vars=['totim', 'Date'], var_name = 'subbasin', value_name='sroff')
+sroff['subbasin'] = sroff['subbasin'].astype(int)
+sroff['sroff'] = sroff['sroff'] * inches_per_meter
+for sub in subs:
+
+    # get area for this subbasin
+    mask_sub_area = subbasin_areas['subbasin'] == sub
+    sub_area = subbasin_areas.loc[mask_sub_area, 'area_m2'].values[0]
+
+    # convert from depth (m) to volume (m^3)
+    mask_sub = sroff['subbasin'] == sub
+    sroff.loc[mask_sub, 'sroff'] = sroff.loc[mask_sub, 'sroff'] * sub_area
+
+
+
+# read in subsurface reservoir flow file, reformat, convert units
+ssres_flow = pd.read_csv(ssres_flow_file)
+ssres_flow['totim'] = ssres_flow.index.values + 1
+ssres_flow = pd.melt(ssres_flow, id_vars=['totim', 'Date'], var_name = 'subbasin', value_name='ssres_flow')
+ssres_flow['subbasin'] = ssres_flow['subbasin'].astype(int)
+ssres_flow['ssres_flow'] = ssres_flow['ssres_flow'] * inches_per_meter
+for sub in subs:
+
+    # get area for this subbasin
+    mask_sub_area = subbasin_areas['subbasin'] == sub
+    sub_area = subbasin_areas.loc[mask_sub_area, 'area_m2'].values[0]
+
+    # convert from depth (m) to volume (m^3)
+    mask_sub = ssres_flow['subbasin'] == sub
+    ssres_flow.loc[mask_sub, 'ssres_flow'] = ssres_flow.loc[mask_sub, 'ssres_flow'] * sub_area
+
 
 
 #---- Combine all budget components into one daily budget table and export csv ---------------------------------------------------------####
@@ -140,6 +180,8 @@ for sub in subs:
 # merge
 df = pd.merge(precip, potet, how='left', on=['subbasin', 'totim', 'Date'])
 df = pd.merge(df, actet, how='left', on=['subbasin', 'totim', 'Date'])
+df = pd.merge(df, sroff, how='left', on=['subbasin', 'totim', 'Date'])
+df = pd.merge(df, ssres_flow, how='left', on=['subbasin', 'totim', 'Date'])
 budget_daily = pd.merge(df, recharge, how='left', on=['subbasin', 'totim', 'Date'])
 
 # reformat
@@ -199,7 +241,7 @@ for sub in subs:
     df_all = pd.melt(df_all,  id_vars=['year'], var_name='variable', value_name='value')
 
     # plot surface water budget
-    selected_vars = ['precip', 'potet', 'actet', 'recharge']
+    selected_vars = ['precip', 'potet', 'actet', 'recharge', 'sroff', 'ssres_flow']
     df = df_all[df_all['variable'].isin(selected_vars)]
     plt.figure(figsize=(12, 8))
     sns.set(style='white')
