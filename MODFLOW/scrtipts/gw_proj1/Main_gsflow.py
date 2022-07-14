@@ -660,6 +660,15 @@ if update_transient_model_for_smooth_running == 1:
     mask_lowland_3d = np.stack([mask_lowland, mask_lowland, mask_lowland])
     mask_upland_3d = np.stack([mask_upland, mask_upland, mask_upland])
 
+    # get layer masks
+    ibound_lyr = mf_tr.bas6.ibound.array
+    ibound_lyr[0, :, :] = 1
+    ibound_lyr[1, :, :] = 2
+    ibound_lyr[2, :, :] = 3
+    mask_lyr1 = ibound_lyr == 1
+    mask_lyr2 = ibound_lyr == 2
+    mask_lyr3 = ibound_lyr == 3
+
 
 
     # update NWT -------------------------------------------------------------------####
@@ -882,8 +891,8 @@ if update_transient_model_for_smooth_running == 1:
     # shale, fractured basalt, weathered granite and gneiss): 0.5-10%
 
     # assign SY values for geological zones
-    sy_bedrock = 0.03
-    sy_bedrock_highly_weathered = 0.06
+    sy_bedrock = 0.03                      # ORIGINAL: 0.03, EXPERIMENT: various
+    sy_bedrock_highly_weathered = 0.06     # ORIGINAL: 0.06, EXPERIMENT: various
     sy_sonoma_volcanics = 0.07
     sy_consolidated_sediments = 0.15
     sy_unconsolidated_sediments = 0.2
@@ -893,7 +902,8 @@ if update_transient_model_for_smooth_running == 1:
     sy = mf_tr.upw.sy.array
 
     # assign SY for geological zones
-    sy[geo_zones_new == 14] = sy_bedrock
+    sy[(geo_zones_new == 14) & (ibound_lyr == 3)] = sy_bedrock
+    sy[(geo_zones_new == 14) & (ibound_lyr == 2)] = sy_bedrock_highly_weathered
     sy[geo_zones_new == 15] = sy_sonoma_volcanics
     sy[geo_zones_new == 16] = sy_consolidated_sediments
     sy[geo_zones_new == 17] = sy_unconsolidated_sediments
@@ -1259,6 +1269,10 @@ if update_transient_model_for_smooth_running == 1:
     mf_tr.uzf.thti = thti_old
 
 
+
+    # update UZF EXTDP ------------------------------#
+
+    mf_tr.uzf.extdp = 0.1
 
 
     # update nsets -----------------------------#
@@ -2345,6 +2359,14 @@ if update_prms_params_for_ag_package == 1:
                                   file_name = gs.prms.parameters.parameter_files[1])
 
 
+    # Set dprst_frac_init=0 ------------------------------------------------------------------------#
+
+    dprst_frac_init = 0
+    gs.prms.parameters.add_record(name = "dprst_frac_init", values = [dprst_frac_init],
+                                  dimensions = [["one",1]], datatype = 2,
+                                  file_name = gs.prms.parameters.parameter_files[1])
+
+
 
 
     # write prms param file
@@ -2779,8 +2801,8 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # calculate the max ag water demand (units: m^3/day)
         pond_list_mask = pond_list['hru_id'] == pond
-        # max_demand_m3 = pond_df['Qmax_field'].sum()  # ORIGINAL
-        max_demand_m3 = pond_df['Qmax_field'].sum() * 1.5   # EXPERIMENT 7/6/22: increase water diverted to ponds by 50% but keep the 25 ft pond depth constraint
+        max_demand_m3 = pond_df['Qmax_field'].sum()  # ORIGINAL
+        #max_demand_m3 = pond_df['Qmax_field'].sum() * 1.5   # EXPERIMENT 7/6/22: increase water diverted to ponds by 50% but keep the 25 ft pond depth constraint
         pond_list.loc[pond_list_mask, 'max_demand_m3'] = max_demand_m3
 
         # store the pond area
@@ -2867,8 +2889,10 @@ if create_tabfiles_for_pond_diversions == 1:
     # by dividing up the demand among the number of days in the month
 
     # assign wettest month of wet season
-    wettest_month = 1    # assuming January for now
-    num_days_in_wettest_month = 31
+    # wettest_month = [1]    # ORIGINAL: assuming January for now
+    # num_days_in_wettest_month = 31    # ORIGINAL
+    wettest_months = [11, 12, 1, 2]    # assuming January for now
+    num_days_in_wettest_months = 31+31+31+28
 
     # summarize (i.e. add up) pond demand by diversion segment
     seg_df = pond_list.groupby('segid').sum().reset_index()
@@ -2903,10 +2927,12 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # calculate daily irrigation demand during wettest month
         seg_mask = seg_df['segid'] == seg
-        daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_month
+        # daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_months           # ORIGINAL
+        daily_irrig_demand_wettest_month = (1.25 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 1.25
+
 
         # create tabfile
-        month_mask = this_tabfile['model_month'] == wettest_month
+        month_mask = this_tabfile['model_month'].isin(wettest_months)
         this_tabfile.loc[month_mask, 'daily_demand_m3'] = daily_irrig_demand_wettest_month   # ORIGINAL
         #this_tabfile.loc[month_mask, 'daily_demand_m3'] = 0   # EXPERIMENT
         this_tabfile = this_tabfile[['model_time_step', 'daily_demand_m3']]

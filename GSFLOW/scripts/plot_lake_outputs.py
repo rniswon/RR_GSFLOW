@@ -44,6 +44,10 @@ subbasin_2_gage_file = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "EF_
 mendo_inflow_seg64_rch3_file = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "mendo_inflow_seg64_rch3.out")
 mendo_inflow_seg70_rch9_file = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "mendo_inflow_seg70_rch9.out")
 
+# # set file for lake mendo surface
+# file_path = os.path.join(script_ws, "inputs_for_scripts", "RR_gage_and_other_flows.csv")
+# gage_and_other_flows.to_csv(file_path, index=False)
+
 
 
 # ---- Read in ----------------------------------------------------####
@@ -74,7 +78,7 @@ obs_lake_stage['lake_mendocino_stage_feet_NGVD29'] = obs_lake_stage['lake_mendoc
 obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] = obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] * ft_to_meters
 
 # read in file for redwood valley demand
-redwood_valley_demand = pd.read_excel(redwood_valley_demand_file, sheet_name="all")
+redwood_valley_demand = pd.read_excel(redwood_valley_demand_file, sheet_name="all_1990_2015")
 
 # read in files for lake mendo surface inflows and outflows
 subbasin_2_gage = pd.read_csv(subbasin_2_gage_file, delim_whitespace=True, skiprows=[0], header=None)
@@ -265,9 +269,9 @@ def examine_lake_mendo(specified_outflows, subbasin_2_gage, mendo_inflow_seg64_r
     redwood_valley_demand['flow_cumul'] = redwood_valley_demand['redwood_valley_demand_cmd'].cumsum()
 
     # initialise the subplot function using number of rows and columns
-    fig, ax = plt.subplots(2, 1, figsize=(12, 8), dpi=150)
+    fig, ax = plt.subplots(3, 1, figsize=(12, 8), dpi=150)
 
-    # plot specified outflow at lake mendo vs. subbasin 3 gage
+    # plot specified outflow at lake mendo vs. subbasin 3 gage and subbasin 2 gage
     ax[0].plot(subbasin_3_gage['date'], subbasin_3_gage['flow_cumul'],  label = 'subbasin 3 flow')
     ax[0].plot(specified_outflows['date'], specified_outflows['flow_cumul'], label = 'specified outflow', linestyle='dotted')
     ax[0].plot(subbasin_2_gage['date'], subbasin_2_gage['flow_cumul'],  label = 'subbasin 2 flow', linestyle='dotted')
@@ -284,6 +288,14 @@ def examine_lake_mendo(specified_outflows, subbasin_2_gage, mendo_inflow_seg64_r
     ax[1].legend()
     ax[1].set_xlabel('Time step')
     ax[1].set_ylabel('Cumulative flow (cubic meters)')
+
+    # plot difference between subbasin 2 and 3 gages
+    diff_sub2_sub3 = subbasin_2_gage['flow'] - subbasin_3_gage['flow']
+    cumdiff_sub2_sub3 = diff_sub2_sub3.cumsum()
+    ax[2].plot(subbasin_2_gage['date'], cumdiff_sub2_sub3)
+    ax[2].set_title('Cumulative flow difference between subbasin 2 (upstream of Lake Mendocino) and subbasin 3 (downstream of Lake Mendocino)')
+    ax[2].set_xlabel('Date')
+    ax[2].set_ylabel('Cumulative flow difference (m^3)')
 
     # add spacing between subplots
     fig.tight_layout()

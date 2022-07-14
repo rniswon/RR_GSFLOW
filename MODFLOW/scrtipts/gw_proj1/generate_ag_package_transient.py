@@ -11,6 +11,7 @@ except (ImportError, ModuleNotFoundError):
     sys.path.insert(0, r"D:\Workspace\Codes")
 
 import pandas as pd
+import pandas as pd
 pd.options.mode.chained_assignment = None
 import shapefile
 import geopandas
@@ -468,14 +469,13 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     # define low flow period
     low_flow_period = (6,7,8,9,10,11)
 
-    # OLD: may return to this later, if needed
-    # # set flowthrough based on low flow period
-    # flowthrough = 1
-    # if int(month) in low_flow_period:
-    #     flowthrough=0
+    # set flowthrough based on low flow period
+    flowthrough = 1
+    if int(month) in low_flow_period:
+        flowthrough=0
 
-    # set flowthrough
-    flowthrough = 0
+    # # set flowthrough
+    # flowthrough = 0
 
     # filter out orphan fields if it is the low flow period
     if int(month) in low_flow_period:
