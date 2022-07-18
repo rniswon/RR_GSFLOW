@@ -647,7 +647,10 @@ def identify_orphan_fields(ag_dataset, ag_dataset_w_orphan_fields_file):
 
     # add orphan field flag column to ag_dataset
     ag_dataset['orphan_field'] = 0
-    mask = ((ag_dataset['pod_type'] == "DIVERSION") & (ag_dataset['div_seg'].isin(segments_with_pond_and_field)) & (ag_dataset['pond_id'] < 0) & ag_dataset['field_hru_id'].isin(orphan_fields))
+    mask = ((ag_dataset['pod_type'] == "DIVERSION") &
+            (ag_dataset['div_seg'].isin(segments_with_pond_and_field)) &
+            (ag_dataset['pond_id'] < 0) & ag_dataset['field_hru_id'].isin(orphan_fields))
+
     ag_dataset.loc[mask, 'orphan_field'] = 1
 
     # write to csv
