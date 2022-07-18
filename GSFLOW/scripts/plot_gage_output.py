@@ -423,15 +423,19 @@ if __name__ == "__main__":
         # DAILY PLOTS  -------------------------------------------------####
 
         # plot cumulative flows (based on daily flows)
-        obs_flow_cumul = sim_obs_daily['obs_flow'].cumsum()
-        sim_flow_cumul = sim_obs_daily['sim_flow'].cumsum()
+        seconds_per_day = 86400
+        cubic_meters_per_cubic_ft= 1/35.3146667
+        obs_flow_cmd = sim_obs_daily['obs_flow'] * seconds_per_day *  cubic_meters_per_cubic_ft           # convert cfs to cmd
+        sim_flow_cmd = sim_obs_daily['sim_flow'] * seconds_per_day *  cubic_meters_per_cubic_ft           # convert cfs to cmd
+        obs_flow_cumul = obs_flow_cmd.cumsum()
+        sim_flow_cumul = sim_flow_cmd.cumsum()
         plt.style.use('default')
         plt.figure(figsize=(12, 8), dpi=150)
         plt.plot(sim_obs_daily.date, obs_flow_cumul, label = 'Observed')
         plt.plot(sim_obs_daily.date, sim_flow_cumul, label = 'Simulated', linestyle='dotted')
         plt.title('Cumulative streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
         plt.xlabel('Date')
-        plt.ylabel('Cumulative streamflow (cubic feet)')
+        plt.ylabel('Cumulative streamflow (cubic meters)')
         plt.legend()
         file_name = 'cumul_streamflow_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumul", file_name)
@@ -554,7 +558,7 @@ if __name__ == "__main__":
 
 
 
-        # LOCAL FLOWS  -------------------------------------------------####
+        # LOCAL AND CUMULATIVE FLOWS  -------------------------------------------------####
 
         # if subbasin_id == 1:
         #      obs_local = gage_and_other_flows['11461000'].values
@@ -562,10 +566,10 @@ if __name__ == "__main__":
         if subbasin_id == 2:
             obs_local = gage_and_other_flows['11461500'] - gage_and_other_flows['11471000']
             sim_local = sim_dict['11461500']['flow'] - gage_and_other_flows['11471000']
-        # elif subbasin_id == 3:
-        #     obs_local = gage_and_other_flows['Lake Mendocino observed inflow (SCWA)'] - gage_and_other_flows['11471000']
-        #     sim_local = np.empty((len(obs_local), 1))
-        #     sim_local[:] = np.nan
+        elif subbasin_id == 3:
+            obs_local = gage_and_other_flows['11461500'] - gage_and_other_flows['11462000']
+            sim_local = sim_dict['11461500']['flow'] - sim_dict['11462000']['flow']
+            # note: doing upstream minus downstream for subbasin 3 only (all the rest are downstream minus upstream)
         elif subbasin_id == 5:
             obs_local = gage_and_other_flows['11462500'] - gage_and_other_flows['11461000'] - gage_and_other_flows['11462000']
             sim_local = sim_dict['11462500']['flow'] - sim_dict['11461000']['flow'] - sim_dict['11462000']['flow'] - (gage_and_other_flows['Lake Mendocino observed inflow (SCWA)'] - gage_and_other_flows['11471000'])  # note: this last part is observed
@@ -587,7 +591,7 @@ if __name__ == "__main__":
 
 
         # plot
-        subbasins_for_local_flows = [2,5,6,13,16,18]
+        subbasins_for_local_flows = [2,3,5,6,13,16,18]
         date = gage_and_other_flows['date']
         if subbasin_id in subbasins_for_local_flows:
 
@@ -604,18 +608,41 @@ if __name__ == "__main__":
             file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily_local", file_name)
             plt.savefig(file_path)
 
-            # calculate (absolute) cumulative differences
-            diff_obs_cum = obs_local.abs().cumsum()
-            diff_sim_cum = sim_local.abs().cumsum()
+            # # calculate (absolute) cumulative differences
+            # diff_obs_cum = obs_local.abs().cumsum()
+            # diff_sim_cum = sim_local.abs().cumsum()
+            #
+            # # plot absolute cumulative differences
+            # plt.style.use('default')
+            # plt.figure(figsize=(12, 8), dpi=150)
+            # plt.plot(date, diff_obs_cum, label = 'Observed')
+            # plt.plot(date, diff_sim_cum, label = 'Simulated')
+            # plt.title('Cumulative absolute difference in streamflow: subbasin ' + str(subbasin_id))
+            # plt.xlabel('Date')
+            # plt.ylabel('Cumulative absolute difference in streamflow (ft^3/s)')
+            # plt.legend()
+            # file_name = 'cumdiff_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
+            # file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumdiff", file_name)
+            # plt.savefig(file_path)
 
-            # plot absolute cumulative differences
+            # calculate cumulative differences
+            seconds_per_day = 86400
+            cubic_meters_per_cubic_ft = 1 / 35.3146667
+            obs_local_cmd = obs_local * seconds_per_day * cubic_meters_per_cubic_ft  # convert cfs to cmd
+            sim_local_cmd = sim_local * seconds_per_day * cubic_meters_per_cubic_ft  # convert cfs to cmd
+            diff_obs_cum = obs_local_cmd.cumsum()
+            diff_sim_cum = sim_local_cmd.cumsum()
+            # diff_obs_cum = obs_local.cumsum()
+            # diff_sim_cum = sim_local.cumsum()
+
+            # plot cumulative differences
             plt.style.use('default')
             plt.figure(figsize=(12, 8), dpi=150)
             plt.plot(date, diff_obs_cum, label = 'Observed')
             plt.plot(date, diff_sim_cum, label = 'Simulated')
-            plt.title('Cumulative absolute difference in streamflow: subbasin ' + str(subbasin_id))
+            plt.title('Cumulative difference in streamflow: subbasin ' + str(subbasin_id))
             plt.xlabel('Date')
-            plt.ylabel('Cumulative absolute difference in streamflow (ft^3/s)')
+            plt.ylabel('Cumulative difference in streamflow (cubic meters)')
             plt.legend()
             file_name = 'cumdiff_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumdiff", file_name)

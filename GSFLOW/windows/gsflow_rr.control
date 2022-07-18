@@ -548,7 +548,7 @@ var_save_file
 print_debug
 1
 1
--1
+0
 ####
 aniOutON_OFF
 1
@@ -733,6 +733,16 @@ nhruOut_freq
 1
 1
 6
+####
+modflow_time_zero
+6
+1
+1990
+1
+1
+0
+0
+0
 
 
 
