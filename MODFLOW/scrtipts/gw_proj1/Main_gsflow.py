@@ -2488,18 +2488,21 @@ if update_ag_package == 1:
     # extract crop types
     crop_type = ag_data['crop_type'].unique().tolist()
 
-    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year = ft/year), then convert to model units (i.e. meters/day)
     Qmax_dict = {'Grapes': 1,
                  'Apples': 2.5,
                  'Mixed Pasture': 3.5,
                  'other': 1}
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
+    ft_per_meter = 3.2808399
+
     #days_per_year = 365    #TODO: need to update this so that it is days_per_growing_season with different numbers of days for the different crops - extract from KC_sonoma shared
     for key in Qmax_dict.keys():
 
-        # convert to meters
-        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * (1/irrigated_days_per_year_dict[key]) * -1   # multiplying by -1 to indicate pumping
+        # convert to meters/day
+        #Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * (1/irrigated_days_per_year_dict[key]) * -1   # multiplying by -1 to indicate pumping
+        Qmax_dict[key] = Qmax_dict[key] * (1/ft_per_meter) * (1/irrigated_days_per_year_dict[key]) * -1   # multiplying by -1 to indicate pumping
 
 
     # create a Qmax_crop column in ag_data based on crop_type
@@ -2728,14 +2731,14 @@ if create_tabfiles_for_pond_diversions == 1:
     crop_type = ag_data['crop_type'].unique().tolist()
 
     # AFTER EXPERIMENT: GO BACK TO THIS VERSION
-    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year = ft/year), then convert to meters/year
     Qmax_dict = {'Grapes': 1,
                  'Apples': 2.5,
                  'Mixed Pasture': 3.5,
                  'other': 1}
 
     # # EXPERIMENT
-    # # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    # # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year= ft/year), then convert to meters/year
     # Qmax_dict = {'Grapes': 0.5,
     #              'Apples': 0.5,
     #              'Mixed Pasture': 0.5,
@@ -2743,13 +2746,15 @@ if create_tabfiles_for_pond_diversions == 1:
 
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
+    ft_per_meter = 3.2808399
     #days_per_year = 365
     for key in Qmax_dict.keys():
 
-        # convert to meters
+        # convert to meters/year
         # not multiplying by -1 because interested in field water demand, not well pumping
         # not converting to irrigation demand per year, instead keeping as irrigation demand per growing season
-        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft
+        #Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft
+        Qmax_dict[key] = Qmax_dict[key] * (1/ft_per_meter)
 
 
     # create a Qmax_crop column in ag_data based on crop_type
@@ -2799,7 +2804,7 @@ if create_tabfiles_for_pond_diversions == 1:
         ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond) & (ag_data['orphan_field'] == 0)
         pond_df = ag_data[ag_data_mask]
 
-        # calculate the max ag water demand (units: m^3/day)
+        # calculate the max ag water demand (units: m^3/year)
         pond_list_mask = pond_list['hru_id'] == pond
         max_demand_m3 = pond_df['Qmax_field'].sum()  # ORIGINAL
         #max_demand_m3 = pond_df['Qmax_field'].sum() * 1.5   # EXPERIMENT 7/6/22: increase water diverted to ponds by 50% but keep the 25 ft pond depth constraint
@@ -2838,8 +2843,9 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # Update QPOND in pond list
         # NOTE: updating to represent 5-day filling period for pond demand
-        fraction_filled_per_day = 1/5
-        qpond = pond_demand_m3 * fraction_filled_per_day
+        #fraction_filled_per_day = 1/5
+        #qpond = pond_demand_m3 * fraction_filled_per_day
+        qpond = pond_demand_m3
         pond_list.loc[pond_list_mask, 'q'] = qpond     # ORIGINAL
         #pond_list.loc[pond_list_mask, 'q'] = 0        # EXPERIMENT
 
@@ -2885,13 +2891,13 @@ if create_tabfiles_for_pond_diversions == 1:
 
 
     # Create tab files -------------------------------------------------------####
-    # Fill ponds during the wettest month of the wet season to cover the water demand
+    # Fill ponds during the wettest months of the wet season to cover the water demand
     # by dividing up the demand among the number of days in the month
 
     # assign wettest month of wet season
     # wettest_month = [1]    # ORIGINAL: assuming January for now
     # num_days_in_wettest_month = 31    # ORIGINAL
-    wettest_months = [11, 12, 1, 2]    # assuming January for now
+    wettest_months = [11, 12, 1, 2]    # assuming Nov-Feb for now
     num_days_in_wettest_months = 31+31+31+28
 
     # summarize (i.e. add up) pond demand by diversion segment

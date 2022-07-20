@@ -16,7 +16,7 @@ from gw_utils import general_util
 
 
 
-def map_hobs_obsname_to_date(mf_tr_name_file):
+def map_hobs_obsname_to_date(mf_tr_name_file, results_ws):
 
     # read in HOB input file
     mf = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
@@ -59,14 +59,14 @@ def map_hobs_obsname_to_date(mf_tr_name_file):
         hobs_df.loc[mask, 'date'] = hob_date
 
     # export
-    file_name = os.path.join(repo_ws, "GSFLOW", "results", "tables", "hobs_df.csv")
+    file_name = os.path.join(results_ws, "tables", "hobs_df.csv")
     hobs_df.to_csv(file_name)
 
     return hobs_df
 
 
 
-def add_date_to_hobs_out(hobs_df, hobs_out_path):
+def add_date_to_hobs_out(hobs_df, hobs_out_path, results_ws):
 
     # read in hobs output file
     col_names = ["simulated", "observed", "obsname"]
@@ -81,7 +81,7 @@ def add_date_to_hobs_out(hobs_df, hobs_out_path):
     hobs_out_df = hobs_out_df[['obsname', 'well_id', 'well_time', 'irefsp', 'toffset', 'totim', 'date', 'simulated', 'observed', 'residual']]
 
     # export
-    file_name = os.path.join(repo_ws, "GSFLOW", "results", "tables", "hobs_out_df.csv")
+    file_name = os.path.join(results_ws, "tables", "hobs_out_df.csv")
     hobs_out_df.to_csv(file_name)
 
     return hobs_out_df
@@ -444,23 +444,20 @@ def hob_resid_to_shapefile_loc(mf, stress_period=[0, -1], shpname='hob_shapefile
 
 
 
+def main(model_ws, results_ws):
 
-
-
-if __name__ == "__main__":
-
-    # set workspaces
-    script_ws = os.path.abspath(os.path.dirname(__file__))
-    repo_ws = os.path.join(script_ws, "..", "..")
+    # # set workspaces
+    # script_ws = os.path.abspath(os.path.dirname(__file__))
+    # repo_ws = os.path.join(script_ws, "..", "..")
 
     # create data frame that maps HOBS observation name to date
-    mf_tr_name_file = os.path.join(repo_ws, "GSFLOW", "windows", "rr_tr.nam")
-    hobs_df = map_hobs_obsname_to_date(mf_tr_name_file)
+    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    hobs_df = map_hobs_obsname_to_date(mf_tr_name_file, results_ws)
 
     # read in and add dates to hobs output file
     hobs_out_name = "rr_tr.hob.out"
-    hobs_out_path = os.path.join(repo_ws, "GSFLOW", "modflow", "output", hobs_out_name)
-    hobs_out_df = add_date_to_hobs_out(hobs_df, hobs_out_path)
+    hobs_out_path = os.path.join(model_ws, "modflow", "output", hobs_out_name)
+    hobs_out_df = add_date_to_hobs_out(hobs_df, hobs_out_path, results_ws)
 
 
 
@@ -490,7 +487,7 @@ if __name__ == "__main__":
         plt.ylabel('Head (m)')
         plt.legend()
         file_name = 'time_series_' + str(well) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_time_series", file_name)
+        file_path = os.path.join(results_ws, "plots", "gw_time_series", file_name)
         plt.savefig(file_path)
 
 
@@ -513,7 +510,7 @@ if __name__ == "__main__":
         ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
         plt.legend()
         file_name = 'sim_vs_obs_' + str(well) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_sim_vs_obs", file_name)
+        file_path = os.path.join(results_ws, "plots", "gw_sim_vs_obs", file_name)
         plt.savefig(file_path)
 
 
@@ -525,7 +522,7 @@ if __name__ == "__main__":
         plt.xlabel('Simulated head (m)')
         plt.ylabel('Head residual (m)')
         file_name = 'resid_vs_sim' + str(well) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_resid_vs_sim", file_name)
+        file_path = os.path.join(results_ws, "plots", "gw_resid_vs_sim", file_name)
         plt.savefig(file_path)
 
 
@@ -544,7 +541,7 @@ if __name__ == "__main__":
 
     # export summary stats data frame
     file_name= "gw_summary_stats.csv"
-    file_path = os.path.join(repo_ws, "GSFLOW", "results", "tables", file_name)
+    file_path = os.path.join(results_ws, "tables", file_name)
     summary_stats.to_csv(file_path, index=False)
 
 
@@ -565,20 +562,29 @@ if __name__ == "__main__":
 
     # create shapefile: entire calibration period
     shp_file_name = "gw_resid_jan1990_dec2015.shp"
-    shapefile_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_resid_map", shp_file_name)
+    shapefile_path = os.path.join(results_ws, "plots", "gw_resid_map", shp_file_name)
     hob_resid_to_shapefile_loc(mf, stress_period=[0, -1], shpname = shapefile_path)
 
     # create shapefile: Jan 1990 - Dec 1999
     shp_file_name = "gw_resid_jan1990_dec1999.shp"
-    shapefile_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_resid_map", shp_file_name)
+    shapefile_path = os.path.join(results_ws, "plots", "gw_resid_map", shp_file_name)
     hob_resid_to_shapefile_loc(mf, stress_period=[0, 119], shpname = shapefile_path)
 
     # create shapefile: Jan 2000 - Dec 2009
     shp_file_name = "gw_resid_jan2000_dec2009.shp"
-    shapefile_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_resid_map", shp_file_name)
+    shapefile_path = os.path.join(results_ws, "plots", "gw_resid_map", shp_file_name)
     hob_resid_to_shapefile_loc(mf, stress_period=[120, 239], shpname = shapefile_path)
 
     # create shapefile: Jan 2010 - Dec 2015
     shp_file_name = "gw_resid_jan2010_dec2015.shp"
-    shapefile_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "gw_resid_map", shp_file_name)
+    shapefile_path = os.path.join(results_ws, "plots", "gw_resid_map", shp_file_name)
     hob_resid_to_shapefile_loc(mf, stress_period=[240, 311], shpname = shapefile_path)
+
+
+
+if __name__ == "__main__":
+
+    # note: model_ws and results_ws are defined in plot_all_gsflow.py,
+    # if we want to run this script alone then need to define them here
+
+    main(model_ws, results_ws)

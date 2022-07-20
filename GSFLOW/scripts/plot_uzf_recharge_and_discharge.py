@@ -85,16 +85,15 @@ class NetFlux(object):
                 result = np.reshape(result, shape)
         return result
 
+def main(model_ws, results_ws):
 
-if __name__ == "__main__":
-
-    # set workspaces
-    script_ws = os.path.abspath(os.path.dirname(__file__))
-    repo_ws = os.path.join(script_ws, "..", "..")
+    # # set workspaces
+    # script_ws = os.path.abspath(os.path.dirname(__file__))
+    # repo_ws = os.path.join(script_ws, "..", "..")
 
     # set file paths
-    file_path_recharge = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "uzf_recharge.out")
-    file_path_discharge = os.path.join(repo_ws, "GSFLOW", "modflow", "output", "uzf_discharge.out")
+    file_path_recharge = os.path.join(model_ws, "modflow", "output", "uzf_recharge.out")
+    file_path_discharge = os.path.join(model_ws, "modflow", "output", "uzf_discharge.out")
 
     # settings
     analyze_day_01_recharge = 0
@@ -118,7 +117,7 @@ if __name__ == "__main__":
         plt.colorbar(im)
         plt.title("UZF recharge net flux: 1/1/1990,\ngrid cells with recharge = 0 set to nan")
         file_name = 'netrech_19900101.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "uzf_netrech_netdis", file_name)
+        file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
         plt.savefig(file_path)
 
 
@@ -136,7 +135,7 @@ if __name__ == "__main__":
     data = np.average(data, axis=0)
 
     # export recharge
-    file_name = os.path.join(repo_ws, "GSFLOW", "results", "tables", "netrech_all.txt")
+    file_name = os.path.join(results_ws, "tables", "netrech_all.txt")
     np.savetxt(file_name, data, delimiter=",")
 
     # plot recharge
@@ -146,7 +145,7 @@ if __name__ == "__main__":
     plt.colorbar(im)
     plt.title("UZF recharge net flux: averaged over all stress periods,\ngrid cells with recharge = 0 set to nan")
     file_name = 'netrech_all.jpg'
-    file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "uzf_netrech_netdis", file_name)
+    file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
     plt.savefig(file_path)
 
 
@@ -185,7 +184,7 @@ if __name__ == "__main__":
         plt.colorbar(im)
         plt.title("UZF recharge net flux: month " + str(month + 1) + "\ngrid cells with recharge = 0 set to nan")
         file_name = 'netrech_month_' + str(month+1) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "uzf_netrech_netdis", file_name)
+        file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
         plt.savefig(file_path)
 
 
@@ -213,7 +212,7 @@ if __name__ == "__main__":
     plt.colorbar(im)
     plt.title("UZF discharge net flux: averaged over all stress periods,\ngrid cells with discharge = 0 set to nan")
     file_name = 'netdis_all.jpg'
-    file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "uzf_netrech_netdis", file_name)
+    file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
     plt.savefig(file_path)
 
 
@@ -255,10 +254,19 @@ if __name__ == "__main__":
         plt.colorbar(im)
         plt.title("UZF discharge net flux: month " + str(month + 1) + "\ngrid cells with discharge = 0 set to nan")
         file_name = 'netdis_month_' + str(month+1) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "uzf_netrech_netdis", file_name)
+        file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
         plt.savefig(file_path)
 
-    xx=1
+
+
+# main function
+if __name__ == "__main__":
+
+    # note: model_ws and results_ws are defined in plot_all_gsflow.py,
+    # if we want to run this script alone then need to define them here
+
+    main(model_ws, results_ws)
+
 
 
 
