@@ -2385,10 +2385,34 @@ if update_modflow_for_ag_package == 1:
     # print
     print('Update MODFLOW for AG package')
 
-    # change name file to add ag package file
-    # TODO
+    # load modflow tr model
+    # load transient modflow model
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        load_only=["BAS6", "DIS", "SFR"],
+                                        verbose=True, forgive=False, version="mfnwt")
 
-    pass
+    # get sfr segment data and reach data
+    segment_data = pd.DataFrame(mf_tr.sfr.segment_data[0])
+    reach_data = pd.DataFrame(mf_tr.sfr.reach_data)
+
+    # identify diversion segments (i.e. segments with non-zero iupseg)
+    mask = segment_data['iupseg'] > 0
+    segment_data_div = segment_data[mask]
+    div_segs = segment_data_div['nseg'].values
+
+    # set streambed K=0 for diversion segments
+    mask = reach_data['iseg'].isin(div_segs)
+    reach_data.loc[mask, 'strhc1'] = 0
+
+    # write sfr file
+    mf_tr.sfr.reach_data = reach_data.to_records(index=False)
+    mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    mf_tr.sfr.write_file()
+
+
+
+
 
 
 
@@ -2806,8 +2830,8 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # calculate the max ag water demand (units: m^3/year)
         pond_list_mask = pond_list['hru_id'] == pond
-        # max_demand_m3 = pond_df['Qmax_field'].sum()            # ORIGINAL
-        max_demand_m3 = pond_df['Qmax_field'].sum() * 5       # EXPERIMENT: increase water diverted to ponds but keep the 25 ft pond depth constraint
+        max_demand_m3 = pond_df['Qmax_field'].sum()            # ORIGINAL
+        # max_demand_m3 = pond_df['Qmax_field'].sum() * 5       # EXPERIMENT: increase water diverted to ponds but keep the 25 ft pond depth constraint
         pond_list.loc[pond_list_mask, 'max_demand_m3'] = max_demand_m3
 
         # store the pond area
@@ -2994,6 +3018,7 @@ if create_tabfiles_for_pond_diversions == 1:
     # add columns to pond list
     pond_list['tabpondunit'] = -999
     pond_list['tabpondval'] = -999
+    pond_list['tabpondfrac'] = -999
 
     # loop through diversion segments
     pond_div_segs = pond_list['segid'].unique()
@@ -3009,8 +3034,14 @@ if create_tabfiles_for_pond_diversions == 1:
         pond_list.loc[mask_pond_list, 'tabpondunit'] = tab_unit
         pond_list.loc[mask_pond_list, 'tabpondval'] = num_lines
 
+        # get diversion segment demand and calculate tabpondfrac
+        mask_div_seg_demand = seg_df['segid'] == seg
+        div_seg_demand = seg_df.loc[mask_div_seg_demand, 'pond_demand_m3'].values[0]
+        mask_pond_list = pond_list['segid'] == seg
+        pond_list.loc[mask_pond_list, 'tabpondfrac'] = pond_list.loc[mask_pond_list, 'pond_demand_m3'] / div_seg_demand
+
     # export pond list csv (until get ag package export working)
-    pond_list_19a = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid", "qfrac"]]
+    pond_list_19a = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid", "tabpondfrac"]]
     pond_list_19a = pond_list_19a.sort_values(by='tabpondunit')
     pond_list_19a['hru_id'] = pond_list_19a['hru_id'] + 1
     pond_list_file_path = os.path.join(repo_ws, "MODFLOW", "init_files", "pond_list_19a.csv")

@@ -38,16 +38,22 @@ def main(model_ws, results_ws, init_files_ws):
     subbasin_3_gage_file = os.path.join(model_ws, "modflow", "output", "EF_RUSSIAN_R_NR_UKIAH.go")
 
     # set file for redwood valley demand
-    redwood_valley_demand_file = os.path.join(init_files_ws, "redwood_valley_demand.xlsx")
+    redwood_valley_demand_file = os.path.join(init_files_ws, "redwood_valley_demand_processed_20220725.csv")
 
     # set files for lake mendo surface inflows
     subbasin_2_gage_file = os.path.join(model_ws, "modflow", "output", "EF_RUSSIAN_R_NR_CALPELLA.go")
     mendo_inflow_seg64_rch3_file = os.path.join(model_ws, "modflow", "output", "mendo_inflow_seg64_rch3.out")
     mendo_inflow_seg70_rch9_file = os.path.join(model_ws, "modflow", "output", "mendo_inflow_seg70_rch9.out")
 
-    # # set file for lake mendo surface
-    # file_path = os.path.join(script_ws, "inputs_for_scripts", "RR_gage_and_other_flows.csv")
-    # gage_and_other_flows.to_csv(file_path, index=False)
+    # set file for observed streamflow
+    file_path = os.path.join(model_ws, "..", "..", "scripts", "inputs_for_scripts", "RR_gage_and_other_flows.csv")
+
+    # set dates for observed and simulated data
+    start_date_obs = "1990-01-01"
+    end_date_obs = "2015-12-31"
+    start_date_sim = "1990-01-01"
+    start_date_sim_minus1 = "1989-12-31"
+    end_date_sim = "2013-10-10"
 
 
 
@@ -79,7 +85,9 @@ def main(model_ws, results_ws, init_files_ws):
     obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] = obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] * ft_to_meters
 
     # read in file for redwood valley demand
-    redwood_valley_demand = pd.read_excel(redwood_valley_demand_file, sheet_name="all_1990_2015")
+    #redwood_valley_demand = pd.read_excel(redwood_valley_demand_file, sheet_name="all_1990_2015")
+    redwood_valley_demand = pd.read_csv(redwood_valley_demand_file)
+    redwood_valley_demand['date'] = pd.to_datetime(redwood_valley_demand['date'])
 
     # read in files for lake mendo surface inflows and outflows
     subbasin_2_gage = pd.read_csv(subbasin_2_gage_file, delim_whitespace=True, skiprows=[0], header=None)
@@ -92,20 +100,22 @@ def main(model_ws, results_ws, init_files_ws):
     mendo_inflow_seg70_rch9.rename(columns = col_headers, inplace=True)
     subbasin_3_gage.rename(columns = col_headers, inplace=True)
 
+    # read in observed streamflows and extract subbasin 2 and 3 observed streamflow
+    gage_and_other_flows = pd.read_csv(file_path, index=False)
+
+
 
 
 
     # ---- Function to plot lake outflows ----------------------------------------------------####
 
-    def plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name):
+    def plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name,
+                           start_date_obs, end_date_obs, start_date_sim, end_date_sim):
 
         # add date column
-        specified_outflows['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        sim_gate_seg_outflows['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        sim_spillway_seg_outflows['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        # specified_outflows['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        # sim_gate_seg_outflows['date'] = pd.date_range(start="1990-01-01",end="2011-10-27")
-        # sim_spillway_seg_outflows['date'] = pd.date_range(start="1990-01-01",end="2011-10-27")
+        specified_outflows['date'] = pd.date_range(start=start_date_obs, end=end_date_obs)
+        sim_gate_seg_outflows['date'] = pd.date_range(start=start_date_sim, end=end_date_sim)
+        sim_spillway_seg_outflows['date'] = pd.date_range(start=start_date_sim, end=end_date_sim)
 
         # calculate cumulative sum
         sim_gate_seg_outflows['flow_cumul'] = sim_gate_seg_outflows['midpt_flow'].cumsum()
@@ -147,11 +157,11 @@ def main(model_ws, results_ws, init_files_ws):
 
     # ---- Function to plot lake budget components: stages, evap, runoff, GW inflow/outflow, SW inflow/outflow ----------------------------####
 
-    def plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02):
+    def plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
+                               start_date_sim_minus1, end_date_sim):
 
         # add date column to sim lake budget
-        sim_lake_budget['date'] = pd.date_range(start="1989-12-31",end="2015-12-31")
-        #sim_lake_budget['date'] = pd.date_range(start="1989-12-31",end="2011-10-27")
+        sim_lake_budget['date'] = pd.date_range(start=start_date_sim_minus1,end=end_date_sim)
 
 
         # ---- plot first budget plot -----------------------------------------------####
@@ -252,14 +262,15 @@ def main(model_ws, results_ws, init_files_ws):
 
     # ---- Function to examine lake mendo in more detail --------------------------------####
 
-    def examine_lake_mendo(specified_outflows, subbasin_2_gage, mendo_inflow_seg64_rch3, mendo_inflow_seg70_rch9, subbasin_3_gage, redwood_valley_demand):
+    def examine_lake_mendo(specified_outflows, subbasin_2_gage, mendo_inflow_seg64_rch3, mendo_inflow_seg70_rch9, subbasin_3_gage, redwood_valley_demand,
+                           start_date_obs, end_date_obs, start_date_sim, end_date_sim):
 
         # add date column
-        specified_outflows['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        subbasin_2_gage['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        mendo_inflow_seg64_rch3['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        mendo_inflow_seg70_rch9['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
-        subbasin_3_gage['date'] = pd.date_range(start="1990-01-01",end="2015-12-31")
+        specified_outflows['date'] = pd.date_range(start=start_date_obs,end=end_date_obs)
+        subbasin_2_gage['date'] = pd.date_range(start=start_date_sim,end=end_date_sim)
+        mendo_inflow_seg64_rch3['date'] = pd.date_range(start=start_date_sim,end=end_date_sim)
+        mendo_inflow_seg70_rch9['date'] = pd.date_range(start=start_date_sim,end=end_date_sim)
+        subbasin_3_gage['date'] = pd.date_range(start=start_date_sim,end=end_date_sim)
 
         # calculate cumulative sum
         specified_outflows['flow_cumul'] = specified_outflows[1].cumsum()
@@ -267,7 +278,7 @@ def main(model_ws, results_ws, init_files_ws):
         mendo_inflow_seg64_rch3['flow_cumul'] = mendo_inflow_seg64_rch3['midpt_flow'].cumsum()
         mendo_inflow_seg70_rch9['flow_cumul'] = mendo_inflow_seg70_rch9['midpt_flow'].cumsum()
         subbasin_3_gage['flow_cumul'] = subbasin_3_gage['midpt_flow'].cumsum()
-        redwood_valley_demand['flow_cumul'] = redwood_valley_demand['redwood_valley_demand_cmd'].cumsum()
+        redwood_valley_demand['flow_cumul_cmd'] = redwood_valley_demand['pumping_cmd'].cumsum()
 
         # initialise the subplot function using number of rows and columns
         fig, ax = plt.subplots(3, 1, figsize=(12, 8), dpi=150)
@@ -282,7 +293,7 @@ def main(model_ws, results_ws, init_files_ws):
         ax[0].set_ylabel('Cumulative flow (cubic meters)')
 
         # plot other inflows and outflows (other two inflows, redwood valley demand)
-        ax[1].plot(redwood_valley_demand['date'], redwood_valley_demand['flow_cumul'], linestyle='dotted', label="redwood valley demand")
+        ax[1].plot(redwood_valley_demand['date'], redwood_valley_demand['flow_cumul_cmd'], linestyle='dotted', label="redwood valley demand")
         ax[1].plot(mendo_inflow_seg64_rch3['date'], mendo_inflow_seg64_rch3['flow_cumul'], label = 'mendo_inflow_seg64_rch3', linestyle='dotted')
         ax[1].plot(mendo_inflow_seg70_rch9['date'], mendo_inflow_seg70_rch9['flow_cumul'], label = 'mendo_inflow_seg70_rch9', linestyle='dotted')
         ax[1].set_title('Other cumulative surface inflows and outflows')
@@ -310,10 +321,10 @@ def main(model_ws, results_ws, init_files_ws):
 
     # ---- Function to plot annual lake budget components ---------------------------------------####
 
-    def plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name):
+    def plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
 
         # add date and year columns to sim lake budget
-        sim_lake_budget['date'] = pd.date_range(start="1989-12-31",end="2015-12-31")
+        sim_lake_budget['date'] = pd.date_range(start=start_date_sim_minus1,end=end_date_sim)
         sim_lake_budget['year'] = sim_lake_budget['date'].dt.year
 
         # calculate annual sums for budget components
@@ -420,10 +431,10 @@ def main(model_ws, results_ws, init_files_ws):
     # ---- Function to plot annual lake budget components ---------------------------------------####
 
 
-    def plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name):
+    def plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
 
         # add date and year columns to sim lake budget
-        sim_lake_budget['date'] = pd.date_range(start="1989-12-31",end="2015-12-31")
+        sim_lake_budget['date'] = pd.date_range(start=start_date_sim_minus1,end=end_date_sim)
         sim_lake_budget['year'] = sim_lake_budget['date'].dt.year
 
         # calculate annual sums for budget components
@@ -506,7 +517,8 @@ def main(model_ws, results_ws, init_files_ws):
     sim_spillway_seg_outflows = lake_1_seg_447
     lake_id = 1
     out_file_name = 'specified_vs_sim_outflows_lake_1.jpg'
-    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name)
+    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name,
+                       start_date_obs, end_date_obs, start_date_sim, end_date_sim)
 
     # plot lake budget - daily
     sim_lake_budget = lake_1_budget
@@ -514,19 +526,20 @@ def main(model_ws, results_ws, init_files_ws):
     lake_name = 'Lake Mendocino'
     out_file_name_01 = 'budget_lake_1_group_1.jpg'
     out_file_name_02 = 'budget_lake_1_group_2.jpg'
-    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02)
+    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
+                           start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual
     sim_lake_budget = lake_1_budget
     lake_name = 'Lake Mendocino'
     out_file_name = 'budget_lake_1_annual.jpg'
-    plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name)
+    plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual diff
     sim_lake_budget = lake_1_budget
     lake_name = 'Lake Mendocino'
     out_file_name = 'budget_diff_lake_1_annual.jpg'
-    plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name)
+    plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake investigation
     specified_outflows = lake_1_release
@@ -534,7 +547,8 @@ def main(model_ws, results_ws, init_files_ws):
     mendo_inflow_seg64_rch3.rename(columns = col_headers, inplace=True)
     mendo_inflow_seg70_rch9.rename(columns = col_headers, inplace=True)
     subbasin_3_gage.rename(columns = col_headers, inplace=True)
-    examine_lake_mendo(specified_outflows, subbasin_2_gage, mendo_inflow_seg64_rch3, mendo_inflow_seg70_rch9, subbasin_3_gage, redwood_valley_demand)
+    examine_lake_mendo(specified_outflows, subbasin_2_gage, mendo_inflow_seg64_rch3, mendo_inflow_seg70_rch9, subbasin_3_gage, redwood_valley_demand,
+                       start_date_obs, end_date_obs, start_date_sim, end_date_sim)
 
 
 
@@ -547,7 +561,8 @@ def main(model_ws, results_ws, init_files_ws):
     sim_spillway_seg_outflows = lake_2_seg_449
     lake_id = 2
     out_file_name = 'specified_vs_sim_outflows_lake_2.jpg'
-    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name)
+    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name,
+                       start_date_obs, end_date_obs, start_date_sim, end_date_sim)
 
     # plot lake budget - daily
     sim_lake_budget = lake_2_budget
@@ -555,19 +570,20 @@ def main(model_ws, results_ws, init_files_ws):
     lake_name = 'Lake Sonoma'
     out_file_name_01 = 'budget_lake_2_group_1.jpg'
     out_file_name_02 = 'budget_lake_2_group_2.jpg'
-    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02)
+    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
+                           start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual
     sim_lake_budget = lake_2_budget
     lake_name = 'Lake Sonoma'
     out_file_name = 'budget_lake_2_annual.jpg'
-    plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name)
+    plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual diff
     sim_lake_budget = lake_2_budget
     lake_name = 'Lake Sonoma'
     out_file_name = 'budget_diff_lake_2_annual.jpg'
-    plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name)
+    plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
 
 # main function
