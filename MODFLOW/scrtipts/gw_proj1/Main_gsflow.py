@@ -2806,8 +2806,8 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # calculate the max ag water demand (units: m^3/year)
         pond_list_mask = pond_list['hru_id'] == pond
-        max_demand_m3 = pond_df['Qmax_field'].sum()  # ORIGINAL
-        #max_demand_m3 = pond_df['Qmax_field'].sum() * 1.5   # EXPERIMENT 7/6/22: increase water diverted to ponds by 50% but keep the 25 ft pond depth constraint
+        # max_demand_m3 = pond_df['Qmax_field'].sum()            # ORIGINAL
+        max_demand_m3 = pond_df['Qmax_field'].sum() * 5       # EXPERIMENT: increase water diverted to ponds but keep the 25 ft pond depth constraint
         pond_list.loc[pond_list_mask, 'max_demand_m3'] = max_demand_m3
 
         # store the pond area
@@ -2933,8 +2933,9 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # calculate daily irrigation demand during wettest month
         seg_mask = seg_df['segid'] == seg
-        # daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_months           # ORIGINAL
-        daily_irrig_demand_wettest_month = (1.25 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 1.25
+        daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_months           # ORIGINAL
+        # daily_irrig_demand_wettest_month = (1.25 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 1.25x
+        # daily_irrig_demand_wettest_month = (5 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 5x
 
 
         # create tabfile

@@ -81,7 +81,7 @@ def main(model_ws, results_ws):
     divet = pd.concat(div_et_list)
 
 
-    # read in pond diversion input files
+    # read in pond diversion input files (i.e. max pond demand)
     pond_div_input_files = [file for file in os.listdir(pond_div_input_file_path)]
     m, d, y = [int(i) for i in model_start_date.split("-")]
     start_date = dt.datetime(y, m, d)
@@ -242,8 +242,8 @@ def main(model_ws, results_ws):
         df = pond_daily[pond_daily['water_year'] == water_year]
 
         # convert to long format
-        #df = df[['date', 'max_diversion', 'et_ww', 'et_a', 'seg_inflow', 'pond_outflow', 'pond_storage', 'available_water']]
-        df = df[['date', 'max_diversion', 'et_ww', 'et_a', 'seg_inflow', 'pond_outflow', 'pond_storage']]
+        #df = df[['date', 'max_diversion', 'et_ww', 'et_a', 'seg_inflow', 'pond_outflow', 'pond_storage', 'available_water']]    # use this if want to include available_water in the plots
+        df = df[['date', 'max_diversion', 'et_ww', 'et_a', 'seg_inflow', 'pond_outflow', 'pond_storage']]     # use this if don't want to include available_water in the plots
         df = pd.melt(df, id_vars = ['date'], var_name = 'variable', value_name = 'value')
 
         # plot
