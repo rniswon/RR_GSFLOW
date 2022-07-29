@@ -2367,6 +2367,14 @@ if update_prms_params_for_ag_package == 1:
                                   file_name = gs.prms.parameters.parameter_files[1])
 
 
+    # Set soil_moist_init_frac_ag ------------------------------------------------------------------------#
+
+    soil_moist_init_frac_ag = gs.prms.parameters.get_values("soil_moist_init_frac")
+    nhru = len(soil_moist_init_frac_ag)
+    gs.prms.parameters.add_record(name = "soil_moist_init_frac_ag", values = soil_moist_init_frac_ag,
+                                  dimensions = [["nhru",nhru]], datatype = 2,
+                                  file_name = gs.prms.parameters.parameter_files[1])
+
 
 
     # write prms param file
