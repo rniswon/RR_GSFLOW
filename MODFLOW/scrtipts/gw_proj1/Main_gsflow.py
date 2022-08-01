@@ -2833,7 +2833,8 @@ if create_tabfiles_for_pond_diversions == 1:
     for pond in ponds:
 
         # create data frame of all fields that get water from this pond, excluding orphan fields
-        ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond) & (ag_data['orphan_field'] == 0)
+        # ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond) & (ag_data['orphan_field'] == 0)    # ORIGINAL
+        ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond)    # EXPERIMENT: divert enough for orphan fields too
         pond_df = ag_data[ag_data_mask]
 
         # calculate the max ag water demand (units: m^3/year)

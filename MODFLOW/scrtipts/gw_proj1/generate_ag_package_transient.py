@@ -470,16 +470,16 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     low_flow_period = (6,7,8,9,10)
 
     # set flowthrough=1 during low flow period
-    # flowthrough = 0
-    # if int(month) in low_flow_period:
-    #     flowthrough=1
-
-    # set flowthrough
     flowthrough = 0
-
-    # filter out orphan fields if it is the low flow period
     if int(month) in low_flow_period:
-        df_diversion = df_diversion[df_diversion['orphan_field'] == 0]
+        flowthrough=1
+
+    # # set flowthrough
+    # flowthrough = 0
+
+    # # filter out orphan fields if it is the low flow period
+    # if int(month) in low_flow_period:
+    #     df_diversion = df_diversion[df_diversion['orphan_field'] == 0]
 
     # get crop info, namely decide if crop is irrigated or not
     not_irrigated_col = 'NotIrrigated_{}'.format(int(month))
