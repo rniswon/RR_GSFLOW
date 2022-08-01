@@ -13,6 +13,10 @@ from gw_utils import general_util
 import seaborn as sb
 import datetime as dt
 
+
+#---- Main function ---------------------------------------------------------####
+
+
 def main(model_ws, results_ws):
 
     # # set workspaces
@@ -34,7 +38,7 @@ def main(model_ws, results_ws):
     # set diversion and diversion et files
     # TODO: use this once gsflow code is able to generate these files
 
-    # set pond diversion input file path
+    # set pond diversion input folder path
     pond_div_input_file_path = os.path.join(model_ws, "modflow", "input",  "ag_diversions")
 
     # set model start date
@@ -262,6 +266,8 @@ def main(model_ws, results_ws):
         fig = this_plot.get_figure()
         fig.savefig(file_path)
 
+
+#---- Call main function ---------------------------------------------------------####
 
 if __name__ == "__main__":
 

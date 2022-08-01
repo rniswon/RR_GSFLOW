@@ -470,12 +470,12 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     low_flow_period = (6,7,8,9,10)
 
     # set flowthrough=1 during low flow period
-    flowthrough = 0
-    if int(month) in low_flow_period:
-        flowthrough=1
-
-    # # set flowthrough
     # flowthrough = 0
+    # if int(month) in low_flow_period:
+    #     flowthrough=1
+
+    # set flowthrough
+    flowthrough = 0
 
     # filter out orphan fields if it is the low flow period
     if int(month) in low_flow_period:
@@ -894,6 +894,7 @@ def main():
     irrpond_dict, numirrponds, maxcellspond = generate_irrpond(
         mf.nper, ag_dataset_ponds, crop_kc_df, pond_lut
     )
+    ag_dataset_ponds.to_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_ponds.csv"), index=False)
 
     # generate well list and irrwell
     ag_dataset_wells = ag_dataset[ag_dataset['pod_type'] == 'WELL'].copy()
@@ -904,6 +905,7 @@ def main():
     irrwell_dict, numirrwells, maxcellswell = generate_irrwell(
         mf.nper, ag_dataset_wells, crop_kc_df
     )
+    ag_dataset_wells.to_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_wells.csv"), index=False)
 
     # generate segment list and irrdiversion
     ag_dataset_diversions = ag_dataset[
@@ -914,6 +916,7 @@ def main():
     ag_dataset_diversions = ag_dataset_diversions.sort_values(by='div_seg')
     irrdiversion_dict, numirrdiversions, maxcellsdiversion = \
         generate_irrdiversion(mf.nper, ag_dataset_diversions, crop_kc_df)
+    ag_dataset_diversions.to_csv(os.path.join(repo_ws, "MODFLOW", "init_files", "ag_dataset_diversions.csv"), index=False)
 
     # build options block
     options = build_option_block(
