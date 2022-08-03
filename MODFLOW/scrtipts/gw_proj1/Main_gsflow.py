@@ -2376,6 +2376,14 @@ if update_prms_params_for_ag_package == 1:
                                   file_name = gs.prms.parameters.parameter_files[1])
 
 
+    # Set irr_type ------------------------------------------------------------------------#
+
+    irr_type = 1
+    gs.prms.parameters.add_record(name = "irr_type", values = [irr_type],
+                                  dimensions = [["one",1]], datatype = 1,
+                                  file_name = gs.prms.parameters.parameter_files[1])
+
+
 
     # write prms param file
     gs.prms.parameters.write()

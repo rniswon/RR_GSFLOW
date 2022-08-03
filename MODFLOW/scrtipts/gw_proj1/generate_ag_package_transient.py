@@ -467,15 +467,28 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
     year, month = get_yr_mon_from_stress_period(stress_period)
 
     # define low flow period
-    low_flow_period = (6,7,8,9,10)
+    #low_flow_period = (6,7,8,9,10,11)
+    #low_flow_period = (6,7,8,9,10)
+    low_flow_period = (6,7,8,9)  # experiment
+
+
+    # TODO: choose the best flowthrough option from among these below
+
+    # # set flowthrough=0 always
+    # flowthrough = 0
+
+    # # set flowthrough=1 always
+    # flowthrough = 1
 
     # set flowthrough=1 during low flow period
     flowthrough = 0
     if int(month) in low_flow_period:
         flowthrough=1
 
-    # # set flowthrough
-    # flowthrough = 0
+    # # set flowthrough=1 during high flow period
+    # flowthrough = 1
+    # if int(month) in low_flow_period:
+    #     flowthrough=0
 
     # # filter out orphan fields if it is the low flow period
     # if int(month) in low_flow_period:
