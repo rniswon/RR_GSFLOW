@@ -2367,6 +2367,22 @@ if update_prms_params_for_ag_package == 1:
                                   file_name = gs.prms.parameters.parameter_files[1])
 
 
+    # Set soil_moist_init_frac_ag ------------------------------------------------------------------------#
+
+    soil_moist_init_frac_ag = gs.prms.parameters.get_values("soil_moist_init_frac")
+    nhru = len(soil_moist_init_frac_ag)
+    gs.prms.parameters.add_record(name = "soil_moist_init_frac_ag", values = soil_moist_init_frac_ag,
+                                  dimensions = [["nhru",nhru]], datatype = 2,
+                                  file_name = gs.prms.parameters.parameter_files[1])
+
+
+    # Set irr_type ------------------------------------------------------------------------#
+
+    irr_type = 1
+    gs.prms.parameters.add_record(name = "irr_type", values = [irr_type],
+                                  dimensions = [["one",1]], datatype = 1,
+                                  file_name = gs.prms.parameters.parameter_files[1])
+
 
 
     # write prms param file
@@ -2385,10 +2401,34 @@ if update_modflow_for_ag_package == 1:
     # print
     print('Update MODFLOW for AG package')
 
-    # change name file to add ag package file
-    # TODO
+    # load modflow tr model
+    # load transient modflow model
+    mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
+                                        model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
+                                        load_only=["BAS6", "DIS", "SFR"],
+                                        verbose=True, forgive=False, version="mfnwt")
 
-    pass
+    # get sfr segment data and reach data
+    segment_data = pd.DataFrame(mf_tr.sfr.segment_data[0])
+    reach_data = pd.DataFrame(mf_tr.sfr.reach_data)
+
+    # identify diversion segments (i.e. segments with non-zero iupseg)
+    mask = segment_data['iupseg'] > 0
+    segment_data_div = segment_data[mask]
+    div_segs = segment_data_div['nseg'].values
+
+    # set streambed K=0 for diversion segments
+    mask = reach_data['iseg'].isin(div_segs)
+    reach_data.loc[mask, 'strhc1'] = 0
+
+    # write sfr file
+    mf_tr.sfr.reach_data = reach_data.to_records(index=False)
+    mf_tr.sfr.fn_path = os.path.join(tr_model_input_file_dir, "rr_tr.sfr")
+    mf_tr.sfr.write_file()
+
+
+
+
 
 
 
@@ -2488,18 +2528,21 @@ if update_ag_package == 1:
     # extract crop types
     crop_type = ag_data['crop_type'].unique().tolist()
 
-    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year = ft/year), then convert to model units (i.e. meters/day)
     Qmax_dict = {'Grapes': 1,
                  'Apples': 2.5,
                  'Mixed Pasture': 3.5,
                  'other': 1}
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
+    ft_per_meter = 3.2808399
+
     #days_per_year = 365    #TODO: need to update this so that it is days_per_growing_season with different numbers of days for the different crops - extract from KC_sonoma shared
     for key in Qmax_dict.keys():
 
-        # convert to meters
-        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * (1/irrigated_days_per_year_dict[key]) * -1   # multiplying by -1 to indicate pumping
+        # convert to meters/day
+        #Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft * (1/irrigated_days_per_year_dict[key]) * -1   # multiplying by -1 to indicate pumping
+        Qmax_dict[key] = Qmax_dict[key] * (1/ft_per_meter) * (1/irrigated_days_per_year_dict[key]) * -1   # multiplying by -1 to indicate pumping
 
 
     # create a Qmax_crop column in ag_data based on crop_type
@@ -2728,14 +2771,14 @@ if create_tabfiles_for_pond_diversions == 1:
     crop_type = ag_data['crop_type'].unique().tolist()
 
     # AFTER EXPERIMENT: GO BACK TO THIS VERSION
-    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year = ft/year), then convert to meters/year
     Qmax_dict = {'Grapes': 1,
                  'Apples': 2.5,
                  'Mixed Pasture': 3.5,
                  'other': 1}
 
     # # EXPERIMENT
-    # # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year), then convert to model units (i.e. meters/day)
+    # # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year= ft/year), then convert to meters/year
     # Qmax_dict = {'Grapes': 0.5,
     #              'Apples': 0.5,
     #              'Mixed Pasture': 0.5,
@@ -2743,13 +2786,15 @@ if create_tabfiles_for_pond_diversions == 1:
 
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
+    ft_per_meter = 3.2808399
     #days_per_year = 365
     for key in Qmax_dict.keys():
 
-        # convert to meters
+        # convert to meters/year
         # not multiplying by -1 because interested in field water demand, not well pumping
         # not converting to irrigation demand per year, instead keeping as irrigation demand per growing season
-        Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft
+        #Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft
+        Qmax_dict[key] = Qmax_dict[key] * (1/ft_per_meter)
 
 
     # create a Qmax_crop column in ag_data based on crop_type
@@ -2796,13 +2841,14 @@ if create_tabfiles_for_pond_diversions == 1:
     for pond in ponds:
 
         # create data frame of all fields that get water from this pond, excluding orphan fields
-        ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond) & (ag_data['orphan_field'] == 0)
+        # ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond) & (ag_data['orphan_field'] == 0)    # ORIGINAL
+        ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond)    # EXPERIMENT: divert enough for orphan fields too
         pond_df = ag_data[ag_data_mask]
 
-        # calculate the max ag water demand (units: m^3/day)
+        # calculate the max ag water demand (units: m^3/year)
         pond_list_mask = pond_list['hru_id'] == pond
-        max_demand_m3 = pond_df['Qmax_field'].sum()  # ORIGINAL
-        #max_demand_m3 = pond_df['Qmax_field'].sum() * 1.5   # EXPERIMENT 7/6/22: increase water diverted to ponds by 50% but keep the 25 ft pond depth constraint
+        max_demand_m3 = pond_df['Qmax_field'].sum()            # ORIGINAL
+        # max_demand_m3 = pond_df['Qmax_field'].sum() * 5       # EXPERIMENT: increase water diverted to ponds but keep the 25 ft pond depth constraint
         pond_list.loc[pond_list_mask, 'max_demand_m3'] = max_demand_m3
 
         # store the pond area
@@ -2838,8 +2884,9 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # Update QPOND in pond list
         # NOTE: updating to represent 5-day filling period for pond demand
-        fraction_filled_per_day = 1/5
-        qpond = pond_demand_m3 * fraction_filled_per_day
+        #fraction_filled_per_day = 1/5
+        #qpond = pond_demand_m3 * fraction_filled_per_day
+        qpond = pond_demand_m3
         pond_list.loc[pond_list_mask, 'q'] = qpond     # ORIGINAL
         #pond_list.loc[pond_list_mask, 'q'] = 0        # EXPERIMENT
 
@@ -2885,13 +2932,13 @@ if create_tabfiles_for_pond_diversions == 1:
 
 
     # Create tab files -------------------------------------------------------####
-    # Fill ponds during the wettest month of the wet season to cover the water demand
+    # Fill ponds during the wettest months of the wet season to cover the water demand
     # by dividing up the demand among the number of days in the month
 
     # assign wettest month of wet season
     # wettest_month = [1]    # ORIGINAL: assuming January for now
     # num_days_in_wettest_month = 31    # ORIGINAL
-    wettest_months = [11, 12, 1, 2]    # assuming January for now
+    wettest_months = [11, 12, 1, 2]    # assuming Nov-Feb for now
     num_days_in_wettest_months = 31+31+31+28
 
     # summarize (i.e. add up) pond demand by diversion segment
@@ -2927,8 +2974,9 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # calculate daily irrigation demand during wettest month
         seg_mask = seg_df['segid'] == seg
-        # daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_months           # ORIGINAL
-        daily_irrig_demand_wettest_month = (1.25 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 1.25
+        daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_months           # ORIGINAL
+        # daily_irrig_demand_wettest_month = (1.25 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 1.25x
+        # daily_irrig_demand_wettest_month = (5 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 5x
 
 
         # create tabfile
@@ -2987,6 +3035,7 @@ if create_tabfiles_for_pond_diversions == 1:
     # add columns to pond list
     pond_list['tabpondunit'] = -999
     pond_list['tabpondval'] = -999
+    pond_list['tabpondfrac'] = -999
 
     # loop through diversion segments
     pond_div_segs = pond_list['segid'].unique()
@@ -3002,8 +3051,14 @@ if create_tabfiles_for_pond_diversions == 1:
         pond_list.loc[mask_pond_list, 'tabpondunit'] = tab_unit
         pond_list.loc[mask_pond_list, 'tabpondval'] = num_lines
 
+        # get diversion segment demand and calculate tabpondfrac
+        mask_div_seg_demand = seg_df['segid'] == seg
+        div_seg_demand = seg_df.loc[mask_div_seg_demand, 'pond_demand_m3'].values[0]
+        mask_pond_list = pond_list['segid'] == seg
+        pond_list.loc[mask_pond_list, 'tabpondfrac'] = pond_list.loc[mask_pond_list, 'pond_demand_m3'] / div_seg_demand
+
     # export pond list csv (until get ag package export working)
-    pond_list_19a = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid", "qfrac"]]
+    pond_list_19a = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid", "tabpondfrac"]]
     pond_list_19a = pond_list_19a.sort_values(by='tabpondunit')
     pond_list_19a['hru_id'] = pond_list_19a['hru_id'] + 1
     pond_list_file_path = os.path.join(repo_ws, "MODFLOW", "init_files", "pond_list_19a.csv")

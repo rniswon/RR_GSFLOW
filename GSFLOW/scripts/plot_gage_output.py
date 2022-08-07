@@ -71,11 +71,10 @@ def read_observation_data(f):
     return pd.read_csv(f)
 
 
-if __name__ == "__main__":
-
+def main(script_ws, model_ws, results_ws):
     print("\n@@@@ CREATING GAGE OUTPUT FIGURE @@@@")
-    script_ws = os.path.abspath(os.path.dirname(__file__))
-    repo_ws = os.path.join(script_ws, "..", "..")
+    # script_ws = os.path.abspath(os.path.dirname(__file__))
+    # repo_ws = os.path.join(script_ws, "..", "..")
 
     # set flag
     prepare_obs_data = 0
@@ -83,7 +82,6 @@ if __name__ == "__main__":
     # set start and end dates of modeling period
     start_date = "01-01-1990"
     end_date = "12-31-2015"
-
 
     # READ IN  -------------------------------------------------####
 
@@ -93,7 +91,7 @@ if __name__ == "__main__":
     gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
 
     # identify gages with available observations
-    gages_with_obs = [1,2,3,5,6,13,16,18,20,21,22]
+    gages_with_obs = [1, 2, 3, 5, 6, 13, 16, 18, 20, 21, 22]
     gage_df['obs_available'] = 0
     gage_mask = gage_df['subbasin'].isin(gages_with_obs)
     gage_df.loc[gage_mask, 'obs_available'] = 1
@@ -115,7 +113,8 @@ if __name__ == "__main__":
         gage_flows['date'] = gage_flows['date'].dt.date
 
         # convert gage flows to wide form data frame
-        gage_flows = pd.pivot(gage_flows, index=['date', 'year', 'month', 'day'], columns='station', values='discharge (cfs)').reset_index()
+        gage_flows = pd.pivot(gage_flows, index=['date', 'year', 'month', 'day'], columns='station',
+                              values='discharge (cfs)').reset_index()
 
         # merge gage flows with other flows
         gage_and_other_flows = pd.merge(gage_flows, other_flows, how='left', on=['date'])
@@ -131,18 +130,16 @@ if __name__ == "__main__":
         gage_and_other_flows = pd.read_csv(file_path)
         gage_and_other_flows.date = pd.to_datetime(gage_and_other_flows.date).dt.date
 
-
     # read in sim flows and store in dictionary
-    sim_file_path = os.path.join(repo_ws, 'GSFLOW', 'modflow', 'output')
+    sim_file_path = os.path.join(model_ws, 'modflow', 'output')
     sim_files = [x for x in os.listdir(sim_file_path) if x.endswith('.go')]
     sim_dict = {}
     for file in sim_files:
-
         # read in gage file
-        gage_file = os.path.join(repo_ws, 'GSFLOW', 'modflow', 'output', file)
+        gage_file = os.path.join(model_ws, 'modflow', 'output', file)
         data = read_gage(gage_file, start_date)
         sim_df = pd.DataFrame.from_dict(data)
-        sim_df.date = pd.to_datetime(sim_df.date).dt.date  #TODO: why would we need this? - .values.astype(np.int64)
+        sim_df.date = pd.to_datetime(sim_df.date).dt.date  # TODO: why would we need this? - .values.astype(np.int64)
         sim_df['gage_name'] = 'none'
         sim_df['subbasin_id'] = 0
         sim_df['gage_id'] = 0
@@ -160,28 +157,31 @@ if __name__ == "__main__":
         sim_df['gage_id'] = gage_id
 
         # convert flow units from m^3/day to ft^3/s
-        days_div_sec = 1/86400      # 1 day is 86400 seconds
-        ft3_div_m3 = 35.314667/1       # 35.314667 cubic feet in 1 cubic meter
+        days_div_sec = 1 / 86400  # 1 day is 86400 seconds
+        ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
         sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
 
         # store in dict
         sim_dict.update({gage_id: sim_df})
 
-
-
-
     # ERROR METRICS AND PLOTS  -------------------------------------------------####
-
 
     # prepare empty error metric data frame
     num_subbasin = 22
-    subbasin_ids = list(range(1,num_subbasin+1))
+    subbasin_ids = list(range(1, num_subbasin + 1))
     col_names = ['error_metric']
     col_names.extend(subbasin_ids)
-    error_metric_df = pd.DataFrame(columns = col_names)
-    error_metric_df['error_metric'] = ['nse_annual', 'log_nse_annual', 'paee_annual', 'aaee_annual', 'rmse_annual', 'percent_bias_annual', 'kge_annual', 'alpha_kge_annual', 'beta_kge_annual', 'corr_kge_annual',
-                                       'nse_monthly',  'log_nse_monthly','paee_monthly', 'aaee_monthly', 'rmse_monthly', 'percent_bias_monthly', 'kge_monthly', 'alpha_kge_monthly', 'beta_kge_monthly', 'corr_kge_monthly',
-                                       'nse_daily',  'log_nse_daily', 'paee_daily', 'aaee_daily', 'rmse_daily', 'percent_bias_daily', 'kge_daily', 'alpha_kge_daily', 'beta_kge_daily', 'corr_kge_daily', 'fdc_low_bias_daily', 'fdc_high_bias_daily', 'fdc_mid_bias_daily']
+    error_metric_df = pd.DataFrame(columns=col_names)
+    error_metric_df['error_metric'] = ['nse_annual', 'log_nse_annual', 'paee_annual', 'aaee_annual', 'rmse_annual',
+                                       'percent_bias_annual', 'kge_annual', 'alpha_kge_annual', 'beta_kge_annual',
+                                       'corr_kge_annual',
+                                       'nse_monthly', 'log_nse_monthly', 'paee_monthly', 'aaee_monthly', 'rmse_monthly',
+                                       'percent_bias_monthly', 'kge_monthly', 'alpha_kge_monthly', 'beta_kge_monthly',
+                                       'corr_kge_monthly',
+                                       'nse_daily', 'log_nse_daily', 'paee_daily', 'aaee_daily', 'rmse_daily',
+                                       'percent_bias_daily', 'kge_daily', 'alpha_kge_daily', 'beta_kge_daily',
+                                       'corr_kge_daily', 'fdc_low_bias_daily', 'fdc_high_bias_daily',
+                                       'fdc_mid_bias_daily']
 
     # loop through simulated gages
     sim_obs_daily_dict = {}
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     for gage_id, sim_df in sim_dict.items():
 
         # rename flow column in sim data frame
-        sim_df = sim_df.rename(columns = {"flow": "sim_flow", "stage": "sim_stage"})
+        sim_df = sim_df.rename(columns={"flow": "sim_flow", "stage": "sim_stage"})
 
         # get observed data if it exists for this gage
         mask = gage_df['Name'] == gage_id
@@ -200,7 +200,7 @@ if __name__ == "__main__":
 
             # get obs data frame
             obs_df = gage_and_other_flows[['date', 'year', 'month', 'day', gage_id]]
-            obs_df = obs_df.rename(columns = {gage_id: "obs_flow"})
+            obs_df = obs_df.rename(columns={gage_id: "obs_flow"})
 
             # merge with sim data frame
             sim_obs_daily = pd.merge(sim_df, obs_df, how='left', on=['date', 'year', 'month'])
@@ -230,11 +230,10 @@ if __name__ == "__main__":
         # TODO: if end up plotting stage, it probably doesn't make sense to plot the annual stage sum, so leaving it out
         sim_obs_year = sim_obs_daily.groupby(['year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
         seconds_per_day = 86400
-        acre_ft_per_cubic_ft = 1/43560.02
+        acre_ft_per_cubic_ft = 1 / 43560.02
         sim_obs_year['sim_flow'] = sim_obs_year['sim_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
         sim_obs_year['obs_flow'] = sim_obs_year['obs_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
         sim_obs_year_dict.update({gage_id: sim_obs_year})
-
 
         # calculate error metrics if have observed data
         # TODO: need to write functions for the rest of the error metrics and calculate/store them below
@@ -243,8 +242,6 @@ if __name__ == "__main__":
         gage_name = gage_df.loc[mask, 'Gage_Name'].values[0]
         obs_available = gage_df.loc[mask, 'obs_available'].values[0]
         if obs_available == 1:
-
-
             # ANNUAL ERROR METRICS -------------------------------------------------####
 
             # calculate error metrics: annual flow volumes
@@ -256,7 +253,6 @@ if __name__ == "__main__":
             error_metric_df.loc[error_metric_df['error_metric'] == 'nse_annual', subbasin_id] = nse
             error_metric_df.loc[error_metric_df['error_metric'] == 'paee_annual', subbasin_id] = paee
             error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_annual', subbasin_id] = aaee
-
 
             # MONTHLY ERROR METRICS  -------------------------------------------------####
 
@@ -270,7 +266,6 @@ if __name__ == "__main__":
             error_metric_df.loc[error_metric_df['error_metric'] == 'paee_monthly', subbasin_id] = paee
             error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_monthly', subbasin_id] = aaee
 
-
             # DAILY ERROR METRICS  -------------------------------------------------####
 
             # calculate error metrics: daily flows
@@ -283,15 +278,13 @@ if __name__ == "__main__":
             error_metric_df.loc[error_metric_df['error_metric'] == 'paee_daily', subbasin_id] = paee
             error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_daily', subbasin_id] = aaee
 
-
-
         # ANNUAL PLOTS  -------------------------------------------------####
 
         # plot annual flow volumes: time series
         plt.style.use('default')
         plt.figure(figsize=(12, 8), dpi=150)
-        plt.scatter(sim_obs_year.year, sim_obs_year.obs_flow, label = 'Observed')
-        plt.scatter(sim_obs_year.year, sim_obs_year.sim_flow, label = 'Simulated')
+        plt.scatter(sim_obs_year.year, sim_obs_year.obs_flow, label='Observed')
+        plt.scatter(sim_obs_year.year, sim_obs_year.sim_flow, label='Simulated')
         plt.plot(sim_obs_year.year, sim_obs_year.obs_flow)
         plt.plot(sim_obs_year.year, sim_obs_year.sim_flow)
         plt.title('Annual streamflow volumes: subbasin ' + str(subbasin_id) + "\n" + gage_name)
@@ -299,12 +292,11 @@ if __name__ == "__main__":
         plt.ylabel('Annual streamflow volume (acre-ft)')
         plt.legend()
         file_name = 'annual_streamflow_volume_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_annual", file_name)
+        file_path = os.path.join(results_ws, "plots", "streamflow_annual", file_name)
         plt.savefig(file_path)
 
         # plot annual flow volumes: sim vs. obs
         if subbasin_id in gages_with_obs:
-
             all_val = np.append(sim_obs_year['sim_flow'].values, sim_obs_year['obs_flow'].values)
             min_val = np.nanmin(all_val)
             max_val = np.nanmax(all_val)
@@ -315,18 +307,17 @@ if __name__ == "__main__":
             fig = plt.figure(figsize=(8, 8), dpi=150)
             ax = fig.add_subplot(111)
             ax.scatter(sim_obs_year.obs_flow, sim_obs_year.sim_flow)
-            ax.plot(df_1to1.observed, df_1to1.simulated, color = "red", label='1:1 line')
-            ax.set_title('Simulated vs. observed annual streamflow volume: subbasin '  + str(subbasin_id) + "\n" + gage_name)
+            ax.plot(df_1to1.observed, df_1to1.simulated, color="red", label='1:1 line')
+            ax.set_title(
+                'Simulated vs. observed annual streamflow volume: subbasin ' + str(subbasin_id) + "\n" + gage_name)
             plt.xlabel('Observed annual streamflow volume (acre-ft)')
             plt.ylabel('Simulated annual streamflow volume (acre-ft)')
             ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
             ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
             plt.legend()
             file_name = 'annual_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_annual", file_name)
+            file_path = os.path.join(results_ws, "plots", "streamflow_annual", file_name)
             plt.savefig(file_path)
-
-
 
         # MONTHLY PLOTS: mean over all years  -------------------------------------------------####
 
@@ -344,12 +335,11 @@ if __name__ == "__main__":
         plt.ylabel('Monthly mean streamflow (ft^3/s)')
         plt.legend()
         file_name = 'monthly_mean_streamflow_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_monthly", file_name)
+        file_path = os.path.join(results_ws, "plots", "streamflow_monthly", file_name)
         plt.savefig(file_path)
 
         # plot monthly mean flows: sim vs. obs
         if subbasin_id in gages_with_obs:
-
             all_val = np.append(sim_obs_month['sim_flow'].values, sim_obs_month['obs_flow'].values)
             min_val = np.nanmin(all_val)
             max_val = np.nanmax(all_val)
@@ -360,19 +350,17 @@ if __name__ == "__main__":
             fig = plt.figure(figsize=(8, 8), dpi=150)
             ax = fig.add_subplot(111)
             ax.scatter(sim_obs_month.obs_flow, sim_obs_month.sim_flow)
-            ax.plot(df_1to1.observed, df_1to1.simulated, color = "red", label='1:1 line')
-            ax.set_title('Simulated vs. observed mean monthly streamflow: subbasin '  + str(subbasin_id) + "\n" + gage_name)
+            ax.plot(df_1to1.observed, df_1to1.simulated, color="red", label='1:1 line')
+            ax.set_title(
+                'Simulated vs. observed mean monthly streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
             plt.xlabel('Observed monthly mean streamflow (ft^3/s)')
             plt.ylabel('Simulated monthly mean streamflow (ft^3/s)')
             ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
             ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
             plt.legend()
             file_name = 'monthly_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_monthly", file_name)
+            file_path = os.path.join(results_ws, "plots", "streamflow_monthly", file_name)
             plt.savefig(file_path)
-
-
-
 
         # MONTHLY PLOTS: for each year  -------------------------------------------------####
 
@@ -390,9 +378,8 @@ if __name__ == "__main__":
         plt.ylabel('Monthly mean streamflow (ft^3/s)')
         plt.legend()
         file_name = 'yearmonth_streamflow_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
+        file_path = os.path.join(results_ws, "plots", "streamflow_yearmonth", file_name)
         plt.savefig(file_path)
-
 
         # plot monthly mean flows: sim vs. obs
         # TODO: color the points by month
@@ -408,46 +395,46 @@ if __name__ == "__main__":
             ax = fig.add_subplot(111)
             ax.scatter(sim_obs_yearmonth.obs_flow, sim_obs_yearmonth.sim_flow)
             ax.plot(df_1to1.observed, df_1to1.simulated, color="red", label='1:1 line')
-            ax.set_title('Simulated vs. observed monthly mean streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+            ax.set_title(
+                'Simulated vs. observed monthly mean streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
             plt.xlabel('Observed monthly mean streamflow (ft^3/s)')
             plt.ylabel('Simulated monthly mean streamflow (ft^3/s)')
             ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
             ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
             plt.legend()
             file_name = 'yearmonth_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_yearmonth", file_name)
+            file_path = os.path.join(results_ws, "plots", "streamflow_yearmonth", file_name)
             plt.savefig(file_path)
-
-
 
         # DAILY PLOTS  -------------------------------------------------####
 
         # plot cumulative flows (based on daily flows)
         seconds_per_day = 86400
-        cubic_meters_per_cubic_ft= 1/35.3146667
-        obs_flow_cmd = sim_obs_daily['obs_flow'] * seconds_per_day *  cubic_meters_per_cubic_ft           # convert cfs to cmd
-        sim_flow_cmd = sim_obs_daily['sim_flow'] * seconds_per_day *  cubic_meters_per_cubic_ft           # convert cfs to cmd
+        cubic_meters_per_cubic_ft = 1 / 35.3146667
+        obs_flow_cmd = sim_obs_daily['obs_flow'] * seconds_per_day * cubic_meters_per_cubic_ft  # convert cfs to cmd
+        sim_flow_cmd = sim_obs_daily['sim_flow'] * seconds_per_day * cubic_meters_per_cubic_ft  # convert cfs to cmd
         obs_flow_cumul = obs_flow_cmd.cumsum()
         sim_flow_cumul = sim_flow_cmd.cumsum()
         plt.style.use('default')
         plt.figure(figsize=(12, 8), dpi=150)
-        plt.plot(sim_obs_daily.date, obs_flow_cumul, label = 'Observed')
-        plt.plot(sim_obs_daily.date, sim_flow_cumul, label = 'Simulated', linestyle='dotted')
+        plt.plot(sim_obs_daily.date, obs_flow_cumul, label='Observed')
+        plt.plot(sim_obs_daily.date, sim_flow_cumul, label='Simulated', linestyle='dotted')
         plt.title('Cumulative streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
         plt.xlabel('Date')
         plt.ylabel('Cumulative streamflow (cubic meters)')
         plt.legend()
         file_name = 'cumul_streamflow_' + str(subbasin_id).zfill(2) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumul", file_name)
+        file_path = os.path.join(results_ws, "plots", "streamflow_cumul", file_name)
         plt.savefig(file_path)
 
-
         # plot all daily flows on one page: time series
-        #TODO: make the dates on the x-axis not overlap
-        #fig, ax = plt.subplots(figsize=(20, 8))
+        # TODO: make the dates on the x-axis not overlap
+        # fig, ax = plt.subplots(figsize=(20, 8))
         plt.subplots(figsize=(8, 12))
         sim_obs_daily_long = sim_obs_daily.drop(['sim_stage'], axis=1)
-        sim_obs_daily_long = pd.melt(sim_obs_daily_long, id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'], var_name='flow_type', value_name='flow')
+        sim_obs_daily_long = pd.melt(sim_obs_daily_long,
+                                     id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'],
+                                     var_name='flow_type', value_name='flow')
         this_plot = sns.FacetGrid(data=sim_obs_daily_long, col='year', col_wrap=5, sharex=False, sharey=False)
         this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
         this_plot.add_legend()
@@ -455,62 +442,71 @@ if __name__ == "__main__":
         # ax.xaxis.set_minor_locator(locator)
         # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
         file_name = 'daily_streamflow_time_series_' + str(subbasin_id) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+        file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
         plt.savefig(file_path)
 
-
         # plot daily flows across several pages: time series
-        #TODO: make the dates on the x-axis not overlap
-        #fig, ax = plt.subplots(figsize=(20, 8))
+        # TODO: make the dates on the x-axis not overlap
+        # fig, ax = plt.subplots(figsize=(20, 8))
         plt.subplots(figsize=(8, 12))
         sim_obs_daily_long = sim_obs_daily.drop(['sim_stage'], axis=1)
-        sim_obs_daily_long = pd.melt(sim_obs_daily_long, id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'], var_name='flow_type', value_name='flow')
-        year_groups = [(1990,1993), (1994, 1997), (1998, 2001), (2002, 2005), (2006, 2009), (2010,2013), (2014, 2015)]
+        sim_obs_daily_long = pd.melt(sim_obs_daily_long,
+                                     id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'],
+                                     var_name='flow_type', value_name='flow')
+        year_groups = [(1990, 1993), (1994, 1997), (1998, 2001), (2002, 2005), (2006, 2009), (2010, 2013), (2014, 2015)]
         for years in year_groups:
 
-            sim_obs_daily_long_subset = sim_obs_daily_long[(sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
+            sim_obs_daily_long_subset = sim_obs_daily_long[
+                (sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
             if len(sim_obs_daily_long_subset.index) > 0:
-                this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False, sharey=False, height=4, aspect=1.3)
+                this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False,
+                                          sharey=False, height=4, aspect=1.3)
                 this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
                 this_plot.add_legend()
                 # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
                 # ax.xaxis.set_minor_locator(locator)
                 # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
-                file_name = 'daily_streamflow_time_series_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(years[1]) + '.jpg'
-                file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+                file_name = 'daily_streamflow_time_series_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
+                    years[1]) + '.jpg'
+                file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
                 plt.savefig(file_path)
 
-
         # plot daily flows across several pages with only low flows: time series
-        #TODO: make the dates on the x-axis not overlap
-        #fig, ax = plt.subplots(figsize=(20, 8))
+        # TODO: make the dates on the x-axis not overlap
+        # fig, ax = plt.subplots(figsize=(20, 8))
         plt.subplots(figsize=(8, 12))
         sim_obs_daily_long = sim_obs_daily.drop(['sim_stage'], axis=1)
-        sim_obs_daily_long = pd.melt(sim_obs_daily_long, id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'], var_name='flow_type', value_name='flow')
-        year_groups = [(1990,1993), (1994, 1997), (1998, 2001), (2002, 2005), (2006, 2009), (2010,2013), (2014, 2015)]
+        sim_obs_daily_long = pd.melt(sim_obs_daily_long,
+                                     id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'],
+                                     var_name='flow_type', value_name='flow')
+        year_groups = [(1990, 1993), (1994, 1997), (1998, 2001), (2002, 2005), (2006, 2009), (2010, 2013), (2014, 2015)]
         for years in year_groups:
 
-            sim_obs_daily_long_subset = sim_obs_daily_long[(sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
+            sim_obs_daily_long_subset = sim_obs_daily_long[
+                (sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
             if len(sim_obs_daily_long_subset.index) > 0:
                 low_flow_cutoff = sim_obs_daily_long_subset['flow'].quantile(q=0.65)
-                this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False, sharey=False, height=4, aspect=1.3)
+                this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False,
+                                          sharey=False, height=4, aspect=1.3)
                 this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
                 this_plot.set(ylim=(0, low_flow_cutoff))
                 this_plot.add_legend()
                 # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
                 # ax.xaxis.set_minor_locator(locator)
                 # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
-                file_name = 'daily_streamflow_time_series_low_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(years[1]) + '.jpg'
-                file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+                file_name = 'daily_streamflow_time_series_low_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
+                    years[1]) + '.jpg'
+                file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
                 plt.savefig(file_path)
 
-
         # plot all daily flows on one page: time series on log scale
-        #TODO: make the dates on the x-axis not overlap
-        #fig, ax = plt.subplots(figsize=(20, 8))
+        # TODO: make the dates on the x-axis not overlap
+        # fig, ax = plt.subplots(figsize=(20, 8))
         plt.subplots(figsize=(8, 12))
         sim_obs_daily_long = sim_obs_daily.drop(['sim_stage'], axis=1)
-        sim_obs_daily_long = pd.melt(sim_obs_daily_long, id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'], var_name='flow_type', value_name='flow')
+        sim_obs_daily_long = pd.melt(sim_obs_daily_long,
+                                     id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'],
+                                     var_name='flow_type', value_name='flow')
         this_plot = sns.FacetGrid(data=sim_obs_daily_long, col='year', col_wrap=5, sharex=False, sharey=False)
         this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
         this_plot.set(yscale="log")
@@ -519,32 +515,35 @@ if __name__ == "__main__":
         # ax.xaxis.set_minor_locator(locator)
         # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
         file_name = 'daily_streamflow_time_series_log_' + str(subbasin_id) + '.jpg'
-        file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+        file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
         plt.savefig(file_path)
 
-
         # plot daily flows across several pages: time series on log scale
-        #TODO: make the dates on the x-axis not overlap
-        #fig, ax = plt.subplots(figsize=(20, 8))
+        # TODO: make the dates on the x-axis not overlap
+        # fig, ax = plt.subplots(figsize=(20, 8))
         plt.subplots(figsize=(8, 12))
         sim_obs_daily_long = sim_obs_daily.drop(['sim_stage'], axis=1)
-        sim_obs_daily_long = pd.melt(sim_obs_daily_long, id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'], var_name='flow_type', value_name='flow')
-        year_groups = [(1990,1993), (1994, 1997), (1998, 2001), (2002, 2005), (2006, 2009), (2010,2013), (2014, 2015)]
+        sim_obs_daily_long = pd.melt(sim_obs_daily_long,
+                                     id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'],
+                                     var_name='flow_type', value_name='flow')
+        year_groups = [(1990, 1993), (1994, 1997), (1998, 2001), (2002, 2005), (2006, 2009), (2010, 2013), (2014, 2015)]
         for years in year_groups:
 
-            sim_obs_daily_long_subset = sim_obs_daily_long[(sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
+            sim_obs_daily_long_subset = sim_obs_daily_long[
+                (sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
             if len(sim_obs_daily_long_subset.index) > 0:
-                this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False, sharey=False, height=4, aspect=1.3)
+                this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False,
+                                          sharey=False, height=4, aspect=1.3)
                 this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
                 this_plot.set(yscale="log")
                 this_plot.add_legend()
                 # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
                 # ax.xaxis.set_minor_locator(locator)
                 # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
-                file_name = 'daily_streamflow_time_series_log_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(years[1]) + '.jpg'
-                file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+                file_name = 'daily_streamflow_time_series_log_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
+                    years[1]) + '.jpg'
+                file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
                 plt.savefig(file_path)
-
 
         # plot daily flows: sim vs. obs
         # TODO: add a 1:1 line here
@@ -553,10 +552,8 @@ if __name__ == "__main__":
             this_plot.map_dataframe(sns.scatterplot, x="obs_flow", y="sim_flow", hue="month")
             this_plot.add_legend()
             file_name = 'daily_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily", file_name)
+            file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
             plt.savefig(file_path)
-
-
 
         # LOCAL AND CUMULATIVE FLOWS  -------------------------------------------------####
 
@@ -571,8 +568,11 @@ if __name__ == "__main__":
             sim_local = sim_dict['11461500']['flow'] - sim_dict['11462000']['flow']
             # note: doing upstream minus downstream for subbasin 3 only (all the rest are downstream minus upstream)
         elif subbasin_id == 5:
-            obs_local = gage_and_other_flows['11462500'] - gage_and_other_flows['11461000'] - gage_and_other_flows['11462000']
-            sim_local = sim_dict['11462500']['flow'] - sim_dict['11461000']['flow'] - sim_dict['11462000']['flow'] - (gage_and_other_flows['Lake Mendocino observed inflow (SCWA)'] - gage_and_other_flows['11471000'])  # note: this last part is observed
+            obs_local = gage_and_other_flows['11462500'] - gage_and_other_flows['11461000'] - gage_and_other_flows[
+                '11462000']
+            sim_local = sim_dict['11462500']['flow'] - sim_dict['11461000']['flow'] - sim_dict['11462000']['flow'] - (
+                        gage_and_other_flows['Lake Mendocino observed inflow (SCWA)'] - gage_and_other_flows[
+                    '11471000'])  # note: this last part is observed
         elif subbasin_id == 6:
             obs_local = gage_and_other_flows['11463000'] - gage_and_other_flows['11462500']
             sim_local = sim_dict['11463000']['flow'] - sim_dict['11462500']['flow']
@@ -583,29 +583,31 @@ if __name__ == "__main__":
             obs_local = gage_and_other_flows['11465350'] - gage_and_other_flows['Lake Sonoma historical release (SCWA)']
             sim_local = sim_dict['11465350']['flow'] - gage_and_other_flows['Lake Sonoma historical release (SCWA)']
         elif subbasin_id == 18:
-            obs_local = gage_and_other_flows['11467000'] - gage_and_other_flows['11464000'] - gage_and_other_flows['11465350'] - gage_and_other_flows['BCM-estimated flow at 11466800 (MW Creek)'] + gage_and_other_flows['SCWA diversion above Gurneville']
-            sim_local = sim_dict['11467000']['flow'] - sim_dict['11464000']['flow'] - sim_dict['11465350']['flow'] - gage_and_other_flows['BCM-estimated flow at 11466800 (MW Creek)'] + gage_and_other_flows['SCWA diversion above Gurneville']
-        #elif subbasin_id == 21:
-        #elif subbasin_id == 22:
-        #elif subbasin_id == 20:
-
+            obs_local = gage_and_other_flows['11467000'] - gage_and_other_flows['11464000'] - gage_and_other_flows[
+                '11465350'] - gage_and_other_flows['BCM-estimated flow at 11466800 (MW Creek)'] + gage_and_other_flows[
+                            'SCWA diversion above Gurneville']
+            sim_local = sim_dict['11467000']['flow'] - sim_dict['11464000']['flow'] - sim_dict['11465350']['flow'] - \
+                        gage_and_other_flows['BCM-estimated flow at 11466800 (MW Creek)'] + gage_and_other_flows[
+                            'SCWA diversion above Gurneville']
+        # elif subbasin_id == 21:
+        # elif subbasin_id == 22:
+        # elif subbasin_id == 20:
 
         # plot
-        subbasins_for_local_flows = [2,3,5,6,13,16,18]
+        subbasins_for_local_flows = [2, 3, 5, 6, 13, 16, 18]
         date = gage_and_other_flows['date']
         if subbasin_id in subbasins_for_local_flows:
-
             # plot local flow time series
             plt.style.use('default')
             plt.figure(figsize=(12, 8), dpi=150)
-            plt.plot(date, obs_local, label = 'Observed')
-            plt.plot(date, sim_local, label = 'Simulated')
+            plt.plot(date, obs_local, label='Observed')
+            plt.plot(date, sim_local, label='Simulated')
             plt.title('Local streamflow: subbasin ' + str(subbasin_id))
             plt.xlabel('Date')
             plt.ylabel('Local streamflow (ft^3/s)')
             plt.legend()
             file_name = 'local_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_daily_local", file_name)
+            file_path = os.path.join(results_ws, "plots", "streamflow_daily_local", file_name)
             plt.savefig(file_path)
 
             # # calculate (absolute) cumulative differences
@@ -638,22 +640,27 @@ if __name__ == "__main__":
             # plot cumulative differences
             plt.style.use('default')
             plt.figure(figsize=(12, 8), dpi=150)
-            plt.plot(date, diff_obs_cum, label = 'Observed')
-            plt.plot(date, diff_sim_cum, label = 'Simulated')
+            plt.plot(date, diff_obs_cum, label='Observed')
+            plt.plot(date, diff_sim_cum, label='Simulated')
             plt.title('Cumulative difference in streamflow: subbasin ' + str(subbasin_id))
             plt.xlabel('Date')
             plt.ylabel('Cumulative difference in streamflow (cubic meters)')
             plt.legend()
             file_name = 'cumdiff_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
-            file_path = os.path.join(repo_ws, "GSFLOW", "results", "plots", "streamflow_cumdiff", file_name)
+            file_path = os.path.join(results_ws, "plots", "streamflow_cumdiff", file_name)
             plt.savefig(file_path)
 
-
-
         # export error metrics
-        file_path = os.path.join(repo_ws, 'GSFLOW', 'results', 'tables', 'streamflow_error_metrics.csv')
+        file_path = os.path.join(results_ws, 'tables', 'streamflow_error_metrics.csv')
         error_metric_df.to_csv(file_path, index=False)
 
+
+if __name__ == "__main__":
+
+    # note: model_ws and results_ws are defined in plot_all_gsflow.py,
+    # if we want to run this script alone then need to define them here
+
+    main(script_ws, model_ws, results_ws)
 
 
 
