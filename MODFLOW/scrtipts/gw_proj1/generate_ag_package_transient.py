@@ -676,7 +676,7 @@ def identify_orphan_fields(ag_dataset, ag_dataset_w_orphan_fields_file):
 
 def assign_orphan_fields_to_nearby_ponds(segments_with_pond_and_field, ag_dataset, ponds_coord_df, fields_coord_df, ag_dataset_w_no_orphan_fields_file):
 
-    # loop through segments that send water to both a field and a pond
+    # loop through segments that send water to both a field and a pond n
     for seg in segments_with_pond_and_field:
 
         # create mask from this segment
