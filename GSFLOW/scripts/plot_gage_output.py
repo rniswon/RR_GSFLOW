@@ -185,9 +185,13 @@ def main(script_ws, model_ws, results_ws):
 
     # loop through simulated gages
     sim_obs_daily_dict = {}
+    sim_obs_daily_dropna_dict = {}
     sim_obs_yearmonth_dict = {}
+    sim_obs_yearmonth_dropna_dict = {}
     sim_obs_month_dict = {}
+    sim_obs_month_dropna_dict = {}
     sim_obs_year_dict = {}
+    sim_obs_year_dropna_dict = {}
     for gage_id, sim_df in sim_dict.items():
 
         # rename flow column in sim data frame
@@ -215,16 +219,31 @@ def main(script_ws, model_ws, results_ws):
         # store sim_obs_daily in dictionary
         sim_obs_daily_dict.update({gage_id: sim_obs_daily})
 
+        # drop NA from sim_obs_daily
+        sim_obs_daily_dropna = sim_obs_daily.dropna(subset=['sim_flow', 'obs_flow']).reset_index(drop=True).copy()
+        sim_obs_daily_dropna_dict.update({gage_id: sim_obs_daily})
+
         # aggregate data by year and month: mean
         sim_obs_yearmonth = sim_obs_daily.groupby(['year', 'month'], as_index=False)[['sim_flow', 'obs_flow']].mean()
         sim_obs_yearmonth['day'] = 1
         sim_obs_yearmonth['date'] = pd.to_datetime(sim_obs_yearmonth[['year', 'month', 'day']])
         sim_obs_yearmonth_dict.update({gage_id: sim_obs_yearmonth})
 
+        # aggregate data by year and month: mean, drop NA
+        sim_obs_yearmonth_dropna = sim_obs_daily_dropna.groupby(['year', 'month'], as_index=False)[['sim_flow', 'obs_flow']].mean()
+        sim_obs_yearmonth_dropna['day'] = 1
+        sim_obs_yearmonth_dropna['date'] = pd.to_datetime(sim_obs_yearmonth_dropna[['year', 'month', 'day']])
+        sim_obs_yearmonth_dropna_dict.update({gage_id: sim_obs_yearmonth_dropna})
+
         # aggregate data by month: mean
         # TODO: only take mean over dates for which have values for sim and observed, or just don't use this and only use the yearmonth aggregation values
         sim_obs_month = sim_obs_daily.groupby(['month'], as_index=False)[['sim_stage', 'sim_flow', 'obs_flow']].mean()
         sim_obs_month_dict.update({gage_id: sim_obs_month})
+
+        # aggregate data by month: mean, drop NA
+        # TODO: only take mean over dates for which have values for sim and observed, or just don't use this and only use the yearmonth aggregation values
+        sim_obs_month_dropna = sim_obs_daily_dropna.groupby(['month'], as_index=False)[['sim_stage', 'sim_flow', 'obs_flow']].mean()
+        sim_obs_month_dropna_dict.update({gage_id: sim_obs_month_dropna})
 
         # aggregate data by year: sum to get annual volume and convert to acre-ft
         # TODO: if end up plotting stage, it probably doesn't make sense to plot the annual stage sum, so leaving it out
@@ -234,6 +253,15 @@ def main(script_ws, model_ws, results_ws):
         sim_obs_year['sim_flow'] = sim_obs_year['sim_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
         sim_obs_year['obs_flow'] = sim_obs_year['obs_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
         sim_obs_year_dict.update({gage_id: sim_obs_year})
+
+        # aggregate data by year: sum to get annual volume and convert to acre-ft, drop NA
+        # TODO: if end up plotting stage, it probably doesn't make sense to plot the annual stage sum, so leaving it out
+        sim_obs_year_dropna = sim_obs_daily_dropna.groupby(['year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
+        seconds_per_day = 86400
+        acre_ft_per_cubic_ft = 1 / 43560.02
+        sim_obs_year_dropna['sim_flow'] = sim_obs_year_dropna['sim_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
+        sim_obs_year_dropna['obs_flow'] = sim_obs_year_dropna['obs_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
+        sim_obs_year_dropna_dict.update({gage_id: sim_obs_year_dropna})
 
         # calculate error metrics if have observed data
         # TODO: need to write functions for the rest of the error metrics and calculate/store them below
@@ -245,9 +273,9 @@ def main(script_ws, model_ws, results_ws):
             # ANNUAL ERROR METRICS -------------------------------------------------####
 
             # calculate error metrics: annual flow volumes
-            nse = nash_sutcliffe_efficiency(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
-            paee = calculate_paee(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
-            aaee = calculate_aaee(sim_obs_year['sim_flow'], sim_obs_year['obs_flow'])
+            nse = nash_sutcliffe_efficiency(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            paee = calculate_paee(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            aaee = calculate_aaee(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
 
             # store error metrics: annual flow volumes
             error_metric_df.loc[error_metric_df['error_metric'] == 'nse_annual', subbasin_id] = nse
@@ -257,9 +285,9 @@ def main(script_ws, model_ws, results_ws):
             # MONTHLY ERROR METRICS  -------------------------------------------------####
 
             # calculate error metrics: monthly mean flows (for each year)
-            nse = nash_sutcliffe_efficiency(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
-            paee = calculate_paee(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
-            aaee = calculate_aaee(sim_obs_yearmonth['sim_flow'], sim_obs_yearmonth['obs_flow'])
+            nse = nash_sutcliffe_efficiency(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            paee = calculate_paee(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            aaee = calculate_aaee(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
 
             # store error metrics: monthly mean flows (for each year)
             error_metric_df.loc[error_metric_df['error_metric'] == 'nse_monthly', subbasin_id] = nse
@@ -269,9 +297,9 @@ def main(script_ws, model_ws, results_ws):
             # DAILY ERROR METRICS  -------------------------------------------------####
 
             # calculate error metrics: daily flows
-            nse = nash_sutcliffe_efficiency(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
-            paee = calculate_paee(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
-            aaee = calculate_aaee(sim_obs_daily['sim_flow'], sim_obs_daily['obs_flow'])
+            nse = nash_sutcliffe_efficiency(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            paee = calculate_paee(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            aaee = calculate_aaee(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
 
             # store error metrics: daily flows
             error_metric_df.loc[error_metric_df['error_metric'] == 'nse_daily', subbasin_id] = nse
@@ -408,6 +436,19 @@ def main(script_ws, model_ws, results_ws):
 
         # DAILY PLOTS  -------------------------------------------------####
 
+        # plot entire daily flow time series
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.plot(sim_obs_daily.date, sim_obs_daily.obs_flow, label='Observed')
+        plt.plot(sim_obs_daily.date, sim_obs_daily.sim_flow, label='Simulated', linestyle='dotted')
+        plt.title('Daily streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Date')
+        plt.ylabel('Streamflow (cfs)')
+        plt.legend()
+        file_name = 'daily_streamflow_time_series_all_' + str(subbasin_id).zfill(2) + '.jpg'
+        file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        plt.savefig(file_path)
+
         # plot cumulative flows (based on daily flows)
         seconds_per_day = 86400
         cubic_meters_per_cubic_ft = 1 / 35.3146667
@@ -435,8 +476,9 @@ def main(script_ws, model_ws, results_ws):
         sim_obs_daily_long = pd.melt(sim_obs_daily_long,
                                      id_vars=['date', 'year', 'month', 'day', 'gage_id', 'subbasin_id', 'gage_name'],
                                      var_name='flow_type', value_name='flow')
+        hue_order = ['obs_flow', 'sim_flow']
         this_plot = sns.FacetGrid(data=sim_obs_daily_long, col='year', col_wrap=5, sharex=False, sharey=False)
-        this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
+        this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", hue_order=hue_order, linestyle="dashed")
         this_plot.add_legend()
         # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
         # ax.xaxis.set_minor_locator(locator)
@@ -459,9 +501,10 @@ def main(script_ws, model_ws, results_ws):
             sim_obs_daily_long_subset = sim_obs_daily_long[
                 (sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
             if len(sim_obs_daily_long_subset.index) > 0:
+                hue_order = ['obs_flow', 'sim_flow']
                 this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False,
                                           sharey=False, height=4, aspect=1.3)
-                this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
+                this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", hue_order = hue_order, linestyle="dashed")
                 this_plot.add_legend()
                 # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
                 # ax.xaxis.set_minor_locator(locator)
@@ -486,9 +529,10 @@ def main(script_ws, model_ws, results_ws):
                 (sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
             if len(sim_obs_daily_long_subset.index) > 0:
                 low_flow_cutoff = sim_obs_daily_long_subset['flow'].quantile(q=0.65)
+                hue_order = ['obs_flow', 'sim_flow']
                 this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False,
                                           sharey=False, height=4, aspect=1.3)
-                this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
+                this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", hue_order = hue_order, linestyle="dashed")
                 this_plot.set(ylim=(0, low_flow_cutoff))
                 this_plot.add_legend()
                 # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
@@ -532,9 +576,10 @@ def main(script_ws, model_ws, results_ws):
             sim_obs_daily_long_subset = sim_obs_daily_long[
                 (sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
             if len(sim_obs_daily_long_subset.index) > 0:
+                hue_order = ['obs_flow', 'sim_flow']
                 this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False,
                                           sharey=False, height=4, aspect=1.3)
-                this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", linestyle="dashed")
+                this_plot.map_dataframe(sns.lineplot, x="date", y="flow", hue="flow_type", hue_order = hue_order, linestyle="dashed")
                 this_plot.set(yscale="log")
                 this_plot.add_legend()
                 # locator = mdates.MonthLocator(bymonth=[1,2,3,4,5,6,7,8,9,10,11,12])
