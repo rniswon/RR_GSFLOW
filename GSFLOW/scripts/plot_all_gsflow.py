@@ -35,7 +35,7 @@ import plot_watershed_summary_time_series
 # note: update these workspaces as needed
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20220808_01")                   # model workspace
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20220812_04")                   # model workspace
 results_ws = os.path.join(repo_ws, "GSFLOW", "results")                                # results workspace
 ss_archived_models_ws = os.path.join(repo_ws, "MODFLOW", "archived_models")            # steady state archived models workspace
 init_files_ws = os.path.join(repo_ws, "MODFLOW", "init_files")                         # modflow init files workspace

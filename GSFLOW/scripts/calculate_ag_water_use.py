@@ -1,16 +1,16 @@
 #---- Settings ------------------------------------------####
 
 # set model-simulated values
-ag_water_use_total_m3_per_num_years = 695806464
-ag_water_use_well_m3_per_num_years = 378145696
-ag_water_use_div_m3_per_num_years = 57590624
-ag_water_use_pond_m3_per_num_years = 260070112
+ag_water_use_well_m3_per_num_years = 369427328
+ag_water_use_div_m3_per_num_years = 49158480
+ag_water_use_pond_m3_per_num_years = 9868974080
+ag_water_use_total_m3_per_num_years = 10287559680
 
 # set field areas
-field_area_total_acres = 49447
 field_area_well_acres= 19192
 field_area_div_acres = 2631
 field_area_pond_acres = 27408
+field_area_total_acres = 49447
 
 # set units constants and conversion factors
 num_years = 26
@@ -27,10 +27,6 @@ def convert_ag_water_use_units(ag_water_use_m3, field_area_acres):
     return(ag_water_use_ftyr)
 
 
-# ag water use: total
-ag_water_use_total_ftyr = convert_ag_water_use_units(ag_water_use_total_m3_per_num_years, field_area_total_acres)
-print('ag_water_use_total_ftyr: ' + str(ag_water_use_total_ftyr))
-
 # ag water use: wells
 ag_water_use_well_ftyr = convert_ag_water_use_units(ag_water_use_well_m3_per_num_years, field_area_well_acres)
 print('ag_water_use_well_ftyr: ' + str(ag_water_use_well_ftyr))
@@ -42,3 +38,7 @@ print('ag_water_use_div_ftyr: ' + str(ag_water_use_div_ftyr))
 # ag water use: ponds
 ag_water_use_pond_ftyr = convert_ag_water_use_units(ag_water_use_pond_m3_per_num_years, field_area_pond_acres)
 print('ag_water_use_pond_ftyr: ' + str(ag_water_use_pond_ftyr))
+
+# ag water use: total
+ag_water_use_total_ftyr = convert_ag_water_use_units(ag_water_use_total_m3_per_num_years, field_area_total_acres)
+print('ag_water_use_total_ftyr: ' + str(ag_water_use_total_ftyr))
