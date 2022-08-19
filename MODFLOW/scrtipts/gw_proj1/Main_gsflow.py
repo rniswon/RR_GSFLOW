@@ -2819,6 +2819,7 @@ if create_tabfiles_for_pond_diversions == 1:
     #                     'Mixed Pasture': 0,
     #                     'other': 0}
 
+    # ORIGINAL
     Qmax_dict_daily = {'Grapes': -999,
                         'Apples': -999,
                         'Mixed Pasture': -999,
@@ -2844,7 +2845,7 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # convert to meters/year
         #Qmax_dict_daily[key] = Qmax_dict_annual[key] * (1 / irrigated_days_per_year_dict[key])        # ORIGINAL
-        Qmax_dict_daily[key] = Qmax_dict_annual[key] * (1 / irrigated_days_per_year_dict[key]) * 10    # EXPERIMENT
+        Qmax_dict_daily[key] = Qmax_dict_annual[key] * (1 / irrigated_days_per_year_dict[key]) * 3.33    # EXPERIMENT
 
 
 
@@ -3025,8 +3026,8 @@ if create_tabfiles_for_pond_diversions == 1:
     num_days_in_wettest_months = 31+31+31+28
 
     # assign months with pond flowthrough=1
-    flowthrough_active_months = [6,7,8,9,10]
-    #flowthrough_active_months = [3,4,5,6,7,8,9,10]
+    #flowthrough_active_months = [6,7,8,9,10]
+    flowthrough_active_months = [3,4,5,6,7,8,9,10]
 
     # summarize (i.e. add up) pond demand by diversion segment
     seg_df = pond_list.groupby('segid').sum().reset_index()

@@ -468,8 +468,10 @@ def create_irrpond_stress_period(stress_period, df_diversion, df_kcs, pond_lut):
 
     # define low flow period
     #low_flow_period = (6,7,8,9,10,11)
-    low_flow_period = (6,7,8,9,10)
-    #low_flow_period = (3,4,5,6,7,8,9,10)
+    #low_flow_period = (6,7,8,9,10)
+    low_flow_period = (3,4,5,6,7,8,9,10)
+    #low_flow_period = (3,4,5,6,7)
+
 
 
     # TODO: choose the best flowthrough option from among these below
