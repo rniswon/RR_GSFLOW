@@ -2528,11 +2528,19 @@ if update_ag_package == 1:
     # extract crop types
     crop_type = ag_data['crop_type'].unique().tolist()
 
+    # ORIGINAL
     # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year = ft/year), then convert to model units (i.e. meters/day)
     Qmax_dict = {'Grapes': 1,
                  'Apples': 2.5,
                  'Mixed Pasture': 3.5,
                  'other': 1}
+
+    # # EXPERIMENT
+    # Qmax_dict = {'Grapes': 0,
+    #              'Apples': 0,
+    #              'Mixed Pasture': 0,
+    #              'other': 0}
+
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
     ft_per_meter = 3.2808399
@@ -2759,6 +2767,33 @@ if create_tabfiles_for_pond_diversions == 1:
     ag_data.loc[ag_data.pond_id == 1550, "pond_hru"] += 1     # update pond HRUs to match changes made in generate_ag_package_transient.py
     ag_data.loc[ag_data.pond_id == 1662, "pond_hru"] += 1    # update pond HRUs to match changes made in generate_ag_package_transient.py
 
+    # read in Kc table
+    kc_file = os.path.join(repo_ws, "MODFLOW", "init_files", "KC_sonoma shared.xlsx")
+    kc_data = pd.read_excel(kc_file, sheet_name = "kc_info")
+
+
+
+    # Get number of irrigated days for different crop types -------------------------------------------------------####
+
+    # calculate number of irrigated days per year for different crop types
+    irrig_cols = ['NotIrrigated_1', 'NotIrrigated_2', 'NotIrrigated_3', 'NotIrrigated_4',  'NotIrrigated_5',
+                  'NotIrrigated_6', 'NotIrrigated_7', 'NotIrrigated_8', 'NotIrrigated_9', 'NotIrrigated_10']
+    kc_data['NotIrrigated_sum'] = kc_data[irrig_cols].sum(axis=1)
+    kc_data['irrigated_months_per_year'] = 12 - kc_data['NotIrrigated_sum']
+    num_days_per_month = 31          # using the max number of days per month (across all months) because this is for Qmax, so don't need to be exact
+    kc_data['irrigated_days_per_year'] = kc_data['irrigated_months_per_year'] * num_days_per_month
+    mask = kc_data['irrigated_days_per_year'] > 365
+    kc_data.loc[mask, 'irrigated_days_per_year'] = 365
+    mask_grapes = kc_data['CropName2'] == "Grapes"
+    mask_apples = kc_data['CropName2'] == "Apples"
+    mask_pasture = kc_data['CropName2'] == "Mixed Pasture"
+    mask_other = ~kc_data['CropName2'].isin(["Grapes", "Apples", "Mixed Pasture"])
+    irrigated_days_per_year_dict = {'Grapes': kc_data.loc[mask_grapes, 'irrigated_days_per_year'].values[0],
+                                    'Apples': kc_data.loc[mask_apples, 'irrigated_days_per_year'].values[0],
+                                    'Mixed Pasture': kc_data.loc[mask_pasture, 'irrigated_days_per_year'].values[0],
+                                    'other': kc_data.loc[mask_other, 'irrigated_days_per_year'].values.mean()}
+
+
 
 
     # Get irrigation demand for each field -------------------------------------------------------####
@@ -2770,35 +2805,53 @@ if create_tabfiles_for_pond_diversions == 1:
     # extract crop types
     crop_type = ag_data['crop_type'].unique().tolist()
 
-    # AFTER EXPERIMENT: GO BACK TO THIS VERSION
     # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year = ft/year), then convert to meters/year
-    Qmax_dict = {'Grapes': 1,
-                 'Apples': 2.5,
-                 'Mixed Pasture': 3.5,
-                 'other': 1}
+
+    # # ORIGINAL
+    Qmax_dict_annual = {'Grapes': 1,
+                        'Apples': 2.5,
+                        'Mixed Pasture': 3.5,
+                        'other': 1}
 
     # # EXPERIMENT
-    # # create dictionary of Qmax based on Ayman's research (units: acre-ft/acre/year= ft/year), then convert to meters/year
-    # Qmax_dict = {'Grapes': 0.5,
-    #              'Apples': 0.5,
-    #              'Mixed Pasture': 0.5,
-    #              'other': 0.5}
+    # Qmax_dict_annual = {'Grapes': 0,
+    #                     'Apples': 0,
+    #                     'Mixed Pasture': 0,
+    #                     'other': 0}
+
+    # ORIGINAL
+    Qmax_dict_daily = {'Grapes': -999,
+                        'Apples': -999,
+                        'Mixed Pasture': -999,
+                        'other': -999}
 
     cubic_meters_per_acre_ft = 1233.48185532
     square_meters_per_acre = 4046.85642
     ft_per_meter = 3.2808399
     #days_per_year = 365
-    for key in Qmax_dict.keys():
+
+    # get annual irrigation demand for each crop type
+    for key in Qmax_dict_annual.keys():
 
         # convert to meters/year
         # not multiplying by -1 because interested in field water demand, not well pumping
         # not converting to irrigation demand per year, instead keeping as irrigation demand per growing season
         #Qmax_dict[key] = Qmax_dict[key] * (1/square_meters_per_acre) * cubic_meters_per_acre_ft
-        Qmax_dict[key] = Qmax_dict[key] * (1/ft_per_meter)
+        Qmax_dict_annual[key] = Qmax_dict_annual[key] * (1/ft_per_meter)
+
+
+    # get daily irrigation demand for each crop type
+    for key in Qmax_dict_daily.keys():
+
+        # convert to meters/year
+        #Qmax_dict_daily[key] = Qmax_dict_annual[key] * (1 / irrigated_days_per_year_dict[key])        # ORIGINAL
+        Qmax_dict_daily[key] = Qmax_dict_annual[key] * (1 / irrigated_days_per_year_dict[key]) * 3.33    # EXPERIMENT
+
 
 
     # create a Qmax_crop column in ag_data based on crop_type
-    ag_data['Qmax_crop'] = 0
+    ag_data['Qmax_crop_annual'] = 0
+    ag_data['Qmax_crop_daily'] = 0
     for crop in crop_type:
 
         # identify rows with this crop
@@ -2806,19 +2859,28 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # get Qmax for this crop
         if crop == 'Grapes':
-            Qmax = Qmax_dict['Grapes']
+            Qmax_annual = Qmax_dict_annual['Grapes']
+            Qmax_daily = Qmax_dict_daily['Grapes']
         elif crop == 'Apples':
-            Qmax = Qmax_dict['Apples']
+            Qmax_annual = Qmax_dict_annual['Apples']
+            Qmax_daily = Qmax_dict_daily['Apples']
         elif crop == 'Mixed Pasture':
-            Qmax = Qmax_dict['Mixed Pasture']
+            Qmax_annual = Qmax_dict_annual['Mixed Pasture']
+            Qmax_daily = Qmax_dict_daily['Mixed Pasture']
         else:
-            Qmax = Qmax_dict['other']
+            Qmax_annual = Qmax_dict_annual['other']
+            Qmax_daily = Qmax_dict_daily['other']
 
-        # fill in Qmax_crop column
-        ag_data.loc[mask, 'Qmax_crop'] = Qmax
+
+        # fill in Qmax_crop_annual and Qmax_crop_daily columns
+        ag_data.loc[mask, 'Qmax_crop_annual'] = Qmax_annual
+        ag_data.loc[mask, 'Qmax_crop_daily'] = Qmax_daily
+
 
     # create a Qmax_field column in ag_data, based on Qmax_crop and field_area
-    ag_data['Qmax_field'] = ag_data['Qmax_crop'] * ag_data['field_area']
+    ag_data['Qmax_field_annual'] = ag_data['Qmax_crop_annual'] * ag_data['field_area']
+    ag_data['Qmax_field_daily'] = ag_data['Qmax_crop_daily'] * ag_data['field_area']
+
 
 
 
@@ -2832,11 +2894,15 @@ if create_tabfiles_for_pond_diversions == 1:
 
     # loop through ponds
     pond_list = pd.DataFrame(ag.pond_list)
-    pond_list['max_demand_m3'] = 0
-    pond_list['pond_demand_m3'] = 0
+    pond_list['max_demand_annual_m3'] = 0
+    pond_list['max_demand_daily_m3'] = 0
+    pond_list['pond_demand_annual_m3'] = 0
+    pond_list['pond_demand_daily_m3'] = 0
     pond_list['pond_area_m2'] = 0
-    pond_list['pond_depth_m'] = 0
-    pond_list['pond_depth_in'] = 0
+    pond_list['pond_depth_annual_m'] = 0
+    pond_list['pond_depth_daily_m'] = 0
+    pond_list['pond_depth_annual_in'] = 0
+    pond_list['pond_depth_daily_in'] = 0
     ponds = pond_list['hru_id'].values
     for pond in ponds:
 
@@ -2845,48 +2911,66 @@ if create_tabfiles_for_pond_diversions == 1:
         ag_data_mask = (ag_data['pod_type'] == "DIVERSION") & (ag_data['pond_hru'] == pond)    # EXPERIMENT: divert enough for orphan fields too
         pond_df = ag_data[ag_data_mask]
 
+
         # calculate the max ag water demand (units: m^3/year)
         pond_list_mask = pond_list['hru_id'] == pond
-        max_demand_m3 = pond_df['Qmax_field'].sum()            # ORIGINAL
+        max_demand_annual_m3 = pond_df['Qmax_field_annual'].sum()            # ORIGINAL
+        max_demand_daily_m3 = pond_df['Qmax_field_daily'].sum()            # ORIGINAL
         # max_demand_m3 = pond_df['Qmax_field'].sum() * 5       # EXPERIMENT: increase water diverted to ponds but keep the 25 ft pond depth constraint
-        pond_list.loc[pond_list_mask, 'max_demand_m3'] = max_demand_m3
+
+        pond_list.loc[pond_list_mask, 'max_demand_annual_m3'] = max_demand_annual_m3
+        pond_list.loc[pond_list_mask, 'max_demand_daily_m3'] = max_demand_daily_m3
+
 
         # store the pond area
         pond_area_m2 = pond_df['pond_area_m2'].values[0]
         pond_list.loc[pond_list_mask, 'pond_area_m2'] = pond_area_m2
 
+
         # calculate pond depth required to satisfy water demand given the pond area
-        pond_depth_m = max_demand_m3 / pond_area_m2
-        pond_list.loc[pond_list_mask, 'pond_depth_m'] = pond_depth_m
+        pond_depth_annual_m = max_demand_annual_m3 / pond_area_m2
+        pond_depth_daily_m = max_demand_daily_m3 / pond_area_m2
+
+        pond_list.loc[pond_list_mask, 'pond_depth_annual_m'] = pond_depth_annual_m
+        pond_list.loc[pond_list_mask, 'pond_depth_daily_m'] = pond_depth_daily_m
+
         inches_per_meter = 39.3700787
-        pond_depth_in = pond_depth_m * inches_per_meter
-        pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_in
+        pond_depth_annual_in = pond_depth_annual_m * inches_per_meter
+        pond_depth_daily_in = pond_depth_daily_m * inches_per_meter
+
+        pond_list.loc[pond_list_mask, 'pond_depth_annual_in'] = pond_depth_annual_in
+        pond_list.loc[pond_list_mask, 'pond_depth_daily_in'] = pond_depth_daily_in
+
 
         # make sure pond not deeper than max pond depth
-        if pond_depth_in > max_pond_depth_in:
+        if pond_depth_annual_in > max_pond_depth_in:
 
             # reset pond values
-            pond_depth_in = max_pond_depth_in
-            pond_depth_m = pond_depth_in * (1/inches_per_meter)
-            pond_demand_m3 = pond_depth_m * pond_area_m2
+            pond_depth_annual_in = max_pond_depth_in
+            pond_depth_annual_m = pond_depth_annual_in * (1/inches_per_meter)
+            pond_demand_annual_m3 = pond_depth_annual_m * pond_area_m2
 
             # store updated pond values
-            pond_list.loc[pond_list_mask, 'pond_depth_in'] = pond_depth_in
-            pond_list.loc[pond_list_mask, 'pond_depth_m'] = pond_depth_m
-            pond_list.loc[pond_list_mask, 'pond_demand_m3'] = pond_demand_m3
+            pond_list.loc[pond_list_mask, 'pond_depth_annual_in'] = pond_depth_annual_in
+            pond_list.loc[pond_list_mask, 'pond_depth_annual_m'] = pond_depth_annual_m
+            pond_list.loc[pond_list_mask, 'pond_demand_annual_m3'] = pond_demand_annual_m3
 
         else:
 
             # pond demand is equal to max demand if have the pond storage space for it
-            pond_demand_m3 = max_demand_m3
-            pond_list.loc[pond_list_mask, 'pond_demand_m3'] = pond_demand_m3
+            pond_demand_annual_m3 = max_demand_annual_m3
+            pond_list.loc[pond_list_mask, 'pond_demand_annual_m3'] = pond_demand_annual_m3
+
+        # set daily pond demand
+        pond_list.loc[pond_list_mask, 'pond_demand_daily_m3'] = max_demand_daily_m3
+
 
 
         # Update QPOND in pond list
         # NOTE: updating to represent 5-day filling period for pond demand
         #fraction_filled_per_day = 1/5
         #qpond = pond_demand_m3 * fraction_filled_per_day
-        qpond = pond_demand_m3
+        qpond = pond_demand_annual_m3
         pond_list.loc[pond_list_mask, 'q'] = qpond     # ORIGINAL
         #pond_list.loc[pond_list_mask, 'q'] = 0        # EXPERIMENT
 
@@ -2917,11 +3001,11 @@ if create_tabfiles_for_pond_diversions == 1:
 
             # get updated pond depth
             mask = pond_list['hru_id'] == hru_id
-            pond_depth_in = pond_list.loc[mask, 'pond_depth_in']
+            pond_depth_annual_in = pond_list.loc[mask, 'pond_depth_annual_in']
 
             # update pond depth
             idx = hru_id - 1
-            dprst_depth_avg[idx] = pond_depth_in
+            dprst_depth_avg[idx] = pond_depth_annual_in
 
     # store
     gs.prms.parameters.set_values('dprst_depth_avg', dprst_depth_avg)
@@ -2935,11 +3019,15 @@ if create_tabfiles_for_pond_diversions == 1:
     # Fill ponds during the wettest months of the wet season to cover the water demand
     # by dividing up the demand among the number of days in the month
 
-    # assign wettest month of wet season
+    # assign wettest months of wet season
     # wettest_month = [1]    # ORIGINAL: assuming January for now
     # num_days_in_wettest_month = 31    # ORIGINAL
     wettest_months = [11, 12, 1, 2]    # assuming Nov-Feb for now
     num_days_in_wettest_months = 31+31+31+28
+
+    # assign months with pond flowthrough=1
+    #flowthrough_active_months = [6,7,8,9,10]
+    flowthrough_active_months = [3,4,5,6,7,8,9,10]
 
     # summarize (i.e. add up) pond demand by diversion segment
     seg_df = pond_list.groupby('segid').sum().reset_index()
@@ -2972,17 +3060,23 @@ if create_tabfiles_for_pond_diversions == 1:
         # make a copy of tabfile format df
         this_tabfile = tabfile_format_df.copy()
 
-        # calculate daily irrigation demand during wettest month
+        # set segment mask
         seg_mask = seg_df['segid'] == seg
-        daily_irrig_demand_wettest_month = seg_df.loc[seg_mask,'pond_demand_m3'].values[0] / num_days_in_wettest_months           # ORIGINAL
+
+        # set irrigation demand for specified diversion months
+        daily_irrig_demand_wettest_months = seg_df.loc[seg_mask,'pond_demand_annual_m3'].values[0] / num_days_in_wettest_months           # ORIGINAL
         # daily_irrig_demand_wettest_month = (1.25 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 1.25x
         # daily_irrig_demand_wettest_month = (5 * seg_df.loc[seg_mask,'pond_demand_m3'].values[0]) / num_days_in_wettest_months     # EXPERIMENT: increasing max value by 5x
+        month_mask_spec_div = this_tabfile['model_month'].isin(wettest_months)
+        this_tabfile.loc[month_mask_spec_div, 'daily_demand_m3'] = daily_irrig_demand_wettest_months   # ORIGINAL
+        #this_tabfile.loc[month_mask, 'daily_demand_m3'] = 0   # EXPERIMENT
 
+        # set irrigation demand for flowthrough months
+        pond_demand_daily_m3 = seg_df.loc[seg_mask,'pond_demand_daily_m3'].values[0]
+        month_mask_flowthrough = this_tabfile['model_month'].isin(flowthrough_active_months)
+        this_tabfile.loc[month_mask_flowthrough, 'daily_demand_m3'] = pond_demand_daily_m3
 
         # create tabfile
-        month_mask = this_tabfile['model_month'].isin(wettest_months)
-        this_tabfile.loc[month_mask, 'daily_demand_m3'] = daily_irrig_demand_wettest_month   # ORIGINAL
-        #this_tabfile.loc[month_mask, 'daily_demand_m3'] = 0   # EXPERIMENT
         this_tabfile = this_tabfile[['model_time_step', 'daily_demand_m3']]
 
         # store number of lines in the tabfile
@@ -3053,9 +3147,9 @@ if create_tabfiles_for_pond_diversions == 1:
 
         # get diversion segment demand and calculate tabpondfrac
         mask_div_seg_demand = seg_df['segid'] == seg
-        div_seg_demand = seg_df.loc[mask_div_seg_demand, 'pond_demand_m3'].values[0]
+        div_seg_demand = seg_df.loc[mask_div_seg_demand, 'pond_demand_annual_m3'].values[0]
         mask_pond_list = pond_list['segid'] == seg
-        pond_list.loc[mask_pond_list, 'tabpondfrac'] = pond_list.loc[mask_pond_list, 'pond_demand_m3'] / div_seg_demand
+        pond_list.loc[mask_pond_list, 'tabpondfrac'] = pond_list.loc[mask_pond_list, 'pond_demand_annual_m3'] / div_seg_demand
 
     # export pond list csv (until get ag package export working)
     pond_list_19a = pond_list[["tabpondunit", "tabpondval", "hru_id", "segid", "tabpondfrac"]]

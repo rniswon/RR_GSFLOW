@@ -35,14 +35,14 @@ import plot_watershed_summary_time_series
 # note: update these workspaces as needed
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20220802_02")                   # model workspace
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20220817_03")                   # model workspace
 results_ws = os.path.join(repo_ws, "GSFLOW", "results")                                # results workspace
 ss_archived_models_ws = os.path.join(repo_ws, "MODFLOW", "archived_models")            # steady state archived models workspace
 init_files_ws = os.path.join(repo_ws, "MODFLOW", "init_files")                         # modflow init files workspace
 
 
 
-# ---- Delete old plots and tables -------------------------------------------####
+#---- Delete old plots and tables -------------------------------------------####
 
 # delete and regenerate contents of results workspace: plots
 results_plot_folders = os.listdir(os.path.join(results_ws, "plots"))
@@ -64,10 +64,10 @@ os.mkdir(table_path)
 
 # print('plot ag diversions')
 # plot_ag_diversions.main(model_ws, results_ws)
-
+#
 # print('plot ag diversions iupseg')
 # plot_ag_diversions_iupseg.main(model_ws, results_ws)
-
+#
 # print('plot ag pond diversions iupseg')
 # plot_ag_pond_div_iupseg.main(model_ws, results_ws)
 #
@@ -83,8 +83,8 @@ os.mkdir(table_path)
 # print('plot ag water use')
 # plot_ag_water_use.main(model_ws, results_ws)
 #
-# print('plot gage output')
-# plot_gage_output.main(script_ws, model_ws, results_ws)
+print('plot gage output')
+plot_gage_output.main(script_ws, model_ws, results_ws)
 #
 # print('plot gsflow inputs')
 # plot_gsflow_inputs.main(model_ws, results_ws)
@@ -101,8 +101,8 @@ os.mkdir(table_path)
 # # print('plot lake bathymetry')
 # # plot_lake_bathymetry.main(model_ws, results_ws, init_files_ws)
 
-print('plot lake outputs')
-plot_lake_outputs.main(model_ws, results_ws, init_files_ws)
+# print('plot lake outputs')
+# plot_lake_outputs.main(model_ws, results_ws, init_files_ws)
 
 # print('plot list output')
 # plot_list_output.main(model_ws, results_ws)
@@ -125,3 +125,8 @@ plot_lake_outputs.main(model_ws, results_ws, init_files_ws)
 # print('plot watershed summary time series')
 # plot_watershed_summary_time_series.main(model_ws, results_ws)
 
+
+
+# ---- Copy results folder into model workspace -------------------------------------------####
+
+#shutil.copy(results_ws, model_ws)

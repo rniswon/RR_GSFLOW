@@ -2,6 +2,7 @@ import os
 import flopy
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from datetime import datetime
 from gw_utils import general_util
 
@@ -31,8 +32,12 @@ def main(model_ws, results_ws, init_files_ws):
     lake_1_budget_file = os.path.join(model_ws, "modflow", "output", "mendo_lake_bdg.lak.out")
     lake_2_budget_file = os.path.join(model_ws, "modflow", "output", "sonoma_lake_bdg.lak.out")
 
-    # set files for observed lake stages
+    # set file for observed lake stages
     obs_lake_stage_file = os.path.join(init_files_ws, "LakeMendocino_LakeSonoma_Elevation.xlsx")
+
+    # set files for observed lake storage
+    usace_mendo_storage_data_file = os.path.join(init_files_ws, "usace_lake_mendo_storage.csv")
+    usace_sonoma_storage_data_file = os.path.join(init_files_ws, "usace_lake_sonoma_storage.csv")
 
     # set file for subbasin 3 gage files (lake mendo surface outflow)
     subbasin_3_sim_file = os.path.join(model_ws, "modflow", "output", "EF_RUSSIAN_R_NR_UKIAH.go")
@@ -87,6 +92,15 @@ def main(model_ws, results_ws, init_files_ws):
 
     # read in observed lake stages
     obs_lake_stage = pd.read_excel(obs_lake_stage_file, sheet_name='stages', na_values="--", parse_dates=['date'])
+
+    # read in observed lake storage
+    usace_mendo_storage = pd.read_csv(usace_mendo_storage_data_file)
+    usace_mendo_storage['date'] = pd.to_datetime(usace_mendo_storage['date'])
+    # usace_sonoma_storage = pd.read_csv(usace_sonoma_storage_data_file)               # set back to this
+    # usace_sonoma_storage['date'] = pd.to_datetime(usace_sonoma_storage['date'])      # set back to this
+    usace_sonoma_storage = usace_mendo_storage.copy()          # TEMPORARY
+    usace_sonoma_storage['storage_acreft'] = np.nan           # TEMPORARY
+    usace_sonoma_storage['storage_cmd'] = np.nan              # TEMPORARY
 
     # read in file for redwood valley demand
     redwood_valley_demand = pd.read_csv(redwood_valley_demand_file)
@@ -170,7 +184,7 @@ def main(model_ws, results_ws, init_files_ws):
 
     # ---- Function to plot lake outflows ----------------------------------------------------####
 
-    def plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name,
+    def plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, obs_lake_storage, lake_id, out_file_name,
                            start_date_obs, end_date_obs, start_date_sim, end_date_sim):
 
         # add date column
@@ -218,7 +232,7 @@ def main(model_ws, results_ws, init_files_ws):
 
     # ---- Function to plot lake budget components: stages, evap, runoff, GW inflow/outflow, SW inflow/outflow ----------------------------####
 
-    def plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
+    def plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
                                start_date_sim_minus1, end_date_sim):
 
         # add date column to sim lake budget
@@ -228,43 +242,51 @@ def main(model_ws, results_ws, init_files_ws):
         # ---- plot first budget plot -----------------------------------------------####
 
         # initialise the subplot function using number of rows and columns
-        fig, ax = plt.subplots(5, 1, figsize=(8, 12), dpi=150)
+        fig, ax = plt.subplots(6, 1, figsize=(8, 12), dpi=150)
 
         # plot lake stages
-        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label = 'obs')
-        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label = 'sim', linestyle='dotted')
+        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label = 'sim')
+        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label = 'obs', linestyle='dotted')
         ax[0].set_title('Stage: ' + lake_name)
         ax[0].legend()
         ax[0].set_xlabel('Date')
         ax[0].set_ylabel('Stage (ft)')
 
-        # plot evaporation
-        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Evap.'])
-        ax[1].set_title('Evaporation: ' + lake_name)
+        # plot lake volume
+        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim')
+        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted')
+        ax[1].set_title('Volume: ' + lake_name)
+        ax[1].legend()
         ax[1].set_xlabel('Date')
-        ax[1].set_ylabel('Evaporation (acre-ft/day)')
+        ax[1].set_ylabel('Volume (acre-ft)')
+
+        # plot evaporation
+        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['Evap.'])
+        ax[2].set_title('Evaporation: ' + lake_name)
+        ax[2].set_xlabel('Date')
+        ax[2].set_ylabel('Evaporation (acre-ft/day)')
 
         # plot runoff
-        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['LAK-Runoff'])
-        ax[2].set_title('Runoff: ' + lake_name)
-        ax[2].set_xlabel('Date')
-        ax[2].set_ylabel('Runoff (acre-ft/day)')
+        ax[3].plot(sim_lake_budget['date'], sim_lake_budget['LAK-Runoff'])
+        ax[3].set_title('Runoff: ' + lake_name)
+        ax[3].set_xlabel('Date')
+        ax[3].set_ylabel('Runoff (acre-ft/day)')
 
         # plot groundwater inflow and outflow
-        ax[3].plot(sim_lake_budget['date'], sim_lake_budget['GW-Inflw'], label = 'inflow')
-        ax[3].plot(sim_lake_budget['date'], sim_lake_budget['GW-Outflw'], label = 'outflow', linestyle='dotted')
-        ax[3].set_title('Groundwater inflow and outflow: ' + lake_name)
-        ax[3].legend()
-        ax[3].set_xlabel('Date')
-        ax[3].set_ylabel('Groundwater flow (acre-ft/day)')
-
-        # plot surface water inflow and outflow
-        ax[4].plot(sim_lake_budget['date'], sim_lake_budget['SW-Inflw'], label = 'inflow')
-        ax[4].plot(sim_lake_budget['date'], sim_lake_budget['SW-Outflw'], label = 'outflow', linestyle='dotted')
-        ax[4].set_title('Surface water inflow and outflow: ' + lake_name)
+        ax[4].plot(sim_lake_budget['date'], sim_lake_budget['GW-Inflw'], label = 'inflow')
+        ax[4].plot(sim_lake_budget['date'], sim_lake_budget['GW-Outflw'], label = 'outflow', linestyle='dotted')
+        ax[4].set_title('Groundwater inflow and outflow: ' + lake_name)
         ax[4].legend()
         ax[4].set_xlabel('Date')
-        ax[4].set_ylabel('Surface water flow (acre-ft/day)')
+        ax[4].set_ylabel('Groundwater flow (acre-ft/day)')
+
+        # plot surface water inflow and outflow
+        ax[5].plot(sim_lake_budget['date'], sim_lake_budget['SW-Inflw'], label = 'inflow')
+        ax[5].plot(sim_lake_budget['date'], sim_lake_budget['SW-Outflw'], label = 'outflow', linestyle='dotted')
+        ax[5].set_title('Surface water inflow and outflow: ' + lake_name)
+        ax[5].legend()
+        ax[5].set_xlabel('Date')
+        ax[5].set_ylabel('Surface water flow (acre-ft/day)')
 
         # add spacing between subplots
         fig.tight_layout()
@@ -281,24 +303,26 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(5, 1, figsize=(8, 12), dpi=150)
 
         # plot lake stages
-        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label='obs')
-        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label='sim', linestyle='dotted')
+        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label='sim')
+        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label='obs', linestyle='dotted')
         ax[0].set_title('Stage: ' + lake_name)
         ax[0].legend()
         ax[0].set_xlabel('Date')
         ax[0].set_ylabel('Stage (ft)')
 
-        # plot precip
-        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Precip.'])
-        ax[1].set_title('Precipitation: ' + lake_name)
-        ax[1].set_xlabel('Date')
-        ax[1].set_ylabel('Precipitation (acre-ft/day)')
-
         # plot lake volume
-        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['Volume'])
-        ax[2].set_title('Volume: ' + lake_name)
+        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim')
+        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted')
+        ax[1].set_title('Volume: ' + lake_name)
+        ax[1].legend()
+        ax[1].set_xlabel('Date')
+        ax[1].set_ylabel('Volume (acre-ft)')
+
+        # plot precip
+        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['Precip.'])
+        ax[2].set_title('Precipitation: ' + lake_name)
         ax[2].set_xlabel('Date')
-        ax[2].set_ylabel('Volume (acre-ft)')
+        ax[2].set_ylabel('Precipitation (acre-ft/day)')
 
         # plot lak to uzf
         ax[3].plot(sim_lake_budget['date'], sim_lake_budget['LAK-to-UZF'])
@@ -323,7 +347,7 @@ def main(model_ws, results_ws, init_files_ws):
 
     # ---- Function to plot cumulative daily lake budget components: stages, evap, runoff, GW inflow/outflow, SW inflow/outflow ----------------------------####
 
-    def plot_lake_budget_daily_cumul(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
+    def plot_lake_budget_daily_cumul(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
 
         # add date column to sim lake budget
         sim_lake_budget['date'] = pd.date_range(start=start_date_sim_minus1,end=end_date_sim)
@@ -345,7 +369,9 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 2, figsize=(8, 12), dpi=150)
 
         # plot volume
-        ax[0, 0].plot(sim_lake_budget['date'], sim_lake_budget['Volume'])
+        ax[0, 0].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim')
+        ax[0, 0].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted')
+        ax[0, 0].legend()
         ax[0, 0].set_title('Volume: ' + lake_name)
         ax[0, 0].set_xlabel('Date')
         ax[0, 0].set_ylabel('Volume (acre-ft)')
@@ -481,7 +507,7 @@ def main(model_ws, results_ws, init_files_ws):
     # ---- Function to examine lake mendo in more detail: obs --------------------------------####
 
     def examine_lake_mendo_obs(obs_flows_df, subbasin_2_sim_df, subbasin_3_sim_df, redwood_valley_demand_df, obs_lake_stage_df, sim_lake_budget,
-                               start_date_obs, end_date_obs, start_date_sim, start_date_sim_minus1, end_date_sim):
+                               obs_lake_storage, start_date_obs, end_date_obs, start_date_sim, start_date_sim_minus1, end_date_sim):
 
         # add date to sim lake budget
         sim_lake_budget['date'] = pd.date_range(start=start_date_sim_minus1, end=end_date_sim)
@@ -497,6 +523,10 @@ def main(model_ws, results_ws, init_files_ws):
 
         # calculate simulated change in storage
         sim_lake_budget['Volume_diff'] = sim_lake_budget['Volume'] - sim_lake_budget['Volume'].values[0]
+
+        # calculate observed change in storage
+        #obs_lake_storage['storage_acreft_diff'] = obs_lake_storage['storage_acreft'] - obs_lake_storage['storage_acreft'].values[0]
+
 
 
 
@@ -543,6 +573,7 @@ def main(model_ws, results_ws, init_files_ws):
         # plot cumulative observed flow difference between subbasins 2 and 3
         ax[1].plot(obs_flows_df['date'], obs_flows_df['cumdiff'], label='observed cumul flow diff')
         ax[1].plot(subbasin_2_sim_df['date'], sim_cumdiff, label='simulated cumul flow diff')
+        #ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft_diff'], label='observed change in volume')
         ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume_diff'], label='simulated change in volume')
         ax[1].legend()
         ax[1].axhline(y=0, color='r', linestyle='-')
@@ -566,30 +597,45 @@ def main(model_ws, results_ws, init_files_ws):
 
     # ---- Function to plot annual lake budget components ---------------------------------------####
 
-    def plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
+    def plot_lake_budget_annual(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
 
         # add date, month, year, and water year columns to sim lake budget
         sim_lake_budget['date'] = pd.date_range(start=start_date_sim_minus1,end=end_date_sim)
         sim_lake_budget['year'] = sim_lake_budget['date'].dt.year
         sim_lake_budget['month'] = sim_lake_budget['date'].dt.month
+        sim_lake_budget['water_year'] = sim_lake_budget['year']
         months = list(range(1, 12 + 1))
         for month in months:
             mask = sim_lake_budget['month'] == month
             if month > 9:
                 sim_lake_budget.loc[mask, 'water_year'] = sim_lake_budget.loc[mask, 'year'] + 1
 
+        # add water year to obs_lake_storage
+        obs_lake_storage['year'] = obs_lake_storage['date'].dt.year
+        obs_lake_storage['month'] = obs_lake_storage['date'].dt.month
+        months = list(range(1, 12 + 1))
+        for month in months:
+            mask = obs_lake_storage['month'] == month
+            if month > 9:
+                obs_lake_storage.loc[mask, 'water_year'] = obs_lake_storage.loc[mask, 'year'] + 1
+
         # calculate change in volume
         sim_lake_budget['Volume_diff'] = sim_lake_budget['Volume'].diff()
+        obs_lake_storage['storage_acreft_diff'] = obs_lake_storage['storage_acreft'].diff()
 
         # calculate annual sums for budget components
         sim_lake_budget_annual = sim_lake_budget.groupby(['water_year'])['Volume', 'Precip.', 'Evap.', 'LAK-Runoff', 'UZF-Runoff', 'GW-Inflw', 'GW-Outflw', 'LAK-to-UZF', 'SW-Inflw', 'SW-Outflw', 'Withdrawal', 'Lake-Inflx', 'Volume_diff'].sum().reset_index()
+        obs_lake_storage_annual = obs_lake_storage.groupby(['water_year'])['storage_acreft_diff'].sum().reset_index()
 
         # initialise the subplot function using number of rows and columns
         fig, ax = plt.subplots(6, 2, figsize=(8, 12), dpi=150)
 
         # plot volume
-        ax[0,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'])
+        ax[0,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim')
         ax[0,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'])
+        ax[0,0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted')
+        ax[0,0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'])
+        ax[0,0].legend()
         ax[0,0].set_title('Change in volume: ' + lake_name)
         ax[0,0].set_xlabel('Water year')
         ax[0,0].set_ylabel('Change in volume (acre-ft/yr)')
@@ -684,33 +730,49 @@ def main(model_ws, results_ws, init_files_ws):
     # ---- Function to plot annual lake budget components ---------------------------------------####
 
 
-    def plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
+    def plot_lake_budget_annual_diff(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim):
 
         # add date and year columns to sim lake budget
         sim_lake_budget['date'] = pd.date_range(start=start_date_sim_minus1,end=end_date_sim)
         sim_lake_budget['year'] = sim_lake_budget['date'].dt.year
         sim_lake_budget['month'] = sim_lake_budget['date'].dt.month
+        sim_lake_budget['water_year'] = sim_lake_budget['year']
         months = list(range(1, 12 + 1))
         for month in months:
             mask = sim_lake_budget['month'] == month
             if month > 9:
                 sim_lake_budget.loc[mask, 'water_year'] = sim_lake_budget.loc[mask, 'year'] + 1
 
+        # add water year to obs_lake_storage
+        obs_lake_storage['year'] = obs_lake_storage['date'].dt.year
+        obs_lake_storage['month'] = obs_lake_storage['date'].dt.month
+        obs_lake_storage['water_year'] = obs_lake_storage['year']
+        months = list(range(1, 12 + 1))
+        for month in months:
+            mask = obs_lake_storage['month'] == month
+            if month > 9:
+                obs_lake_storage.loc[mask, 'water_year'] = obs_lake_storage.loc[mask, 'year'] + 1
+
         # calculate change in volume
         sim_lake_budget['Volume_diff'] = sim_lake_budget['Volume'].diff()
+        obs_lake_storage['storage_acreft_diff'] = obs_lake_storage['storage_acreft'].diff()
 
         # calculate annual sums for budget components
         sim_lake_budget_annual = sim_lake_budget.groupby(['water_year'])['Volume', 'Precip.', 'Evap.', 'LAK-Runoff', 'UZF-Runoff', 'GW-Inflw', 'GW-Outflw', 'LAK-to-UZF', 'SW-Inflw', 'SW-Outflw', 'Withdrawal', 'Lake-Inflx', 'Volume_diff'].sum().reset_index()
+        obs_lake_storage_annual = obs_lake_storage.groupby(['water_year'])['storage_acreft_diff'].sum().reset_index()
 
         # initialise the subplot function using number of rows and columns
         fig, ax = plt.subplots(6, 1, figsize=(8, 12), dpi=150)
 
         # plot change in volume
-        ax[0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'])
+        ax[0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim')
         ax[0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'])
+        ax[0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted')
+        ax[0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'])
         ax[0].axhline(y=0, color='r', linestyle='-')
+        ax[0].legend()
         ax[0].set_title('Change in volume: ' + lake_name)
-        ax[0].set_xlabel('Year')
+        ax[0].set_xlabel('Water year')
         ax[0].set_ylabel('Change in volume (acre-ft/yr)')
 
         # plot difference in SW
@@ -719,7 +781,7 @@ def main(model_ws, results_ws, init_files_ws):
         ax[1].scatter(sim_lake_budget_annual['water_year'], sw_diff)
         ax[1].axhline(y=0, color='r', linestyle='-')
         ax[1].set_title('SWin - SWout: ' + lake_name)
-        ax[1].set_xlabel('Year')
+        ax[1].set_xlabel('Water year')
         ax[1].set_ylabel('SWin - SWout (acre-ft/yr)')
 
         # plot difference in GW
@@ -728,7 +790,7 @@ def main(model_ws, results_ws, init_files_ws):
         ax[2].scatter(sim_lake_budget_annual['water_year'], gw_diff)
         ax[2].axhline(y=0, color='r', linestyle='-')
         ax[2].set_title('GWin - GWout: ' + lake_name)
-        ax[2].set_xlabel('Year')
+        ax[2].set_xlabel('Water year')
         ax[2].set_ylabel('GWin - GWout: (acre-ft/yr)')
 
         # plot precip-evap
@@ -737,7 +799,7 @@ def main(model_ws, results_ws, init_files_ws):
         ax[3].scatter(sim_lake_budget_annual['water_year'], precip_evap_diff)
         ax[3].axhline(y=0, color='r', linestyle='-')
         ax[3].set_title('Precipitation - Evaporation: ' + lake_name)
-        ax[3].set_xlabel('Year')
+        ax[3].set_xlabel('Water year')
         ax[3].set_ylabel('Precip - Evap (acre-ft)')
 
         # plot difference in SW inflow + LAK-runoff - SW outflow
@@ -746,7 +808,7 @@ def main(model_ws, results_ws, init_files_ws):
         ax[4].scatter(sim_lake_budget_annual['water_year'], sw_runoff_diff)
         ax[4].axhline(y=0, color='r', linestyle='-')
         ax[4].set_title('SWin + runoff - SWout: ' + lake_name)
-        ax[4].set_xlabel('Year')
+        ax[4].set_xlabel('Water year')
         ax[4].set_ylabel('SWin + runoff - SWout (acre-ft/yr)')
 
         # plot P + SWin + GWin + runoff - E - SWout - GWout
@@ -755,7 +817,7 @@ def main(model_ws, results_ws, init_files_ws):
         ax[5].scatter(sim_lake_budget_annual['water_year'], all_diff)
         ax[5].axhline(y=0, color='r', linestyle='-')
         ax[5].set_title('P + SWin + GWin + runoff - E - SWout - GWout: ' + lake_name)
-        ax[5].set_xlabel('Year')
+        ax[5].set_xlabel('Water year')
         ax[5].set_ylabel('P + SWin + GWin + runoff - E - SWout - GWout (acre-ft/yr)')
 
         # add spacing between subplots
@@ -777,37 +839,42 @@ def main(model_ws, results_ws, init_files_ws):
     specified_outflows = lake_1_release.copy()
     sim_gate_seg_outflows = lake_1_seg_446.copy()
     sim_spillway_seg_outflows = lake_1_seg_447.copy()
+    obs_lake_storage = usace_mendo_storage
     lake_id = 1
     out_file_name = 'lake_1_specified_vs_sim_outflows.jpg'
-    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name,
+    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, obs_lake_storage, lake_id, out_file_name,
                        start_date_obs, end_date_obs, start_date_sim, end_date_sim)
 
     # plot lake budget - daily
     sim_lake_budget = lake_1_budget.copy()
+    obs_lake_storage = usace_mendo_storage
     obs_lake_col = 'lake_mendocino_stage_feet_NGVD29'
     lake_name = 'Lake Mendocino'
     out_file_name_01 = 'lake_1_budget_daily_01.jpg'
     out_file_name_02 = 'lake_1_budget_daily_02.jpg'
-    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
+    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
                            start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - daily cumulative
     sim_lake_budget = lake_1_budget.copy()
+    obs_lake_storage = usace_mendo_storage
     lake_name = 'Lake Mendocino'
     out_file_name = 'lake_1_budget_daily_cumul.jpg'
-    plot_lake_budget_daily_cumul(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
+    plot_lake_budget_daily_cumul(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual
     sim_lake_budget = lake_1_budget.copy()
+    obs_lake_storage = usace_mendo_storage
     lake_name = 'Lake Mendocino'
     out_file_name = 'lake_1_budget_annual.jpg'
-    plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
+    plot_lake_budget_annual(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual diff
     sim_lake_budget = lake_1_budget.copy()
+    obs_lake_storage = usace_mendo_storage
     lake_name = 'Lake Mendocino'
     out_file_name = 'lake_1_budget_annual_diff.jpg'
-    plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
+    plot_lake_budget_annual_diff(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake mendo investigation: sim
     specified_outflows = lake_1_release.copy()
@@ -831,7 +898,7 @@ def main(model_ws, results_ws, init_files_ws):
     obs_lake_stage_df = obs_lake_stage.copy()
     sim_lake_budget = lake_1_budget.copy()
     examine_lake_mendo_obs(obs_flows_df, subbasin_2_sim_df, subbasin_3_sim_df, redwood_valley_demand_df, obs_lake_stage_df, sim_lake_budget,
-                           start_date_obs, end_date_obs, start_date_sim, start_date_sim_minus1, end_date_sim)
+                           obs_lake_storage, start_date_obs, end_date_obs, start_date_sim, start_date_sim_minus1, end_date_sim)
 
 
 
@@ -842,37 +909,42 @@ def main(model_ws, results_ws, init_files_ws):
     specified_outflows = lake_2_release.copy()
     sim_gate_seg_outflows = lake_2_seg_448.copy()
     sim_spillway_seg_outflows = lake_2_seg_449.copy()
+    obs_lake_storage = usace_sonoma_storage
     lake_id = 2
     out_file_name = 'lake_2_specified_vs_sim_outflows.jpg'
-    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, lake_id, out_file_name,
+    plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, obs_lake_storage, lake_id, out_file_name,
                        start_date_obs, end_date_obs, start_date_sim, end_date_sim)
 
     # plot lake budget - daily
     sim_lake_budget = lake_2_budget.copy()
+    obs_lake_storage = usace_sonoma_storage
     obs_lake_col = 'lake_sonoma_stage_feet_NGVD29'
     lake_name = 'Lake Sonoma'
     out_file_name_01 = 'lake_2_budget_daily_01.jpg'
     out_file_name_02 = 'lake_2_budget_daily_02.jpg'
-    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
+    plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
                            start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - daily cumulative
     sim_lake_budget = lake_2_budget.copy()
+    obs_lake_storage = usace_sonoma_storage
     lake_name = 'Lake Sonoma'
     out_file_name = 'lake_2_budget_daily_cumul.jpg'
-    plot_lake_budget_daily_cumul(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
+    plot_lake_budget_daily_cumul(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual
     sim_lake_budget = lake_2_budget.copy()
+    obs_lake_storage = usace_sonoma_storage
     lake_name = 'Lake Sonoma'
     out_file_name = 'lake_2_budget_annual.jpg'
-    plot_lake_budget_annual(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
+    plot_lake_budget_annual(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
     # plot lake budget - annual diff
     sim_lake_budget = lake_2_budget.copy()
+    obs_lake_storage = usace_sonoma_storage
     lake_name = 'Lake Sonoma'
     out_file_name = 'lake_2_budget_annual_diff.jpg'
-    plot_lake_budget_annual_diff(sim_lake_budget, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
+    plot_lake_budget_annual_diff(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim_minus1, end_date_sim)
 
 
 # main function
