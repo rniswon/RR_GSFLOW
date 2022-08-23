@@ -37,6 +37,7 @@ def change_prms_param(Sim):
 
     # extract each prms calib param
     df_jh_coef = df[df['pargp'] == 'prms_jh_coef']
+    df_rain_adj = df[df['pargp'] == 'prms_rain_adj']
     df_sat_threshold = df[df['pargp'] == 'prms_sat_threshold']
     df_slowcoef_lin = df[df['pargp'] == 'prms_slowcoef_lin']
     df_slowcoef_sq = df[df['pargp'] == 'prms_slowcoef_sq']
@@ -59,6 +60,7 @@ def change_prms_param(Sim):
 
     # get current prms calib param values
     jh_coef = Sim.gs.prms.parameters.get_values("jh_coef")
+    rain_adj = Sim.gs.prms.parameters.get_values("rain_adj")
     sat_threshold = Sim.gs.prms.parameters.get_values("sat_threshold")
     slowcoef_lin = Sim.gs.prms.parameters.get_values("slowcoef_lin")
     slowcoef_sq = Sim.gs.prms.parameters.get_values("slowcoef_sq")
@@ -93,6 +95,24 @@ def change_prms_param(Sim):
             mask = (month_arr == month) & (subbasins_by_hru_and_month == sub)
             jh_coef[mask] = jh_coef[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("jh_coef", jh_coef)
+
+    # update rain_adj
+    max_digits_month = 2
+    for month in list(range(1, num_months+1)):
+
+        # get start of par names for this month
+        par_name_partial = 'rain_adj_' + str(month).zfill(max_digits_month) + '_'
+
+        # get df for this month
+        df_rain_adj_month = df_rain_adj[ df_rain_adj['parnme'].str.contains(par_name_partial) ]
+
+        # update rain_adj values for this month
+        for i, row in df_rain_adj_month.iterrows():
+            nm = row['parnme']
+            sub = float(nm.split("_")[2])
+            mask = (month_arr == month) & (subbasins_by_hru_and_month == sub)
+            rain_adj[mask] = rain_adj[mask] * row['parval1']
+    Sim.gs.prms.parameters.set_values("rain_adj", rain_adj)
 
     # update sat_threshold
     for i, row in df_sat_threshold.iterrows():

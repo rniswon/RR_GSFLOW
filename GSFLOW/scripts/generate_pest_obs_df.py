@@ -49,6 +49,24 @@ model_end_date = '2015-12-31'
 model_end_date = datetime.strptime(model_end_date, "%Y-%m-%d")
 model_end_date = model_end_date.date()
 
+# set model start up years
+model_spinup_start_year = 1990
+model_spinup_end_year = 1995
+
+
+#-----------------------------------------------------------
+# Define helper functions
+#-----------------------------------------------------------
+
+def generate_water_years(df):
+    df['water_year'] = df['year']
+    months = list(range(1, 12 + 1))
+    for month in months:
+        mask = df['month'] == month
+        if month > 9:
+            df.loc[mask, 'water_year'] = df.loc[mask, 'year'] + 1
+
+    return df
 
 
 #-----------------------------------------------------------
@@ -122,22 +140,25 @@ def map_hobs_obsname_to_date(mf_tr_name_file, pest_obs_head_file_name, model_sta
     hobs_df['weight'] = 1
     hobs_df['obs_group'] = 'heads'
 
-    # reorder columns to match up with pest control file
-    hobs_df = hobs_df[['date', 'obs_site', 'totim', 'irefsp', 'toffset', 'obsname', 'hobs', 'weight', 'obs_group']]
-
-    # set weight to 0 for first year of calibration period
+    # foramt date column, add year, month, and water year columns
     hobs_df['date'] = pd.to_datetime(hobs_df['date'])
     hobs_df['year'] = hobs_df['date'].dt.year
-    calib_first_year = 1990
-    mask_year = hobs_df['year'] == calib_first_year
-    hobs_df.loc[mask_year, 'weight'] = 0
+    hobs_df['month'] = hobs_df['date'].dt.month
+    hobs_df = generate_water_years(hobs_df)
+
+    # reorder columns to match up with pest control file
+    hobs_df = hobs_df[['date', 'water_year', 'year', 'month', 'obs_site', 'totim', 'irefsp', 'toffset', 'obsname', 'hobs', 'weight', 'obs_group']]
+
+    # set weight to 0 during model spin-up period
+    mask_spinup = (hobs_df['year'] >= model_spinup_start_year) & (hobs_df['year'] <= model_spinup_end_year)
+    hobs_df.loc[mask_spinup, 'weight'] = 0
 
     # export
     hobs_df.to_csv(pest_obs_head_file_name, index=False)
 
     return hobs_df
 
-hob_df = map_hobs_obsname_to_date(mf_name_file, pest_obs_head_file_name, model_start_date)
+hobs_df = map_hobs_obsname_to_date(mf_name_file, pest_obs_head_file_name, model_start_date)
 
 
 
@@ -192,13 +213,15 @@ gage_and_other_flows.loc[mask, 'obs_name'] = 'none'
 gage_and_other_flows['weight'] = 1
 gage_and_other_flows['obs_group'] = 'gage_flow'
 
-# reorder
-gage_and_other_flows = gage_and_other_flows[['totim',  'date' , 'year', 'month', 'day', 'gage_id', 'gage_name', 'subbasin_id', 'obs_name', 'flow_cfs', 'weight', 'obs_group']]
+# create water year column
+gage_and_other_flows = generate_water_years(gage_and_other_flows)
 
-# set weight to 0 for first year of calibration period
-calib_first_year = 1990
-mask_year = gage_and_other_flows['year'] == calib_first_year
-gage_and_other_flows.loc[mask_year, 'weight'] = 0
+# reorder
+gage_and_other_flows = gage_and_other_flows[['totim',  'date' , 'water_year', 'year', 'month', 'day', 'gage_id', 'gage_name', 'subbasin_id', 'obs_name', 'flow_cfs', 'weight', 'obs_group']]
+
+# set weight to 0 during model spin-up period
+mask_spinup = (gage_and_other_flows['year'] >= model_spinup_start_year) & (gage_and_other_flows['year'] <= model_spinup_end_year)
+gage_and_other_flows.loc[mask_spinup, 'weight'] = 0
 
 # set weight to 0 for subbasin 16
 mask_subbasin16 = gage_and_other_flows['subbasin_id'] == 16
@@ -240,6 +263,8 @@ obs_lake_stage = obs_lake_stage.drop('lake_mendocino_stage_feet_NGVD29', 1)
 obs_lake_stage = obs_lake_stage.drop('lake_sonoma_stage_feet_NGVD29', 1)
 obs_lake_stage = obs_lake_stage.melt(id_vars = 'date', var_name = 'lake_name', value_name = 'obs_val')
 obs_lake_stage['year'] = obs_lake_stage['date'].dt.year
+obs_lake_stage['month'] = obs_lake_stage['date'].dt.month
+obs_lake_stage = generate_water_years(obs_lake_stage)
 obs_lake_stage['date'] = pd.to_datetime(obs_lake_stage['date']).dt.date
 
 # cut data frame to date range
@@ -258,8 +283,10 @@ obs_lake_stage['obs_group'] = 'lake_stage'
 
 # add weight column
 obs_lake_stage['weight'] = 1
-mask_1990 = obs_lake_stage['year'] == 1990
-obs_lake_stage.loc[mask_1990, 'weight'] = 0
+
+# set weight to 0 during model spin-up period
+mask_spinup = (obs_lake_stage['year'] >= model_spinup_start_year) & (obs_lake_stage['year'] <= model_spinup_end_year)
+obs_lake_stage.loc[mask_spinup, 'weight'] = 0
 
 # add a column for totim
 obs_lake_stage['totim'] = (obs_lake_stage['date'] - model_start_date).dt.days + 1
@@ -278,13 +305,13 @@ obs_lake_stage.to_csv(pest_obs_lake_stage_file_name, index=False)
 #-------------------------------------------------------------------------
 
 # calculate drawdown for each site
-hob_df['drawdown'] = -999
-obs_sites  = hob_df['obs_site'].unique()
+hobs_df['drawdown'] = -999
+obs_sites  = hobs_df['obs_site'].unique()
 site_dfs = []
 for site in obs_sites:
 
     # create data frame for this site
-    df = hob_df[hob_df['obs_site'] == site]
+    df = hobs_df[hobs_df['obs_site'] == site]
 
     # sort df by date
     df = df.sort_values(by='date', axis=0)
@@ -298,17 +325,17 @@ for site in obs_sites:
     site_dfs.append(df)
 
 # concat all site dfs
-hob_df_drawdown = pd.concat(site_dfs)
+hobs_df_drawdown = pd.concat(site_dfs)
 
 # change obs site and name to reflect drawdown
-hob_df_drawdown['obs_site'] = hob_df_drawdown['obs_site'].str.replace('HO_', 'dd_')
-hob_df_drawdown['obsname'] = hob_df_drawdown['obsname'].str.replace('HO_', 'dd_')
+hobs_df_drawdown['obs_site'] = hobs_df_drawdown['obs_site'].str.replace('HO_', 'dd_')
+hobs_df_drawdown['obsname'] = hobs_df_drawdown['obsname'].str.replace('HO_', 'dd_')
 
 # change obs_group
-hob_df_drawdown['obs_group'] = 'drawdown'
+hobs_df_drawdown['obs_group'] = 'drawdown'
 
 # export
-hob_df_drawdown.to_csv(pest_obs_drawdown_file_name, index=False)
+hobs_df_drawdown.to_csv(pest_obs_drawdown_file_name, index=False)
 
 
 
@@ -318,7 +345,7 @@ hob_df_drawdown.to_csv(pest_obs_drawdown_file_name, index=False)
 #-------------------------------------------------------------------------
 
 # get relevant head obs df columns and rename
-pest_head_obs = hob_df[['obs_group', 'obsname', 'weight', 'hobs']]
+pest_head_obs = hobs_df[['obs_group', 'obsname', 'weight', 'hobs']]
 pest_head_obs.columns = ['obs_group', 'obs_name', 'weight', 'obs_val']
 
 # get relevant gaged streamflow df columns and rename, filter obs to keep only those at subbasin outlets
@@ -331,7 +358,7 @@ pest_gage_obs = pest_gage_obs[mask]
 pest_lake_obs = obs_lake_stage[['obs_group', 'obs_name', 'weight', 'obs_val']]
 
 # get relevant drawdown df columns
-pest_drawdown_obs = hob_df_drawdown[['obs_group', 'obsname', 'weight', 'drawdown']]
+pest_drawdown_obs = hobs_df_drawdown[['obs_group', 'obsname', 'weight', 'drawdown']]
 pest_drawdown_obs.columns = ['obs_group', 'obs_name', 'weight', 'obs_val']
 
 # combine all obs into one df

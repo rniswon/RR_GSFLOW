@@ -12,6 +12,7 @@ import plot_ag_pond_diversions
 import plot_ag_pond_water_demand_and_use
 import plot_ag_water_budget_by_subbasin_prms_only
 import plot_ag_water_use
+import plot_rainfall_runoff_ratio
 import plot_gage_output
 import plot_gsflow_inputs
 import plot_hobs_output
@@ -35,7 +36,7 @@ import plot_watershed_summary_time_series
 # note: update these workspaces as needed
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20220817_03")                   # model workspace
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20220815_05")                   # model workspace
 results_ws = os.path.join(repo_ws, "GSFLOW", "results")                                # results workspace
 ss_archived_models_ws = os.path.join(repo_ws, "MODFLOW", "archived_models")            # steady state archived models workspace
 init_files_ws = os.path.join(repo_ws, "MODFLOW", "init_files")                         # modflow init files workspace
@@ -82,7 +83,10 @@ os.mkdir(table_path)
 #
 # print('plot ag water use')
 # plot_ag_water_use.main(model_ws, results_ws)
-#
+
+print('plot annual rainfall-runoff ratio')
+plot_rainfall_runoff_ratio.main(script_ws, model_ws, results_ws)
+
 print('plot gage output')
 plot_gage_output.main(script_ws, model_ws, results_ws)
 #

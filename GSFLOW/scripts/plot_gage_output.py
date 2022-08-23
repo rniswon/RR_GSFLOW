@@ -70,6 +70,17 @@ def read_gage(f, start_date="1-1-1970"):
 def read_observation_data(f):
     return pd.read_csv(f)
 
+# define water year function
+def generate_water_year(df):
+    df['water_year'] = df['year']
+    months = list(range(1, 12 + 1))
+    for month in months:
+        mask = df['month'] == month
+        if month > 9:
+            df.loc[mask, 'water_year'] = df.loc[mask, 'year'] + 1
+
+    return df
+
 
 def main(script_ws, model_ws, results_ws):
     print("\n@@@@ CREATING GAGE OUTPUT FIGURE @@@@")
@@ -135,6 +146,7 @@ def main(script_ws, model_ws, results_ws):
     sim_files = [x for x in os.listdir(sim_file_path) if x.endswith('.go')]
     sim_dict = {}
     for file in sim_files:
+
         # read in gage file
         gage_file = os.path.join(model_ws, 'modflow', 'output', file)
         data = read_gage(gage_file, start_date)
@@ -216,7 +228,8 @@ def main(script_ws, model_ws, results_ws):
             sim_obs_daily['obs_flow'] = np.nan
             sim_obs_daily['day'] = np.nan
 
-        # store sim_obs_daily in dictionary
+        # add water year column, store sim_obs_daily in dictionary
+        sim_obs_daily = generate_water_year(sim_obs_daily)
         sim_obs_daily_dict.update({gage_id: sim_obs_daily})
 
         # drop NA from sim_obs_daily
@@ -247,7 +260,7 @@ def main(script_ws, model_ws, results_ws):
 
         # aggregate data by year: sum to get annual volume and convert to acre-ft
         # TODO: if end up plotting stage, it probably doesn't make sense to plot the annual stage sum, so leaving it out
-        sim_obs_year = sim_obs_daily.groupby(['year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
+        sim_obs_year = sim_obs_daily.groupby(['water_year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
         seconds_per_day = 86400
         acre_ft_per_cubic_ft = 1 / 43560.02
         sim_obs_year['sim_flow'] = sim_obs_year['sim_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
@@ -270,6 +283,7 @@ def main(script_ws, model_ws, results_ws):
         gage_name = gage_df.loc[mask, 'Gage_Name'].values[0]
         obs_available = gage_df.loc[mask, 'obs_available'].values[0]
         if obs_available == 1:
+
             # ANNUAL ERROR METRICS -------------------------------------------------####
 
             # calculate error metrics: annual flow volumes
@@ -311,12 +325,12 @@ def main(script_ws, model_ws, results_ws):
         # plot annual flow volumes: time series
         plt.style.use('default')
         plt.figure(figsize=(12, 8), dpi=150)
-        plt.scatter(sim_obs_year.year, sim_obs_year.obs_flow, label='Observed')
-        plt.scatter(sim_obs_year.year, sim_obs_year.sim_flow, label='Simulated')
-        plt.plot(sim_obs_year.year, sim_obs_year.obs_flow)
-        plt.plot(sim_obs_year.year, sim_obs_year.sim_flow)
+        plt.scatter(sim_obs_year.water_year, sim_obs_year.obs_flow, label='Observed')
+        plt.scatter(sim_obs_year.water_year, sim_obs_year.sim_flow, label='Simulated')
+        plt.plot(sim_obs_year.water_year, sim_obs_year.obs_flow)
+        plt.plot(sim_obs_year.water_year, sim_obs_year.sim_flow)
         plt.title('Annual streamflow volumes: subbasin ' + str(subbasin_id) + "\n" + gage_name)
-        plt.xlabel('Year')
+        plt.xlabel('Water year')
         plt.ylabel('Annual streamflow volume (acre-ft)')
         plt.legend()
         file_name = 'annual_streamflow_volume_time_series_' + str(subbasin_id).zfill(2) + '.jpg'

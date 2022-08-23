@@ -39,13 +39,15 @@ streamflow_gage_weights_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir"
 
 # # Set fixed parameters
 # fix_parms = []
-fix_param_group = ["prms_jh_coef", "uzf_vks", "prms_soil_rechr_max_frac", "prms_slowcoef_sq", "prms_soil_moist_max", "prms_sat_threshold",
-                   "prms_slowcoef_lin", "sfr_ks", "ghb_bhead", "lak_cd", "uzf_surfk", "prms_ssr2gw_rate", "uzf_surfdep", "uzf_extdp"]
+fix_param_group = ['upw_ks', 'lak_cd', 'sfr_ks', 'upw_vka', 'uzf_vks', 'upw_sy',
+                   'upw_ss', 'uzf_surfdep', 'uzf_extdp', 'uzf_surfk', 'ghb_bhead']
 
 # set factors used to equalize pest phi groups
 drawdown_group_equalization_factor = 10.5
-lake_stage_group_equalization_factor = 1.6
-gage_flow_group_equalization_factor = 1.6
+# lake_stage_group_equalization_factor = 1.6
+# gage_flow_group_equalization_factor = 1.6
+lake_stage_group_equalization_factor = 3
+gage_flow_group_equalization_factor = 3
 
 
 
@@ -310,6 +312,20 @@ for par in parnames:
         pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
 
 
+    # Set parameter transformation and upper/lower bounds for rain_adj multiplier
+    if grpnm.values[0] in 'prms_rain_adj':
+
+        lower_bound = 1.1e-10
+        upper_bound = 1.1e10
+        if init_val < lower_bound:
+            lower_bound = init_val - (lower_bound_buffer * init_val)
+        if init_val > upper_bound:
+            upper_bound = init_val + (upper_bound_buffer * init_val)
+
+        pst.parameter_data.loc[mask, 'parlbnd'] = lower_bound
+        pst.parameter_data.loc[mask, 'parubnd'] = upper_bound
+
+
     # Set parameter transformation and upper/lower bounds for sat_threshold multiplier
     if grpnm.values[0] in 'prms_sat_threshold':
 
@@ -446,21 +462,21 @@ for obs in obsnames:
     pst.observation_data.loc[mask, 'obgnme'] = obgnme.values[0]
 
 # set groundwater level weights
-# for now just assume that weights for groundwater levels are the same and equal to 1, which is what they're automatically set to (except for first year set to 0 in generate_pest_obs_df.py)
+# for now just assume that weights for groundwater levels are the same and equal to 1, which is what they're automatically set to (except for spin-up set to 0 in generate_pest_obs_df.py)
 
-# set drawdown weights
+# update drawdown weights
 mask_pest_file = pst.observation_data['obgnme'] == 'drawdown'
 mask_output_obs = output_obs['obs_group'] == 'drawdown'
 pst.observation_data.loc[mask_pest_file, 'weight'] = pst.observation_data.loc[mask_pest_file, 'weight'] * drawdown_group_equalization_factor
 output_obs.loc[mask_output_obs, 'weight'] = output_obs.loc[mask_output_obs, 'weight'] * drawdown_group_equalization_factor
 
-# set lake stage weights
+# update lake stage weights
 mask_pest_file = pst.observation_data['obgnme'] == 'lake_stage'
 mask_output_obs = output_obs['obs_group'] == 'lake_stage'
 pst.observation_data.loc[mask_pest_file, 'weight'] = pst.observation_data.loc[mask_pest_file, 'weight'] * lake_stage_group_equalization_factor
 output_obs.loc[mask_output_obs, 'weight'] = output_obs.loc[mask_output_obs, 'weight'] * lake_stage_group_equalization_factor
 
-# set gage weights
+# update gage weights
 df_weights = pd.read_csv(streamflow_gage_weights_file_name)
 zero_weight_gage = df_weights[df_weights['weight']==0]['site_id'].values
 

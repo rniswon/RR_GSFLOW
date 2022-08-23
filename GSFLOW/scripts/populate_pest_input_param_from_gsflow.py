@@ -258,6 +258,32 @@ for month in list(range(1,nmonths+1)):
         input_param = param_utils.add_param(input_param, nm, val, 'prms_jh_coef', trans='none', comments='#')
 
 
+# rain_adj
+# note: distribute by subbasin (for each month)
+rain_adj = gs.prms.parameters.get_values("rain_adj")
+nhru = gs.prms.parameters.get_values("nhru")[0]
+nmonths = 12
+idx_start = 0
+idx_end = nhru
+uniq_subbasins = np.unique(subbasins)
+for month in list(range(1,nmonths+1)):
+
+    # extract this month and convert to 2d array
+    if month > 1:
+        idx_start = nhru * (month-1)
+        idx_end = (nhru * month)
+    rain_adj_month = rain_adj[idx_start:idx_end]
+    rain_adj_month_arr = rain_adj_month.reshape(num_row, num_col)
+
+    # add parameter per subbasin
+    for sub_i in uniq_subbasins:
+        if sub_i == 0:
+            continue
+        nm = 'rain_adj_mult_' + str(int(month)) + '_' + str(int(sub_i))
+        val = 1   # set all multipliers to 1 to start
+        input_param = param_utils.add_param(input_param, nm, val, 'prms_rain_adj', trans='none', comments='#')
+
+
 
 
 # a general head boundary parameter - either conductance or reference head
