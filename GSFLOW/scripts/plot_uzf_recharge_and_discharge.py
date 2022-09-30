@@ -118,6 +118,8 @@ def main(model_ws, results_ws):
         plt.title("UZF recharge net flux: 1/1/1990,\ngrid cells with recharge = 0 set to nan")
         file_name = 'netrech_19900101.jpg'
         file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -146,6 +148,8 @@ def main(model_ws, results_ws):
     plt.title("UZF recharge net flux: averaged over all stress periods,\ngrid cells with recharge = 0 set to nan")
     file_name = 'netrech_all.jpg'
     file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
 
 
@@ -185,6 +189,8 @@ def main(model_ws, results_ws):
         plt.title("UZF recharge net flux: month " + str(month + 1) + "\ngrid cells with recharge = 0 set to nan")
         file_name = 'netrech_month_' + str(month+1) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -213,6 +219,8 @@ def main(model_ws, results_ws):
     plt.title("UZF discharge net flux: averaged over all stress periods,\ngrid cells with discharge = 0 set to nan")
     file_name = 'netdis_all.jpg'
     file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
 
 
@@ -255,6 +263,8 @@ def main(model_ws, results_ws):
         plt.title("UZF discharge net flux: month " + str(month + 1) + "\ngrid cells with discharge = 0 set to nan")
         file_name = 'netdis_month_' + str(month+1) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "uzf_netrech_netdis", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 

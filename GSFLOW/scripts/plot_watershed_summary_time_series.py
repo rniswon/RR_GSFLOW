@@ -33,6 +33,8 @@ def main(model_ws, results_ws):
         plt.ylabel(col_name)
         file_name = str(col_name) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "watershed_summary", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 

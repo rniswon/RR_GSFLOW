@@ -402,6 +402,8 @@ def main(script_ws, model_ws, results_ws):
         file_name = 'surface_water_budget_' + str(sub) + '.png'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
 
 
@@ -421,6 +423,8 @@ def main(script_ws, model_ws, results_ws):
         file_name = 'ag_water_use_' + str(sub) + '.png'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
 
 
@@ -440,6 +444,8 @@ def main(script_ws, model_ws, results_ws):
         file_name = 'groundwater_budget_' + str(sub) + '.png'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
 
 
@@ -462,6 +468,8 @@ def main(script_ws, model_ws, results_ws):
         file_name = 'subbasin_lateral_transfer_' + str(sub) + '.png'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
 
 

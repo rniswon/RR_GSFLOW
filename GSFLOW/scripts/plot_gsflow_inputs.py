@@ -62,6 +62,8 @@ def main(model_ws, results_ws):
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 1")
         file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr1.png')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot array: layer 2
@@ -70,6 +72,8 @@ def main(model_ws, results_ws):
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 2")
         file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr2.png')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot array: layer 3
@@ -78,6 +82,8 @@ def main(model_ws, results_ws):
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 3")
         file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr3.png')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -99,6 +105,8 @@ def main(model_ws, results_ws):
         plt.colorbar()
         plt.title(file_name_pretty)
         file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '.png')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
