@@ -65,6 +65,7 @@ def main(model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot array: layer 2
         plt.figure(figsize=(6, 6), dpi=150)
@@ -75,6 +76,7 @@ def main(model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot array: layer 3
         plt.figure(figsize=(6, 6), dpi=150)
@@ -85,6 +87,7 @@ def main(model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
 
@@ -108,6 +111,7 @@ def main(model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
     def generate_ag_gis(mf, file_name_ag_wells, file_name_ag_div, file_name_ag_ponds):

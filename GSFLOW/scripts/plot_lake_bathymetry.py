@@ -116,6 +116,7 @@ def main(model_ws, results_ws, init_files_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
 
@@ -198,6 +199,7 @@ def main(model_ws, results_ws, init_files_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
+    plt.close('all')
 
     # plot Lake Mendo: stage vs. area
     plt.figure(figsize=(12, 8))
@@ -216,6 +218,7 @@ def main(model_ws, results_ws, init_files_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
+    plt.close('all')
 
     # plot Lake Mendo: area vs. volume
     plt.figure(figsize=(12, 8))
@@ -234,6 +237,7 @@ def main(model_ws, results_ws, init_files_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
+    plt.close('all')
 
     # plot Lake Sonoma
     plt.figure(figsize=(12, 8))
@@ -252,6 +256,7 @@ def main(model_ws, results_ws, init_files_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
+    plt.close('all')
 
     # plot Lake Mendo: stage vs. area
     plt.figure(figsize=(12, 8))
@@ -270,6 +275,7 @@ def main(model_ws, results_ws, init_files_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
+    plt.close('all')
 
     # plot Lake Sonoma: area vs. volume
     plt.figure(figsize=(12, 8))
@@ -288,6 +294,7 @@ def main(model_ws, results_ws, init_files_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
+    plt.close('all')
 
 
 

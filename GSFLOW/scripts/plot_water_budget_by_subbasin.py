@@ -405,6 +405,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
+        plt.close('all')
 
 
         # plot ag water use
@@ -426,6 +427,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
+        plt.close('all')
 
 
         # plot groundwater budget
@@ -447,6 +449,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
+        plt.close('all')
 
 
         # plot lateral transfers from other subbasins
@@ -471,6 +474,8 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
+        plt.close('all')
+
 
 
 # main function
