@@ -9,6 +9,8 @@ from flopy.utils.geometry import Polygon, LineString, Point
 from flopy.export.shapefile_utils import recarray2shp, shp2recarray
 from datetime import datetime
 from datetime import timedelta
+from sklearn.metrics import r2_score
+
 
 from gw_utils import *
 from gw_utils import hob_util
@@ -459,6 +461,10 @@ def main(model_ws, results_ws):
     hobs_out_path = os.path.join(model_ws, "modflow", "output", hobs_out_name)
     hobs_out_df = add_date_to_hobs_out(hobs_df, hobs_out_path, results_ws)
 
+    # read in gw obs sites
+    gw_obs_sites_file = os.path.join(model_ws, '..' , '..', 'scripts', 'inputs_for_scripts', 'gw_obs_sites.shp')
+    gw_obs_sites = geopandas.read_file(gw_obs_sites_file)
+
 
 
     # ---- Plot scatter/line plots, calculate error metrics -------------------------------------------####
@@ -500,7 +506,6 @@ def main(model_ws, results_ws):
         max_val = all_val.max()
         plot_buffer = (max_val - min_val) * 0.05
         df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
-
         plt.style.use('default')
         fig = plt.figure(figsize=(8, 8), dpi=150)
         ax = fig.add_subplot(111)
@@ -588,6 +593,56 @@ def main(model_ws, results_ws):
     shp_file_name = "gw_resid_jan2010_dec2015.shp"
     shapefile_path = os.path.join(results_ws, "plots", "gw_resid_map", shp_file_name)
     hob_resid_to_shapefile_loc(mf, stress_period=[240, 311], shpname = shapefile_path)
+
+
+
+    # ---- Plot all points together ---------------------------------------------------------------####
+
+    # merge hobs_out_df and gw_obs_sites
+    hobs_out_df = hobs_out_df.merge(gw_obs_sites, left_on='well_id', right_on='obsnme')
+
+    # plot sim vs. obs groundwater heads
+    all_val = np.append(hobs_out_df['simulated'].values, hobs_out_df['observed'].values)
+    min_val = all_val.min()
+    max_val = all_val.max()
+    plot_buffer = (max_val - min_val) * 0.05
+    df_1to1 = pd.DataFrame({'observed': [min_val, max_val], 'simulated': [min_val, max_val]})
+    plt.style.use('default')
+    fig = plt.figure(figsize=(8, 8), dpi=150)
+    ax = fig.add_subplot(111)
+    scatter = ax.scatter(hobs_out_df.observed, hobs_out_df.simulated, c=hobs_out_df.gwbasin_nm.astype('category').cat.codes, alpha=0.75)
+    ax.plot(df_1to1.observed, df_1to1.simulated, color="red", label='1:1 line')
+    ax.set_title('Simulated vs. observed heads')
+    plt.xlabel('Observed head (m)')
+    plt.ylabel('Simulated head (m)')
+    ax.set_ylim(min_val - plot_buffer, max_val + plot_buffer)
+    ax.set_xlim(min_val - plot_buffer, max_val + plot_buffer)
+    legend_names = sorted(hobs_out_df.gwbasin_nm.unique().tolist())
+    plt.legend(handles=scatter.legend_elements()[0],
+               labels=legend_names,
+               title="Groundwater Basin")
+    r_squared = r2_score(hobs_out_df.observed, hobs_out_df.simulated)
+    plt.annotate("r-squared = {:.3f}".format(r_squared), (400, 1))
+    file_name = 'sim_vs_obs_all_gw_basin.jpg'
+    file_path = os.path.join(results_ws, "plots", "gw_sim_vs_obs", file_name)
+    plt.savefig(file_path)
+
+    # plot resid vs. obs groundwater heads
+    plt.style.use('default')
+    plt.figure(figsize=(12, 8), dpi=150)
+    plt.scatter(hobs_out_df.simulated, hobs_out_df.residual, c=hobs_out_df.gwbasin_nm.astype('category').cat.codes, alpha=0.75)
+    plt.title('Residuals vs. simulated heads')
+    plt.xlabel('Simulated head (m)')
+    plt.ylabel('Head residual (m)')
+    legend_names = sorted(hobs_out_df.gwbasin_nm.unique().tolist())
+    plt.legend(handles=scatter.legend_elements()[0],
+               labels=legend_names,
+               title="Groundwater Basin")
+    file_name = 'resid_vs_sim_all_gw_basin.jpg'
+    file_path = os.path.join(results_ws, "plots", "gw_resid_vs_sim", file_name)
+    plt.savefig(file_path)
+
+
 
 
 

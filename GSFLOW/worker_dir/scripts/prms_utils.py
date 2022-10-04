@@ -1,4 +1,4 @@
-run_cluster = False
+run_cluster = True
 
 if run_cluster == True:
     import os, sys
@@ -44,6 +44,12 @@ def change_prms_param(Sim):
     df_soil_moist_max = df[df['pargp'] == 'prms_soil_moist_max']
     df_soil_rechr_max_frac = df[df['pargp'] == 'prms_soil_rechr_max_frac']
     df_ssr2gw_rate = df[df['pargp'] == 'prms_ssr2gw_rate']
+    df_carea_max = df[df['pargp'] == 'prms_carea_max']
+    df_smidx_coef = df[df['pargp'] == 'prms_smidx_coef']
+    df_smidx_exp = df[df['pargp'] == 'prms_smidx_exp']
+    df_pref_flow_den = df[df['pargp'] == 'prms_pref_flow_den']
+    df_covden_win = df[df['pargp'] == 'prms_covden_win']
+
 
     # get model grid dimensions
     num_lay, num_row, num_col = Sim.mf.modelgrid.shape
@@ -67,6 +73,13 @@ def change_prms_param(Sim):
     soil_moist_max = Sim.gs.prms.parameters.get_values("soil_moist_max")
     soil_rechr_max_frac = Sim.gs.prms.parameters.get_values("soil_rechr_max_frac")
     ssr2gw_rate = Sim.gs.prms.parameters.get_values("ssr2gw_rate")
+    carea_max = Sim.gs.prms.parameters.get_values("carea_max")
+    smidx_coef = Sim.gs.prms.parameters.get_values("smidx_coef")
+    smidx_exp = Sim.gs.prms.parameters.get_values("smidx_exp")
+    pref_flow_den = Sim.gs.prms.parameters.get_values("pref_flow_den")
+    covden_win = Sim.gs.prms.parameters.get_values("covden_win")
+
+
 
     # create month array
     num_months =  12
@@ -153,6 +166,42 @@ def change_prms_param(Sim):
         mask = subbasins == sub
         soil_rechr_max_frac[mask] = soil_rechr_max_frac[mask] * row['parval1']
     Sim.gs.prms.parameters.set_values("soil_rechr_max_frac", soil_rechr_max_frac)
+
+    # update carea_max
+    for i, row in df_carea_max.iterrows():
+        nm = row['parnme']
+        sub = float(nm.split("_")[-1])
+        mask = subbasins == sub
+        carea_max[mask] = carea_max[mask] * row['parval1']
+    Sim.gs.prms.parameters.set_values("carea_max", carea_max)
+
+    # update smidx_coef
+    for i, row in df_smidx_coef.iterrows():
+        nm = row['parnme']
+        sub = float(nm.split("_")[-1])
+        mask = subbasins == sub
+        smidx_coef[mask] = smidx_coef[mask] * row['parval1']
+    Sim.gs.prms.parameters.set_values("smidx_coef", smidx_coef)
+
+    # update smidx_exp
+    smidx_exp = df_smidx_exp['parval1'].values[0]
+    Sim.gs.prms.parameters.set_values("smidx_exp", [smidx_exp])
+
+    # update pref_flow_den
+    for i, row in df_pref_flow_den.iterrows():
+        nm = row['parnme']
+        sub = float(nm.split("_")[-1])
+        mask = subbasins == sub
+        pref_flow_den[mask] = pref_flow_den[mask] * row['parval1']
+    Sim.gs.prms.parameters.set_values("pref_flow_den", pref_flow_den)
+
+    # update covden_win
+    for i, row in df_covden_win.iterrows():
+        nm = row['parnme']
+        sub = float(nm.split("_")[-1])
+        mask = subbasins == sub
+        covden_win[mask] = covden_win[mask] * row['parval1']
+    Sim.gs.prms.parameters.set_values("covden_win", covden_win)
 
     # update ssr2gw_rate
     vks = Sim.mf.uzf.vks.array

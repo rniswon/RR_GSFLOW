@@ -4,7 +4,7 @@
 More details to come...
 """
 
-run_cluster = False
+run_cluster = True
 
 if run_cluster == True:
     import os, sys
@@ -227,7 +227,7 @@ def generate_output_file_tr(Sim):
     for lake_id, lake_df in lake_dict.items():
 
         # update column name
-        lake_df.columns.values[0] = 'totim'
+        lake_df.rename(columns={'"DATA: Time': 'totim'}, inplace=True)
         lake_df['totim'] = lake_df['totim'].astype(int)
 
         # add obs_site
@@ -237,13 +237,13 @@ def generate_output_file_tr(Sim):
         lake_df['date_id'] = lake_df['totim'].astype(str).str.zfill(4)
         lake_df['obs_name'] = lake_id + '.' + lake_df['date_id']
 
-        # fill in simulated lake stage into pest obs data frame
+        # make mask of lake obs in pest obs data frame
         obs_names = pest_obs_all['obs_name'].str.split('.', expand=True)
         pest_obs_lake_ids = obs_names.loc[:,0]
         mask_lake_obs = pest_obs_lake_ids == lake_id
         pest_obs_lake_stage_names = pest_obs_all.loc[mask_lake_obs, 'obs_name'].unique()
 
-        # loop through obs names
+        # loop through obs names and fill in simulated lake stage into pest obs data frame
         for obs_name in pest_obs_lake_stage_names:
 
             # get sim value for this obs
@@ -262,7 +262,7 @@ def generate_output_file_tr(Sim):
     df_hob = read_hob_out_tr(Sim.mf)
 
     # sort, get site ids from pest_obs_all
-    pest_obs_all = pest_obs_all.sort_values(by=['obs_group', 'obs_name'], axis=0)
+    #pest_obs_all = pest_obs_all.sort_values(by=['obs_group', 'obs_name'], axis=0)
     obs_names_pest = pest_obs_all['obs_name'].str.split('.', expand=True)
     site_ids_pest = obs_names_pest.loc[:, 0]
 
@@ -329,23 +329,14 @@ def generate_output_file_tr(Sim):
 
     # pump change: ag -------------------------------------------####
 
-    # read in pump reduction results
-    pump_red_ag = flopy.utils.observationfile.get_reduced_pumping(Sim.pump_red_file_ag)
+    # read in ag pump reduction results
+    pump_red_ag = pd.read_csv(Sim.pump_red_file_ag, delim_whitespace=True)
 
     # if pumping reduction file is not empty
     if len(pump_red_ag) > 0:
 
-        # pumping reduction: convert to data frame
-        pump_red_ag = pd.DataFrame(pump_red_ag)
-
-        # pumping reduction: sum by stress period
-        pump_red_ag_sp = pump_red_ag.groupby(['SP'], as_index=False)[['APPL.Q', 'ACT.Q']].sum()
-
-        # merge pumping reduction and well files
-        pump_red_ag_wel_sp = pd.merge(pump_red_ag_sp, wel_sp, how='left', left_on=['SP'], right_on=['per'])
-
         # calculate fraction pumping reduction overall
-        fraction_reduced = (pump_red_ag_wel_sp['APPL.Q'].sum() - pump_red_ag_wel_sp['ACT.Q'].sum()) / pump_red_ag_wel_sp['flux_sp'].sum()
+        fraction_reduced = (pump_red_ag['GW-DEMAND'].sum() - pump_red_ag['GW-PUMPED'].sum()) / pump_red_ag['GW-DEMAND'].sum()
 
         # fill in simulated pump change
         mask = pest_obs_all['obs_name'] == 'pump_chg_ag'

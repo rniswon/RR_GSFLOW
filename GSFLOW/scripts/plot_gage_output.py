@@ -102,7 +102,7 @@ def main(script_ws, model_ws, results_ws):
     gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
 
     # identify gages with available observations
-    gages_with_obs = [1, 2, 3, 5, 6, 13, 16, 18, 20, 21, 22]
+    gages_with_obs = [1, 2, 3, 5, 6, 13, 18, 20]   #TODO: this doesn't include all the gauges that have obs, need to include all the gauges with obs and troubleshoot
     gage_df['obs_available'] = 0
     gage_mask = gage_df['subbasin'].isin(gages_with_obs)
     gage_df.loc[gage_mask, 'obs_available'] = 1
