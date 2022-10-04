@@ -182,6 +182,8 @@ def main(model_ws, results_ws):
         file_name = 'surface_water_budget_ag_' + str(sub) + '.png'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
 
 

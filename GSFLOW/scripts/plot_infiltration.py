@@ -71,6 +71,8 @@ def main(model_ws, results_ws):
         plt.title("Infiltration: " + str(date) + ",\ngrid cells with infiltration = 0 set to nan")
         file_name = 'infiltration_year_' + str(date) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "infiltration", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -86,6 +88,8 @@ def main(model_ws, results_ws):
     plt.title("Infiltration: average over all years,\ngrid cells with infiltration = 0 set to nan")
     file_name = 'infiltration_year_avg' + '.jpg'
     file_path = os.path.join(results_ws, "plots", "infiltration", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
 
 

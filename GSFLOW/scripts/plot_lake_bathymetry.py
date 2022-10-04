@@ -113,6 +113,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", out_file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -193,6 +195,8 @@ def main(model_ws, results_ws, init_files_ws):
     file_name = 'lake_mendo_compare_stage_vs_volume.png'
     file_path = os.path.join(results_ws, "plots", "lakes", file_name)
     fig = this_plot.get_figure()
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
 
     # plot Lake Mendo: stage vs. area
@@ -209,6 +213,8 @@ def main(model_ws, results_ws, init_files_ws):
     file_name = 'lake_mendo_compare_stage_vs_area.png'
     file_path = os.path.join(results_ws, "plots", "lakes", file_name)
     fig = this_plot.get_figure()
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
 
     # plot Lake Mendo: area vs. volume
@@ -225,6 +231,8 @@ def main(model_ws, results_ws, init_files_ws):
     file_name = 'lake_mendo_compare_area_vs_volume.png'
     file_path = os.path.join(results_ws, "plots", "lakes", file_name)
     fig = this_plot.get_figure()
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
 
     # plot Lake Sonoma
@@ -241,6 +249,8 @@ def main(model_ws, results_ws, init_files_ws):
     file_name = 'lake_sonoma_compare_stage_vs_volume.png'
     file_path = os.path.join(results_ws, "plots", "lakes", file_name)
     fig = this_plot.get_figure()
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
 
     # plot Lake Mendo: stage vs. area
@@ -257,6 +267,8 @@ def main(model_ws, results_ws, init_files_ws):
     file_name = 'lake_sonoma_compare_stage_vs_area.png'
     file_path = os.path.join(results_ws, "plots", "lakes", file_name)
     fig = this_plot.get_figure()
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
 
     # plot Lake Sonoma: area vs. volume
@@ -273,6 +285,8 @@ def main(model_ws, results_ws, init_files_ws):
     file_name = 'lake_sonoma_compare_area_vs_volume.png'
     file_path = os.path.join(results_ws, "plots", "lakes", file_name)
     fig = this_plot.get_figure()
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     fig.savefig(file_path)
 
 

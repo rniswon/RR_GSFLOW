@@ -216,6 +216,8 @@ def main(model_ws, results_ws, init_files_ws):
         plt.legend()
         file_name = file_name
         file_path = os.path.join(results_ws, "plots", "pumping_reduction", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -230,6 +232,8 @@ def main(model_ws, results_ws, init_files_ws):
         plt.ylabel('Pumping reduction fraction ((applied - actual)/applied)')
         file_name = file_name
         file_path = os.path.join(results_ws, "plots", "pumping_reduction", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
     # plot time series for all wells: applied vs. actual pumping
@@ -246,6 +250,8 @@ def main(model_ws, results_ws, init_files_ws):
         plt.legend()
         file_name = file_name
         file_path = os.path.join(results_ws, "plots", "pumping_reduction", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -260,6 +266,8 @@ def main(model_ws, results_ws, init_files_ws):
         plt.ylabel('Pumping reduction fraction ((applied - actual)/applied)')
         file_name = file_name
         file_path = os.path.join(results_ws, "plots", "pumping_reduction", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -509,6 +517,8 @@ def main(model_ws, results_ws, init_files_ws):
     plt.colorbar()
     plt.title("Fraction pumping reduced: summed over all\nstress periods and layers in each grid cell")
     file_path = os.path.join(results_ws, 'plots', 'pumping_reduction', 'pumping_reduction_map.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
 
 

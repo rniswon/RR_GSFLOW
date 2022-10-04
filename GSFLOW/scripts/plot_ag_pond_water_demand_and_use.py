@@ -215,6 +215,8 @@ def main(model_ws, results_ws, init_files_ws):
             file_name = 'pond_fluxes_daily_' + str(pond_div_seg) + '_' + str(water_year) + '.png'
             file_path = os.path.join(results_ws, "plots", "ag_pond_water_demand_and_use", file_name)
             fig = this_plot.get_figure()
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             fig.savefig(file_path)
 
 

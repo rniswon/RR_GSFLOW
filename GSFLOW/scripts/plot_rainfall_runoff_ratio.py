@@ -336,6 +336,8 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'runoff_ratio_subbasin_' + str(sub) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "runoff_ratio", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot precip
@@ -347,6 +349,8 @@ def main(script_ws, model_ws, results_ws):
         plt.ylabel('Annual precipitation (in)')
         file_name = 'precip_subbasin_' + str(sub) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "precip", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 

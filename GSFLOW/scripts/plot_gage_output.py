@@ -335,6 +335,8 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'annual_streamflow_volume_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_annual", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot annual flow volumes: sim vs. obs
@@ -359,6 +361,8 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'annual_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_annual", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
 
         # MONTHLY PLOTS: mean over all years  -------------------------------------------------####
@@ -378,6 +382,8 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'monthly_mean_streamflow_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_monthly", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot monthly mean flows: sim vs. obs
@@ -402,6 +408,8 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'monthly_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_monthly", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
 
         # MONTHLY PLOTS: for each year  -------------------------------------------------####
@@ -421,6 +429,8 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'yearmonth_streamflow_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_yearmonth", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot monthly mean flows: sim vs. obs
@@ -446,6 +456,8 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'yearmonth_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_yearmonth", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
 
         # DAILY PLOTS  -------------------------------------------------####
@@ -461,6 +473,8 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'daily_streamflow_time_series_all_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot cumulative flows (based on daily flows)
@@ -480,6 +494,8 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'cumul_streamflow_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_cumul", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot all daily flows on one page: time series
@@ -499,6 +515,8 @@ def main(script_ws, model_ws, results_ws):
         # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
         file_name = 'daily_streamflow_time_series_' + str(subbasin_id) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot daily flows across several pages: time series
@@ -526,6 +544,8 @@ def main(script_ws, model_ws, results_ws):
                 file_name = 'daily_streamflow_time_series_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
                     years[1]) + '.jpg'
                 file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
 
         # plot daily flows across several pages with only low flows: time series
@@ -555,6 +575,8 @@ def main(script_ws, model_ws, results_ws):
                 file_name = 'daily_streamflow_time_series_low_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
                     years[1]) + '.jpg'
                 file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
 
         # plot all daily flows on one page: time series on log scale
@@ -574,6 +596,8 @@ def main(script_ws, model_ws, results_ws):
         # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
         file_name = 'daily_streamflow_time_series_log_' + str(subbasin_id) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
         # plot daily flows across several pages: time series on log scale
@@ -602,6 +626,8 @@ def main(script_ws, model_ws, results_ws):
                 file_name = 'daily_streamflow_time_series_log_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
                     years[1]) + '.jpg'
                 file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
 
         # plot daily flows: sim vs. obs
@@ -612,6 +638,8 @@ def main(script_ws, model_ws, results_ws):
             this_plot.add_legend()
             file_name = 'daily_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
 
         # LOCAL AND CUMULATIVE FLOWS  -------------------------------------------------####
@@ -667,6 +695,8 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'local_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_daily_local", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
 
             # # calculate (absolute) cumulative differences
@@ -707,6 +737,8 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'cumdiff_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_cumdiff", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
 
         # export error metrics

@@ -225,6 +225,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", out_file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -293,6 +295,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", out_file_name_01)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -341,6 +345,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", out_file_name_02)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -447,6 +453,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", out_file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -499,6 +507,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", "lake_1_examine_sim.jpg")
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -553,6 +563,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", "lake_1_obs_stage_cumdiffFlows.jpg")
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -586,6 +598,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", "lake_1_obsSim_stage_cumdiffFlows.jpg")
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -722,6 +736,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", out_file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
@@ -825,6 +841,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # export
         file_path = os.path.join(results_ws, "plots", "lakes", out_file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
 
 
