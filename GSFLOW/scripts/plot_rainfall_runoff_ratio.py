@@ -263,10 +263,10 @@ def main(script_ws, model_ws, results_ws):
 
         # get precip for upstream subbasins for this subbasin
         sub_up = upstream_subbasin_dict[str(sub)]
-        df_sub_up = precip['subbasin'].isin(sub_up)
+        df_sub_up = precip[precip['subbasin'].isin(sub_up)]
 
         # calculate sum of daily precip for each day over all upstream subbasins
-        this_precip_cumul = precip.groupby(['Date'], as_index=False)[['precip_cfd']].sum()
+        this_precip_cumul = df_sub_up.groupby(['Date'], as_index=False)[['precip_cfd']].sum()
         this_precip_cumul['subbasin'] = sub
 
         # store

@@ -200,22 +200,22 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(3, 1, figsize=(12, 8), dpi=150)
 
         # plot specified outflows and sim gate seg outflows
-        ax[0].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['midpt_flow'],  label = 'sim gate flow')
-        ax[0].plot(specified_outflows['date'], specified_outflows[1], label = 'specified outflow', linestyle='dotted')
+        ax[0].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['midpt_flow'],  label = 'sim gate flow', color='#ff7f0e')
+        ax[0].plot(specified_outflows['date'], specified_outflows[1], label = 'specified outflow', linestyle='dotted', color='#1f77b4')
         ax[0].set_title('Specified outflow and simulated gate segment outflow: lake ' + str(lake_id))
         ax[0].legend()
         ax[0].set_xlabel('Time step')
         ax[0].set_ylabel('Flow (acre-ft/day)')
 
-        ax[1].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['flow_cumul'],  label = 'sim gate flow')
-        ax[1].plot(specified_outflows['date'], specified_outflows['flow_cumul'], label = 'specified outflow', linestyle='dotted')
+        ax[1].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['flow_cumul'],  label = 'sim gate flow', color='#ff7f0e')
+        ax[1].plot(specified_outflows['date'], specified_outflows['flow_cumul'], label = 'specified outflow', linestyle='dotted', color='#1f77b4')
         ax[1].set_title('Cumulative specified outflow and simulated gate segment outflow: lake ' + str(lake_id))
         ax[1].legend()
         ax[1].set_xlabel('Time step')
         ax[1].set_ylabel('Cumulative flow (acre-ft)')
 
         # plot sim spillway seg outflows
-        ax[2].plot(sim_spillway_seg_outflows['date'], sim_spillway_seg_outflows['midpt_flow'])
+        ax[2].plot(sim_spillway_seg_outflows['date'], sim_spillway_seg_outflows['midpt_flow'], color='#ff7f0e')
         ax[2].set_title('Simulated spillway segment outflow: lake ' + str(lake_id))
         ax[2].set_xlabel('Time step')
         ax[2].set_ylabel('Flow (acre-ft/day)')
@@ -245,23 +245,23 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 1, figsize=(8, 12), dpi=150)
 
         # plot lake stages
-        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label = 'sim')
-        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label = 'obs', linestyle='dotted')
+        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label = 'sim', color='#ff7f0e')
+        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label = 'obs', linestyle='dotted', color='#1f77b4')
         ax[0].set_title('Stage: ' + lake_name)
         ax[0].legend()
         ax[0].set_xlabel('Date')
         ax[0].set_ylabel('Stage (ft)')
 
         # plot lake volume
-        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim')
-        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted')
+        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', color='#ff7f0e')
+        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted', color='#1f77b4')
         ax[1].set_title('Volume: ' + lake_name)
         ax[1].legend()
         ax[1].set_xlabel('Date')
         ax[1].set_ylabel('Volume (acre-ft)')
 
         # plot evaporation
-        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['Evap.'])
+        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['Evap.'], color='#ff7f0e')
         ax[2].set_title('Evaporation: ' + lake_name)
         ax[2].set_xlabel('Date')
         ax[2].set_ylabel('Evaporation (acre-ft/day)')
@@ -303,35 +303,35 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(5, 1, figsize=(8, 12), dpi=150)
 
         # plot lake stages
-        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label='sim')
-        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label='obs', linestyle='dotted')
+        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label='sim', color='#ff7f0e')
+        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label='obs', linestyle='dotted', color='#1f77b4')
         ax[0].set_title('Stage: ' + lake_name)
         ax[0].legend()
         ax[0].set_xlabel('Date')
         ax[0].set_ylabel('Stage (ft)')
 
         # plot lake volume
-        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim')
-        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted')
+        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', color='#ff7f0e')
+        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted', color='#1f77b4')
         ax[1].set_title('Volume: ' + lake_name)
         ax[1].legend()
         ax[1].set_xlabel('Date')
         ax[1].set_ylabel('Volume (acre-ft)')
 
         # plot precip
-        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['Precip.'])
+        ax[2].plot(sim_lake_budget['date'], sim_lake_budget['Precip.'], color='#ff7f0e')
         ax[2].set_title('Precipitation: ' + lake_name)
         ax[2].set_xlabel('Date')
         ax[2].set_ylabel('Precipitation (acre-ft/day)')
 
         # plot lak to uzf
-        ax[3].plot(sim_lake_budget['date'], sim_lake_budget['LAK-to-UZF'])
+        ax[3].plot(sim_lake_budget['date'], sim_lake_budget['LAK-to-UZF'], color='#ff7f0e')
         ax[3].set_title('LAK-to-UZF: ' + lake_name)
         ax[3].set_xlabel('Date')
         ax[3].set_ylabel('LAK-to-UZF (acre-ft/day)')
 
         # plot withdrawal
-        ax[4].plot(sim_lake_budget['date'], sim_lake_budget['Withdrawal'])
+        ax[4].plot(sim_lake_budget['date'], sim_lake_budget['Withdrawal'], color='#ff7f0e')
         ax[4].set_title('Withdrawal: ' + lake_name)
         ax[4].set_xlabel('Date')
         ax[4].set_ylabel('Withdrawal (acre-ft/day)')
@@ -369,75 +369,75 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 2, figsize=(8, 12), dpi=150)
 
         # plot volume
-        ax[0, 0].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim')
-        ax[0, 0].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted')
+        ax[0, 0].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', color='#ff7f0e')
+        ax[0, 0].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted', color='#1f77b4')
         ax[0, 0].legend()
         ax[0, 0].set_title('Volume: ' + lake_name)
         ax[0, 0].set_xlabel('Date')
         ax[0, 0].set_ylabel('Volume (acre-ft)')
 
         # plot precip
-        ax[1, 0].plot(sim_lake_budget['date'], sim_lake_budget['Precip.'])
+        ax[1, 0].plot(sim_lake_budget['date'], sim_lake_budget['Precip.'], color='#ff7f0e')
         ax[1, 0].set_title('Cumul. precipitation: ' + lake_name)
         ax[1, 0].set_xlabel('Date')
         ax[1, 0].set_ylabel('Precipitation (acre-ft)')
 
         # plot evaporation
-        ax[2, 0].plot(sim_lake_budget['date'], sim_lake_budget['Evap.'])
+        ax[2, 0].plot(sim_lake_budget['date'], sim_lake_budget['Evap.'], color='#ff7f0e')
         ax[2, 0].set_title('Cumul. evaporation: ' + lake_name)
         ax[2, 0].set_xlabel('Date')
         ax[2, 0].set_ylabel('Evaporation (acre-ft)')
 
         # plot SW inflow
-        ax[3, 0].plot(sim_lake_budget['date'], sim_lake_budget['SW-Inflw'])
+        ax[3, 0].plot(sim_lake_budget['date'], sim_lake_budget['SW-Inflw'], color='#ff7f0e')
         ax[3, 0].set_title('Cumul. SW-Inflw: ' + lake_name)
         ax[3, 0].set_xlabel('Date')
         ax[3, 0].set_ylabel('SW-Inflow (acre-ft)')
 
         # plot SW outflow
-        ax[4, 0].plot(sim_lake_budget['date'], sim_lake_budget['SW-Outflw'])
+        ax[4, 0].plot(sim_lake_budget['date'], sim_lake_budget['SW-Outflw'], color='#ff7f0e')
         ax[4, 0].set_title('Cumul. SW-Outflw: ' + lake_name)
         ax[4, 0].set_xlabel('Date')
         ax[4, 0].set_ylabel('SW-Outflow (acre-ft)')
 
         # plot LAK-Runoff
-        ax[5, 0].plot(sim_lake_budget['date'], sim_lake_budget['LAK-Runoff'])
+        ax[5, 0].plot(sim_lake_budget['date'], sim_lake_budget['LAK-Runoff'], color='#ff7f0e')
         ax[5, 0].set_title('Cumul. LAK-Runoff: ' + lake_name)
         ax[5, 0].set_xlabel('Date')
         ax[5, 0].set_ylabel('LAK-Runoff (acre-ft)')
 
         # plot GW inflow
-        ax[0, 1].plot(sim_lake_budget['date'], sim_lake_budget['GW-Inflw'])
+        ax[0, 1].plot(sim_lake_budget['date'], sim_lake_budget['GW-Inflw'], color='#ff7f0e')
         ax[0, 1].set_title('Cumul. GW-Inflw: ' + lake_name)
         ax[0, 1].set_xlabel('Date')
         ax[0, 1].set_ylabel('GW-Inflow (acre-ft)')
 
         # plot GW outflow
-        ax[1, 1].plot(sim_lake_budget['date'], sim_lake_budget['GW-Outflw'])
+        ax[1, 1].plot(sim_lake_budget['date'], sim_lake_budget['GW-Outflw'], color='#ff7f0e')
         ax[1, 1].set_title('Cumul. GW-Outflw: ' + lake_name)
         ax[1, 1].set_xlabel('Date')
         ax[1, 1].set_ylabel('GW-Outflow (acre-ft)')
 
         # plot UZF-Runoff
-        ax[2, 1].plot(sim_lake_budget['date'], sim_lake_budget['UZF-Runoff'])
+        ax[2, 1].plot(sim_lake_budget['date'], sim_lake_budget['UZF-Runoff'], color='#ff7f0e')
         ax[2, 1].set_title('Cumul. UZF-Runoff: ' + lake_name)
         ax[2, 1].set_xlabel('Date')
         ax[2, 1].set_ylabel('UZF-Runoff (acre-ft)')
 
         # plot LAK-to-UZF
-        ax[3, 1].plot(sim_lake_budget['date'], sim_lake_budget['LAK-to-UZF'])
+        ax[3, 1].plot(sim_lake_budget['date'], sim_lake_budget['LAK-to-UZF'], color='#ff7f0e')
         ax[3, 1].set_title('Cumul. LAK-to-UZF: ' + lake_name)
         ax[3, 1].set_xlabel('Date')
         ax[3, 1].set_ylabel('LAK-to-UZF (acre-ft)')
 
         # plot withdrawal
-        ax[4, 1].plot(sim_lake_budget['date'], sim_lake_budget['Withdrawal'])
+        ax[4, 1].plot(sim_lake_budget['date'], sim_lake_budget['Withdrawal'], color='#ff7f0e')
         ax[4, 1].set_title('Cumul. withdrawal: ' + lake_name)
         ax[4, 1].set_xlabel('Date')
         ax[4, 1].set_ylabel('Withdrawal (acre-ft)')
 
         # plot lake influx
-        ax[5, 1].plot(sim_lake_budget['date'], sim_lake_budget['Lake-Inflx'])
+        ax[5, 1].plot(sim_lake_budget['date'], sim_lake_budget['Lake-Inflx'], color='#ff7f0e')
         ax[5, 1].set_title('Cumul. Lake-Inflx: ' + lake_name)
         ax[5, 1].set_xlabel('Date')
         ax[5, 1].set_ylabel('Lake-Inflx (acre-ft)')
@@ -631,88 +631,88 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 2, figsize=(8, 12), dpi=150)
 
         # plot volume
-        ax[0,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim')
-        ax[0,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'])
-        ax[0,0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted')
-        ax[0,0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'])
+        ax[0,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim', color='#ff7f0e')
+        ax[0,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], color='#ff7f0e')
+        ax[0,0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[0,0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], color='#1f77b4')
         ax[0,0].legend()
         ax[0,0].set_title('Change in volume: ' + lake_name)
         ax[0,0].set_xlabel('Water year')
         ax[0,0].set_ylabel('Change in volume (acre-ft/yr)')
 
         # plot precip
-        ax[1,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Precip.'])
-        ax[1,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Precip.'])
+        ax[1,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Precip.'], color='#ff7f0e')
+        ax[1,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Precip.'], color='#ff7f0e')
         ax[1,0].set_title('Precipitation: ' + lake_name)
         ax[1,0].set_xlabel('Water year')
         ax[1,0].set_ylabel('Precipitation (acre-ft/yr)')
 
         # plot evaporation
-        ax[2,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Evap.'])
-        ax[2,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Evap.'])
+        ax[2,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Evap.'], color='#ff7f0e')
+        ax[2,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Evap.'], color='#ff7f0e')
         ax[2,0].set_title('Evaporation: ' + lake_name)
         ax[2,0].set_xlabel('Water year')
         ax[2,0].set_ylabel('Evaporation (acre-ft/yr)')
 
         # plot SW inflow
-        ax[3,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Inflw'])
-        ax[3,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Inflw'])
+        ax[3,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Inflw'], color='#ff7f0e')
+        ax[3,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Inflw'], color='#ff7f0e')
         ax[3,0].set_title('SW-Inflw: ' + lake_name)
         ax[3,0].set_xlabel('Water year')
         ax[3,0].set_ylabel('SW-Inflow (acre-ft/yr)')
 
         # plot SW outflow
-        ax[4,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Outflw'])
-        ax[4,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Outflw'])
+        ax[4,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Outflw'], color='#ff7f0e')
+        ax[4,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['SW-Outflw'], color='#ff7f0e')
         ax[4,0].set_title('SW-Outflw: ' + lake_name)
         ax[4,0].set_xlabel('Water year')
         ax[4,0].set_ylabel('SW-Outflow (acre-ft/yr)')
 
         # plot LAK-Runoff
-        ax[5,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-Runoff'])
-        ax[5,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-Runoff'])
+        ax[5,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-Runoff'], color='#ff7f0e')
+        ax[5,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-Runoff'], color='#ff7f0e')
         ax[5,0].set_title('LAK-Runoff: ' + lake_name)
         ax[5,0].set_xlabel('Water year')
         ax[5,0].set_ylabel('LAK-Runoff (acre-ft/yr)')
 
         # plot GW inflow
-        ax[0,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Inflw'])
-        ax[0,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Inflw'])
+        ax[0,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Inflw'], color='#ff7f0e')
+        ax[0,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Inflw'], color='#ff7f0e')
         ax[0,1].set_title('GW-Inflw: ' + lake_name)
         ax[0,1].set_xlabel('Water year')
         ax[0,1].set_ylabel('GW-Inflow (acre-ft/yr)')
 
         # plot GW outflow
-        ax[1,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Outflw'])
-        ax[1,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Outflw'])
+        ax[1,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Outflw'], color='#ff7f0e')
+        ax[1,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['GW-Outflw'], color='#ff7f0e')
         ax[1,1].set_title('GW-Outflw: ' + lake_name)
         ax[1,1].set_xlabel('Water year')
         ax[1,1].set_ylabel('GW-Outflow (acre-ft/yr)')
 
         # plot UZF-Runoff
-        ax[2,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['UZF-Runoff'])
-        ax[2,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['UZF-Runoff'])
+        ax[2,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['UZF-Runoff'], color='#ff7f0e')
+        ax[2,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['UZF-Runoff'], color='#ff7f0e')
         ax[2,1].set_title('UZF-Runoff: ' + lake_name)
         ax[2,1].set_xlabel('Water year')
         ax[2,1].set_ylabel('UZF-Runoff (acre-ft/yr)')
 
         # plot LAK-to-UZF
-        ax[3,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-to-UZF'])
-        ax[3,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-to-UZF'])
+        ax[3,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-to-UZF'], color='#ff7f0e')
+        ax[3,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['LAK-to-UZF'], color='#ff7f0e')
         ax[3,1].set_title('LAK-to-UZF: ' + lake_name)
         ax[3,1].set_xlabel('Water year')
         ax[3,1].set_ylabel('LAK-to-UZF (acre-ft/yr)')
 
         # plot withdrawal
-        ax[4,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Withdrawal'])
-        ax[4,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Withdrawal'])
+        ax[4,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Withdrawal'], color='#ff7f0e')
+        ax[4,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Withdrawal'], color='#ff7f0e')
         ax[4,1].set_title('Withdrawal: ' + lake_name)
         ax[4,1].set_xlabel('Water year')
         ax[4,1].set_ylabel('Withdrawal (acre-ft/yr)')
 
         # plot lake influx
-        ax[5,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Lake-Inflx'])
-        ax[5,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Lake-Inflx'])
+        ax[5,1].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Lake-Inflx'], color='#ff7f0e')
+        ax[5,1].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Lake-Inflx'], color='#ff7f0e')
         ax[5,1].set_title('Lake-Inflx: ' + lake_name)
         ax[5,1].set_xlabel('Water year')
         ax[5,1].set_ylabel('Lake-Inflx (acre-ft/yr)')
@@ -765,10 +765,10 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 1, figsize=(8, 12), dpi=150)
 
         # plot change in volume
-        ax[0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim')
-        ax[0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'])
-        ax[0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted')
-        ax[0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'])
+        ax[0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim', color='#ff7f0e')
+        ax[0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], color='#ff7f0e')
+        ax[0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], color='#1f77b4')
         ax[0].axhline(y=0, color='r', linestyle='-')
         ax[0].legend()
         ax[0].set_title('Change in volume: ' + lake_name)
@@ -777,8 +777,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # plot difference in SW
         sw_diff = sim_lake_budget_annual['SW-Inflw'] - sim_lake_budget_annual['SW-Outflw']
-        ax[1].plot(sim_lake_budget_annual['water_year'], sw_diff)
-        ax[1].scatter(sim_lake_budget_annual['water_year'], sw_diff)
+        ax[1].plot(sim_lake_budget_annual['water_year'], sw_diff, color='#ff7f0e')
+        ax[1].scatter(sim_lake_budget_annual['water_year'], sw_diff, color='#ff7f0e')
         ax[1].axhline(y=0, color='r', linestyle='-')
         ax[1].set_title('SWin - SWout: ' + lake_name)
         ax[1].set_xlabel('Water year')
@@ -786,8 +786,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # plot difference in GW
         gw_diff = sim_lake_budget_annual['GW-Inflw'] - sim_lake_budget_annual['GW-Outflw']
-        ax[2].plot(sim_lake_budget_annual['water_year'], gw_diff)
-        ax[2].scatter(sim_lake_budget_annual['water_year'], gw_diff)
+        ax[2].plot(sim_lake_budget_annual['water_year'], gw_diff, color='#ff7f0e')
+        ax[2].scatter(sim_lake_budget_annual['water_year'], gw_diff, color='#ff7f0e')
         ax[2].axhline(y=0, color='r', linestyle='-')
         ax[2].set_title('GWin - GWout: ' + lake_name)
         ax[2].set_xlabel('Water year')
@@ -795,8 +795,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # plot precip-evap
         precip_evap_diff = sim_lake_budget_annual['Precip.'] - sim_lake_budget_annual['Evap.']
-        ax[3].plot(sim_lake_budget_annual['water_year'], precip_evap_diff)
-        ax[3].scatter(sim_lake_budget_annual['water_year'], precip_evap_diff)
+        ax[3].plot(sim_lake_budget_annual['water_year'], precip_evap_diff, color='#ff7f0e')
+        ax[3].scatter(sim_lake_budget_annual['water_year'], precip_evap_diff, color='#ff7f0e')
         ax[3].axhline(y=0, color='r', linestyle='-')
         ax[3].set_title('Precipitation - Evaporation: ' + lake_name)
         ax[3].set_xlabel('Water year')
@@ -804,8 +804,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # plot difference in SW inflow + LAK-runoff - SW outflow
         sw_runoff_diff = sim_lake_budget_annual['SW-Inflw'] + sim_lake_budget_annual['LAK-Runoff'] - sim_lake_budget_annual['SW-Outflw']
-        ax[4].plot(sim_lake_budget_annual['water_year'], sw_runoff_diff)
-        ax[4].scatter(sim_lake_budget_annual['water_year'], sw_runoff_diff)
+        ax[4].plot(sim_lake_budget_annual['water_year'], sw_runoff_diff, color='#ff7f0e')
+        ax[4].scatter(sim_lake_budget_annual['water_year'], sw_runoff_diff, color='#ff7f0e')
         ax[4].axhline(y=0, color='r', linestyle='-')
         ax[4].set_title('SWin + runoff - SWout: ' + lake_name)
         ax[4].set_xlabel('Water year')
@@ -813,8 +813,8 @@ def main(model_ws, results_ws, init_files_ws):
 
         # plot P + SWin + GWin + runoff - E - SWout - GWout
         all_diff = sim_lake_budget_annual['Precip.'] + sim_lake_budget_annual['SW-Inflw'] + sim_lake_budget_annual['GW-Inflw'] + sim_lake_budget_annual['LAK-Runoff'] - sim_lake_budget_annual['Evap.'] - sim_lake_budget_annual['SW-Outflw'] - sim_lake_budget_annual['GW-Outflw']
-        ax[5].plot(sim_lake_budget_annual['water_year'], all_diff)
-        ax[5].scatter(sim_lake_budget_annual['water_year'], all_diff)
+        ax[5].plot(sim_lake_budget_annual['water_year'], all_diff, color='#ff7f0e')
+        ax[5].scatter(sim_lake_budget_annual['water_year'], all_diff, color='#ff7f0e')
         ax[5].axhline(y=0, color='r', linestyle='-')
         ax[5].set_title('P + SWin + GWin + runoff - E - SWout - GWout: ' + lake_name)
         ax[5].set_xlabel('Water year')

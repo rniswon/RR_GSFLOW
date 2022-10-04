@@ -1,11 +1,12 @@
 # ----------------------------------------------
 # Setup
 # ----------------------------------------------
-run_cluster = False
+run_cluster = True
 
 if run_cluster == True:
 
     import os, sys
+    import shutil
 
     fpath = os.path.abspath(os.path.dirname(__file__))
     os.environ["HOME"] = os.path.join(fpath, "..", "..", "..", "..", "Miniconda3")
@@ -30,6 +31,7 @@ if run_cluster == True:
 else:
 
     import os, sys
+    import shutil
     import pandas as pd
     import numpy as np
     import gsflow
@@ -74,6 +76,7 @@ def run(input_file = None, real_no=-999, output_file = None):
     :return:
     """
 
+
     # ----------------------------------------------
     # Set file names and paths
     # ----------------------------------------------
@@ -81,8 +84,10 @@ def run(input_file = None, real_no=-999, output_file = None):
         pass
     Sim.repo_ws = repo_ws
     Sim.script_ws = script_ws
-    Sim.name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows", "rr_tr.nam")
-    Sim.prms_control = os.path.join(repo_ws, "GSFLOW", "worker_dir", 'windows', 'prms_rr.control')
+    Sim.gsflow_model = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model")
+    Sim.gsflow_model_updated = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated")
+    Sim.name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "windows", "rr_tr.nam")
+    Sim.prms_control = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", 'windows', 'prms_rr.control')
     Sim.hru_shp_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "hru_shp.csv")
     #Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.shp')
     Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.txt')
@@ -94,13 +99,14 @@ def run(input_file = None, real_no=-999, output_file = None):
     Sim.K_zones_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "K_zone_ids_20220318.dat")
     #Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "ghb_hru_20220404.shp")
     Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "ghb_hru_20220404.txt")
-    Sim.pump_red_file_nonag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "pumping_reduction.out")
-    Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "pumping_reduction_ag.out")
+    Sim.pump_red_file_nonag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "pumping_reduction.out")
+    #Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "pumping_reduction_ag.out")
+    Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "ag_well_all.out")
     Sim.model_output_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "model_output.csv")
-    Sim.modflow_output_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output")
-    Sim.windows_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "windows")
-    Sim.lake_1_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "mendo_lake_bdg.lak.out")
-    Sim.lake_2_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "output", "sonoma_lake_bdg.lak.out")
+    Sim.modflow_output_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output")
+    Sim.windows_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "windows")
+    Sim.lake_1_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "mendo_lake_bdg.lak.out")
+    Sim.lake_2_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "sonoma_lake_bdg.lak.out")
 
 
     if not(input_file is None):
@@ -119,6 +125,21 @@ def run(input_file = None, real_no=-999, output_file = None):
             Sim.output_file = os.path.basename(output_file) + "_{}.csv".format(real_no)
         else:
             Sim.output_file = r"model_output_{}.csv".format(real_no)
+
+
+    # -----------------------------------------------------------------------------------------------------
+    # Copy gsflow model with base parameters into a new folder in which parameter changes are made
+    # -----------------------------------------------------------------------------------------------------
+
+    # delete old gsflow_model_updated folder
+    if os.path.isdir(Sim.gsflow_model_updated):
+        shutil.rmtree(Sim.gsflow_model_updated)
+
+    # create new gsflow model updated folder (a folder where gsflow model inputs can be updated)
+    shutil.copytree(Sim.gsflow_model, Sim.gsflow_model_updated)
+
+
+
 
 
     # ----------------------------------------------
@@ -186,12 +207,12 @@ def run(input_file = None, real_no=-999, output_file = None):
 
     # change file paths for export of updated model input files
     # TODO: figure out why these files aren't being written to these file paths
-    Sim.mf.upw.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.upw")
-    Sim.mf.uzf.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.uzf")
-    Sim.mf.lak.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.lak")
-    Sim.mf.sfr.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.sfr")
-    Sim.mf.wel.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.wel")
-    Sim.mf.ghb.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "modflow", "input", "rr_tr.ghb")
+    Sim.mf.upw.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.upw")
+    Sim.mf.uzf.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.uzf")
+    Sim.mf.lak.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.lak")
+    Sim.mf.sfr.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.sfr")
+    Sim.mf.wel.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.wel")
+    Sim.mf.ghb.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.ghb")
 
 
     # write updated parameters
@@ -233,34 +254,34 @@ def run(input_file = None, real_no=-999, output_file = None):
 
 
 
-# # ----------------------------------------------
-# # Define simple run function
-# # ----------------------------------------------
-# def run_simple_in_out(in_fn, out_fn, csv_in, csv_out):
-#     """
-#
-#     :param in_fn: simple columns of input parameters
-#     :param out_fn: simple column of output parameters
-#     csv_in: is a template csv file that we use to run the model. Column read from in_fn is inserted in parval in this csv
-#     csv_out same but for output
-#
-#     :return:
-#     """
-#     try:
-#         os.remove(out_fn)
-#     except:
-#         pass
-#     df_in = pd.read_csv(csv_in)
-#     vals = np.loadtxt(in_fn)
-#     df_in['parval1'] = vals
-#     df_in.to_csv(csv_in,  index=None)
-#     print("Enter run....")
-#     run(input_file= csv_in, output_file = csv_out)
-#
-#     df_out = pd.read_csv(csv_out)
-#     outvals = df_out['simval'].values
-#     np.savetxt(out_fn, outvals, fmt="%.3f")
-#     print("Write output....")
+# ----------------------------------------------
+# Define simple run function
+# ----------------------------------------------
+def run_simple_in_out(in_fn, out_fn, csv_in, csv_out):
+    """
+
+    :param in_fn: simple columns of input parameters
+    :param out_fn: simple column of output parameters
+    csv_in: is a template csv file that we use to run the model. Column read from in_fn is inserted in parval in this csv
+    csv_out same but for output
+
+    :return:
+    """
+    try:
+        os.remove(out_fn)
+    except:
+        pass
+    df_in = pd.read_csv(csv_in)
+    vals = np.loadtxt(in_fn)
+    df_in['parval1'] = vals
+    df_in.to_csv(csv_in,  index=None)
+    print("Enter run....")
+    run(input_file= csv_in, output_file = csv_out)
+
+    df_out = pd.read_csv(csv_out)
+    outvals = df_out['simval'].values
+    np.savetxt(out_fn, outvals, fmt="%.3f")
+    print("Write output....")
 
 
 # ----------------------------------------------
