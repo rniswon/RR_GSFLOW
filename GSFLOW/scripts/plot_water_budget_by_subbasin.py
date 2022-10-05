@@ -654,33 +654,6 @@ def main(script_ws, model_ws, results_ws):
         fig.savefig(file_path)
         plt.close('all')
 
-
-<<<<<<< HEAD
-        # plot lateral transfers from other subbasins
-        selected_vars = ['ZONE_0', 'ZONE_1', 'ZONE_2', 'ZONE_3', 'ZONE_4', 'ZONE_5', 'ZONE_6', 'ZONE_7', 'ZONE_8',
-                         'ZONE_9', 'ZONE_10', 'ZONE_11', 'ZONE_12', 'ZONE_13', 'ZONE_14', 'ZONE_15', 'ZONE_16',
-                         'ZONE_17', 'ZONE_18', 'ZONE_19', 'ZONE_20', 'ZONE_21', 'ZONE_22']
-        df = df_all[df_all['variable'].isin(selected_vars)]
-        plt.figure(figsize=(12, 8))
-        sns.set(style='white')
-        this_plot = sns.lineplot(x='year',
-                                 y='value',
-                                 hue='variable',
-                                 hue_order = selected_vars,
-                                 style='variable',
-                                 data=df)
-        this_plot.set_title('Subbasin ' + str(sub) + ': ' + 'subbasin lateral transfers, annual sum')
-        this_plot.set_xlabel('Year')
-        this_plot.set_ylabel('Volume (m^3)')
-        file_name = 'subbasin_lateral_transfer_' + str(sub) + '.png'
-        file_path = os.path.join(plot_folder, file_name)
-        fig = this_plot.get_figure()
-        if not os.path.isdir(os.path.dirname(file_path)):
-            os.mkdir(os.path.dirname(file_path))
-        fig.savefig(file_path)
-        plt.close('all')
-
-=======
         # # plot lateral transfers from other subbasins
         # selected_vars = ['ZONE_0', 'ZONE_1', 'ZONE_2', 'ZONE_3', 'ZONE_4', 'ZONE_5', 'ZONE_6', 'ZONE_7', 'ZONE_8',
         #                  'ZONE_9', 'ZONE_10', 'ZONE_11', 'ZONE_12', 'ZONE_13', 'ZONE_14', 'ZONE_15', 'ZONE_16',
@@ -703,7 +676,8 @@ def main(script_ws, model_ws, results_ws):
         # if not os.path.isdir(os.path.dirname(file_path)):
         #     os.mkdir(os.path.dirname(file_path))
         # fig.savefig(file_path)
->>>>>>> 5bd3a618528cdc9a31056748f05e54329fb4c24d
+        #plt.close('all')
+
 
 
 # main function
