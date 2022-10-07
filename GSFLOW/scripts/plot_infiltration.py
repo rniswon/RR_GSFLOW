@@ -74,6 +74,7 @@ def main(model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
     # calculate average infiltration over all years
@@ -91,6 +92,7 @@ def main(model_ws, results_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
 
 if __name__ == "__main__":

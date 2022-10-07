@@ -338,6 +338,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot annual flow volumes: sim vs. obs
         if subbasin_id in gages_with_obs:
@@ -364,6 +365,7 @@ def main(script_ws, model_ws, results_ws):
             if not os.path.isdir(os.path.dirname(file_path)):
                 os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
         # MONTHLY PLOTS: mean over all years  -------------------------------------------------####
 
@@ -385,6 +387,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot monthly mean flows: sim vs. obs
         if subbasin_id in gages_with_obs:
@@ -411,6 +414,7 @@ def main(script_ws, model_ws, results_ws):
             if not os.path.isdir(os.path.dirname(file_path)):
                 os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
         # MONTHLY PLOTS: for each year  -------------------------------------------------####
 
@@ -432,6 +436,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot monthly mean flows: sim vs. obs
         # TODO: color the points by month
@@ -459,6 +464,7 @@ def main(script_ws, model_ws, results_ws):
             if not os.path.isdir(os.path.dirname(file_path)):
                 os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
         # DAILY PLOTS  -------------------------------------------------####
 
@@ -476,6 +482,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot cumulative flows (based on daily flows)
         seconds_per_day = 86400
@@ -497,6 +504,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot all daily flows on one page: time series
         # TODO: make the dates on the x-axis not overlap
@@ -518,6 +526,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot daily flows across several pages: time series
         # TODO: make the dates on the x-axis not overlap
@@ -547,6 +556,7 @@ def main(script_ws, model_ws, results_ws):
                 if not os.path.isdir(os.path.dirname(file_path)):
                     os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
         # plot daily flows across several pages with only low flows: time series
         # TODO: make the dates on the x-axis not overlap
@@ -578,6 +588,7 @@ def main(script_ws, model_ws, results_ws):
                 if not os.path.isdir(os.path.dirname(file_path)):
                     os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
         # plot all daily flows on one page: time series on log scale
         # TODO: make the dates on the x-axis not overlap
@@ -599,6 +610,7 @@ def main(script_ws, model_ws, results_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot daily flows across several pages: time series on log scale
         # TODO: make the dates on the x-axis not overlap
@@ -629,6 +641,7 @@ def main(script_ws, model_ws, results_ws):
                 if not os.path.isdir(os.path.dirname(file_path)):
                     os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
         # plot daily flows: sim vs. obs
         # TODO: add a 1:1 line here
@@ -641,6 +654,7 @@ def main(script_ws, model_ws, results_ws):
             if not os.path.isdir(os.path.dirname(file_path)):
                 os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
         # LOCAL AND CUMULATIVE FLOWS  -------------------------------------------------####
 
@@ -698,6 +712,7 @@ def main(script_ws, model_ws, results_ws):
             if not os.path.isdir(os.path.dirname(file_path)):
                 os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
             # # calculate (absolute) cumulative differences
             # diff_obs_cum = obs_local.abs().cumsum()
@@ -740,6 +755,7 @@ def main(script_ws, model_ws, results_ws):
             if not os.path.isdir(os.path.dirname(file_path)):
                 os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
         # export error metrics
         file_path = os.path.join(results_ws, 'tables', 'streamflow_error_metrics.csv')

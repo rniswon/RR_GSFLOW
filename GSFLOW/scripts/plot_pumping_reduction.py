@@ -219,6 +219,7 @@ def main(model_ws, results_ws, init_files_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
     # plot time series for wells with pumping reduction: fraction
@@ -235,6 +236,7 @@ def main(model_ws, results_ws, init_files_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
     # plot time series for all wells: applied vs. actual pumping
     def plot_applied_vs_actual_pumping_reduced(df, plot_title, file_name):
@@ -253,6 +255,7 @@ def main(model_ws, results_ws, init_files_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
     # plot time series for all wells: fraction
@@ -269,6 +272,7 @@ def main(model_ws, results_ws, init_files_ws):
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
 
@@ -520,6 +524,7 @@ def main(model_ws, results_ws, init_files_ws):
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
 
 

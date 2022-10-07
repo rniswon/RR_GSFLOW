@@ -3,6 +3,11 @@
 # import python packages
 import os
 import shutil
+import matplotlib.pyplot as plt
+import matplotlib
+import importlib
+
+
 
 # import plotting scripts
 import plot_ag_diversions
@@ -142,6 +147,7 @@ plot_water_budget_by_subbasin.main(script_ws, model_ws, results_ws)
 
 print('plot watershed summary time series')
 plot_watershed_summary_time_series.main(model_ws, results_ws)
+
 
 
 
