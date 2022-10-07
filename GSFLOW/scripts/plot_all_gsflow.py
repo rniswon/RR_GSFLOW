@@ -36,7 +36,7 @@ import plot_watershed_summary_time_series
 # note: update these workspaces as needed
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20220928_02")                   # model workspace
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221004_01")                   # model workspace
 results_ws = os.path.join(repo_ws, "GSFLOW", "results")                                # results workspace
 ss_archived_models_ws = os.path.join(repo_ws, "MODFLOW", "archived_models")            # steady state archived models workspace
 init_files_ws = os.path.join(repo_ws, "MODFLOW", "init_files")                         # modflow init files workspace
@@ -92,8 +92,8 @@ plot_ag_pond_diversions.main(model_ws, results_ws)
 print('plot ag pond water demand and use')
 plot_ag_pond_water_demand_and_use.main(model_ws, results_ws, init_files_ws)
 
-print('plot ag water budget by subbasin: prms only')
-plot_ag_water_budget_by_subbasin_prms_only.main(model_ws, results_ws)
+# print('plot ag water budget by subbasin: prms only')
+# plot_ag_water_budget_by_subbasin_prms_only.main(model_ws, results_ws)
 
 print('plot ag water use')
 plot_ag_water_use.main(model_ws, results_ws)
@@ -116,8 +116,8 @@ plot_hobs_output.main(model_ws, results_ws)
 print('plot initial transient heads') #todo: Ayman: no plots are made here
 plot_initial_tr_heads.main(model_ws, results_ws, ss_archived_models_ws)
 
-# print('plot lake bathymetry')
-# plot_lake_bathymetry.main(model_ws, results_ws, init_files_ws)
+print('plot lake bathymetry')
+plot_lake_bathymetry.main(model_ws, results_ws, init_files_ws)
 
 print('plot lake outputs')
 plot_lake_outputs.main(model_ws, results_ws, init_files_ws)
@@ -149,4 +149,4 @@ plot_watershed_summary_time_series.main(model_ws, results_ws)
 
 #shutil.copy(results_ws, model_ws)
 
-end = 1
+#end = 1

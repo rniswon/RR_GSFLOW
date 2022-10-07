@@ -108,6 +108,15 @@ input_param = param_utils.remove_group(input_param, 'well_rubber_dam')
 iuzfbnd = mf.uzf.iuzfbnd.array
 mask_active_cells = iuzfbnd > 0
 
+# create riparian zone mask
+riparian_zone_array = iuzfbnd.copy()
+riparian_zone_array[:,:] = 0
+reach_data = pd.DataFrame(mf.sfr.reach_data)   # get row and column indices for riparian cells (defined as stream cells for now)
+row_val = reach_data['i']
+col_val = reach_data['j']
+riparian_zone_array[row_val, col_val] = 1
+mask_riparian_zone = riparian_zone_array == 1
+
 # get number of rows and columns
 num_row, num_col = iuzfbnd.shape
 
@@ -161,9 +170,9 @@ surfdep = mf.uzf.surfdep
 input_param = param_utils.add_param(input_param, 'surfdep' , surfdep, 'uzf_surfdep', trans = 'none', comments = '#')
 
 # uzf extdp
-# note: constant for the whole model
+# note: constant for the riparian zone
 extdp = mf.uzf.extdp.array[0,0,:,:]
-extdp_val= np.mean(extdp[mask_active_cells])
+extdp_val= np.mean(extdp[mask_riparian_zone])
 input_param = param_utils.add_param(input_param, 'extdp' , extdp_val, 'uzf_extdp', trans = 'none', comments = '#')
 
 # uzf surfk

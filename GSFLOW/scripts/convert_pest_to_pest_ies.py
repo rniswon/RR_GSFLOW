@@ -98,7 +98,7 @@ for site_id in site_ids:
 # Add ies parameters
 # ==================================
 use_mda = False
-n_realizations = 240
+n_realizations = 300
 if use_mda:
     pst.pestpp_options['da_use_mda'] = 'True'
     #pst.pestpp_options['da_parameter_ensemble'] = 'mgKH.csv'
@@ -116,7 +116,7 @@ else:
     pst.pestpp_options['ies_num_reals'] = n_realizations
     pst.pestpp_options['ies_lambda_mults'] = [0.1,1,10]
     pst.pestpp_options['lambda_scale_fac'] = 1
-    pst.control_data.noptmax = 10
+    pst.control_data.noptmax = 5
 
 
 
@@ -124,8 +124,8 @@ else:
 # Write new pest control file
 # ==================================
 pst.observation_data = pest_obs_df
-#pst.write(pst_fn, version=2)
-pst.write(pst_fn)
+pst.write(pst_fn, version=2)
+#pst.write(pst_fn)
 
 
 

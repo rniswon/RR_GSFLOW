@@ -52,10 +52,10 @@ peaks_and_valleys_plot_folder = os.path.join(repo_ws, "GSFLOW", "results", "plot
 #------------------------------------------------------------------------------------
 
 # set flag to set fixed parameters and zero-weight observations using subbasins vs. groundwater basins
-fixed_param_and_weight_obs_flag = 'subbasin'  # options: 'subbasin', or 'gw_basin'
+fixed_param_and_weight_obs_flag = 'none'  # options: 'subbasin', or 'gw_basin', or 'none'
 
 # set subbasins for pest
-subbasins_for_pest = [-999,6]   # note: subbasin -999 refers to parameters or obs that cover the entire watershed
+subbasins_for_pest = [-999,7,8,9,10,11,12,13]   # note: subbasin -999 refers to parameters or obs that cover the entire watershed
 
 # read in parameter and obs files that contain subbasins and groundwater basins
 pest_input_param_subbasin = pd.read_csv(pest_input_param_subbasin_file)
@@ -101,6 +101,15 @@ elif fixed_param_and_weight_obs_flag == 'gw_basin':
     df = pest_input_param_subbasin[pest_input_param_subbasin['gw_basin'] == 0]
     fix_parms = df['parnme'].values.tolist()
 
+elif fixed_param_and_weight_obs_flag == 'none':
+
+    # set fixed parameter groups
+    fix_param_group = ['prms_rain_adj']
+
+    # set fixed parameters based on gw_basins
+    fix_parms = []
+
+
 
 
 # ---- Observation groups ---------------------------------------------------####
@@ -119,8 +128,9 @@ if fixed_param_and_weight_obs_flag == 'subbasin':
     #obs_id_zero_weight = []
 
     # set zero-weight observation groups based on subbasins desired for pest
-    df = pest_all_obs_subbasin[~(pest_all_obs_subbasin['subbasin'].isin(subbasins_for_pest))]
-    obs_id_zero_weight = df['obs_name'].values.tolist()
+    # df = pest_all_obs_subbasin[~(pest_all_obs_subbasin['subbasin'].isin(subbasins_for_pest))]
+    # obs_id_zero_weight = df['obs_name'].values.tolist()
+    obs_id_zero_weight = []
 
 
 elif fixed_param_and_weight_obs_flag == 'gw_basin':
@@ -129,9 +139,18 @@ elif fixed_param_and_weight_obs_flag == 'gw_basin':
     obs_group_zero_weight = []
 
     # set observation ids with weight=0
-    df = pest_all_obs_subbasin[pest_all_obs_subbasin['gw_basin'] == 0]
-    obs_id_zero_weight = df['obs_name'].values.tolist()
+    # df = pest_all_obs_subbasin[pest_all_obs_subbasin['gw_basin'] == 0]
+    # obs_id_zero_weight = df['obs_name'].values.tolist()
+    obs_id_zero_weight = []
 
+
+elif fixed_param_and_weight_obs_flag == 'none':
+
+    # set observation groups with weight=0
+    obs_group_zero_weight = []
+
+    # set observation ids with weight=0
+    obs_id_zero_weight = []
 
 
 
@@ -212,6 +231,8 @@ def extract_peaks_and_valleys(obs_group, obs_units, output_obs, site_ids, thresh
             # save plot
             file_name = obs_group +'_' + site_id + '.png'
             file_path = os.path.join(peaks_and_valleys_plot_folder, file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
 
 
