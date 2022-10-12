@@ -71,8 +71,14 @@ def main(script_ws, model_ws, results_ws):
     # set potential ET file
     potet_file = os.path.join(model_ws, "PRMS", "output", "nsub_potet.csv")
 
-    # set actual ET file
+    # set actual ET files
     actet_file = os.path.join(model_ws, "PRMS", "output", "nsub_hru_actet.csv")
+    intcp_evap_file = os.path.join(model_ws, "PRMS", "output", "nsub_intcp_evap.csv")
+    snow_evap_file = os.path.join(model_ws, "PRMS", "output", "nsub_snow_evap.csv")
+    imperv_evap_file = os.path.join(model_ws, "PRMS", "output", "nsub_imperv_evap.csv")
+    dprst_evap_hru_file = os.path.join(model_ws, "PRMS", "output", "nsub_dprst_evap_hru.csv")
+    perv_actet_file = os.path.join(model_ws, "PRMS", "output", "nsub_perv_actet.csv")
+    swale_actet_file = os.path.join(model_ws, "PRMS", "output", "nsub_swale_actet.csv")
 
     # set recharge file
     recharge_file = os.path.join(model_ws, "PRMS", "output", "nsub_recharge.csv")
@@ -81,6 +87,8 @@ def main(script_ws, model_ws, results_ws):
     sroff_file = os.path.join(model_ws, "PRMS", "output", "nsub_sroff.csv")
     dunnian_flow_file = os.path.join(model_ws, "PRMS", "output", "nsub_dunnian_flow.csv")
     hortonian_flow_file = os.path.join(model_ws, "PRMS", "output", "nsub_hortonian_flow.csv")
+    hortonian_lakes_file = os.path.join(model_ws, "PRMS", "output", "nsub_hortonian_lakes.csv")
+    lakein_sz_file = os.path.join(model_ws, "PRMS", "output", "nsub_lakein_sz.csv")
 
     # set interflow files
     ssres_flow_file = os.path.join(model_ws, "PRMS", "output", "nsub_ssres_flow.csv")
@@ -90,6 +98,9 @@ def main(script_ws, model_ws, results_ws):
     dprst_stor_hru_file = os.path.join(model_ws, "PRMS", "output", "nsub_dprst_stor_hru.csv")
     intcp_stor_file = os.path.join(model_ws, "PRMS", "output", "nsub_intcp_stor.csv")
     imperv_stor_file = os.path.join(model_ws, "PRMS", "output", "nsub_imperv_stor.csv")
+
+    # set potter valley inflows file
+    potter_valley_inflows_file = os.path.join(model_ws, "modflow", "input", "Potter_Valley_inflow.dat")
 
     # set gage file name
     gage_file = os.path.join(script_ws, 'inputs_for_scripts', 'gage_hru.shp')
@@ -103,7 +114,7 @@ def main(script_ws, model_ws, results_ws):
     # set ag diversion shapefile table
     ag_div_shp_file = os.path.join(script_ws, "inputs_for_scripts", "all_sfr_diversions.txt")
 
-    # set subbasin arera table
+    # set subbasin area table
     subbasin_areas_file = os.path.join(script_ws, "inputs_for_scripts", "subbasin_areas.txt")
 
     # set file name for daily budget table
@@ -132,7 +143,7 @@ def main(script_ws, model_ws, results_ws):
     # set conversion factors
     cubic_meters_per_acreft = 1233.4818375
 
-    # set upstream subbasins for lateral inflow
+    # set upstream subbasins for each subbasin
     upstream_sub_dict = {1:[0],
                     2:[0],
                     3:[2],
@@ -141,7 +152,7 @@ def main(script_ws, model_ws, results_ws):
                     6:[5],
                     7:[0],
                     8:[7],
-                    9:[8],
+                    9:[6,8],
                     10:[9],
                     11:[0],
                     12:[10,11],
@@ -231,9 +242,16 @@ def main(script_ws, model_ws, results_ws):
     ssres_flow = reformat_prms_outputs(ssres_flow_file, "ssres_flow")
     soil_moist_tot = reformat_prms_outputs(soil_moist_tot_file, "soil_moist_tot")
     dprst_stor_hru = reformat_prms_outputs(dprst_stor_hru_file, "dprst_stor_hru")
-    intcp_stor = reformat_prms_outputs(intcp_stor_file, "intcp_stor_file")
+    intcp_stor = reformat_prms_outputs(intcp_stor_file, "intcp_stor")
     imperv_stor = reformat_prms_outputs(imperv_stor_file, "imperv_stor")
-
+    hortonian_lakes = reformat_prms_outputs(hortonian_lakes_file, "hortonian_lakes")
+    lakein_sz = reformat_prms_outputs(lakein_sz_file, "lakein_sz")
+    intcp_evap = reformat_prms_outputs(intcp_evap_file, "intcp_evap")
+    snow_evap = reformat_prms_outputs(snow_evap_file, "snow_evap")
+    imperv_evap = reformat_prms_outputs(imperv_evap_file, "imperv_evap")
+    dprst_evap_hru = reformat_prms_outputs(dprst_evap_hru_file, "dprst_evap_hru")
+    perv_actet = reformat_prms_outputs(perv_actet_file, "perv_actet")
+    swale_actet = reformat_prms_outputs(swale_actet_file, "swale_actet")
 
 
 
@@ -264,6 +282,10 @@ def main(script_ws, model_ws, results_ws):
     # read in gage file and reformat
     gage_df = geopandas.read_file(gage_file)
     gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
+
+    # add in info for subbasins 21 and 22
+    gage_df = gage_df.append({'subbasin': 21, 'Name': 'none', 'Gage_Name': 'subbasin_21'}, ignore_index=True)
+    gage_df = gage_df.append({'subbasin': 22, 'Name': 'none', 'Gage_Name': 'subbasin_22'}, ignore_index=True)
 
     # read in sim flows and store in dictionary
     sim_file_path = os.path.join(model_ws, 'modflow', 'output')
@@ -301,26 +323,67 @@ def main(script_ws, model_ws, results_ws):
         # sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
 
     sim_df = pd.concat(sim_df_list)
-    sim_df = sim_df[['subbasin_id', 'date', 'year', 'month', 'flow']]
+    #sim_df = sim_df[['subbasin_id', 'date', 'year', 'month', 'flow']]
+    sim_df = sim_df[['subbasin_id', 'date', 'flow']]
+    sim_df = sim_df.rename(columns={'subbasin_id': 'subbasin', 'flow': 'streamflow_out'})
+    streamflow_out = sim_df.copy()
 
-    # add water year column
-    sim_df['water_year'] = sim_df['year']
-    months = list(range(1, 12 + 1))
-    for month in months:
-        mask = sim_df['month'] == month
-        if month > 9:
-            sim_df.loc[mask, 'water_year'] = sim_df.loc[mask, 'year'] + 1
+    # make date column a string
+    streamflow_out['date'] = streamflow_out['date'].astype(str)
 
-    # remove water years with incomplete data
-    sim_df = sim_df[~(sim_df['water_year'].isin(wy_incomplete_data))].reset_index(drop=True)
+    # # add water year column
+    # sim_df['water_year'] = sim_df['year']
+    # months = list(range(1, 12 + 1))
+    # for month in months:
+    #     mask = sim_df['month'] == month
+    #     if month > 9:
+    #         sim_df.loc[mask, 'water_year'] = sim_df.loc[mask, 'year'] + 1
 
-    # calculate water year sums
-    groupby_cols = ['water_year', 'subbasin_id']
-    #non_agg_cols = ['date', 'year', 'water_year', 'subbasin','kper', 'kstp', 'month', 'totim']
-    #var_cols = sim_df.columns.tolist()
-    agg_cols = ['flow']
-    sim_df = sim_df.groupby(groupby_cols)[agg_cols].sum().reset_index()
-    sim_df = sim_df.rename(columns={'subbasin_id': 'subbasin'})
+    # # remove water years with incomplete data
+    # sim_df = sim_df[~(sim_df['water_year'].isin(wy_incomplete_data))].reset_index(drop=True)
+    #
+    # # calculate water year sums
+    # groupby_cols = ['water_year', 'subbasin_id']
+    # #non_agg_cols = ['date', 'year', 'water_year', 'subbasin','kper', 'kstp', 'month', 'totim']
+    # #var_cols = sim_df.columns.tolist()
+    # agg_cols = ['flow']
+    # sim_df = sim_df.groupby(groupby_cols)[agg_cols].sum().reset_index()
+    # sim_df = sim_df.rename(columns={'subbasin_id': 'subbasin'})
+
+
+
+
+    # create streamflow_in for each subbasin
+    subs = streamflow_out['subbasin'].unique()
+    upstream_sub_list = []
+    for sub in subs:
+
+        # get upstream subbasins that contribute streamflow into each subbasin
+        upstream_sub = upstream_sub_dict[sub]
+        upstream_sub_df = streamflow_out[streamflow_out['subbasin'].isin(upstream_sub)]
+        if len(upstream_sub_df) > 0:
+            upstream_sub_df = upstream_sub_df.pivot(index='date', columns='subbasin', values='streamflow_out').reset_index()
+            upstream_sub_df['streamflow_in'] = upstream_sub_df[upstream_sub].sum(axis=1)
+            #upstream_sub_df['streamflow_in'] = upstream_sub_df['streamflow_in'] * (1/cubic_meters_per_acreft)
+            upstream_sub_df = upstream_sub_df[['date', 'streamflow_in']]
+            upstream_sub_df['subbasin'] = sub
+            upstream_sub_list.append(upstream_sub_df)
+
+    streamflow_in = pd.concat(upstream_sub_list)
+
+
+    # add in potter valley flows for streamflow coming into subbasin 2
+    potter_valley_inflows = pd.read_csv(potter_valley_inflows_file, sep=' ', header=None)
+    potter_valley_inflows = potter_valley_inflows.rename(columns={0: 'totim', 1: 'streamflow_in', 2: 'date'})
+    tmp= potter_valley_inflows['date'].str.split(pat='#', expand=True)
+    potter_valley_inflows['date'] = tmp[[1]]
+    potter_valley_inflows['subbasin'] = 2
+    potter_valley_inflows = potter_valley_inflows[['date', 'streamflow_in', 'subbasin']]
+    streamflow_in = pd.concat([streamflow_in, potter_valley_inflows])
+
+
+
+
 
 
     #---- Read in non-pond ag diversions and reformat ---------------------------------------------------------####
@@ -431,6 +494,20 @@ def main(script_ws, model_ws, results_ws):
 
     #---- Combine all budget components into one daily budget table and export csv ---------------------------------------------------------####
 
+    # add all of the surface and soil zone storage components
+    surface_and_soil_zone_storage = pd.merge(soil_moist_tot, dprst_stor_hru, how='left', on=['subbasin', 'totim', 'Date'])
+    surface_and_soil_zone_storage = pd.merge(surface_and_soil_zone_storage, intcp_stor, how='left', on=['subbasin', 'totim', 'Date'])
+    surface_and_soil_zone_storage = pd.merge(surface_and_soil_zone_storage, imperv_stor, how='left', on=['subbasin', 'totim', 'Date'])
+    surface_and_soil_zone_storage['surface_and_soil_zone_storage'] = surface_and_soil_zone_storage['soil_moist_tot'] + surface_and_soil_zone_storage['dprst_stor_hru'] + surface_and_soil_zone_storage['intcp_stor'] + surface_and_soil_zone_storage['imperv_stor']
+    surface_and_soil_zone_storage = surface_and_soil_zone_storage.drop(['soil_moist_tot', 'dprst_stor_hru', 'intcp_stor', 'imperv_stor'], axis=1)
+    surface_and_soil_zone_storage_change = surface_and_soil_zone_storage.copy()
+    surface_and_soil_zone_storage_change = surface_and_soil_zone_storage_change.pivot(index='Date', columns='subbasin', values='storage').reset_index()
+    date_col = surface_and_soil_zone_storage_change['Date']
+    surface_and_soil_zone_storage_change = surface_and_soil_zone_storage_change.drop(['Date'], axis=1).diff(axis=0)
+    surface_and_soil_zone_storage_change['Date'] = date_col
+    surface_and_soil_zone_storage_change = pd.melt(surface_and_soil_zone_storage_change, id_vars=['Date'], var_name='subbasin', value_name='storage_change')
+
+
     # merge
     df = pd.merge(zbout, precip, how='left', on=['subbasin', 'totim'])
     df = pd.merge(df, potet, how='left', on=['subbasin', 'totim', 'Date'])
@@ -440,12 +517,29 @@ def main(script_ws, model_ws, results_ws):
     df = pd.merge(df, hortonian_flow, how='left', on=['subbasin', 'totim', 'Date'])
     df = pd.merge(df, dunnian_flow, how='left', on=['subbasin', 'totim', 'Date'])
     df = pd.merge(df, ssres_flow, how='left', on=['subbasin', 'totim', 'Date'])
-    df = pd.merge(df, soil_moist_tot, how='left', on=['subbasin', 'totim', 'Date'])
-    df = pd.merge(df, dprst_stor_hru, how='left', on=['subbasin', 'totim', 'Date'])
-    df = pd.merge(df, intcp_stor, how='left', on=['subbasin', 'totim', 'Date'])
-    df = pd.merge(df, imperv_stor, how='left', on=['subbasin', 'totim', 'Date'])
+    #df = pd.merge(df, surface_and_soil_zone_storage, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, surface_and_soil_zone_storage_change, how='left', on=['subbasin', 'Date'])
+    df = pd.merge(df, hortonian_lakes, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, lakein_sz, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, intcp_evap, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, snow_evap, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, imperv_evap, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, dprst_evap_hru, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, perv_actet, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, swale_actet, how='left', on=['subbasin', 'totim', 'Date'])
+    df = pd.merge(df, streamflow_out, how='left', left_on=['subbasin', 'Date'], right_on=['subbasin', 'date'])
+    df = pd.merge(df, streamflow_in, how='left', left_on=['subbasin', 'Date'], right_on=['subbasin', 'date'])
     df = pd.merge(df, ag_div, how='left', on=['subbasin', 'totim'])
     budget_daily = pd.merge(df, ag_pond_div, how='left', on=['subbasin', 'totim'])
+    budget_daily = budget_daily.drop(['date_x', 'date_y'], axis=1)
+
+    # create surface and soil zone ET variable
+    #budget_daily['surface_and_soil_zone_et'] = budget_daily['actet'] - budget_daily['GW_ET'] # - budget_daily['UZF_ET']   # TODO: need to subtract UZF ET here
+    budget_daily['surface_and_soil_zone_et'] = budget_daily['intcp_evap'] + budget_daily['snow_evap'] + budget_daily['imperv_evap'] + budget_daily['dprst_evap_hru'] + budget_daily['perv_actet'] + budget_daily['swale_actet']
+
+    # combine all ag water uses together
+    budget_daily['ag_water_use'] = (budget_daily['AG_WE'] * -1) + budget_daily['direct_div'] + budget_daily['pond_div']  # note multiplying ag wells by negative 1 to convert from saturated zone control volume to surface and soil zone control volume
+    budget_daily['flow_to_lakes'] = budget_daily['hortonian_lakes'] + budget_daily['lakein_sz']
 
     # reformat
     shiftPos = budget_daily.pop("Date")
@@ -482,6 +576,14 @@ def main(script_ws, model_ws, results_ws):
     agg_cols = np.setdiff1d(var_cols,non_agg_cols)
     budget_annual = budget_daily.groupby(groupby_cols)[agg_cols].sum().reset_index()
 
+    # # calculate surface and soil zone storage change
+    # surface_and_soil_zone_storage_change_val = budget_annual[['surface_and_soil_zone_storage']].diff(axis=0)
+    # budget_annual['surface_and_soil_zone_storage_v1'] = surface_and_soil_zone_storage_change_val
+    #
+    # # calculate saturated zone storage change
+    # saturated_zone_storage_change_val = budget_annual[['STORAGE']].diff(axis=0)
+    # budget_annual['saturated_zone_storage'] = saturated_zone_storage_change_val
+
     # export
     budget_annual.to_csv(budget_subbasin_annual_file, index=False)
 
@@ -501,21 +603,21 @@ def main(script_ws, model_ws, results_ws):
 
 
 
-    #---- Plot annual sums of budget components ---------------------------------------------------------####
+    #---- Plot annual (water year) sums of budget components ---------------------------------------------------------####
 
     # loop through subbasins
     subs = budget_annual['subbasin'].unique()
     for sub in subs:
 
-        # get upstream subbasins for lateral inflow to surface and soil zone
-        upstream_sub = upstream_sub_dict[sub]
-        try:
-            upstream_sub_df = sim_df[sim_df['subbasin'].isin(upstream_sub)]
-            upstream_sub_df = upstream_sub_df.pivot(index='water_year', columns='subbasin', values='flow').reset_index()
-            upstream_sub_df['lateral_inflow'] = upstream_sub_df[upstream_sub].sum(axis=1)
-            upstream_sub_df['lateral_inflow'] = upstream_sub_df['lateral_inflow'] * (1/cubic_meters_per_acreft)
-        except:
-            pass
+        # # get upstream subbasins for lateral inflow to surface and soil zone
+        # upstream_sub = upstream_sub_dict[sub]
+        # try:
+        #     upstream_sub_df = sim_df[sim_df['subbasin'].isin(upstream_sub)]
+        #     upstream_sub_df = upstream_sub_df.pivot(index='water_year', columns='subbasin', values='flow').reset_index()
+        #     upstream_sub_df['lateral_inflow'] = upstream_sub_df[upstream_sub].sum(axis=1)
+        #     upstream_sub_df['lateral_inflow'] = upstream_sub_df['lateral_inflow'] * (1/cubic_meters_per_acreft)
+        # except:
+        #     pass
 
         # subset df_all
         df_all = budget_annual[budget_annual['subbasin'] == sub]
@@ -552,21 +654,15 @@ def main(script_ws, model_ws, results_ws):
         # fig.savefig(file_path)
 
         # plot surface and soil zone water budget: stacked bar plot
-        # TODO: check on all of the units, seems like there is a discrepancy between units for variables output by prms vs. modflow
-        # TODO: need to also include:
-        #  lateral inflow (streamflow into subbasin, shallow subsurface streamflow into subbasin?),
-        selected_vars = ['precip', 'actet', 'recharge', 'hortonian_flow', 'dunnian_flow', 'ssres_flow', 'SURFACE_LEAKAGE']
+        selected_vars = ['precip', 'surface_and_soil_zone_et', 'recharge', 'hortonian_flow', 'dunnian_flow', 'flow_to_lakes', 'ssres_flow', 'SURFACE_LEAKAGE', 'ag_water_use', 'storage_change']
         df = df_all[df_all['variable'].isin(selected_vars)]
         df = pd.pivot(df, index= 'water_year', columns='variable', values='value').reset_index()
-        try:
-            df['lateral_inflow'] = upstream_sub_df['lateral_inflow']
-        except:
-            pass
-        df['actet'] = df['actet'] * -1
+        df['surface_and_soil_zone_et'] = df['surface_and_soil_zone_et'] * -1
         df['recharge'] = df['recharge'] * -1
         df['hortonian_flow'] = df['hortonian_flow'] * -1
         df['dunnian_flow'] = df['dunnian_flow'] * -1
         df['ssres_flow'] = df['ssres_flow'] * -1
+        df['flow_to_lakes'] = df['flow_to_lakes'] * -1
         df['SURFACE_LEAKAGE'] = df['SURFACE_LEAKAGE'] * -1   # NOTE: multiplying by -1 because switching control volume for surface leakage from groundwater aquifer to surface and soil zone
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
                 title='Subbasin ' + str(sub) + ': ' + 'surface and soil zone water budget, annual sum',
@@ -598,7 +694,7 @@ def main(script_ws, model_ws, results_ws):
         # fig = this_plot.get_figure()
         # fig.savefig(file_path)
 
-        # plot ag water use: stacked bar
+        # plot ag water use: stacked bar --> NOTE: incorporating all the ag variables into the surface and soil zone budget rather than making separate field budgets
         # TODO: need to include ag field ET and ag field recharge
         selected_vars = ['AG_WE', 'direct_div', 'pond_div']
         df = df_all[df_all['variable'].isin(selected_vars)]
@@ -677,6 +773,24 @@ def main(script_ws, model_ws, results_ws):
         #     os.mkdir(os.path.dirname(file_path))
         # fig.savefig(file_path)
         #plt.close('all')
+
+
+        # plot stream network budget
+        selected_vars = ['streamflow_in', 'hortonian_flow', 'dunnian_flow', 'ssres_flow', 'streamflow_out']
+        df = df_all[df_all['variable'].isin(selected_vars)]
+        df = pd.pivot(df, index= 'water_year', columns='variable', values='value').reset_index()
+        df['groundwater_flow'] = df['streamflow_out'] - df['streamflow_in'] - df['hortonian_flow'] - df['dunnian_flow'] - df['ssres_flow']
+        df['streamflow_out'] = df['streamflow_out'] * -1
+        this_plot = df.plot(x='water_year', kind='bar', stacked=True,
+                title='Subbasin ' + str(sub) + ': ' + 'stream network water budget, annual sum',
+                xlabel="Water Year", ylabel="Volume (acre-ft)", figsize=(12, 8))
+        file_name = 'stream_network_water_budget_bar_' + str(sub) + '.png'
+        file_path = os.path.join(plot_folder, file_name)
+        fig = this_plot.get_figure()
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        fig.savefig(file_path)
+        plt.close('all')
 
 
 

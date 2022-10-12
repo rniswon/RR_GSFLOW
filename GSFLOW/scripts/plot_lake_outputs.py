@@ -200,15 +200,15 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(3, 1, figsize=(12, 8), dpi=150)
 
         # plot specified outflows and sim gate seg outflows
-        ax[0].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['midpt_flow'],  label = 'sim gate flow', color='#ff7f0e')
-        ax[0].plot(specified_outflows['date'], specified_outflows[1], label = 'specified outflow', linestyle='dotted', color='#1f77b4')
+        ax[0].plot(specified_outflows['date'], specified_outflows[1], label = 'specified outflow', color='#1f77b4')
+        ax[0].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['midpt_flow'],  label = 'sim gate flow', linestyle='dotted', color='#ff7f0e')
         ax[0].set_title('Specified outflow and simulated gate segment outflow: lake ' + str(lake_id))
         ax[0].legend()
         ax[0].set_xlabel('Time step')
         ax[0].set_ylabel('Flow (acre-ft/day)')
 
-        ax[1].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['flow_cumul'],  label = 'sim gate flow', color='#ff7f0e')
-        ax[1].plot(specified_outflows['date'], specified_outflows['flow_cumul'], label = 'specified outflow', linestyle='dotted', color='#1f77b4')
+        ax[1].plot(specified_outflows['date'], specified_outflows['flow_cumul'], label = 'specified outflow', color='#1f77b4')
+        ax[1].plot(sim_gate_seg_outflows['date'], sim_gate_seg_outflows['flow_cumul'],  label = 'sim gate flow', linestyle='dotted', color='#ff7f0e')
         ax[1].set_title('Cumulative specified outflow and simulated gate segment outflow: lake ' + str(lake_id))
         ax[1].legend()
         ax[1].set_xlabel('Time step')
@@ -248,16 +248,16 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 1, figsize=(8, 12), dpi=150)
 
         # plot lake stages
-        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label = 'sim', color='#ff7f0e')
-        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label = 'obs', linestyle='dotted', color='#1f77b4')
+        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label = 'obs', color='#1f77b4')
+        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label = 'sim', linestyle='dotted', color='#ff7f0e')
         ax[0].set_title('Stage: ' + lake_name)
         ax[0].legend()
         ax[0].set_xlabel('Date')
         ax[0].set_ylabel('Stage (ft)')
 
         # plot lake volume
-        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', color='#ff7f0e')
-        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', color='#1f77b4')
+        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', linestyle='dotted', color='#ff7f0e')
         ax[1].set_title('Volume: ' + lake_name)
         ax[1].legend()
         ax[1].set_xlabel('Date')
@@ -270,7 +270,7 @@ def main(model_ws, results_ws, init_files_ws):
         ax[2].set_ylabel('Evaporation (acre-ft/day)')
 
         # plot runoff
-        ax[3].plot(sim_lake_budget['date'], sim_lake_budget['LAK-Runoff'])
+        ax[3].plot(sim_lake_budget['date'], sim_lake_budget['LAK-Runoff'], color='#ff7f0e')
         ax[3].set_title('Runoff: ' + lake_name)
         ax[3].set_xlabel('Date')
         ax[3].set_ylabel('Runoff (acre-ft/day)')
@@ -309,16 +309,16 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(5, 1, figsize=(8, 12), dpi=150)
 
         # plot lake stages
-        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label='sim', color='#ff7f0e')
-        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label='obs', color='#1f77b4')
+        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label='sim', linestyle='dotted', color='#ff7f0e')
         ax[0].set_title('Stage: ' + lake_name)
         ax[0].legend()
         ax[0].set_xlabel('Date')
         ax[0].set_ylabel('Stage (ft)')
 
         # plot lake volume
-        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', color='#ff7f0e')
-        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', color='#1f77b4')
+        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', linestyle='dotted', color='#ff7f0e')
         ax[1].set_title('Volume: ' + lake_name)
         ax[1].legend()
         ax[1].set_xlabel('Date')
@@ -378,8 +378,8 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 2, figsize=(8, 12), dpi=150)
 
         # plot volume
-        ax[0, 0].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', color='#ff7f0e')
-        ax[0, 0].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[0, 0].plot(obs_lake_storage['date'], obs_lake_storage['storage_acreft'], label='obs', color='#1f77b4')
+        ax[0, 0].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='sim', linestyle='dotted', color='#ff7f0e')
         ax[0, 0].legend()
         ax[0, 0].set_title('Volume: ' + lake_name)
         ax[0, 0].set_xlabel('Date')
@@ -652,10 +652,10 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 2, figsize=(8, 12), dpi=150)
 
         # plot volume
-        ax[0,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim', color='#ff7f0e')
-        ax[0,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], color='#ff7f0e')
-        ax[0,0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[0,0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', color='#1f77b4')
         ax[0,0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], color='#1f77b4')
+        ax[0,0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim', linestyle='dotted', color='#ff7f0e')
+        ax[0,0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], color='#ff7f0e')
         ax[0,0].legend()
         ax[0,0].set_title('Change in volume: ' + lake_name)
         ax[0,0].set_xlabel('Water year')
@@ -789,10 +789,10 @@ def main(model_ws, results_ws, init_files_ws):
         fig, ax = plt.subplots(6, 1, figsize=(8, 12), dpi=150)
 
         # plot change in volume
-        ax[0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim', color='#ff7f0e')
-        ax[0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], color='#ff7f0e')
-        ax[0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', linestyle='dotted', color='#1f77b4')
+        ax[0].plot(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], label='obs', color='#1f77b4')
         ax[0].scatter(obs_lake_storage_annual['water_year'], obs_lake_storage_annual['storage_acreft_diff'], color='#1f77b4')
+        ax[0].plot(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], label='sim', linestyle='dotted', color='#ff7f0e')
+        ax[0].scatter(sim_lake_budget_annual['water_year'], sim_lake_budget_annual['Volume_diff'], color='#ff7f0e')
         ax[0].axhline(y=0, color='r', linestyle='-')
         ax[0].legend()
         ax[0].set_title('Change in volume: ' + lake_name)

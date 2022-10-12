@@ -131,37 +131,43 @@ def main(script_ws, model_ws, results_ws):
     sim_dict = {}
     for file in sim_files:
 
-        # read in gage file
-        gage_file = os.path.join(model_ws, 'modflow', 'output', file)
-        data = read_gage(gage_file, start_date)
-        sim_df = pd.DataFrame.from_dict(data)
-        sim_df.date = pd.to_datetime(sim_df.date).dt.date  # TODO: why would we need this? - .values.astype(np.int64)
-        sim_df['gage_name'] = 'none'
-        sim_df['subbasin_id'] = 0
-        sim_df['gage_id'] = 0
+        try:
 
-        # add gage name
-        gage_name = file.split(".")
-        gage_name = gage_name[0]
-        sim_df['gage_name'] = gage_name
+            # read in gage file
+            gage_file = os.path.join(model_ws, 'modflow', 'output', file)
+            data = read_gage(gage_file, start_date)
+            sim_df = pd.DataFrame.from_dict(data)
+            sim_df.date = pd.to_datetime(sim_df.date).dt.date  # TODO: why would we need this? - .values.astype(np.int64)
+            sim_df['gage_name'] = 'none'
+            sim_df['subbasin_id'] = 0
+            sim_df['gage_id'] = 0
 
-        # add subbasin id and gage id
-        mask = gage_df['Gage_Name'] == gage_name
-        subbasin_id = gage_df.loc[mask, 'subbasin'].values[0]
-        sim_df['subbasin_id'] = subbasin_id
-        gage_id = gage_df.loc[mask, 'Name'].values[0]
-        sim_df['gage_id'] = gage_id
+            # add gage name
+            gage_name = file.split(".")
+            gage_name = gage_name[0]
+            sim_df['gage_name'] = gage_name
 
-        # convert flow units from m^3/day to ft^3/s
-        days_div_sec = 1 / 86400  # 1 day is 86400 seconds
-        ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
-        sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
+            # add subbasin id and gage id
+            mask = gage_df['Gage_Name'] == gage_name
+            subbasin_id = gage_df.loc[mask, 'subbasin'].values[0]
+            sim_df['subbasin_id'] = subbasin_id
+            gage_id = gage_df.loc[mask, 'Name'].values[0]
+            sim_df['gage_id'] = gage_id
 
-        # store in dict
-        sim_dict.update({gage_id: sim_df})
+            # convert flow units from m^3/day to ft^3/s
+            days_div_sec = 1 / 86400  # 1 day is 86400 seconds
+            ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
+            sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
+
+            # store in dict
+            sim_dict.update({gage_id: sim_df})
+
+        except:
+
+            pass
 
     # identify gages with available observations
-    gages_with_obs = [1, 2, 3, 5, 6, 13, 16, 18, 20, 21, 22]
+    gages_with_obs = [1, 2, 3, 5, 6, 13, 18, 20]
     gage_df['obs_available'] = 0
     gage_mask = gage_df['subbasin'].isin(gages_with_obs)
     gage_df.loc[gage_mask, 'obs_available'] = 1
@@ -354,7 +360,6 @@ def main(script_ws, model_ws, results_ws):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
         plt.close('all')
-
 
 
 
