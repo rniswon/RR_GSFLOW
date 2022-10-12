@@ -498,7 +498,7 @@ def main(script_ws, model_ws, results_ws):
     surface_and_soil_zone_storage = pd.merge(soil_moist_tot, dprst_stor_hru, how='left', on=['subbasin', 'totim', 'Date'])
     surface_and_soil_zone_storage = pd.merge(surface_and_soil_zone_storage, intcp_stor, how='left', on=['subbasin', 'totim', 'Date'])
     surface_and_soil_zone_storage = pd.merge(surface_and_soil_zone_storage, imperv_stor, how='left', on=['subbasin', 'totim', 'Date'])
-    surface_and_soil_zone_storage['surface_and_soil_zone_storage'] = surface_and_soil_zone_storage['soil_moist_tot'] + surface_and_soil_zone_storage['dprst_stor_hru'] + surface_and_soil_zone_storage['intcp_stor'] + surface_and_soil_zone_storage['imperv_stor']
+    surface_and_soil_zone_storage['storage'] = surface_and_soil_zone_storage['soil_moist_tot'] + surface_and_soil_zone_storage['dprst_stor_hru'] + surface_and_soil_zone_storage['intcp_stor'] + surface_and_soil_zone_storage['imperv_stor']
     surface_and_soil_zone_storage = surface_and_soil_zone_storage.drop(['soil_moist_tot', 'dprst_stor_hru', 'intcp_stor', 'imperv_stor'], axis=1)
     surface_and_soil_zone_storage_change = surface_and_soil_zone_storage.copy()
     surface_and_soil_zone_storage_change = surface_and_soil_zone_storage_change.pivot(index='Date', columns='subbasin', values='storage').reset_index()
