@@ -18,7 +18,7 @@ import flopy
 # workspaces
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221006_03")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221007_02")
 
 # modflow name file
 mf_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
@@ -27,11 +27,11 @@ mf_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
 riparian_zone_file = os.path.join(repo_ws, "GSFLOW", "scripts", "inputs_for_scripts", "riparian_zone.shp")
 
 # set the desired initial value for extdp in riparian cells
-extdp_init_riparian = 0.1
+extdp_init_riparian = 2
 
 # script settings
-riparian_zone_all_stream_cells = 0
-riparian_zone_subset_stream_cells = 1
+riparian_zone_all_stream_cells = 1
+riparian_zone_subset_stream_cells = 0
 
 
 

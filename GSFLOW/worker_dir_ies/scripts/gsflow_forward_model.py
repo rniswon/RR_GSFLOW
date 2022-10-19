@@ -84,29 +84,29 @@ def run(input_file = None, real_no=-999, output_file = None):
         pass
     Sim.repo_ws = repo_ws
     Sim.script_ws = script_ws
-    Sim.gsflow_model = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model")
-    Sim.gsflow_model_updated = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated")
-    Sim.name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "windows", "rr_tr.nam")
-    Sim.prms_control = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", 'windows', 'prms_rr.control')
-    Sim.hru_shp_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "hru_shp.csv")
-    #Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", 'gage_hru.shp')
-    Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", 'gage_hru.txt')
-    Sim.pest_obs_all = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "pest_obs_all.csv")
-    Sim.gage_measurement_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "pest_obs_streamflow.csv")
-    Sim.subbasins_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "subbasins.txt")
-    Sim.surf_geo_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "surface_geology.txt")
-    Sim.grid_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "grid_info.npy")
-    Sim.K_zones_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "K_zone_ids_20220318.dat")
-    #Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "ghb_hru_20220404.shp")
-    Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "calib_files", "ghb_hru_20220404.txt")
-    Sim.pump_red_file_nonag = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output", "pumping_reduction.out")
-    #Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output", "pumping_reduction_ag.out")
-    Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output", "ag_well_all.out")
-    Sim.model_output_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "pest", "model_output.csv")
-    Sim.modflow_output_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output")
-    Sim.windows_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "windows")
-    Sim.lake_1_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output", "mendo_lake_bdg.lak.out")
-    Sim.lake_2_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output", "sonoma_lake_bdg.lak.out")
+    Sim.gsflow_model = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model")
+    Sim.gsflow_model_updated = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated")
+    Sim.name_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "windows", "rr_tr.nam")
+    Sim.prms_control = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", 'windows', 'prms_rr.control')
+    Sim.hru_shp_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "hru_shp.csv")
+    #Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.shp')
+    Sim.gage_hru_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", 'gage_hru.txt')
+    Sim.pest_obs_all = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_all.csv")
+    Sim.gage_measurement_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "pest_obs_streamflow.csv")
+    Sim.subbasins_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "subbasins.txt")
+    Sim.surf_geo_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "surface_geology.txt")
+    Sim.grid_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "grid_info.npy")
+    Sim.K_zones_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "K_zone_ids_20220318.dat")
+    #Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "ghb_hru_20220404.shp")
+    Sim.ghb_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "ghb_hru_20220404.txt")
+    Sim.pump_red_file_nonag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "pumping_reduction.out")
+    #Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "pumping_reduction_ag.out")
+    Sim.pump_red_file_ag = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "ag_well_all.out")
+    Sim.model_output_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "model_output.csv")
+    Sim.modflow_output_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output")
+    Sim.windows_folder = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "windows")
+    Sim.lake_1_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "mendo_lake_bdg.lak.out")
+    Sim.lake_2_budget_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "output", "sonoma_lake_bdg.lak.out")
 
 
     if not(input_file is None):
@@ -207,12 +207,12 @@ def run(input_file = None, real_no=-999, output_file = None):
 
     # change file paths for export of updated model input files
     # TODO: figure out why these files aren't being written to these file paths
-    Sim.mf.upw.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.upw")
-    Sim.mf.uzf.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.uzf")
-    Sim.mf.lak.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.lak")
-    Sim.mf.sfr.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.sfr")
-    Sim.mf.wel.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.wel")
-    Sim.mf.ghb.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.ghb")
+    Sim.mf.upw.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.upw")
+    Sim.mf.uzf.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.uzf")
+    Sim.mf.lak.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.lak")
+    Sim.mf.sfr.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.sfr")
+    Sim.mf.wel.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.wel")
+    Sim.mf.ghb.fn_path = os.path.join(repo_ws, "GSFLOW", "worker_dir", "gsflow_model_updated", "modflow", "input", "rr_tr.ghb")
 
 
     # write updated parameters
@@ -292,7 +292,7 @@ if __name__ == '__main__':
     time_start = time.time()
     print("Starting model run")
 
-    input_param_file = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param.csv")
+    input_param_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "pest", "input_param.csv")
     run(input_file= input_param_file)
     #shutil.copyfile(r"model_output - Copy.csv", "model_output.csv")
     #run_simple_in_out('input_param.dat', 'model_output.dat', 'input_param.csv', 'model_output.csv')

@@ -34,6 +34,11 @@ pst_fn = r"tr_mf.pst"
 # then it will be removed if CLEAN = True.
 CLEAN = True
 
+# set total pumping for non-ag and ag wells to be used in setting weights
+total_pumping_nonag = 2755305024.6011276
+total_pumping_ag = 545594008.896832
+
+
 
 
 
@@ -73,8 +78,22 @@ for site_id in site_ids:
     # assign weights for sites with only one value
     if df.shape[0] == 1:
 
-        weight = df['obsval'].values[0] * measurement_error
-        pest_obs_df.loc[mask_site_nonzero, 'weight']  = weight
+        if df['obsnme'].str.contains("pump_chg_nonag").values[0]:
+
+            # calculate weight
+            weight = 1/(0.05 * total_pumping_nonag)
+            pest_obs_df.loc[mask_site_nonzero, 'weight']  = weight
+
+        elif df['obsnme'].str.contains("pump_chg_ag").values[0]:
+
+            # calculate weight
+            weight = 1/(0.05 * total_pumping_ag)
+            pest_obs_df.loc[mask_site_nonzero, 'weight']  = weight
+
+
+        else:
+            weight = df['obsval'].values[0] * measurement_error
+            pest_obs_df.loc[mask_site_nonzero, 'weight']  = weight
 
 
     # assign weights for sites with more than one value
