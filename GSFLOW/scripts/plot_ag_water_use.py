@@ -156,7 +156,10 @@ def main(model_ws, results_ws):
     #     p.bar_label(container)
     file_name = 'ag_et.jpg'
     file_path = os.path.join(results_ws, "plots", "ag_water_use", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
     #plt.close(p)
 
 
@@ -173,7 +176,10 @@ def main(model_ws, results_ws):
     plt.ylabel('Volume (acre-ft)')
     file_name = 'groundwater_use.jpg'
     file_path = os.path.join(results_ws, "plots", "ag_water_use", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
 
     #---- Reformat pond files, plot ---------------------------------------------------------####
@@ -191,7 +197,10 @@ def main(model_ws, results_ws):
     plt.ylabel('Volume (acre-ft)')
     file_name = 'pond_fluxes.jpg'
     file_path = os.path.join(results_ws, "plots", "ag_water_use", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
 
     #---- Reformat diversion files, plot ---------------------------------------------------------####
@@ -207,7 +216,10 @@ def main(model_ws, results_ws):
     plt.ylabel('Volume (acre-ft)')
     file_name = 'div_water_use.jpg'
     file_path = os.path.join(results_ws, "plots", "ag_water_use", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
 
 

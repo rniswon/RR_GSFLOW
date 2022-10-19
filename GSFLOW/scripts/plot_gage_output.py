@@ -1,6 +1,7 @@
 import os
 import sys
 import matplotlib.pyplot as plt
+import hydroeval
 import datetime as dt
 import pandas as pd
 import numpy as np
@@ -70,6 +71,17 @@ def read_gage(f, start_date="1-1-1970"):
 def read_observation_data(f):
     return pd.read_csv(f)
 
+# define water year function
+def generate_water_year(df):
+    df['water_year'] = df['year']
+    months = list(range(1, 12 + 1))
+    for month in months:
+        mask = df['month'] == month
+        if month > 9:
+            df.loc[mask, 'water_year'] = df.loc[mask, 'year'] + 1
+
+    return df
+
 
 def main(script_ws, model_ws, results_ws):
     print("\n@@@@ CREATING GAGE OUTPUT FIGURE @@@@")
@@ -91,7 +103,7 @@ def main(script_ws, model_ws, results_ws):
     gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
 
     # identify gages with available observations
-    gages_with_obs = [1, 2, 3, 5, 6, 13, 16, 18, 20, 21, 22]
+    gages_with_obs = [1, 2, 3, 5, 6, 13, 18, 20]   #TODO: this doesn't include all the gauges that have obs, need to include all the gauges with obs and troubleshoot
     gage_df['obs_available'] = 0
     gage_mask = gage_df['subbasin'].isin(gages_with_obs)
     gage_df.loc[gage_mask, 'obs_available'] = 1
@@ -135,34 +147,43 @@ def main(script_ws, model_ws, results_ws):
     sim_files = [x for x in os.listdir(sim_file_path) if x.endswith('.go')]
     sim_dict = {}
     for file in sim_files:
-        # read in gage file
-        gage_file = os.path.join(model_ws, 'modflow', 'output', file)
-        data = read_gage(gage_file, start_date)
-        sim_df = pd.DataFrame.from_dict(data)
-        sim_df.date = pd.to_datetime(sim_df.date).dt.date  # TODO: why would we need this? - .values.astype(np.int64)
-        sim_df['gage_name'] = 'none'
-        sim_df['subbasin_id'] = 0
-        sim_df['gage_id'] = 0
 
-        # add gage name
-        gage_name = file.split(".")
-        gage_name = gage_name[0]
-        sim_df['gage_name'] = gage_name
+        try:
 
-        # add subbasin id and gage id
-        mask = gage_df['Gage_Name'] == gage_name
-        subbasin_id = gage_df.loc[mask, 'subbasin'].values[0]
-        sim_df['subbasin_id'] = subbasin_id
-        gage_id = gage_df.loc[mask, 'Name'].values[0]
-        sim_df['gage_id'] = gage_id
+            # read in gage file
+            gage_file = os.path.join(model_ws, 'modflow', 'output', file)
+            data = read_gage(gage_file, start_date)
+            sim_df = pd.DataFrame.from_dict(data)
+            sim_df.date = pd.to_datetime(sim_df.date).dt.date  # TODO: why would we need this? - .values.astype(np.int64)
+            sim_df['gage_name'] = 'none'
+            sim_df['subbasin_id'] = 0
+            sim_df['gage_id'] = 0
 
-        # convert flow units from m^3/day to ft^3/s
-        days_div_sec = 1 / 86400  # 1 day is 86400 seconds
-        ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
-        sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
+            # add gage name
+            gage_name = file.split(".")
+            gage_name = gage_name[0]
+            sim_df['gage_name'] = gage_name
 
-        # store in dict
-        sim_dict.update({gage_id: sim_df})
+            # add subbasin id and gage id
+            mask = gage_df['Gage_Name'] == gage_name
+            subbasin_id = gage_df.loc[mask, 'subbasin'].values[0]
+            sim_df['subbasin_id'] = subbasin_id
+            gage_id = gage_df.loc[mask, 'Name'].values[0]
+            sim_df['gage_id'] = gage_id
+
+            # convert flow units from m^3/day to ft^3/s
+            days_div_sec = 1 / 86400  # 1 day is 86400 seconds
+            ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
+            sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
+
+            # store in dict
+            sim_dict.update({gage_id: sim_df})
+
+        except:
+
+            pass
+
+
 
     # ERROR METRICS AND PLOTS  -------------------------------------------------####
 
@@ -216,7 +237,8 @@ def main(script_ws, model_ws, results_ws):
             sim_obs_daily['obs_flow'] = np.nan
             sim_obs_daily['day'] = np.nan
 
-        # store sim_obs_daily in dictionary
+        # add water year column, store sim_obs_daily in dictionary
+        sim_obs_daily = generate_water_year(sim_obs_daily)
         sim_obs_daily_dict.update({gage_id: sim_obs_daily})
 
         # drop NA from sim_obs_daily
@@ -247,7 +269,7 @@ def main(script_ws, model_ws, results_ws):
 
         # aggregate data by year: sum to get annual volume and convert to acre-ft
         # TODO: if end up plotting stage, it probably doesn't make sense to plot the annual stage sum, so leaving it out
-        sim_obs_year = sim_obs_daily.groupby(['year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
+        sim_obs_year = sim_obs_daily.groupby(['water_year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
         seconds_per_day = 86400
         acre_ft_per_cubic_ft = 1 / 43560.02
         sim_obs_year['sim_flow'] = sim_obs_year['sim_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
@@ -270,58 +292,109 @@ def main(script_ws, model_ws, results_ws):
         gage_name = gage_df.loc[mask, 'Gage_Name'].values[0]
         obs_available = gage_df.loc[mask, 'obs_available'].values[0]
         if obs_available == 1:
+
             # ANNUAL ERROR METRICS -------------------------------------------------####
 
             # calculate error metrics: annual flow volumes
-            nse = nash_sutcliffe_efficiency(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
-            paee = calculate_paee(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
-            aaee = calculate_aaee(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            #nse = nash_sutcliffe_efficiency(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            #paee = calculate_paee(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            #aaee = calculate_aaee(sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            nse = hydroeval.evaluator(hydroeval.nse, sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            nse_log = hydroeval.evaluator(hydroeval.nse, sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'], transform='log')
+            kge, r, alpha, beta = hydroeval.evaluator(hydroeval.kge, sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            rmse = hydroeval.evaluator(hydroeval.rmse, sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
+            pbias = hydroeval.evaluator(hydroeval.pbias, sim_obs_year_dropna['sim_flow'], sim_obs_year_dropna['obs_flow'])
 
             # store error metrics: annual flow volumes
-            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_annual', subbasin_id] = nse
-            error_metric_df.loc[error_metric_df['error_metric'] == 'paee_annual', subbasin_id] = paee
-            error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_annual', subbasin_id] = aaee
+            #error_metric_df.loc[error_metric_df['error_metric'] == 'nse_annual', subbasin_id] = nse
+            #error_metric_df.loc[error_metric_df['error_metric'] == 'paee_annual', subbasin_id] = paee
+            #error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_annual', subbasin_id] = aaee
+            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_annual', subbasin_id] = nse[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'log_nse_annual', subbasin_id] = nse_log[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'kge_annual', subbasin_id] = kge[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'alpha_kge_annual', subbasin_id] = alpha[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'corr_kge_annual', subbasin_id] = r[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'beta_kge_annual', subbasin_id] = beta[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'rmse_annual', subbasin_id] = rmse[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'percent_bias_annual', subbasin_id] = pbias[0]
+
+
 
             # MONTHLY ERROR METRICS  -------------------------------------------------####
 
             # calculate error metrics: monthly mean flows (for each year)
-            nse = nash_sutcliffe_efficiency(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
-            paee = calculate_paee(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
-            aaee = calculate_aaee(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            # nse = nash_sutcliffe_efficiency(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            # paee = calculate_paee(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            # aaee = calculate_aaee(sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            nse = hydroeval.evaluator(hydroeval.nse, sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            nse_log = hydroeval.evaluator(hydroeval.nse, sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'], transform='log')
+            kge, r, alpha, beta = hydroeval.evaluator(hydroeval.kge, sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            rmse = hydroeval.evaluator(hydroeval.rmse, sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
+            pbias = hydroeval.evaluator(hydroeval.pbias, sim_obs_yearmonth_dropna['sim_flow'], sim_obs_yearmonth_dropna['obs_flow'])
 
             # store error metrics: monthly mean flows (for each year)
-            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_monthly', subbasin_id] = nse
-            error_metric_df.loc[error_metric_df['error_metric'] == 'paee_monthly', subbasin_id] = paee
-            error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_monthly', subbasin_id] = aaee
+            # error_metric_df.loc[error_metric_df['error_metric'] == 'nse_monthly', subbasin_id] = nse
+            # error_metric_df.loc[error_metric_df['error_metric'] == 'paee_monthly', subbasin_id] = paee
+            # error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_monthly', subbasin_id] = aaee
+            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_monthly', subbasin_id] = nse[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'log_nse_monthly', subbasin_id] = nse_log[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'kge_monthly', subbasin_id] = kge[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'alpha_kge_monthly', subbasin_id] = alpha[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'corr_kge_monthly', subbasin_id] = r[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'beta_kge_monthly', subbasin_id] = beta[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'rmse_monthly', subbasin_id] = rmse[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'percent_bias_monthly', subbasin_id] = pbias[0]
+
+
+
 
             # DAILY ERROR METRICS  -------------------------------------------------####
 
             # calculate error metrics: daily flows
-            nse = nash_sutcliffe_efficiency(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
-            paee = calculate_paee(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
-            aaee = calculate_aaee(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            # nse = nash_sutcliffe_efficiency(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            # paee = calculate_paee(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            # aaee = calculate_aaee(sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            nse = hydroeval.evaluator(hydroeval.nse, sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            nse_log = hydroeval.evaluator(hydroeval.nse, sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'], transform='log')
+            kge, r, alpha, beta = hydroeval.evaluator(hydroeval.kge, sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            rmse = hydroeval.evaluator(hydroeval.rmse, sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
+            pbias = hydroeval.evaluator(hydroeval.pbias, sim_obs_daily_dropna['sim_flow'], sim_obs_daily_dropna['obs_flow'])
 
             # store error metrics: daily flows
-            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_daily', subbasin_id] = nse
-            error_metric_df.loc[error_metric_df['error_metric'] == 'paee_daily', subbasin_id] = paee
-            error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_daily', subbasin_id] = aaee
+            # error_metric_df.loc[error_metric_df['error_metric'] == 'nse_daily', subbasin_id] = nse
+            # error_metric_df.loc[error_metric_df['error_metric'] == 'paee_daily', subbasin_id] = paee
+            # error_metric_df.loc[error_metric_df['error_metric'] == 'aaee_daily', subbasin_id] = aaee
+            error_metric_df.loc[error_metric_df['error_metric'] == 'nse_daily', subbasin_id] = nse[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'log_nse_daily', subbasin_id] = nse_log[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'kge_daily', subbasin_id] = kge[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'alpha_kge_daily', subbasin_id] = alpha[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'corr_kge_daily', subbasin_id] = r[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'beta_kge_daily', subbasin_id] = beta[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'rmse_daily', subbasin_id] = rmse[0]
+            error_metric_df.loc[error_metric_df['error_metric'] == 'percent_bias_daily', subbasin_id] = pbias[0]
+
+
+
 
         # ANNUAL PLOTS  -------------------------------------------------####
 
         # plot annual flow volumes: time series
         plt.style.use('default')
         plt.figure(figsize=(12, 8), dpi=150)
-        plt.scatter(sim_obs_year.year, sim_obs_year.obs_flow, label='Observed')
-        plt.scatter(sim_obs_year.year, sim_obs_year.sim_flow, label='Simulated')
-        plt.plot(sim_obs_year.year, sim_obs_year.obs_flow)
-        plt.plot(sim_obs_year.year, sim_obs_year.sim_flow)
+        plt.scatter(sim_obs_year.water_year, sim_obs_year.obs_flow, label='Observed')
+        plt.scatter(sim_obs_year.water_year, sim_obs_year.sim_flow, label='Simulated')
+        plt.plot(sim_obs_year.water_year, sim_obs_year.obs_flow)
+        plt.plot(sim_obs_year.water_year, sim_obs_year.sim_flow)
         plt.title('Annual streamflow volumes: subbasin ' + str(subbasin_id) + "\n" + gage_name)
-        plt.xlabel('Year')
+        plt.xlabel('Water year')
         plt.ylabel('Annual streamflow volume (acre-ft)')
         plt.legend()
         file_name = 'annual_streamflow_volume_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_annual", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot annual flow volumes: sim vs. obs
         if subbasin_id in gages_with_obs:
@@ -345,7 +418,12 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'annual_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_annual", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
+
+
 
         # MONTHLY PLOTS: mean over all years  -------------------------------------------------####
 
@@ -364,7 +442,10 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'monthly_mean_streamflow_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_monthly", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot monthly mean flows: sim vs. obs
         if subbasin_id in gages_with_obs:
@@ -388,7 +469,12 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'monthly_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_monthly", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
+
+
 
         # MONTHLY PLOTS: for each year  -------------------------------------------------####
 
@@ -407,7 +493,10 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'yearmonth_streamflow_time_series_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_yearmonth", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot monthly mean flows: sim vs. obs
         # TODO: color the points by month
@@ -432,7 +521,12 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'yearmonth_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_yearmonth", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
+
+
 
         # DAILY PLOTS  -------------------------------------------------####
 
@@ -447,7 +541,10 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'daily_streamflow_time_series_all_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot cumulative flows (based on daily flows)
         seconds_per_day = 86400
@@ -466,7 +563,10 @@ def main(script_ws, model_ws, results_ws):
         plt.legend()
         file_name = 'cumul_streamflow_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_cumul", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot all daily flows on one page: time series
         # TODO: make the dates on the x-axis not overlap
@@ -485,7 +585,10 @@ def main(script_ws, model_ws, results_ws):
         # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
         file_name = 'daily_streamflow_time_series_' + str(subbasin_id) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot daily flows across several pages: time series
         # TODO: make the dates on the x-axis not overlap
@@ -512,7 +615,10 @@ def main(script_ws, model_ws, results_ws):
                 file_name = 'daily_streamflow_time_series_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
                     years[1]) + '.jpg'
                 file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
         # plot daily flows across several pages with only low flows: time series
         # TODO: make the dates on the x-axis not overlap
@@ -541,7 +647,10 @@ def main(script_ws, model_ws, results_ws):
                 file_name = 'daily_streamflow_time_series_low_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
                     years[1]) + '.jpg'
                 file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
         # plot all daily flows on one page: time series on log scale
         # TODO: make the dates on the x-axis not overlap
@@ -560,7 +669,10 @@ def main(script_ws, model_ws, results_ws):
         # ax.xaxis.set_minor_formatter(mdates.ConciseDateFormatter(locator))
         file_name = 'daily_streamflow_time_series_log_' + str(subbasin_id) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot daily flows across several pages: time series on log scale
         # TODO: make the dates on the x-axis not overlap
@@ -588,7 +700,10 @@ def main(script_ws, model_ws, results_ws):
                 file_name = 'daily_streamflow_time_series_log_' + str(subbasin_id) + '_' + str(years[0]) + '_' + str(
                     years[1]) + '.jpg'
                 file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
         # plot daily flows: sim vs. obs
         # TODO: add a 1:1 line here
@@ -598,7 +713,12 @@ def main(script_ws, model_ws, results_ws):
             this_plot.add_legend()
             file_name = 'daily_streamflow_sim_vs_obs_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
+
+
 
         # LOCAL AND CUMULATIVE FLOWS  -------------------------------------------------####
 
@@ -653,7 +773,10 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'local_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_daily_local", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
             # # calculate (absolute) cumulative differences
             # diff_obs_cum = obs_local.abs().cumsum()
@@ -693,7 +816,10 @@ def main(script_ws, model_ws, results_ws):
             plt.legend()
             file_name = 'cumdiff_streamflow_time_series_subbasin_' + str(subbasin_id) + '.jpg'
             file_path = os.path.join(results_ws, "plots", "streamflow_cumdiff", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
             plt.savefig(file_path)
+            plt.close('all')
 
         # export error metrics
         file_path = os.path.join(results_ws, 'tables', 'streamflow_error_metrics.csv')

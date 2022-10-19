@@ -1,0 +1,63 @@
+#---- Settings ---------------------------------------------####
+
+# load packages
+import os
+import pandas as pd
+import pyemu
+
+# set workspaces
+script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
+repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
+model_ws = os.path.join(repo_ws, "GSFLOW", "worker_dir_ies")
+
+# set pest control file
+pest_control_file = os.path.join(model_ws, "pest", "pest_baseline", "tr_mf.pst")
+pest_control_file_new = os.path.join(model_ws, "pest", "tr_mf.pst")
+
+
+#---- Update pest control file ---------------------------------------------####
+
+pst = pyemu.Pst(pest_control_file)
+
+xx=1
+
+if 1:
+
+    # make change range narrow
+    mask_none = pst.parameter_data['partrans'].isin(['none'])
+    pst.parameter_data.loc[mask_none, 'parlbnd'] =  pst.parameter_data.loc[mask_none,'parval1'] * 0.05
+    pst.parameter_data.loc[mask_none, 'parubnd'] =  pst.parameter_data.loc[mask_none,'parval1'] * 3
+
+    mask_none = pst.parameter_data['partrans'].isin(['log'])
+    pst.parameter_data.loc[mask_none, 'parlbnd'] =  pst.parameter_data.loc[mask_none,'parval1'] * 0.01
+    pst.parameter_data.loc[mask_none, 'parubnd'] =  pst.parameter_data.loc[mask_none,'parval1'] * 10.0
+
+     # every time we change a value make sure that the initial value is within the bounds.
+    # if beyond the limit, set equal to the mean of the bounds
+    # set a max value for upw_ks --- 500, min = 1e-6
+    # sy [0.03,  0.25]
+
+    # change the bounds for upw_ks
+    mask = pst.parameter_data['pargp'].isin(['upw_ks'])
+    pst.parameter_data.loc[mask, 'parlbnd'] = 1e-6
+    pst.parameter_data.loc[mask, 'parubnd'] = 500
+    mask = (pst.parameter_data['pargp'].isin(['upw_ks'])) & ((pst.parameter_data['parval1'] < pst.parameter_data['parlbnd']) | (pst.parameter_data['parval1'] > pst.parameter_data['parubnd']))
+    pst.parameter_data.loc[mask, 'parval1'] = (pst.parameter_data.loc[mask, 'parlbnd'] + pst.parameter_data.loc[mask, 'parubnd'])/2
+
+    # change the bounds for upw_sy
+    mask = pst.parameter_data['pargp'].isin(['upw_sy'])
+    pst.parameter_data.loc[mask, 'parlbnd'] = 0.03
+    pst.parameter_data.loc[mask, 'parubnd'] = 0.25
+    mask = (pst.parameter_data['pargp'].isin(['upw_sy'])) & ((pst.parameter_data['parval1'] < pst.parameter_data['parlbnd']) | (pst.parameter_data['parval1'] > pst.parameter_data['parubnd']))
+    pst.parameter_data.loc[mask, 'parval1'] = (pst.parameter_data.loc[mask, 'parlbnd'] + pst.parameter_data.loc[mask, 'parubnd'])/2
+
+    # mask_none = (pst.parameter_data['pargp'].isin(['upw_sy'])) & (pst.parameter_data['parlbnd']<0.03)
+
+
+
+#---- Export updated pest control file ---------------------------------------------####
+
+pst.write(os.path.join(os.path.dirname(pest_control_file_new) ,"tr_mf.pst"), version = 2)
+
+
+

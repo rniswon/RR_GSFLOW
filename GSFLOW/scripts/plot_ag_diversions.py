@@ -65,7 +65,10 @@ def main(model_ws, results_ws):
                 # export
                 file_name = 'div_seg_' + str(div_seg) + '_flow.jpg'
                 file_path = os.path.join(results_ws, "plots", "ag_diversions", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
             except:
                 print('Could not read in file: ' + fn)
@@ -106,7 +109,10 @@ def main(model_ws, results_ws):
                 # export
                 file_name = 'div_seg_' + str(div_seg) + '_et.jpg'
                 file_path = os.path.join(results_ws, "plots", "ag_diversions", file_name)
+                if not os.path.isdir(os.path.dirname(file_path)):
+                    os.mkdir(os.path.dirname(file_path))
                 plt.savefig(file_path)
+                plt.close('all')
 
             except:
                 print('Could not read in file: ' + fn)

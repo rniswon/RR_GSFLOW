@@ -83,7 +83,10 @@ def main(model_ws, results_ws):
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 1")
         file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr1.png')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot heads: layer 2
         plt.figure(figsize=(4.5, 6), dpi=150)
@@ -91,7 +94,10 @@ def main(model_ws, results_ws):
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 2")
         file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr2.png')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
         # plot heads: layer 3
         plt.figure(figsize=(4.5, 6), dpi=150)
@@ -99,7 +105,10 @@ def main(model_ws, results_ws):
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 3")
         file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr3.png')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
+        plt.close('all')
 
 
 
@@ -120,7 +129,10 @@ def main(model_ws, results_ws):
     plt.colorbar()
     plt.title(file_name_pretty + "\nlayer 1")
     file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr1.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
     # plot heads difference: layer 2
     plt.figure(figsize=(4.5, 6), dpi=150)
@@ -128,7 +140,10 @@ def main(model_ws, results_ws):
     plt.colorbar()
     plt.title(file_name_pretty + "\nlayer 2")
     file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr2.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
     # plot heads difference: layer 3
     plt.figure(figsize=(4.5, 6), dpi=150)
@@ -136,7 +151,10 @@ def main(model_ws, results_ws):
     plt.colorbar()
     plt.title(file_name_pretty + "\nlayer 3")
     file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr3.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
 
 
