@@ -61,6 +61,8 @@ DATA            1042  ..\modflow\output\EF_RUSSIAN_R_NR_CALPELLA.go
 DATA            1043  ..\modflow\output\mendo_lake_bdg.lak.out
 DATA            1044  ..\modflow\output\sonoma_lake_bdg.lak.out
 DATA            1045  ..\modflow\output\rubber_dam_lake_bdg.lak.out
+DATA            1047  ..\modflow\output\subbasin_22.go
+DATA            1048  ..\modflow\output\subbasin_21.go
 DATA(BINARY)      51  ..\modflow\output\rr_tr.hds REPLACE
 AG               121  ..\modflow\input\rr_tr.ag
 DATA            1046  ..\modflow\output\pumping_reduction_ag.out

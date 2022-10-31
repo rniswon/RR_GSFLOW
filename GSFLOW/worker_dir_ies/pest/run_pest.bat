@@ -1,1 +1,1 @@
-..\bin\pestpp-glm.exe tr_mf.pst
+..\bin\pestpp-ies.exe tr_mf.pst
