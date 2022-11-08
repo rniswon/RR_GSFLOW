@@ -83,7 +83,7 @@ def generate_water_year(df):
     return df
 
 
-def main(script_ws, model_ws, results_ws):
+def main(script_ws, model_ws, results_ws, mf_name_file_type):
     print("\n@@@@ CREATING GAGE OUTPUT FIGURE @@@@")
     # script_ws = os.path.abspath(os.path.dirname(__file__))
     # repo_ws = os.path.join(script_ws, "..", "..")
@@ -546,6 +546,23 @@ def main(script_ws, model_ws, results_ws):
         plt.ylabel('Streamflow (cfs)')
         plt.legend()
         file_name = 'daily_streamflow_time_series_all_' + str(subbasin_id).zfill(2) + '.jpg'
+        file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
+        # plot entire daily flow time series on log scale
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.plot(sim_obs_daily.date, sim_obs_daily.obs_flow, label='Observed')
+        plt.plot(sim_obs_daily.date, sim_obs_daily.sim_flow, label='Simulated', linestyle='dotted')
+        plt.title('Daily streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Date')
+        plt.ylabel('Streamflow (cfs)')
+        plt.yscale('log')
+        plt.legend()
+        file_name = 'daily_streamflow_time_series_all_log_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))

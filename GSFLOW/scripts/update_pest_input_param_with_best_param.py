@@ -47,7 +47,7 @@ ies_nth_best_run = 2
 
 # script settings
 pestpp_type = 'ies'   # options: glm, ies
-ies_summary_type = 'nth_best_run'  # options: average_all, average_best_n_runs, nth_best_run
+ies_summary_type = 'average_all'  # options: average_all, average_best_n_runs, nth_best_run
 
 
 

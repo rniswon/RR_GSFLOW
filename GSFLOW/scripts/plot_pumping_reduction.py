@@ -7,7 +7,7 @@ import geopandas
 import flopy
 
 
-def main(model_ws, results_ws, init_files_ws):
+def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
 
     # Set file names and paths -----------------------------------------------####
 
@@ -21,7 +21,7 @@ def main(model_ws, results_ws, init_files_ws):
     modflow_input_file_dir = os.path.join(model_ws, "modflow", "input")
 
     # name file
-    modflow_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    modflow_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
 
     # pumping reduction file
     pump_red_file = os.path.join(model_ws, "modflow", "output", "pumping_reduction.out")

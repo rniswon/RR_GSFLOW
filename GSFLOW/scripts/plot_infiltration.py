@@ -8,7 +8,7 @@ import geopandas
 import flopy
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # Set file names and paths -----------------------------------------------####
 
@@ -22,7 +22,7 @@ def main(model_ws, results_ws):
     modflow_input_file_dir = os.path.join(model_ws, "modflow", "input")
 
     # name file
-    modflow_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    modflow_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
 
     # simulated infiltration file
     sim_infiltration_file = os.path.join(model_ws, "PRMS", "output", "nhru_finf_cell_yearly.csv")

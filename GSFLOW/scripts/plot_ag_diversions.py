@@ -6,7 +6,7 @@ from datetime import datetime
 from gw_utils import general_util
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # ---- Settings ----------------------------------------------------####
 
@@ -15,7 +15,7 @@ def main(model_ws, results_ws):
     # repo_ws = os.path.join(script_ws, "..", "..")
 
     # set name file
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
 
 
 

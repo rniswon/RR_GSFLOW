@@ -47,7 +47,7 @@ def generate_water_year(df):
 
 
 # define main function
-def main(script_ws, model_ws, results_ws):
+def main(script_ws, model_ws, results_ws, mf_name_file_type):
 
 
     #-----------------------------------------------------------

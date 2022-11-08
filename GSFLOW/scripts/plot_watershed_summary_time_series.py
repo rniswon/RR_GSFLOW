@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # # set workspaces
     # script_ws = os.path.abspath(os.path.dirname(__file__))
@@ -45,4 +45,4 @@ if __name__ == "__main__":
     # note: model_ws and results_ws are defined in plot_all_gsflow.py,
     # if we want to run this script alone then need to define them here
 
-    main(model_ws, results_ws)
+    main(model_ws, results_ws, mf_name_file_type)

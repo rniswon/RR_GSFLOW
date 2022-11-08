@@ -6,7 +6,7 @@ import flopy
 import matplotlib.pyplot as plt
 
 
-def main(model_ws, results_ws, ss_archived_models_ws):
+def main(model_ws, results_ws, ss_archived_models_ws, mf_name_file_type):
 
     # ---- Settings -------------------------------------------####
 
@@ -21,7 +21,7 @@ def main(model_ws, results_ws, ss_archived_models_ws):
     # ---- Transient initial heads -------------------------------------------####
 
     # load transient modflow model
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                         load_only=["BAS6", "DIS"],
@@ -113,7 +113,7 @@ def main(model_ws, results_ws, ss_archived_models_ws):
     # ---- Experiment: change initial tr heads -------------------------------------------####
 
     # load transient modflow model
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                         load_only=["BAS6", "DIS"],
@@ -173,7 +173,7 @@ def main(model_ws, results_ws, ss_archived_models_ws):
     # ---- Plot final transient heads -------------------------------------------####
 
     # load transient modflow model
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                         load_only=["BAS6", "DIS"],
@@ -222,4 +222,4 @@ if __name__ == "__main__":
     # note: model_ws and results_ws are defined in plot_all_gsflow.py,
     # if we want to run this script alone then need to define them here
 
-    main(model_ws, results_ws, ss_archived_models_ws)
+    main(model_ws, results_ws, ss_archived_models_ws, mf_name_file_type)

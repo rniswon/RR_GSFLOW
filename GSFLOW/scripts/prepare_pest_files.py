@@ -73,9 +73,10 @@ if fixed_param_and_weight_obs_flag == 'subbasin':
     # fix_param_group = ['upw_ks', 'lak_cd', 'sfr_ks', 'upw_vka', 'uzf_vks', 'upw_sy',
     #                    'upw_ss', 'uzf_surfdep', 'uzf_extdp', 'uzf_surfk', 'ghb_bhead',
     #                    'prms_rain_adj']   # used for calibration of region upstream of Lake Mendo
-    fix_param_group = ['prms_carea_max', 'prms_covden_win', 'prms_jh_coef', 'prms_pref_flow_den',
-                       'prms_rain_adj', 'prms_smidx_exp', 'prms_sat_threshold', 'prms_slowcoef_lin', 'prms_slowcoef_sq',
-                       'prms_soil_moist_max', 'prms_soil_rechr_max_frac']
+    # fix_param_group = ['prms_carea_max', 'prms_covden_win', 'prms_jh_coef', 'prms_pref_flow_den',
+    #                    'prms_rain_adj', 'prms_smidx_exp', 'prms_sat_threshold', 'prms_slowcoef_lin', 'prms_slowcoef_sq',
+    #                    'prms_soil_moist_max', 'prms_soil_rechr_max_frac']
+    fix_param_group = ['prms_rain_adj']
 
 
     # set fixed parameters

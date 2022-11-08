@@ -9,8 +9,8 @@ from flopy.utils.geometry import Polygon, LineString, Point
 from flopy.export.shapefile_utils import recarray2shp, shp2recarray
 from datetime import datetime
 from datetime import timedelta
+from datetime import date
 from sklearn.metrics import r2_score
-
 
 from gw_utils import *
 from gw_utils import hob_util
@@ -446,14 +446,18 @@ def hob_resid_to_shapefile_loc(mf, stress_period=[0, -1], shpname='hob_shapefile
 
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # # set workspaces
     # script_ws = os.path.abspath(os.path.dirname(__file__))
     # repo_ws = os.path.join(script_ws, "..", "..")
 
+    # set model start and end dates
+    model_start_date = dt.date(1990, 1, 1)
+    model_end_date = dt.date(2015, 12, 31)
+
     # create data frame that maps HOBS observation name to date
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
     hobs_df = map_hobs_obsname_to_date(mf_tr_name_file, results_ws)
 
     # read in and add dates to hobs output file
@@ -464,6 +468,12 @@ def main(model_ws, results_ws):
     # read in gw obs sites
     gw_obs_sites_file = os.path.join(model_ws, '..' , '..', 'scripts', 'inputs_for_scripts', 'gw_obs_sites.shp')
     gw_obs_sites = geopandas.read_file(gw_obs_sites_file)
+
+    # read in simulated heads output file
+    sim_heads_file = os.path.join(model_ws, 'modflow', 'output', 'rr_tr.hds')
+    hds_obj = flopy.utils.HeadFile(sim_heads_file)
+    mf = flopy.modflow.Modflow.load(mf_tr_name_file, model_ws = os.path.dirname(mf_tr_name_file), load_only=['DIS', 'BAS6'])
+    hds_obj.model = mf
 
 
 
@@ -480,17 +490,71 @@ def main(model_ws, results_ws):
         df = hobs_out_df[well_mask]
         df = df.sort_values(by = 'date')
 
+        # get layer, row, col, roff, and coff of this well
+        mask_well = gw_obs_sites['obsnme'] == well
+        well_layer = gw_obs_sites.loc[mask_well, 'layer'].values[0] - 1
+        well_row = gw_obs_sites.loc[mask_well, 'row'].values[0] - 1
+        well_col = gw_obs_sites.loc[mask_well, 'col'].values[0] - 1
+        well_roff = gw_obs_sites.loc[mask_well, 'roff'].values[0]
+        well_coff = gw_obs_sites.loc[mask_well, 'coff'].values[0]
+
+        # get all the layers in this location
+        ibound = mf.bas6.ibound.array
+        ibound_lyr1 = ibound[0, well_row, well_col]
+        ibound_lyr2 = ibound[1, well_row, well_col]
+        ibound_lyr3 = ibound[2, well_row, well_col]
+
+        # extract the simulated time series for each layer for this well (at the center of the well, but is there a way to incorporate the roff and coff?)
+        date = pd.date_range(model_start_date, model_end_date, freq='d')
+        num_val = len(date)
+        head_ts = pd.DataFrame({'totim': list(range(1,num_val+1)),
+                                'date': date})
+        if ibound_lyr1 > 0:
+            head_ts_lyr1 = hds_obj.get_ts((0, well_row, well_col))
+            head_ts_lyr1 = pd.DataFrame(head_ts_lyr1, columns=['totim', 'sim_heads_lyr1'])
+            head_ts = pd.merge(head_ts, head_ts_lyr1, how='left', on='totim')
+        if ibound_lyr2 > 0:
+            head_ts_lyr2 = hds_obj.get_ts((1, well_row, well_col))
+            head_ts_lyr2 = pd.DataFrame(head_ts_lyr2, columns=['totim', 'sim_heads_lyr2'])
+            head_ts = pd.merge(head_ts, head_ts_lyr2, how='left', on='totim')
+        if ibound_lyr3 > 0:
+            head_ts_lyr3 = hds_obj.get_ts((2, well_row, well_col))
+            head_ts_lyr3 = pd.DataFrame(head_ts_lyr3, columns=['totim', 'sim_heads_lyr3'])
+            head_ts = pd.merge(head_ts, head_ts_lyr3, how='left', on='totim')
+
+        # remove all NA values in head_ts
+        head_ts = head_ts.dropna()
+
+        # set ylim buffer
+        ylim_buffer = 10
+
+        # identify min and max values
+        if ('sim_heads_lyr1' in head_ts.columns) & ('sim_heads_lyr2' in head_ts.columns) & ('sim_heads_lyr3' in head_ts.columns):
+            all_val_list = [head_ts['sim_heads_lyr1'].values.tolist(), head_ts['sim_heads_lyr2'].values.tolist(), head_ts['sim_heads_lyr3'].values.tolist(),
+                            df['observed'].values.tolist(), df['simulated'].values.tolist()]
+            all_val_list = [item for subl in all_val_list for item in subl]
+        elif ('sim_heads_lyr2' in head_ts.columns) & ('sim_heads_lyr3' in head_ts.columns):
+            all_val_list = [head_ts['sim_heads_lyr2'].values.tolist(), head_ts['sim_heads_lyr3'].values.tolist(),
+                            df['observed'].values.tolist(), df['simulated'].values.tolist()]
+            all_val_list = [item for subl in all_val_list for item in subl]
+        min_yval = min(all_val_list) - ylim_buffer
+        max_yval = max(all_val_list) + ylim_buffer
 
         # plot time series of simulated and observed heads
         plt.style.use('default')
         plt.figure(figsize=(12, 8), dpi=150)
-        plt.scatter(df.date, df.observed, label = 'Observed')
-        plt.scatter(df.date, df.simulated, label = 'Simulated')
-        plt.plot(df.date, df.observed)
-        plt.plot(df.date, df.simulated)
+        if 'sim_heads_lyr1' in head_ts.columns:
+            plt.plot(head_ts.date, head_ts.sim_heads_lyr1, label='Simulated layer 1 heads', color = 'tab:green', zorder=3)
+        if 'sim_heads_lyr2' in head_ts.columns:
+            plt.plot(head_ts.date, head_ts.sim_heads_lyr2, label='Simulated layer 2 heads', color = 'tab:olive', zorder=2)
+        if 'sim_heads_lyr3' in head_ts.columns:
+            plt.plot(head_ts.date, head_ts.sim_heads_lyr3, label='Simulated layer 3 heads', color = 'tab:gray', zorder=1)
+        plt.scatter(df.date, df.observed, label='Observed', color='tab:blue', zorder=4)
+        plt.scatter(df.date, df.simulated, label='Simulated', color='tab:orange', zorder=5)
         plt.title('Head time series: ' + str(well))
         plt.xlabel('Date')
         plt.ylabel('Head (m)')
+        plt.ylim(min_yval, max_yval)
         plt.legend()
         file_name = 'time_series_' + str(well) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "gw_time_series", file_name)

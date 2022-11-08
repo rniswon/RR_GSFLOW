@@ -8,7 +8,7 @@ import seaborn as sns
 
 
 
-def main(model_ws, results_ws, init_files_ws):
+def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
 
     # ---- Settings ----------------------------------------------------####
 

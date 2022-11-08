@@ -10,7 +10,7 @@ import flopy
 from gw_utils import general_util
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # ---- Settings ---------------------------------------------------------####
 
