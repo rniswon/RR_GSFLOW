@@ -83,7 +83,7 @@ def generate_water_year(df):
     return df
 
 
-def main(script_ws, model_ws, results_ws):
+def main(script_ws, model_ws, results_ws, mf_name_file_type):
     print("\n@@@@ CREATING GAGE OUTPUT FIGURE @@@@")
     # script_ws = os.path.abspath(os.path.dirname(__file__))
     # repo_ws = os.path.join(script_ws, "..", "..")
@@ -278,7 +278,7 @@ def main(script_ws, model_ws, results_ws):
 
         # aggregate data by year: sum to get annual volume and convert to acre-ft, drop NA
         # TODO: if end up plotting stage, it probably doesn't make sense to plot the annual stage sum, so leaving it out
-        sim_obs_year_dropna = sim_obs_daily_dropna.groupby(['year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
+        sim_obs_year_dropna = sim_obs_daily_dropna.groupby(['water_year'], as_index=False)[['sim_flow', 'obs_flow']].sum(min_count=360)
         seconds_per_day = 86400
         acre_ft_per_cubic_ft = 1 / 43560.02
         sim_obs_year_dropna['sim_flow'] = sim_obs_year_dropna['sim_flow'].values * seconds_per_day * acre_ft_per_cubic_ft
@@ -385,6 +385,10 @@ def main(script_ws, model_ws, results_ws):
         plt.scatter(sim_obs_year.water_year, sim_obs_year.sim_flow, label='Simulated')
         plt.plot(sim_obs_year.water_year, sim_obs_year.obs_flow)
         plt.plot(sim_obs_year.water_year, sim_obs_year.sim_flow)
+        # plt.scatter(sim_obs_year_dropna.water_year, sim_obs_year_dropna.obs_flow, label='Observed')
+        # plt.scatter(sim_obs_year_dropna.water_year, sim_obs_year_dropna.sim_flow, label='Simulated')
+        # plt.plot(sim_obs_year_dropna.water_year, sim_obs_year_dropna.obs_flow)
+        # plt.plot(sim_obs_year_dropna.water_year, sim_obs_year_dropna.sim_flow)
         plt.title('Annual streamflow volumes: subbasin ' + str(subbasin_id) + "\n" + gage_name)
         plt.xlabel('Water year')
         plt.ylabel('Annual streamflow volume (acre-ft)')
@@ -399,6 +403,7 @@ def main(script_ws, model_ws, results_ws):
         # plot annual flow volumes: sim vs. obs
         if subbasin_id in gages_with_obs:
             all_val = np.append(sim_obs_year['sim_flow'].values, sim_obs_year['obs_flow'].values)
+            #all_val = np.append(sim_obs_year_dropna['sim_flow'].values, sim_obs_year_dropna['obs_flow'].values)
             min_val = np.nanmin(all_val)
             max_val = np.nanmax(all_val)
             plot_buffer = (max_val - min_val) * 0.05
@@ -408,6 +413,7 @@ def main(script_ws, model_ws, results_ws):
             fig = plt.figure(figsize=(8, 8), dpi=150)
             ax = fig.add_subplot(111)
             ax.scatter(sim_obs_year.obs_flow, sim_obs_year.sim_flow)
+            # ax.scatter(sim_obs_year_dropna.obs_flow, sim_obs_year_dropna.sim_flow)
             ax.plot(df_1to1.observed, df_1to1.simulated, color="red", label='1:1 line')
             ax.set_title(
                 'Simulated vs. observed annual streamflow volume: subbasin ' + str(subbasin_id) + "\n" + gage_name)
@@ -540,6 +546,23 @@ def main(script_ws, model_ws, results_ws):
         plt.ylabel('Streamflow (cfs)')
         plt.legend()
         file_name = 'daily_streamflow_time_series_all_' + str(subbasin_id).zfill(2) + '.jpg'
+        file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
+        # plot entire daily flow time series on log scale
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.plot(sim_obs_daily.date, sim_obs_daily.obs_flow, label='Observed')
+        plt.plot(sim_obs_daily.date, sim_obs_daily.sim_flow, label='Simulated', linestyle='dotted')
+        plt.title('Daily streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Date')
+        plt.ylabel('Streamflow (cfs)')
+        plt.yscale('log')
+        plt.legend()
+        file_name = 'daily_streamflow_time_series_all_log_' + str(subbasin_id).zfill(2) + '.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))

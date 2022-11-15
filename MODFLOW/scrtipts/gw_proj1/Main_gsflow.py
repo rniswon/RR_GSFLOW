@@ -317,7 +317,8 @@ if (update_starting_heads == 1) | (update_starting_parameters == 1):
 
     # steady state or transient heads file
     # mf_initial_heads_file = r"..\..\archived_models\22_20220319\mf_dataset\rr_ss.hds"
-    mf_initial_heads_file = r"..\..\..\GSFLOW\archive\20220428_01_ag\modflow\output\rr_tr.hds"
+    #mf_initial_heads_file = r"..\..\..\GSFLOW\archive\20220428_01_ag\modflow\output\rr_tr.hds"  # TODO: need to put this back on laptop
+    mf_initial_heads_file = r"..\..\..\GSFLOW\archive\20220915_01\modflow\output\rr_tr.hds"  # Temporary
 
     # csv with best steady state params
     best_ss_input_params = r"..\..\archived_models\22_20220319\input_param_20211223_newgf.csv"
@@ -2381,8 +2382,51 @@ if update_prms_params_for_ag_package == 1:
     irr_type = 1
     gs.prms.parameters.add_record(name = "irr_type", values = [irr_type],
                                   dimensions = [["one",1]], datatype = 1,
-                                  file_name = gs.prms.parameters.parameter_files[1])
+                                  file_name = gs.prms.parameters.parameter_files[0])
 
+
+    # Add ag_soil_moist_max as prms parameter ------------------------------------------------------#
+
+    xx=1
+
+
+    # start with soil_moist_max values
+    ag_soil_moist_max = gs.prms.parameters.get_values("soil_moist_max")
+
+    # get mask of non-ag cells using ag_frac
+    ag_frac = gs.prms.parameters.get_values("ag_frac")
+    not_ag_mask = ag_frac == 0
+
+    # set to 0 in non-ag cells
+    ag_soil_moist_max[not_ag_mask] = 0
+
+    # set cells with values below min value to min value
+    min_ag_soil_moist_max_val = 2
+    too_low_mask = ag_soil_moist_max <= min_ag_soil_moist_max_val
+    ag_soil_moist_max[too_low_mask] = min_ag_soil_moist_max_val
+
+    # update
+    gs.prms.parameters.add_record(name = "ag_soil_moist_max", values = ag_soil_moist_max,
+                                  dimensions = [["nhru", nhru]], datatype = 2,
+                                  file_name = gs.prms.parameters.parameter_files[0])
+
+
+    # Add ag_soil_rechr_max as prms parameter ------------------------------------------------------#
+
+    # start with soil_rechr_max values
+    ag_soil_rechr_max_frac = gs.prms.parameters.get_values("soil_rechr_max_frac")
+
+    # get mask of non-ag cells using ag_frac
+    ag_frac = gs.prms.parameters.get_values("ag_frac")
+    not_ag_mask = ag_frac == 0
+
+    # set to 0 in non-ag cells
+    ag_soil_rechr_max_frac[not_ag_mask] = 0
+
+    # update
+    gs.prms.parameters.add_record(name = "ag_soil_rechr_max_frac", values = ag_soil_rechr_max_frac,
+                                  dimensions = [["nhru", nhru]], datatype = 2,
+                                  file_name = gs.prms.parameters.parameter_files[0])
 
 
     # write prms param file

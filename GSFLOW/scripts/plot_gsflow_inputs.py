@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # ---- Settings -------------------------------------------####
 
@@ -18,7 +18,7 @@ def main(model_ws, results_ws):
     # repo_ws = os.path.join(script_ws, "..", "..")
 
     # load transient modflow model
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                         load_only=["BAS6", "DIS", "UPW", "UZF", "SFR", "AG"],
@@ -117,7 +117,7 @@ def main(model_ws, results_ws):
     def generate_ag_gis(mf, file_name_ag_wells, file_name_ag_div, file_name_ag_ponds):
 
         # NOTE: function by Ayman
-        #mf = flopy.modflow.Modflow.load("rr_tr.nam", model_ws=ws, load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
+        #mf = flopy.modflow.Modflow.load(mf_name_file_type, model_ws=ws, load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
         #ag_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\modflow\input\rr_tr.ag"
         #ag = ModflowAg.load(r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\modflow\input\rr_tr.ag", mf, nper=36)
         #ag.fn_path = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220523_01\windows\rr_trXXX.ag"

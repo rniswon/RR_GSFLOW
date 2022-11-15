@@ -17,7 +17,7 @@ import datetime as dt
 #---- Main function ---------------------------------------------------------####
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # # set workspaces
     # script_ws = os.path.abspath(os.path.dirname(__file__))
@@ -25,7 +25,7 @@ def main(model_ws, results_ws):
     # model_ws = os.path.join(repo_ws, "GSFLOW")
 
     # set name file
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
 
     # set well and well et files
     well_file = os.path.join(model_ws, "modflow", "output", "ag_well_all.out")

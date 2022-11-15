@@ -8,7 +8,7 @@ import flopy
 from flopy.export.utils import export_contourf
 
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # ---- Settings -------------------------------------------####
 
@@ -23,7 +23,7 @@ def main(model_ws, results_ws):
     # ---- Read in model -------------------------------------------####
 
     # load transient modflow model
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
     mf_tr = gsflow.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
                                         load_only=["BAS6", "DIS"],

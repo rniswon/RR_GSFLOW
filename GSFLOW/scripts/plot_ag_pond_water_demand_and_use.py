@@ -17,10 +17,10 @@ import datetime as dt
 
 #---- Main function ---------------------------------------------------------####
 
-def main(model_ws, results_ws, init_files_ws):
+def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
 
     # set name file
-    mf_tr_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    mf_tr_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
 
     # set pond diversion input folder path
     pond_div_input_file_path = os.path.join(model_ws, "modflow", "input",  "ag_diversions")

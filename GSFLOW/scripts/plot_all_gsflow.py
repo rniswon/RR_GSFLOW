@@ -35,17 +35,19 @@ import plot_watershed_summary_time_series
 
 
 
-# ---- Set workspaces -------------------------------------------####
+# ---- Set workspaces and files -------------------------------------------####
 
 # set workspaces
 # note: update these workspaces as needed
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221004_01")                   # model workspace
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221106_02")                   # model workspace
 results_ws = os.path.join(repo_ws, "GSFLOW", "results")                                # results workspace
 ss_archived_models_ws = os.path.join(repo_ws, "MODFLOW", "archived_models")            # steady state archived models workspace
 init_files_ws = os.path.join(repo_ws, "MODFLOW", "init_files")                         # modflow init files workspace
 
+# set name file
+mf_name_file_type = 'rr_tr.nam'  # options: rr_tr.nam or rr_tr_heavy.nam
 
 
 #---- Delete old plots and tables -------------------------------------------####
@@ -83,70 +85,70 @@ if 0:
 # ---- Run plotting scripts -------------------------------------------####
 
 # print('plot ag diversions')
-# plot_ag_diversions.main(model_ws, results_ws)
+# plot_ag_diversions.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot ag diversions iupseg')
-# plot_ag_diversions_iupseg.main(model_ws, results_ws)
+# plot_ag_diversions_iupseg.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot ag pond diversions iupseg')
-# plot_ag_pond_div_iupseg.main(model_ws, results_ws)
+# plot_ag_pond_div_iupseg.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot ag pond diversions')
-# plot_ag_pond_diversions.main(model_ws, results_ws)
+# plot_ag_pond_diversions.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot ag pond water demand and use')
-# plot_ag_pond_water_demand_and_use.main(model_ws, results_ws, init_files_ws)
+# plot_ag_pond_water_demand_and_use.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
 #
 # # print('plot ag water budget by subbasin: prms only')
-# # plot_ag_water_budget_by_subbasin_prms_only.main(model_ws, results_ws)
+# # plot_ag_water_budget_by_subbasin_prms_only.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot ag water use')
-# plot_ag_water_use.main(model_ws, results_ws)
-#
+# plot_ag_water_use.main(model_ws, results_ws, mf_name_file_type)
+
 # print('plot annual rainfall-runoff ratio')
-# plot_rainfall_runoff_ratio.main(script_ws, model_ws, results_ws)
-#
-# print('plot gage output')
-# plot_gage_output.main(script_ws, model_ws, results_ws)
-#
+# plot_rainfall_runoff_ratio.main(script_ws, model_ws, results_ws, mf_name_file_type)
+
+print('plot gage output')
+plot_gage_output.main(script_ws, model_ws, results_ws, mf_name_file_type)
+
 # print('plot gsflow inputs')
-# plot_gsflow_inputs.main(model_ws, results_ws)
-#
-# print('plot hobs output')
-# plot_hobs_output.main(model_ws, results_ws)
-#
+# plot_gsflow_inputs.main(model_ws, results_ws, mf_name_file_type)
+
+print('plot hobs output')
+plot_hobs_output.main(model_ws, results_ws, mf_name_file_type)
+
 # # print('plot infiltration')
-# # plot_infiltration.main(model_ws, results_ws)
+# # plot_infiltration.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot initial transient heads') #todo: Ayman: no plots are made here
-# plot_initial_tr_heads.main(model_ws, results_ws, ss_archived_models_ws)
+# plot_initial_tr_heads.main(model_ws, results_ws, ss_archived_models_ws, mf_name_file_type)
 #
 # # print('plot lake bathymetry')
-# # plot_lake_bathymetry.main(model_ws, results_ws, init_files_ws)
+# # plot_lake_bathymetry.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
 #
 # print('plot lake outputs')
-# plot_lake_outputs.main(model_ws, results_ws, init_files_ws)
+# plot_lake_outputs.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
 #
 # print('plot list output')
-# plot_list_output.main(model_ws, results_ws)
+# plot_list_output.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot pumping reduction')
-# plot_pumping_reduction.main(model_ws, results_ws, init_files_ws)
+# plot_pumping_reduction.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
 #
 # print('plot simulated transient heads')
-# plot_sim_tr_heads.main(model_ws, results_ws)
+# plot_sim_tr_heads.main(model_ws, results_ws, mf_name_file_type)
 #
 # print('plot uzf recharge and discharge')
-# plot_uzf_recharge_and_discharge.main(model_ws, results_ws)
-
-print('plot water budget by subbasin')
-plot_water_budget_by_subbasin.main(script_ws, model_ws, results_ws)
-
+# plot_uzf_recharge_and_discharge.main(model_ws, results_ws, mf_name_file_type)
+#
+# # print('plot water budget by subbasin')
+# # plot_water_budget_by_subbasin.main(script_ws, model_ws, results_ws, mf_name_file_type)
+#
 # # print('plot water budget by subbasin: prms only')
-# # plot_water_budget_by_subbasin_prms_only.main(script_ws, model_ws, results_ws)
+# # plot_water_budget_by_subbasin_prms_only.main(script_ws, model_ws, results_ws, mf_name_file_type)
 #
 # print('plot watershed summary time series')
-# plot_watershed_summary_time_series.main(model_ws, results_ws)
+# plot_watershed_summary_time_series.main(model_ws, results_ws, mf_name_file_type)
 
 
 

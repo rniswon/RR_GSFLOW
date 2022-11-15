@@ -58,3 +58,4 @@ GSFLOW/worker_dir/PRMS/output
 **/*.rnj
 **/*.jcb
 **/*.jco
+GSFLOW/scripts/script_outputs/

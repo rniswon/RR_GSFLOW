@@ -46,7 +46,7 @@ from gw_utils import general_util
 
 
 
-def main(script_ws, model_ws, results_ws):
+def main(script_ws, model_ws, results_ws, mf_name_file_type):
 
 
     # ---- Settings ---------------------------------------------------------####
@@ -60,7 +60,7 @@ def main(script_ws, model_ws, results_ws):
     gsflow_control_file = os.path.join(model_ws, "windows", "gsflow_rr.control")
 
     # set modflow name file
-    modflow_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+    modflow_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
 
     # set zone budget file (derived from cbc file)
     zone_budget_file = os.path.join(model_ws, "modflow", "output", "zone_budget_output.csv.2.csv")
@@ -373,7 +373,7 @@ def main(script_ws, model_ws, results_ws):
 
 
     # add in potter valley flows for streamflow coming into subbasin 2
-    potter_valley_inflows = pd.read_csv(potter_valley_inflows_file, sep=' ', header=None)
+    potter_valley_inflows = pd.read_csv(potter_valley_inflows_file, sep='\t', header=None)   # note: used to be sep=' '
     potter_valley_inflows = potter_valley_inflows.rename(columns={0: 'totim', 1: 'streamflow_in', 2: 'date'})
     tmp= potter_valley_inflows['date'].str.split(pat='#', expand=True)
     potter_valley_inflows['date'] = tmp[[1]]

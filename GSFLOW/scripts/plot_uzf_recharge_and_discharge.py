@@ -85,7 +85,7 @@ class NetFlux(object):
                 result = np.reshape(result, shape)
         return result
 
-def main(model_ws, results_ws):
+def main(model_ws, results_ws, mf_name_file_type):
 
     # # set workspaces
     # script_ws = os.path.abspath(os.path.dirname(__file__))

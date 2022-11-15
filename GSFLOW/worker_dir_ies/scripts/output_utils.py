@@ -147,6 +147,9 @@ def generate_output_file_tr(Sim):
 
         # add subbasin id and gage id
         mask = gage_hru_df['Gage_Name'] == gage_name
+        if not np.any(mask):
+            print(" {} file cannot be found in the gage_hru.txt ")
+            continue
         subbasin_id = gage_hru_df.loc[mask, 'subbasin'].values[0]
         sim_df['subbasin_id'] = subbasin_id
         gage_id = gage_hru_df.loc[mask, 'Name'].values[0]
