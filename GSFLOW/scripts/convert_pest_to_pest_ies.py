@@ -119,15 +119,15 @@ for site_id in site_ids:
 use_mda = False
 n_realizations = 300
 if use_mda:
-    pst.pestpp_options['da_use_mda'] = 'True'
+    #pst.pestpp_options['ies_use_mda'] = 'True'
     #pst.pestpp_options['da_parameter_ensemble'] = 'mgKH.csv'
     pst.pestpp_options['ies_subset_size'] = n_realizations
     pst.pestpp_options['ies_num_reals'] = n_realizations
-    pst.pestpp_options['ies_lambda_mults'] = 1
+    pst.pestpp_options['ies_lambda_mults'] = [0.1,1, 10]
     pst.pestpp_options['lambda_scale_fac'] = 1
     pst.control_data.noptmax = 4
-    pst.pestpp_options['da_mda_init_fac'] = 100
-    pst.pestpp_options['da_mda_dec_fac'] = 0.8
+    #pst.pestpp_options['ies_mda_init_fac'] = 100
+    #pst.pestpp_options['ies_mda_dec_fac'] = 0.8
 
 else:
     # pst.pestpp_options['da_parameter_ensemble'] = 'mgKH.csv'

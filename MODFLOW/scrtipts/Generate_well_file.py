@@ -29,12 +29,16 @@ def main():
     flow_rate_file = r"D:\Workspace\projects\RussianRiver\modflow\other_files" \
                      r"\Pumping_temp_pop_filled_AF_per_month_source.csv"
     well_hru_file = r"D:\Workspace\projects\RussianRiver\GIS\hru_wells2.shp"
-    ws  = r"D:\Workspace\projects\RussianRiver\modflow\model_files\modflow\ss"
-    mfname = r"rr_ss.nam"
+    ws  = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\current_version\windows"
+    well_completion_f = r"D:\Workspace\projects\RussianRiver\Data\Pumping\GIS\i07_WellCompletionReports\i07_WellCompletionReports.shp"
+
+
+    mfname = r"rr_tr.nam"
 
     # Read shapefile for wells hru
     flow_rate = pd.read_csv(flow_rate_file)
     well_hru = geopandas.read_file(well_hru_file)
+    completion_df = geopandas.read_file(well_completion_f)
     well_hru.System = well_hru.System.values.astype(int)
 
     # read modflow grid
@@ -64,7 +68,9 @@ def main():
             continue  # no location
 
         # get row/col/layers and flow for the wells
+        wl_count = 0
         for i, well in curr_well_hrus.iterrows():
+            wl_count = wl_count + 1
             depth_info_flg = 0 # 1 if there is information about depth
             row = well['HRU_ROW'] # modflow index
             col = well['HRU_COL']
@@ -96,14 +102,26 @@ def main():
                 perf_top = float(close_well['Perftop__f']) * 0.3048
                 mid_point = (depth + perf_top) * 0.5
             elif np.isnan(depth) & (not np.isnan(perf_top)):
-                depth_info_flg = 1
+                depth_info_flg = 0.5
                 mid_point = perf_top
             elif (not np.isnan(depth)) & np.isnan(perf_top):
-                depth_info_flg = 1
+                depth_info_flg = 0.5
                 mid_point = depth
             else:
                 depth_info_flg = 1
                 mid_point = (depth + perf_top) * 0.5
+
+            # well completion info
+            dLat = completion_df.DecimalLat - well.Lat
+            dLon = completion_df.DecimalLon - well.Lon
+            dist = np.power(dLat, 2.0) + np.power(dLon, 2.0)
+            dist = np.power(dist, 0.5)
+            com_df = completion_df.copy()
+            com_df['dist'] = dist
+            com_df.sort_values(by=['dist'], inplace = True)
+            cc_depth = com_df[com_df['TotalCompl'] > 0]['TotalCompl'].values[0:10].mean()*0.3048
+            com_df['TopOfPerfo'] = com_df['TopOfPerfo'].astype(float)
+            cc_perf_top = com_df[com_df['TopOfPerfo'] > 0]['TopOfPerfo'].values[0:10].mean()* 0.3048
 
             # Now that the well depth is known find the layer  number
             botms = mf.dis.botm.array[:, row-1, col-1]
@@ -142,6 +160,10 @@ def main():
             else:
                 stress_period = np.arange(0, len(months)) + 1 # make the stress period index 1-based
             loc = flow != 0
+
+
+            well_model_name = "S"+str(System_Nm)+"W"+str(wl_count)
+
             curr_well = pd.DataFrame()
             curr_well['Stress_period'] = stress_period
             curr_well['Layer'] = lays
@@ -152,16 +174,22 @@ def main():
             curr_well['Sys_name'] = System_Nm
             curr_well['Well_name'] = well_nm
             curr_well['PS_CODE'] = PS_CODE
-            curr_well['depth'] = mid_point
+            curr_well['midpoint_elev'] = mid_point
             curr_well['depth_info_flg'] = depth_info_flg
             curr_well['isdata'] = isdata
             curr_well['Lat'] = well.Lat
             curr_well['Lon'] = well.Lon
             curr_well['OBJECTID'] = well['OBJECTID']
+            curr_well['model_name'] = well_model_name
+            curr_well['depth'] = depth
+            curr_well['perf_top'] = perf_top
+            curr_well['completion_depth'] = cc_depth
+            curr_well['completion_perf_top'] = cc_perf_top
+            curr_well['Model_top'] = top
             all_wells_tr.append(curr_well)
 
     all_wells_tr = pd.concat(all_wells_tr)
-    all_wells_tr.to_csv("D:\Workspace\projects\RussianRiver\modflow\other_files\Well_Info_ready_for_Model.csv")
+    all_wells_tr.to_csv(r"D:\Workspace\projects\RussianRiver\modflow\other_files\Well_Info_ready_for_Model.csv")
 
 if 1:
     main()
