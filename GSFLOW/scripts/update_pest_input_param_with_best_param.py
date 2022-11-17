@@ -20,11 +20,11 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set model workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221017_01", "GSFLOW", "worker_dir_ies")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221116_01", "GSFLOW", "worker_dir_ies")
 
 # set input param file
 input_param_file = os.path.join(model_ws, "pest", "input_param.csv")
-input_param_updated_file = os.path.join(model_ws, "pest", "input_param_20221017_05.csv")
+input_param_updated_file = os.path.join(model_ws, "pest", "input_param_20221116_01.csv")
 
 # set best param file
 glm_best_param_file = os.path.join(model_ws, "pest", "tr_mf.ipar")
