@@ -314,8 +314,9 @@ def generate_output_file_tr(Sim):
         # merge pumping reduction and well files
         pump_red_nonag_wel_sp = pd.merge(pump_red_nonag_sp, wel_sp, how='left', left_on=['SP'], right_on=['per'])
 
-        # calculate fraction pumping reduction overall
-        fraction_reduced = (pump_red_nonag_wel_sp['APPL.Q'].sum() - pump_red_nonag_wel_sp['ACT.Q'].sum()) / pump_red_nonag_wel_sp['flux_sp'].sum()
+        # calculate fraction pumping reduction for reduced wells
+        # TODO: need to update this so that applied and actual values are for all wells (both reduced and not, see plot_pumping_reduction.py as a guide)
+        fraction_reduced = (pump_red_nonag_wel_sp['APPL.Q'].sum() - pump_red_nonag_wel_sp['ACT.Q'].sum()) / pump_red_nonag_wel_sp['APPL.Q'].sum()
 
         # fill in simulated pump change in pest obs
         mask = pest_obs_all['obs_name'] == 'pump_chg_nonag'

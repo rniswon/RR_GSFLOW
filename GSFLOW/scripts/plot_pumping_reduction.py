@@ -35,8 +35,8 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
     # gsflow output file
     gsflow_output_file = os.path.join(model_ws, "prms", "output", "gsflow.csv")
 
-    # multinode wells output file
-    mnw_output_file = os.path.join(model_ws, "modflow", "output", "mnwi.out")
+    # # multinode wells output file
+    # mnw_output_file = os.path.join(model_ws, "modflow", "output", "mnwi.out")
 
     # TODO: need a file with actual pumping separated out by well and stress period
 
@@ -64,17 +64,37 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
     # read in gsflow output file
     gsflow_output = pd.read_csv(gsflow_output_file)
 
-    # read in multinode wells output file
-    #mnw_output = pd.read_csv(mnw_output_file)
-    mnw_output = pd.read_fwf(mnw_output_file)
+    # # read in multinode wells output file
+    # #mnw_output = pd.read_csv(mnw_output_file)
+    # mnw_output = pd.read_fwf(mnw_output_file)
 
 
-    # Reformat mnw output -----------------------------------------------####
+    # # Reformat mnw output -----------------------------------------------####
+    #
+    # # get columns we care about
+    # mnw_output = mnw_output[['WELLID', 'Totim', 'Qin', 'Qout', 'Qnet', 'hwell']]
+    #
+    # # get layer, row, and column for each well
+    # mnw_output['layer'] = -999
+    # mnw_output['row'] = -999
+    # mnw_output['col'] = -999
+    # well_ids = mnw_output['WELLID']
+    # for well_id in well_ids:
+    #
+    #     # get layer, row, and col for this well from M&I df
+    #     mask = m_and_i_wells['model_name'] == well_id
+    #     this_layer = m_and_i_wells.loc[mask, 'Layer']
+    #     this_row = m_and_i_wells.loc[mask, 'Row']
+    #     this_col = m_and_i_wells.loc[mask, 'Col']
+    #
+    #     # store layer, row and col for this well in MNW df
+    #     mask = mnw_output['WELLID'] == well_id
+    #     mnw_output.loc[mask, 'layer'] = this_layer
+    #     mnw_output.loc[mask, 'row'] = this_row
+    #     mnw_output.loc[mask, 'col'] = this_col
 
-    mnw_output = mnw_output[['WELLID', 'Totim', 'Qin', 'Qout', 'Qnet', 'hwell']]
 
-    # add row and column for each well
-    # TODO
+
 
 
     # Reformat well data -----------------------------------------------####

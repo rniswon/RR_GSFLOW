@@ -59,3 +59,8 @@ GSFLOW/worker_dir/PRMS/output
 **/*.jcb
 **/*.jco
 GSFLOW/scripts/script_outputs/
+GSFLOW/archive/**/results/
+GSFLOW/archive/**/GSFLOW/worker_dir_ies/calib_files
+GSFLOW/archive/**/GSFLOW/worker_dir_ies/gsflow_model_updated/modflow/output/
+GSFLOW/archive/**/GSFLOW/worker_dir_ies/gsflow_model_updated/PRMS/output/
+GSFLOW/archive/**/GSFLOW/worker_dir_ies/pest/
