@@ -35,8 +35,6 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
     # gsflow output file
     gsflow_output_file = os.path.join(model_ws, "prms", "output", "gsflow.csv")
 
-    # # multinode wells output file
-    # mnw_output_file = os.path.join(model_ws, "modflow", "output", "mnwi.out")
 
     # TODO: need a file with actual pumping separated out by well and stress period
 
@@ -47,13 +45,18 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
     # read in pumping reduction
     pump_red = flopy.utils.observationfile.get_reduced_pumping(pump_red_file)
 
-    # read in well file
+    # read in modflow model
     mf = flopy.modflow.Modflow.load(os.path.basename(modflow_name_file),
                                         model_ws=os.path.dirname(os.path.join(os.getcwd(), modflow_name_file)),
                                         load_only=["BAS6", "DIS", "WEL"],
                                         verbose=True, forgive=False, version="mfnwt")
+
+    # read in well input file
     wel = mf.wel
     wel_spd = wel.stress_period_data
+
+    # read in mnw input file
+    mnw_input = mf.mnw2.stress_period_data.get_dataframe()
 
     # read in rural domestic wells file
     rural_domestic_wells = pd.read_csv(rural_domestic_wells_file)
@@ -63,37 +66,6 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
 
     # read in gsflow output file
     gsflow_output = pd.read_csv(gsflow_output_file)
-
-    # # read in multinode wells output file
-    # #mnw_output = pd.read_csv(mnw_output_file)
-    # mnw_output = pd.read_fwf(mnw_output_file)
-
-
-    # # Reformat mnw output -----------------------------------------------####
-    #
-    # # get columns we care about
-    # mnw_output = mnw_output[['WELLID', 'Totim', 'Qin', 'Qout', 'Qnet', 'hwell']]
-    #
-    # # get layer, row, and column for each well
-    # mnw_output['layer'] = -999
-    # mnw_output['row'] = -999
-    # mnw_output['col'] = -999
-    # well_ids = mnw_output['WELLID']
-    # for well_id in well_ids:
-    #
-    #     # get layer, row, and col for this well from M&I df
-    #     mask = m_and_i_wells['model_name'] == well_id
-    #     this_layer = m_and_i_wells.loc[mask, 'Layer']
-    #     this_row = m_and_i_wells.loc[mask, 'Row']
-    #     this_col = m_and_i_wells.loc[mask, 'Col']
-    #
-    #     # store layer, row and col for this well in MNW df
-    #     mask = mnw_output['WELLID'] == well_id
-    #     mnw_output.loc[mask, 'layer'] = this_layer
-    #     mnw_output.loc[mask, 'row'] = this_row
-    #     mnw_output.loc[mask, 'col'] = this_col
-
-
 
 
 
@@ -174,6 +146,7 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
     # pump_red_wel_sp_isdata['reduced_fraction_all'] = (pump_red_wel_sp_isdata['APPL.Q'] - pump_red_wel_sp_isdata['ACT.Q']) / pump_red_wel_sp_isdata['flux_sp']    # TODO: need to update
     # pump_red_wel_sp_welltype['reduced_fraction_all'] = (pump_red_wel_sp_welltype['APPL.Q'] - pump_red_wel_sp_welltype['ACT.Q']) / pump_red_wel_sp_welltype['flux_sp']   # TODO: need to update
     # pump_red_wel_sp_isdata_welltype['reduced_fraction_all'] = (pump_red_wel_sp_isdata_welltype['APPL.Q'] - pump_red_wel_sp_isdata_welltype['ACT.Q']) / pump_red_wel_sp_isdata_welltype['flux_sp']   # TODO: need to update
+
 
     # calculate fraction pumping reduction for reduced wells
     pump_red_wel_sp['reduced_fraction'] = (pump_red_wel_sp['APPL.Q'] - pump_red_wel_sp['ACT.Q']) / pump_red_wel_sp['APPL.Q']
@@ -333,6 +306,7 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
 
 
 
+
     # Plot pumping reduction: M&I estimated wells -----------------------------------------------####
 
     # plot time series for wells with pumping reduction: applied vs. actual pumping
@@ -362,7 +336,6 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
 
 
 
-
     # Plot pumping reduction: all M&I wells -----------------------------------------------####
 
     # plot time series for wells with pumping reduction: applied vs. actual pumping
@@ -389,6 +362,7 @@ def main(model_ws, results_ws, init_files_ws, mf_name_file_type):
     # plot_title = 'Pumping reduction fraction: all wells\nall M&I wells'
     # file_name = 'pumping_reduction_ts_fraction_all_all_MandI.jpg'
     # plot_pumping_reduction_fraction_all(df, plot_title, file_name)
+
 
 
 

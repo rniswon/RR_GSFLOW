@@ -27,6 +27,7 @@ import plot_lake_bathymetry
 import plot_lake_outputs
 import plot_list_output
 import plot_pumping_reduction
+import plot_pumping_reduction_mnw
 import plot_sim_tr_heads
 import plot_uzf_recharge_and_discharge
 import plot_water_budget_by_subbasin
@@ -41,7 +42,7 @@ import plot_watershed_summary_time_series
 # note: update these workspaces as needed
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221116_04")                   # model workspace
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221123_01")                   # model workspace
 results_ws = os.path.join(repo_ws, "GSFLOW", "results")                                # results workspace
 ss_archived_models_ws = os.path.join(repo_ws, "MODFLOW", "archived_models")            # steady state archived models workspace
 init_files_ws = os.path.join(repo_ws, "MODFLOW", "init_files")                         # modflow init files workspace
@@ -132,8 +133,9 @@ plot_lake_outputs.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
 print('plot list output')
 plot_list_output.main(model_ws, results_ws, mf_name_file_type)
 
-# print('plot pumping reduction')
-# plot_pumping_reduction.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
+print('plot pumping reduction')
+#plot_pumping_reduction.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
+plot_pumping_reduction_mnw.main(model_ws, results_ws, init_files_ws, mf_name_file_type)
 
 print('plot simulated transient heads')
 plot_sim_tr_heads.main(model_ws, results_ws, mf_name_file_type)
