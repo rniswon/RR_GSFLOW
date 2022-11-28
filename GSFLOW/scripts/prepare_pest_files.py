@@ -52,13 +52,13 @@ peaks_and_valleys_plot_folder = os.path.join(repo_ws, "GSFLOW", "results", "plot
 #------------------------------------------------------------------------------------
 
 # set flag to set fixed parameters and zero-weight observations using subbasins vs. groundwater basins
-fixed_param_and_weight_obs_flag = 'subbasin'  # options: 'subbasin', or 'gw_basin', or 'none'
+fixed_param_and_weight_obs_flag = 'none'  # options: 'subbasin', or 'gw_basin', or 'none'
 
 # set flag for how to compare obs ids for zero weight obs
 compare_obs_id_zero_weight = "compare_obs_by_full_name"     # options: compare_obs_by_basename or "compare_obs_by_full_name"
 
 # set subbasins for pest
-subbasins_for_pest = [-999,1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]   # note: subbasin -999 refers to parameters or obs that cover the entire watershed
+subbasins_for_pest = [-999,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]   # note: subbasin -999 refers to parameters or obs that cover the entire watershed
 
 # read in parameter and obs files that contain subbasins and groundwater basins
 pest_input_param_subbasin = pd.read_csv(pest_input_param_subbasin_file)
@@ -73,10 +73,10 @@ if fixed_param_and_weight_obs_flag == 'subbasin':
     # fix_param_group = ['upw_ks', 'lak_cd', 'sfr_ks', 'upw_vka', 'uzf_vks', 'upw_sy',
     #                    'upw_ss', 'uzf_surfdep', 'uzf_extdp', 'uzf_surfk', 'ghb_bhead',
     #                    'prms_rain_adj']   # used for calibration of region upstream of Lake Mendo
-    # fix_param_group = ['prms_carea_max', 'prms_covden_win', 'prms_jh_coef', 'prms_pref_flow_den',
-    #                    'prms_rain_adj', 'prms_smidx_exp', 'prms_sat_threshold', 'prms_slowcoef_lin', 'prms_slowcoef_sq',
-    #                    'prms_soil_moist_max', 'prms_soil_rechr_max_frac']
-    fix_param_group = ['prms_rain_adj']
+    fix_param_group = ['prms_carea_max', 'prms_covden_win', 'prms_jh_coef', 'prms_pref_flow_den',
+                       'prms_rain_adj', 'prms_smidx_exp', 'prms_sat_threshold', 'prms_slowcoef_lin', 'prms_slowcoef_sq',
+                       'prms_soil_moist_max', 'prms_soil_rechr_max_frac']
+    # fix_param_group = ['prms_rain_adj']
 
 
     # set fixed parameters
@@ -114,10 +114,10 @@ elif fixed_param_and_weight_obs_flag == 'none':
     #fix_param_group = ['prms_rain_adj']
     fix_param_group = ['prms_carea_max', 'prms_covden_win', 'prms_jh_coef', 'prms_pref_flow_den',
                        'prms_rain_adj', 'prms_smidx_exp', 'prms_sat_threshold', 'prms_slowcoef_lin', 'prms_slowcoef_sq',
-                       'prms_smidx_coef', 'prms_soil_moist_max', 'prms_soil_rechr_max_frac', 'prms_ssr2gw_rate']
+                       'prms_smidx_coef', 'prms_soil_moist_max', 'prms_soil_rechr_max_frac']  #left out: 'prms_ssr2gw_rate'
 
     # set fixed parameters
-    fix_parms = []
+    fix_parms = ['lak_cond_01', 'lak_cond_02']
 
 
 
