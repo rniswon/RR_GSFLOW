@@ -15,13 +15,14 @@ from flopy.utils import Transient3d
 from gsflow.modflow import ModflowAg, Modflow
 import ArrayToShapeFile as ATS
 import make_utm_proj as mup
+import flopy.export.shapefile_utils
 
 
 
 # ==============================
 # Script settings
 # ==============================
-create_model_grid_shp = 1
+create_model_grid_shp = 0
 create_wells_shp = 0
 create_sfr_shp = 1
 create_ag_shp = 0
@@ -33,17 +34,20 @@ create_prms_param_shp = 0
 # Set file names and paths
 # ==============================
 
+# set script ws
+script_ws = os.path.abspath(os.path.dirname(__file__))
+
 # set gsflow model folder
-gsflow_folder = r".."
+gsflow_folder = os.path.join(script_ws, "..", "archive", "20221123_01", "GSFLOW", "worker_dir_ies", "gsflow_model_updated")
 
 # directory with transient model input files
-mf_tr_model_input_file_dir = r"..\modflow\input"
+mf_tr_model_input_file_dir = os.path.join(gsflow_folder, "modflow", "input")
 
 # name file
-mf_tr_name_file = r"..\windows\rr_tr.nam"
+mf_tr_name_file = os.path.join(gsflow_folder, "windows", "rr_tr.nam")
 
 # set output folder for gis files
-gis_output_folder = r"..\gis"
+gis_output_folder = os.path.join(script_ws,  "..", "archive", "20221123_01", "results", "plots", "gsflow_inputs")
 
 # ag package file
 ag_package_file = os.path.join(mf_tr_model_input_file_dir, "rr_tr.ag")
@@ -56,7 +60,7 @@ ag_package_file = os.path.join(mf_tr_model_input_file_dir, "rr_tr.ag")
 # load transient modflow model
 mf_tr = flopy.modflow.Modflow.load(os.path.basename(mf_tr_name_file),
                                    model_ws=os.path.dirname(os.path.join(os.getcwd(), mf_tr_name_file)),
-                                   verbose=True, forgive=False, version="mfnwt")
+                                   load_only=["BAS6", "DIS", "SFR"], verbose=True, forgive=False, version="mfnwt")
 
 # set model coordinate info
 xll = 465900
@@ -145,6 +149,10 @@ if create_sfr_shp == 1:
     # export to shapefile
     sfr_file_path = os.path.join(gis_output_folder, "sfr.shp")
     sfr.to_shapefile(sfr_file_path)
+    mup.make_proj(sfr_file_path)
+
+    #flopy.export.shapefile_utils.model_attributes_to_shapefile(sfr_file_path, mf_tr, ["sfr"])
+
 
 
 

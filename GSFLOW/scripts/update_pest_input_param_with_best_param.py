@@ -20,24 +20,24 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set model workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221116_01", "GSFLOW", "worker_dir_ies")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221212_04", "GSFLOW", "worker_dir_ies")
 
 # set input param file
 input_param_file = os.path.join(model_ws, "pest", "input_param.csv")
-input_param_updated_file = os.path.join(model_ws, "pest", "input_param_20221116_01.csv")
+input_param_updated_file = os.path.join(model_ws, "pest", "input_param_20221212_04.csv")
 
 # set best param file
 glm_best_param_file = os.path.join(model_ws, "pest", "tr_mf.ipar")
-ies_best_param_file = os.path.join(model_ws, "pest", "tr_mf.5.par.csv")
+ies_best_param_file = os.path.join(model_ws, "pest", "tr_mf.4.par.csv")
 
 # set pestpp-ies phi file
 ies_phi_file = os.path.join(model_ws, "pest", "tr_mf.phi.actual.csv")
 
 # set glm iteration with best param
-glm_best_iter = 5
+glm_best_iter = 1
 
 # set best ies iteration
-ies_best_iter = 5
+ies_best_iter = 4
 
 # set number of ies best runs for average_best_n_runs
 ies_num_best_runs = 20
