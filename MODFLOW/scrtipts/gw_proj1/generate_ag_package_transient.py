@@ -856,8 +856,8 @@ def main():
 
 
     # only keep ag field HRUs that have ag fraction >= a minimum value
-    #ag_frac_min_val = 0.01  # ORIGINAL
-    ag_frac_min_val = 0.05  # EXPERIMENT 6/21/22
+    ag_frac_min_val = 0.01  # ORIGINAL
+    #ag_frac_min_val = 0.05  # EXPERIMENT 6/21/22
     ag_data_nodupes = ag_dataset.drop_duplicates(
         subset=['field_hru_id', 'field_id'],
         keep='last').reset_index(drop=True)

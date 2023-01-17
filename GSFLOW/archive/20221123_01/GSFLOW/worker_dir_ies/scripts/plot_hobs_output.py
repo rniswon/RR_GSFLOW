@@ -11,6 +11,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import date
 from sklearn.metrics import r2_score
+import seaborn as sns
 
 from gw_utils import *
 from gw_utils import hob_util
@@ -84,7 +85,7 @@ def add_date_to_hobs_out(hobs_df, hobs_out_path, results_ws):
 
     # export
     file_name = os.path.join(results_ws, "tables", "hobs_out_df.csv")
-    hobs_out_df.to_csv(file_name)
+    hobs_out_df.to_csv(file_name, index=False)
 
     return hobs_out_df
 
@@ -689,7 +690,10 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
     plt.annotate("r-squared = {:.3f}".format(r_squared), (400, 1))
     file_name = 'sim_vs_obs_all_gw_basin.jpg'
     file_path = os.path.join(results_ws, "plots", "gw_sim_vs_obs", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
     # plot resid vs. obs groundwater heads
     plt.style.use('default')
@@ -704,9 +708,160 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
                title="Groundwater Basin")
     file_name = 'resid_vs_sim_all_gw_basin.jpg'
     file_path = os.path.join(results_ws, "plots", "gw_resid_vs_sim", file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
     plt.savefig(file_path)
+    plt.close('all')
 
 
+    # ---- Characterize gw head accuracy via variability heuristic -------------------------------------------####
+
+    # define function to characterize gw head accuracy
+    def characterize_gw_head_accuracy_via_variability_heuristic(hobs_out_df):
+
+        # calculate min, max, and range over all wells
+        hobs_out_df['residual_abs'] = hobs_out_df['residual'].abs()
+        var_all = hobs_out_df[['observed', 'simulated', 'residual_abs']].describe()
+
+
+
+        #---- group by gw basin ---------------------------------------------####
+
+        # calculate min, max, and range by gw basin: observed
+        var_gw_basin_obs = hobs_out_df.groupby(['gwbasin_nm'], as_index=False)[['observed']].agg(min = ('observed', np.min),
+                                                                                                 mean = ('observed', np.mean),
+                                                                                                 median = ('observed', np.median),
+                                                                                                 max = ('observed', np.max),
+                                                                                                 std = ('observed', np.std))
+        var_gw_basin_obs['range'] = var_gw_basin_obs['max']- var_gw_basin_obs['min']
+        var_gw_basin_obs['type'] = 'observed'
+
+        # calculate min, max, and range by gw basin: simulated
+        var_gw_basin_sim = hobs_out_df.groupby(['gwbasin_nm'], as_index=False)[['simulated']].agg(min = ('simulated', np.min),
+                                                                                                 mean = ('simulated', np.mean),
+                                                                                                 median = ('simulated', np.median),
+                                                                                                 max = ('simulated', np.max),
+                                                                                                 std = ('simulated', np.std))
+        var_gw_basin_sim['range'] = var_gw_basin_sim['max']- var_gw_basin_sim['min']
+        var_gw_basin_sim['type'] = 'simulated'
+
+        # calculate min, max, and range by gw basin: residual
+        var_gw_basin_resid = hobs_out_df.groupby(['gwbasin_nm'], as_index=False)[['residual_abs']].agg(min = ('residual_abs', np.min),
+                                                                                                 mean = ('residual_abs', np.mean),
+                                                                                                 median = ('residual_abs', np.median),
+                                                                                                 max = ('residual_abs', np.max),
+                                                                                                 std = ('residual_abs', np.std))
+        var_gw_basin_resid['range'] = var_gw_basin_resid['max']- var_gw_basin_resid['min']
+        var_gw_basin_resid['type'] = 'residual_abs'
+
+        # place in one data frame
+        var_gw_basin = pd.concat([var_gw_basin_obs, var_gw_basin_sim, var_gw_basin_resid], ignore_index=True)
+        var_gw_basin['grouping'] = 'gw_basin'
+
+
+
+        #---- group by subbasin ---------------------------------------------####
+
+        # calculate min, max, and range by subbasin: observed
+        var_subbasin_obs = hobs_out_df.groupby(['subbasin'], as_index=False)[['observed']].agg(
+            min=('observed', np.min),
+            mean=('observed', np.mean),
+            median=('observed', np.median),
+            max=('observed', np.max),
+            std=('observed', np.std))
+        var_subbasin_obs['range'] = var_subbasin_obs['max'] - var_subbasin_obs['min']
+        var_subbasin_obs['type'] = 'observed'
+
+        # calculate min, max, and range by subbasin: simulated
+        var_subbasin_sim = hobs_out_df.groupby(['subbasin'], as_index=False)[['simulated']].agg(
+            min=('simulated', np.min),
+            mean=('simulated', np.mean),
+            median=('simulated', np.median),
+            max=('simulated', np.max),
+            std=('simulated', np.std))
+        var_subbasin_sim['range'] = var_subbasin_sim['max'] - var_subbasin_sim['min']
+        var_subbasin_sim['type'] = 'simulated'
+
+        # calculate min, max, and range by subbasin: residual
+        var_subbasin_resid = hobs_out_df.groupby(['subbasin'], as_index=False)[['residual_abs']].agg(
+            min=('residual_abs', np.min),
+            mean=('residual_abs', np.mean),
+            median=('residual_abs', np.median),
+            max=('residual_abs', np.max),
+            std=('residual_abs', np.std))
+        var_subbasin_resid['range'] = var_subbasin_resid['max'] - var_subbasin_resid['min']
+        var_subbasin_resid['type'] = 'residual_abs'
+
+        # place in one data frame
+        var_subbasin = pd.concat([var_subbasin_obs, var_subbasin_sim, var_subbasin_resid], ignore_index=True)
+        var_subbasin['grouping'] = 'subbasin'
+
+
+        # boxplots of residuals by gw basin with lines indicating 10% variability cutoff for each group
+        plt.style.use('default')
+        plt.figure(figsize=(12, 10), dpi=150)
+        gw_basins = ['potter_valley', 'ukiah_valley', 'sanel_valley', 'mcdowell_valley',
+                           'alexander_valley', 'knights_valley', 'santa_rosa_valley', 'wilson_grove',
+                           'lower_rr_valley','upland']
+        sns.boxplot(x='gwbasin_nm', y='residual', data=hobs_out_df, order=gw_basins)
+        sns.stripplot(x='gwbasin_nm', y='residual', data=hobs_out_df, color='black', alpha=0.3, order=gw_basins)
+        plt.grid()
+        ref_line_buffer = 0.1
+        range_ratio = 0.1
+        xlim_all_vec = plt.xlim()
+        x_spacing = (xlim_all_vec[1] - xlim_all_vec[0])/len(gw_basins)
+        xlim_all_vec = [x/10 for x in range(int(xlim_all_vec[0]*10), int((xlim_all_vec[1] + x_spacing) * 10), int(x_spacing*10))]
+        xlim_min_vec = xlim_all_vec[0:-1]
+        xlim_max_vec = xlim_all_vec[1:]
+        for gw_basin, xlim_min, xlim_max in zip(gw_basins, xlim_min_vec, xlim_max_vec):
+
+            obs_range = var_gw_basin.loc[
+                (var_gw_basin['gwbasin_nm'] == gw_basin) & (var_gw_basin['type'] == 'observed'), 'range'].values[0]
+            plt.hlines(obs_range*range_ratio, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+            plt.hlines(obs_range*range_ratio*-1, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+        plt.title('Groundwater head residuals in each groundwater basin')
+        plt.xlabel('Groundwater basin')
+        plt.ylabel('Head residual (m)')
+        plt.xticks(rotation=45)
+        file_name = 'resid_vs_gw_basin.jpg'
+        file_path = os.path.join(results_ws, "plots", "gw_resid_boxplots", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+
+
+        # boxplots of residuals by subbasin with lines indicating 10% variability cutoff for each group
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        subbasins = var_subbasin['subbasin'].unique()
+        sns.boxplot(x='subbasin', y='residual', data=hobs_out_df)
+        sns.stripplot(x='subbasin', y='residual', data=hobs_out_df, color='black', alpha = 0.3)
+        plt.grid()
+        ref_line_buffer = 0.1
+        range_ratio = 0.1
+        xlim_all_vec = plt.xlim()
+        x_spacing = (xlim_all_vec[1] - xlim_all_vec[0])/len(subbasins)
+        xlim_all_vec = [x/10 for x in range(int(xlim_all_vec[0]*10), int((xlim_all_vec[1] + x_spacing) * 10), int(x_spacing*10))]
+        xlim_min_vec = xlim_all_vec[0:-1]
+        xlim_max_vec = xlim_all_vec[1:]
+        for subbasin, xlim_min, xlim_max in zip(subbasins, xlim_min_vec, xlim_max_vec):
+
+            obs_range = var_gw_basin.loc[
+                (var_subbasin['subbasin'] == subbasin) & (var_subbasin['type'] == 'observed'), 'range'].values[0]
+            plt.hlines(obs_range*range_ratio, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+            plt.hlines(obs_range*range_ratio*-1, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+        plt.title('Groundwater head residuals in each subbasin')
+        plt.xlabel('Subbasin')
+        plt.ylabel('Head residual (m)')
+        file_name = 'resid_vs_subbasin.jpg'
+        file_path = os.path.join(results_ws, "plots", "gw_resid_boxplots", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+
+
+    # well variability heuristic
+    gw_head_accuracy = characterize_gw_head_accuracy_via_variability_heuristic(hobs_out_df)
 
 
 
