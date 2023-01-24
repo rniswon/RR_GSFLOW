@@ -15,10 +15,16 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set model workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230116_02", "GSFLOW", "worker_dir_ies", "gsflow_model_updated")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230122_01", "GSFLOW", "worker_dir_ies", "gsflow_model_updated")
 
 # set model name file
 mf_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+
+# set subbasins file
+subbasins_file = os.path.join(model_ws, "..", "scripts", "script_inputs", "subbasins.txt")
+
+# set options
+exclude_subbasins_2_and_3 = 1
 
 
 
@@ -32,7 +38,8 @@ mf = gsflow.modflow.Modflow.load(os.path.basename(mf_name_file),
                                     version="mfnwt")
 
 
-
+# read in subbasins file
+subbasins = np.loadtxt(subbasins_file)
 
 
 # ---- Update iuzfbnd ------------------------------------####
@@ -80,6 +87,19 @@ for lyr in lyrs:
 lakes_lyr1 = mf.lak.lakarr.array[0, 0, :, :]
 mask_lakes = lakes_lyr1 > 0
 iuzfbnd[mask_lakes] = 0
+
+# set iuzfbnd to old values for subbasins 2 and 3
+if exclude_subbasins_2_and_3 == 1:
+
+    # get original iuzfbnd
+    iuzfbnd_orig = mf.uzf.iuzfbnd.array
+
+    # get mask for subbasins 2 and 3
+    mask = np.isin(subbasins, [2,3])
+
+    # set subbasins 2 and 3 make to original values
+    iuzfbnd[mask] = iuzfbnd_orig[mask]
+
 
 # store updated iuzfbnd
 mf.uzf.iuzfbnd = iuzfbnd
