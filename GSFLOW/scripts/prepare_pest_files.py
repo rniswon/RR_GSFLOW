@@ -4,6 +4,7 @@ import pandas as pd
 from scipy import signal
 import numpy as np
 import matplotlib.pyplot as plt
+import geopandas
 
 
 #-----------------------------------------------------------
@@ -45,6 +46,9 @@ streamflow_gage_weights_file_name = os.path.join(repo_ws, "GSFLOW", "worker_dir"
 # set peaks and valleys plot folder
 peaks_and_valleys_plot_folder = os.path.join(repo_ws, "GSFLOW", "results", "plots", "peaks_and_valleys")
 
+# set key wells file
+key_wells_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "gw_obs_sites_key_wells.shp")
+
 
 
 #------------------------------------------------------------------------------------
@@ -52,13 +56,13 @@ peaks_and_valleys_plot_folder = os.path.join(repo_ws, "GSFLOW", "results", "plot
 #------------------------------------------------------------------------------------
 
 # set flag to set fixed parameters and zero-weight observations using subbasins vs. groundwater basins
-fixed_param_and_weight_obs_flag = 'none'  # options: 'subbasin', or 'gw_basin', or 'none'
+fixed_param_and_weight_obs_flag = 'subbasin'  # options: 'subbasin', or 'gw_basin', or 'none'
 
 # set flag for how to compare obs ids for zero weight obs
 compare_obs_id_zero_weight = "compare_obs_by_full_name"     # options: compare_obs_by_basename or "compare_obs_by_full_name"
 
 # set subbasins for pest
-subbasins_for_pest = [-999,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]   # note: subbasin -999 refers to parameters or obs that cover the entire watershed
+subbasins_for_pest = [-999,1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]   # note: subbasin -999 refers to parameters or obs that cover the entire watershed
 
 # read in parameter and obs files that contain subbasins and groundwater basins
 pest_input_param_subbasin = pd.read_csv(pest_input_param_subbasin_file)
@@ -75,7 +79,7 @@ if fixed_param_and_weight_obs_flag == 'subbasin':
     #                    'prms_rain_adj']   # used for calibration of region upstream of Lake Mendo
     fix_param_group = ['prms_carea_max', 'prms_covden_win', 'prms_jh_coef', 'prms_pref_flow_den',
                        'prms_rain_adj', 'prms_smidx_exp', 'prms_sat_threshold', 'prms_slowcoef_lin', 'prms_slowcoef_sq',
-                       'prms_soil_moist_max', 'prms_soil_rechr_max_frac']
+                       'prms_smidx_coef', 'prms_soil_moist_max', 'prms_soil_rechr_max_frac']
     # fix_param_group = ['prms_rain_adj']
 
 
@@ -324,7 +328,6 @@ print("Generate parameter table")
 # Set K parameters and transformation
 kcond_param_groups = ['sfr_ks', 'upw_ks']
 pst.parameter_data['partrans'] = 'none'
-
 
 # Assign initial parameter values
 lower_bound_buffer = 0.1
@@ -759,6 +762,32 @@ mask_output_obs = output_obs['obs_group'] == 'pump_chg'
 weight_pump_chg = (1.0 / ((235000 * 5.0 / 100) ** 0.5)) * 1e6 * pump_chg_group_equalization_factor    # TODO: where did this come from?  is this what we want for the transient model?
 pst.observation_data.loc[mask_pest_file, 'weight'] = weight_pump_chg
 output_obs.loc[mask_output_obs, 'weight'] = weight_pump_chg
+
+
+
+
+
+# ---- Update observation weights: increase weights for key wells --------------------------------------------------####
+
+# read in key wells
+key_wells_df = geopandas.read_file(key_wells_file)
+key_wells_obsnme = key_wells_df.obsnme.str.split(pat='_', expand=True)
+key_wells_obsnme['well_id_num'] = key_wells_obsnme[1].str.zfill(3)
+key_wells_obsnme['well_id'] = key_wells_obsnme[0] + '_' + key_wells_obsnme['well_id_num']
+key_wells = key_wells_obsnme['well_id'].values
+
+# update key wells
+heads_df = output_obs[output_obs['obs_group'] == 'heads']
+site_ids = heads_df['obs_name'].str.split(pat='.', expand=True)
+site_ids = site_ids[0].unique()
+key_well_factor = 20
+for site_id in site_ids:
+
+    if site_id in key_wells:
+
+        mask_output_obs = output_obs['obs_name'].str.contains(site_id)
+        weight = output_obs.loc[mask_output_obs, 'weight'].values[0]
+        output_obs.loc[mask_output_obs, 'weight'] = weight * key_well_factor
 
 
 
