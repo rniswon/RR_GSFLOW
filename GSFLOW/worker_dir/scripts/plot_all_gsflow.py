@@ -120,8 +120,8 @@ plot_hobs_output.main(script_ws, model_ws, results_ws, mf_name_file_type)
 # print('plot infiltration')
 # plot_infiltration.main(model_ws, results_ws, mf_name_file_type)
 
-print('plot initial transient heads') #todo: Ayman: no plots are made here
-plot_initial_tr_heads.main(model_ws, results_ws, mf_name_file_type)
+# print('plot initial transient heads') #todo: Ayman: no plots are made here
+# plot_initial_tr_heads.main(model_ws, results_ws, ss_archived_models_ws, mf_name_file_type)
 
 # print('plot lake bathymetry')
 # plot_lake_bathymetry.main(script_ws, model_ws, results_ws, mf_name_file_type)

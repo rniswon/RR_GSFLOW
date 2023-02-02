@@ -6,7 +6,7 @@ import flopy
 import matplotlib.pyplot as plt
 
 
-def main(model_ws, results_ws, mf_name_file_type):
+def main(model_ws, results_ws, ss_archived_models_ws, mf_name_file_type):
 
     # ---- Settings -------------------------------------------####
 
@@ -222,4 +222,4 @@ if __name__ == "__main__":
     # note: model_ws and results_ws are defined in plot_all_gsflow.py,
     # if we want to run this script alone then need to define them here
 
-    main(model_ws, results_ws, mf_name_file_type)
+    main(model_ws, results_ws, ss_archived_models_ws, mf_name_file_type)

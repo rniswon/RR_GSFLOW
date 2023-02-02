@@ -44,15 +44,13 @@ if 1:
     pst.parameter_data.loc[mask, 'parubnd'] = 500
     # mask = (pst.parameter_data['pargp'].isin(['upw_ks'])) & ((pst.parameter_data['parval1'] < pst.parameter_data['parlbnd']) | (pst.parameter_data['parval1'] > pst.parameter_data['parubnd']))
     # pst.parameter_data.loc[mask, 'parval1'] = (pst.parameter_data.loc[mask, 'parlbnd'] + pst.parameter_data.loc[mask, 'parubnd'])/2
-    if (pst.parameter_data['pargp'].isin(['upw_ks'])) & (pst.parameter_data['parval1'] < pst.parameter_data['parlbnd']):
+    # lower bound
+    mask = (pst.parameter_data['pargp'].isin(['upw_ks'])) & (pst.parameter_data['parval1'] < pst.parameter_data['parlbnd'])
+    pst.parameter_data.loc[mask, 'parlbnd'] = pst.parameter_data.loc[mask,'parval1'] - (lower_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
+    # upper bound
+    mask = (pst.parameter_data['pargp'].isin(['upw_ks'])) & (pst.parameter_data['parval1'] > pst.parameter_data['parubnd'])
+    pst.parameter_data.loc[mask, 'parubnd'] = pst.parameter_data.loc[mask,'parval1'] + (upper_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
 
-        mask = (pst.parameter_data['pargp'].isin(['upw_ks'])) & (pst.parameter_data['parval1'] < pst.parameter_data['parlbnd'])
-        pst.parameter_data.loc[mask, 'parlbnd'] = pst.parameter_data.loc[mask,'parval1'] - (lower_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
-
-    elif (pst.parameter_data['pargp'].isin(['upw_ks'])) & (pst.parameter_data['parval1'] > pst.parameter_data['parubnd']):
-
-        mask = (pst.parameter_data['pargp'].isin(['upw_ks'])) & (pst.parameter_data['parval1'] > pst.parameter_data['parubnd'])
-        pst.parameter_data.loc[mask, 'parubnd'] = pst.parameter_data.loc[mask,'parval1'] + (upper_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
 
 
     # change the bounds for upw_sy
@@ -61,15 +59,12 @@ if 1:
     pst.parameter_data.loc[mask, 'parubnd'] = 0.25
     # mask = (pst.parameter_data['pargp'].isin(['upw_sy'])) & ((pst.parameter_data['parval1'] < pst.parameter_data['parlbnd']) | (pst.parameter_data['parval1'] > pst.parameter_data['parubnd']))
     # pst.parameter_data.loc[mask, 'parval1'] = (pst.parameter_data.loc[mask, 'parlbnd'] + pst.parameter_data.loc[mask, 'parubnd'])/2
-    if (pst.parameter_data['pargp'].isin(['upw_sy'])) & (pst.parameter_data['parval1'] < pst.parameter_data['parlbnd']):
-
-        mask = (pst.parameter_data['pargp'].isin(['upw_sy'])) & (pst.parameter_data['parval1'] < pst.parameter_data['parlbnd'])
-        pst.parameter_data.loc[mask, 'parlbnd'] = pst.parameter_data.loc[mask,'parval1'] - (lower_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
-
-    elif (pst.parameter_data['pargp'].isin(['upw_sy'])) & (pst.parameter_data['parval1'] > pst.parameter_data['parubnd']):
-
-        mask = (pst.parameter_data['pargp'].isin(['upw_sy'])) & (pst.parameter_data['parval1'] > pst.parameter_data['parubnd'])
-        pst.parameter_data.loc[mask, 'parubnd'] = pst.parameter_data.loc[mask,'parval1'] + (upper_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
+    # lower bound
+    mask = (pst.parameter_data['pargp'].isin(['upw_sy'])) & (pst.parameter_data['parval1'] < pst.parameter_data['parlbnd'])
+    pst.parameter_data.loc[mask, 'parlbnd'] = pst.parameter_data.loc[mask,'parval1'] - (lower_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
+    # upper bound
+    mask = (pst.parameter_data['pargp'].isin(['upw_sy'])) & (pst.parameter_data['parval1'] > pst.parameter_data['parubnd'])
+    pst.parameter_data.loc[mask, 'parubnd'] = pst.parameter_data.loc[mask,'parval1'] + (upper_bound_buffer * pst.parameter_data.loc[mask,'parval1'])
 
 
 

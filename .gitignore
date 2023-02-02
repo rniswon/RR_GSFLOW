@@ -53,8 +53,10 @@ GSFLOW/results/
 **/wellcompletionreports_DWR.csv
 GSFLOW/scripts/ponds/input
 GSFLOW/scripts/ponds/output
-GSFLOW/worker_dir/modflow/output
-GSFLOW/worker_dir/PRMS/output
+GSFLOW/worker_dir/gsflow_model/modflow/output
+GSFLOW/worker_dir/gsflow_model/PRMS/output
+GSFLOW/worker_dir_ies/gsflow_model/modflow/output
+GSFLOW/worker_dir_ies/gsflow_model/PRMS/output
 **/*.rnj
 **/*.jcb
 **/*.jco
@@ -64,3 +66,8 @@ GSFLOW/archive/**/GSFLOW/worker_dir_ies/calib_files
 GSFLOW/archive/**/GSFLOW/worker_dir_ies/gsflow_model_updated/modflow/output/
 GSFLOW/archive/**/GSFLOW/worker_dir_ies/gsflow_model_updated/PRMS/output/
 GSFLOW/archive/**/GSFLOW/worker_dir_ies/pest/
+GSFLOW/current_version/GSFLOW/worker_dir_ies/gsflow_model_updated/modflow/output/
+GSFLOW/current_version/GSFLOW/worker_dir_ies/gsflow_model_updated/PRMS/output/
+GSFLOW/current_version/GSFLOW/worker_dir_ies/results/
+GSFLOW/current_version/GSFLOW/worker_dir_ies/calib_files/
+GSFLOW/current_version/GSFLOW/worker_dir_ies/pest/

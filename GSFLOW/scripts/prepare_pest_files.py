@@ -48,6 +48,7 @@ peaks_and_valleys_plot_folder = os.path.join(repo_ws, "GSFLOW", "results", "plot
 
 # set key wells file
 key_wells_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "gw_obs_sites_key_wells.shp")
+nonkey_wells_file = os.path.join(repo_ws, "GSFLOW", "worker_dir", "calib_files", "gw_obs_sites_nonkey_wells.shp")
 
 
 
@@ -767,27 +768,27 @@ output_obs.loc[mask_output_obs, 'weight'] = weight_pump_chg
 
 
 
-# ---- Update observation weights: increase weights for key wells --------------------------------------------------####
+# ---- Update observation weights: decrease weights for non-key wells --------------------------------------------------####
 
-# read in key wells
-key_wells_df = geopandas.read_file(key_wells_file)
-key_wells_obsnme = key_wells_df.obsnme.str.split(pat='_', expand=True)
-key_wells_obsnme['well_id_num'] = key_wells_obsnme[1].str.zfill(3)
-key_wells_obsnme['well_id'] = key_wells_obsnme[0] + '_' + key_wells_obsnme['well_id_num']
-key_wells = key_wells_obsnme['well_id'].values
+# read in non-key wells
+nonkey_wells_df = geopandas.read_file(nonkey_wells_file)
+nonkey_wells_obsnme = nonkey_wells_df.obsnme.str.split(pat='_', expand=True)
+nonkey_wells_obsnme['well_id_num'] = nonkey_wells_obsnme[1].str.zfill(3)
+nonkey_wells_obsnme['well_id'] = nonkey_wells_obsnme[0] + '_' + nonkey_wells_obsnme['well_id_num']
+nonkey_wells = nonkey_wells_obsnme['well_id'].values
 
 # update key wells
 heads_df = output_obs[output_obs['obs_group'] == 'heads']
 site_ids = heads_df['obs_name'].str.split(pat='.', expand=True)
 site_ids = site_ids[0].unique()
-key_well_factor = 20
+nonkey_well_factor = 1/20
 for site_id in site_ids:
 
-    if site_id in key_wells:
+    if site_id in nonkey_wells:
 
         mask_output_obs = output_obs['obs_name'].str.contains(site_id)
         weight = output_obs.loc[mask_output_obs, 'weight'].values[0]
-        output_obs.loc[mask_output_obs, 'weight'] = weight * key_well_factor
+        output_obs.loc[mask_output_obs, 'weight'] = weight * nonkey_well_factor
 
 
 
