@@ -31,6 +31,7 @@ import plot_pumping_reduction_mnw
 import plot_sim_tr_heads
 import plot_uzf_recharge_and_discharge
 import plot_water_budget_by_subbasin
+import plot_water_budget_by_subbasin_light
 import plot_water_budget_by_subbasin_prms_only
 import plot_watershed_summary_time_series
 
@@ -144,6 +145,9 @@ plot_sim_tr_heads.main(model_ws, results_ws, mf_name_file_type)
 
 # print('plot water budget by subbasin')
 # plot_water_budget_by_subbasin.main(script_ws, model_ws, results_ws, mf_name_file_type)
+
+print('plot water budget by subbasin light')
+plot_water_budget_by_subbasin_light.main(script_ws, model_ws, results_ws, mf_name_file_type)
 
 # print('plot water budget by subbasin: prms only')
 # plot_water_budget_by_subbasin_prms_only.main(script_ws, model_ws, results_ws, mf_name_file_type)

@@ -296,14 +296,29 @@ for sub_i in uniq_subbasins:
     val = 1  # set all multipliers to 1 to start
     input_param = param_utils.add_param(input_param, nm, val, 'prms_covden_win', trans = 'none', comments = '#')
 
-# ssr2gw_rate
-# note: make a scalar multiplier of vks
+#ssr2gw_rate
+#note: make a scalar multiplier of vks
 vks = mf.uzf.vks.array
 ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
 ssr2gw_rate_arr = ssr2gw_rate.reshape(num_row, num_col)
 ssr2gw_rate_mult_array = ssr2gw_rate_arr/vks
 ssr2gw_rate_mult = np.mean(ssr2gw_rate_mult_array[mask_active_cells])
 input_param = param_utils.add_param(input_param, 'ssr2gw_rate_mult' , ssr2gw_rate_mult, 'prms_ssr2gw_rate', trans = 'none', comments = '#')
+
+# # note: make a scalar multiplier of vks for each subbasin
+# vks = mf.uzf.vks.array
+# ssr2gw_rate = gs.prms.parameters.get_values("ssr2gw_rate")
+# ssr2gw_rate_arr = ssr2gw_rate.reshape(num_row, num_col)
+# # ssr2gw_rate_mult_array = ssr2gw_rate_arr/vks
+# # ssr2gw_rate_mult = np.mean(ssr2gw_rate_mult_array[mask_active_cells])
+# input_param = param_utils.add_param(input_param, 'ssr2gw_rate_mult' , ssr2gw_rate_mult, 'prms_ssr2gw_rate', trans = 'none', comments = '#')
+# uniq_subbasins = np.unique(subbasins)
+# for sub_i in uniq_subbasins:
+#     if sub_i == 0:
+#         continue
+#     nm = 'pref_flow_den_mult_{}'.format(int(sub_i))
+#     val = 1  # set all multipliers to 1 to start
+#     input_param = param_utils.add_param(input_param, nm, val, 'prms_pref_flow_den', trans = 'none', comments = '#')
 
 # jh_coef
 # note: distribute by subbasin (for each month)
