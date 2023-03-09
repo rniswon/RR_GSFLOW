@@ -77,3 +77,7 @@ gsflow_applications/streamflow_depletion/scenarios/RR_unimpaired/modflow/output/
 gsflow_applications/streamflow_depletion/scenarios/RR_unimpaired/PRMS/output/
 gsflow_applications/streamflow_depletion/results/*.zip
 gsflow_applications/streamflow_depletion/results/*.txt
+gsflow_applications/unimpaired_flow_scenario/SRP/model/output/output.model1_full/
+gsflow_applications/unimpaired_flow_scenario/Russian_River/modflow/output/
+gsflow_applications/unimpaired_flow_scenario/Russian_River/*.list
+gsflow_applications/streamflow_depletion/scenarios/
