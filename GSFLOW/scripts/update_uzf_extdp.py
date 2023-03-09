@@ -18,16 +18,16 @@ import flopy
 # workspaces
 script_ws = os.path.abspath(os.path.dirname(__file__))                                 # script workspace
 repo_ws = os.path.join(script_ws, "..", "..")                                          # git repo workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20221007_02")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230222_10")
 
 # modflow name file
-mf_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
+mf_name_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model", "windows", "rr_tr.nam")
 
 # riparian zone file
 riparian_zone_file = os.path.join(repo_ws, "GSFLOW", "scripts", "inputs_for_scripts", "riparian_zone.shp")
 
 # set the desired initial value for extdp in riparian cells
-extdp_init_riparian = 2
+extdp_init_riparian = 0.5
 
 # script settings
 riparian_zone_all_stream_cells = 1
@@ -88,9 +88,15 @@ if riparian_zone_subset_stream_cells == 1:
     mf_tr.uzf.extdp = extdp
 
 
+# # ---- Update surfk -------------------------------------------####
+#
+# surfk = uzf.surfk.array
+# mask = surfk > 1e-5
+# surfk[mask] = 1e-5
+# mf_tr.uzf.surfk = surfk
 
 
 # ---- Export updated uzf file -------------------------------------------####
 
-mf_tr.uzf.fn_path = os.path.join(model_ws, "modflow", "input", "rr_tr.uzf")
+mf_tr.uzf.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model", "modflow", "input", "rr_tr_updated.uzf")
 mf_tr.uzf.write_file()
