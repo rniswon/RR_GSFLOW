@@ -83,3 +83,4 @@ gsflow_applications/unimpaired_flow_scenario/Russian_River/*.list
 gsflow_applications/streamflow_depletion/scenarios/
 gsflow_applications/unimpaired_flow_scenario/SRP/model/external_files/*.dyn
 gsflow_applications/unimpaired_flow_scenario/SRP/output/output.model1_full/
+gsflow_applications/unimpaired_flow_scenario/SRP/model/external_files/
