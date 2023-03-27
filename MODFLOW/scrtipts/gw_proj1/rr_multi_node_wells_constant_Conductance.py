@@ -6,13 +6,13 @@ import flopy
 import matplotlib.pyplot as plt
 
 
-ws = r".\..\..\..\GSFLOW\archive\current_version\windows"
+ws = r".\..\..\..\GSFLOW\current_version\GSFLOW\worker_dir_ies\gsflow_model\windows"
 mf = flopy.modflow.Modflow.load(r"rr_tr.nam",
                                      load_only=['DIS', 'BAS6'], model_ws = ws )
 Rw = 1.0 #
 Rskin = 12.5
 Kskin = 31.25
-
+cwc = 20
 
 df = pd.read_csv("..\..\init_files\Well_Info_ready_for_Model.csv")
 df = df[~df['Flow_Rate'].isna()]
@@ -24,10 +24,6 @@ well_names = df['model_name'].unique()
 
 for well_name in well_names:
     curr_well = df[df['model_name']==well_name]
-    # well_name = well_name.replace(' ', '')
-    # well_name = well_name.replace('/', '')
-    # well_name = well_name.replace(',', '')
-    # well_name = well_name.replace('#', '')
 
     rrow = int(curr_well['Row'].values[0]-1)
     ccol = int(curr_well['Col'].values[0]-1)
@@ -89,11 +85,14 @@ for well_name in well_names:
         ztop = top_active
         zbotm = botm_active
 
+    klayers = []
+    for lay in list(range(mf.nlay)):
+        if ibb[lay] == 1:
+            klayers.append(lay)
 
-    #['i', 'j', 'ztop', 'zbotm', 'wellid', 'losstype', 'pumploc', 'qlimit', 'ppflag', 'pumpcap', 'rw', 'rskin',
-    # 'kskin', 'zpump']
-    curr_node_data  = [rrow, ccol, ztop, zbotm, well_name, 'skin', 0,0,1,0, Rw, Rskin, Kskin, 0]
-    node_data.append(curr_node_data)
+    for kk in klayers:
+        curr_node_data  = [kk, rrow, ccol, ztop, zbotm, well_name, 'SPECIFYcwc', 0,0,1,0, Rw, Rskin, Kskin, 0, cwc]
+        node_data.append(curr_node_data)
 
     # stress data ['per', 'wellid', 'qdes']
     curr_stress_period = pd.DataFrame(columns=['per', 'wellid', 'qdes'])
@@ -104,9 +103,13 @@ for well_name in well_names:
     stress_period_data.append(curr_stress_period)
 
 #
-columns = ['i', 'j', 'ztop', 'zbotm', 'wellid', 'losstype', 'pumploc', 'qlimit', 'ppflag', 'pumpcap', 'rw', 'rskin',
-       'kskin', 'zpump']
+columns = ['k', 'i', 'j', 'ztop', 'zbotm', 'wellid', 'losstype', 'pumploc', 'qlimit', 'ppflag', 'pumpcap', 'rw', 'rskin',
+       'kskin', 'zpump', 'cwc']
 node_data = pd.DataFrame(node_data, columns= columns)
+
+cols_2_remove = [ 'ztop', 'zbotm','rw', 'rskin',  'kskin']
+for c in cols_2_remove:
+    del(node_data[c])
 node_data = node_data.to_records()
 
 
