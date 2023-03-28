@@ -112,8 +112,8 @@ if 0:
 print('plot gage output')
 plot_gage_output.main(script_ws, model_ws, results_ws, mf_name_file_type)
 
-# print('plot gsflow inputs')
-# plot_gsflow_inputs.main(model_ws, results_ws, mf_name_file_type)
+print('plot gsflow inputs')
+plot_gsflow_inputs.main(script_ws, model_ws, results_ws, mf_name_file_type)
 
 print('plot hobs output')
 plot_hobs_output.main(script_ws, model_ws, results_ws, mf_name_file_type)
