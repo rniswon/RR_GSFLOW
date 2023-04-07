@@ -35,3 +35,6 @@ and stored in two folders
 		  gcm_srphm_future_corrected.csv.
 		+ plot_gcm_ppt_temp_dev.py: plots comparisons between the original and corrected
 		  data. Plots are saved in the climate_scenarios/plots/ folder.
+
+--------------------------------------------------------------------------
+MODELS
