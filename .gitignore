@@ -84,6 +84,7 @@ gsflow_applications/unimpaired_flow_scenario/SRP/output/output.model1_full/
 gsflow_applications/unimpaired_flow_scenario/SRP/model/external_files/
 gsflow_applications/streamflow_depletion/scenarios/
 gsflow_applications/climate_scenarios/Russian_River/download/
+gsflow_applications/climate_scenarios/SRP/external_files/srphm_climate.wel
 gsflow_applications/climate_scenarios/*.py
 gsflow_applications/climate_scenarios/SRP/airport/download/
 gsflow_applications/climate_scenarios/SRP/santa_rosa/download/
