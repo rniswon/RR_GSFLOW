@@ -37,8 +37,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
     nlay, nrow, ncol = mf_tr.bas6.ibound.array.shape
 
     # load gsflow model
-    prms_control = os.path.join(model_ws, 'windows', 'prms_rr.control')
-    gs = gsflow.GsflowModel.load_from_file(control_file=prms_control)
+    gsflow_control = os.path.join(model_ws, 'windows', 'gsflow_rr.control')
+    gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
 
     # read in hru id shapefile
     hru_id_shp_file = os.path.join(script_ws, "script_inputs", "hru_params_hru_id_only.shp")
