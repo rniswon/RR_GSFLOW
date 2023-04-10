@@ -14,7 +14,7 @@ import gis_utils
 
 # (1) File names
 hru_param_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\hru_shp_sfr.shp"
-ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\archive\20220622_01\windows"
+ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\current_version\GSFLOW\worker_dir_ies\gsflow_model_updated\windows"
 output_ws = r"..\gis"
 figs_ws = r"..\figs"
 rural_domestic_file = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\MODFLOW\init_files\rural_domestic_master.csv"
