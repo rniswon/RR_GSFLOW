@@ -6,16 +6,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+
 # ==========================
 # Global Variables
 # ==========================
 Remove_worker = False
-Change_hk_around_wells = False
-Change_hk_around_streams = True
-Change_vk_around_streams = True
+filter_wells = True
+Change_hk_around_wells = True
+Change_vk_around_wells = False
+Change_hk_around_streams = False
+Change_vk_around_streams = False
 minimum_well_hk = 1.0
 minimum_well_vk = 1.0
-well_hk_factor = 1.0
+well_hk_factor = 10
 well_vk_factor = 1.0
 stream_hk_factor = 0.01
 stream_vk_factor = 0.01
@@ -23,28 +26,44 @@ stream_vk_factor = 0.01
 # working_ws = r"C:\work\Russian_River\scratch\worker"
 script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
-original_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230313_08")
-working_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230315_03")
+original_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230327_03")
+working_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230327_03")
+filter_wells_file = os.path.join(script_ws, "inputs_for_scripts", "mnw_mainstem_subbasins_4_thru_13.txt")
+
 
 # ==========================
 # Make changes
 # ==========================
 
-# make a copy of original ws
-if Remove_worker:
-    shutil.rmtree(working_ws)
-shutil.copytree(original_ws, working_ws)
+# # make a copy of original ws
+# if Remove_worker:
+#     shutil.rmtree(working_ws)
+# shutil.copytree(original_ws, working_ws)
 
 # load model
-mf_ws = os.path.join(working_ws, r"GSFLOW\worker_dir_ies\gsflow_model\windows")
+mf_ws = os.path.join(working_ws, r"GSFLOW\worker_dir_ies\gsflow_model_updated\windows")
 mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW', 'MNW2', 'SFR'])
 wells = pd.DataFrame(mf.mnw2.node_data)
-wrows = wells['i'].values
-wcols = wells['j'].values
 hk = mf.upw.hk.array
 vk = mf.upw.vka.array
 
+# filter wells
+if filter_wells == True:
+
+    # read in and get unique well ids
+    filter_wells = pd.read_csv(filter_wells_file)
+    filter_wells = pd.unique(filter_wells['wellid'])
+
+    # filter
+    mask = wells['wellid'].isin(filter_wells)
+    wells = wells[mask]
+
+
+
+
 # identify cells to change near wells
+wrows = wells['i'].values
+wcols = wells['j'].values
 layers, nrows, ncols = hk.shape
 x = mf.modelgrid.get_xcellcenters_for_layer(0)
 y = mf.modelgrid.get_ycellcenters_for_layer(0)
@@ -76,6 +95,17 @@ if Change_hk_around_wells == True:
         vals = vals * well_hk_factor
         vals[vals < 1.0] = minimum_well_hk
         hk[k, rr_cc_arr[:, 0], rr_cc_arr[:, 1]] = vals
+
+
+# change VK around wells
+if Change_vk_around_wells == True:
+    for k in range(layers):
+        vals = vk[k, rr_cc_arr[:, 0], rr_cc_arr[:, 1]]
+        vals = vals * well_vk_factor
+        vals[vals < 1.0] = minimum_well_vk
+        vk[k, rr_cc_arr[:, 0], rr_cc_arr[:, 1]] = vals
+
+
 
 
 
@@ -141,13 +171,13 @@ if Change_vk_around_streams == True:
 # ==========================
 
 # update and write hk and vk
-if (Change_hk_around_wells == True) | (Change_hk_around_streams == True) | (Change_vk_around_streams == True):
+if (Change_hk_around_wells == True) | (Change_vk_around_wells == True) | (Change_hk_around_streams == True) | (Change_vk_around_streams == True):
 
     if (Change_hk_around_wells == True) | (Change_hk_around_streams == True) :
         mf.upw.hk = hk
 
-    if Change_vk_around_streams == True:
-        mf.upw.vk = vk
+    if (Change_vk_around_wells == True) | (Change_vk_around_streams) == True:
+        mf.upw.vka = vk
 
     upw_file = os.path.join(mf_ws, r"..", "modflow\input", mf.upw.file_name[0])
     mf.upw.fn_path = upw_file
