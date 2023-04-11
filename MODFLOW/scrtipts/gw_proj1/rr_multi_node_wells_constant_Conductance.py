@@ -6,7 +6,7 @@ import flopy
 import matplotlib.pyplot as plt
 
 
-ws = r".\..\..\..\GSFLOW\current_version\GSFLOW\worker_dir_ies\gsflow_model\windows"
+ws = r".\..\..\..\GSFLOW\current_version\GSFLOW\worker_dir_ies\gsflow_model_updated\windows"
 mf = flopy.modflow.Modflow.load(r"rr_tr.nam",
                                      load_only=['DIS', 'BAS6'], model_ws = ws )
 Rw = 1.0 #
