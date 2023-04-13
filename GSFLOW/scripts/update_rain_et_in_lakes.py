@@ -17,7 +17,7 @@ import geopandas
 # workspaces
 script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230410_01")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230410_02")
 
 # set gsflow control file
 gsflow_control = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", 'windows', 'gsflow_rr.control')
