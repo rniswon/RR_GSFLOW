@@ -16,7 +16,7 @@ import geopandas
 
 script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230412_08")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230413_07")
 
 # # ag fields shapefile
 # ag_fields_file = (repo_ws, "GSFLOW", "scratch", "run_posproc_scripts", "GSFLOW", "worker_dir_ies", "results", "plots", "gsflow_inputs", "ag_frac.shp")
@@ -40,7 +40,11 @@ ghb_zone_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files"
 # set ghb input param file
 ghb_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_ghb.csv")
 
-
+# # set UPW input param file
+# upw_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_upw.csv")
+#
+# # set K zones file
+# K_zones_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "K_zone_ids_20220318.dat")
 
 
 
@@ -54,7 +58,7 @@ mf_ws = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'LAK'])
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UZF'])
 mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'GHB'])
-
+#mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW'])
 
 # # load gsflow
 # gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
@@ -467,5 +471,115 @@ mf.ghb = ghb
 # export
 mf.ghb.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.ghb")
 mf.ghb.write_file()
+
+
+
+
+
+# # ---- Update UPW  ---------------------------------------------------####
+#
+# # define load text function
+# def load_txt_3d(fn):
+#     fid = open(fn, 'r')
+#     cont = fid.readlines()
+#     fid.close()
+#     arr = []
+#     arrs = []
+#     for lin in cont:
+#         if '#' in lin:
+#             arrs.append(arr)
+#             arr = []
+#         else:
+#             arr.append(lin.split(','))
+#
+#     arrs = np.array(arrs)
+#     return arrs.astype(float)
+#
+# # extract upw package
+# upw = mf.upw
+#
+# # read in csv with new input parameters
+# df = pd.read_csv(upw_input_file, index_col=False)
+#
+# # get K zones
+# zones = load_txt_3d(K_zones_file)
+#
+#
+# # update ks ---------------------------------------####
+#
+# # get current ks parameters
+# ks = upw.hk.array.copy()
+#
+# # get new ks parameters
+# df_upw = df[df['pargp'] == 'upw_ks']
+#
+# # loop over zones and update ks
+# for i, row in df_upw.iterrows():
+#     nm = row['parnme']
+#     zone_id = float(nm.split("_")[1])
+#     mask = zones == zone_id
+#     ks[mask] = ks[mask] * row['parval1']
+#
+# # # update vka ---------------------------------------####
+# #
+# # # get new vka parameters
+# # df_vka = df[df['pargp'] == 'upw_vka']
+# #
+# # # loop over zones and update vka
+# # vka = np.zeros_like(ks)
+# # for i, row in df_vka.iterrows():
+# #     nm = row['parnme']
+# #     layer_id = int(float(nm.split("_")[-1]))
+# #     vka[layer_id - 1, :, :] = ks[layer_id - 1, :, :] * row['parval1']
+# #
+# # # update sy ---------------------------------------####
+# #
+# # # get current sy parameters
+# # sy = upw.sy.array.copy()
+# #
+# # # get new sy parameters
+# # df_sy = df[df['pargp'] == 'upw_sy']
+# #
+# # # loop over zones and update sy
+# # for i, row in df_sy.iterrows():
+# #     nm = row['parnme']
+# #     zone_id = float(nm.split("_")[1])
+# #     mask = zones == zone_id
+# #     sy[mask] = row['parval1']
+# #
+# # # update ss ---------------------------------------####
+# #
+# # # get current ss parameters
+# # ss = upw.ss.array.copy()
+# #
+# # # get new sy parameters
+# # df_ss = df[df['pargp'] == 'upw_ss']
+# #
+# # # loop over zones and update ss
+# # for i, row in df_ss.iterrows():
+# #     nm = row['parnme']
+# #     zone_id = float(nm.split("_")[1])
+# #     mask = zones == zone_id
+# #     ss[mask] = row['parval1']
+#
+# # checks and storage ---------------------------------------####
+#
+# # # make sure values aren't too low
+# # # TODO: should I still do this?
+# # ks[ks <= 1e-5] = 1e-5
+# # vka[vka <= 1e-5] = 1e-5
+# # sy[sy <= 1e-6] = 1e-6
+# # ss[ss <= 0.05] = 0.05
+#
+# # update modflow object with new ks and vka parameters
+# mf.upw.hk = ks
+# # mf.upw.vka = vka
+# # mf.upw.sy = sy
+# # mf.upw.ss = ss
+#
+# # export
+# mf.upw.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.upw")
+# mf.upw.write_file()
+
 
 
