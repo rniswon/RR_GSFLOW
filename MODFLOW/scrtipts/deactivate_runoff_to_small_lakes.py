@@ -28,7 +28,7 @@ epsg= 26910
 
 # (3) load gsflow
 control_file = os.path.join(ws, r"gsflow_rr.control")
-gs = gsflow.GsflowModel.load_from_file(control_file=control_file, model_ws=ws, mf_load_only=['DIS', 'BAS6', 'UPW', 'sfr', 'LAK'])
+gs = gsflow.GsflowModel.load_from_file(control_file=control_file, model_ws=ws, mf_load_only=['DIS', 'BAS6', 'UPW', 'sfr', 'LAK', 'MNW2'])
 lak_arr = gs.mf.lak.lakarr.array[0]
 hru_id = gs.prms.parameters.get_values('gvr_cell_id').reshape(gs.mf.nrow, gs.mf.ncol)
 
