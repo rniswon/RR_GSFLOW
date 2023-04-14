@@ -28,7 +28,7 @@ epsg= 26910
 
 # (3) load gsflow
 control_file = os.path.join(ws, r"gsflow_rr.control")
-gs = gsflow.GsflowModel.load_from_file(control_file=control_file, model_ws=ws, mf_load_only=['DIS', 'BAS6', 'UPW', 'sfr'])
+gs = gsflow.GsflowModel.load_from_file(control_file=control_file, model_ws=ws, mf_load_only=['DIS', 'BAS6', 'UPW', 'sfr', 'LAK'])
 mf = gs.mf
 grid = mf.modelgrid
 grid.set_coord_info(xoff=xoff, yoff=yoff, epsg=epsg)

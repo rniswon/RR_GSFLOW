@@ -742,6 +742,59 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
             plt.close('all')
 
 
+        # FLOW DURATION CURVES  -------------------------------------------------------####
+
+        # calculate rank and exceedance probability
+        df = sim_obs_daily_dropna.copy()
+        df['rank_sim_flow'] = df['sim_flow'].rank(ascending=False)
+        df['rank_obs_flow'] = df['obs_flow'].rank(ascending=False)
+        df['exc_prob_sim_flow'] = 100 * (df['rank_sim_flow'] / (df['rank_sim_flow'].count() + 1))
+        df['exc_prob_obs_flow'] = 100 * (df['rank_obs_flow'] / (df['rank_obs_flow'].count() + 1))
+
+        # sort
+        df_sim = df.sort_values(by='sim_flow')
+        df_obs = df.sort_values(by='obs_flow')
+
+        # sort low flows
+        df_sim_low = df_sim[df_sim['sim_flow'] <= 350 ]
+        df_obs_low = df_obs[df_sim['obs_flow'] <= 350 ]
+
+        # plot exceedance probability
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.plot(df_obs.obs_flow, df_obs.exc_prob_obs_flow, label='Observed', linewidth=4)
+        plt.plot(df_sim.sim_flow, df_sim.exc_prob_sim_flow, label='Simulated', linestyle='dotted', linewidth=4)
+        plt.title('Flow duration curves: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Streamflow (cfs)')
+        plt.ylabel('Exceedance probability (%)')
+        plt.legend()
+        file_name = 'flow_duration_curves_' + str(subbasin_id).zfill(2) + '.jpg'
+        file_path = os.path.join(results_ws, "plots", "flow_duration_curves", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
+        # plot exceedance probability for low flows
+        plt.style.use('default')
+        plt.figure(figsize=(12, 8), dpi=150)
+        plt.plot(df_obs_low.obs_flow, df_obs_low.exc_prob_obs_flow, label='Observed', linewidth=4)
+        plt.plot(df_sim_low.sim_flow, df_sim_low.exc_prob_sim_flow, label='Simulated', linestyle='dotted', linewidth=4)
+        plt.title('Flow duration curves: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Streamflow (cfs)')
+        plt.ylabel('Exceedance probability (%)')
+        plt.legend()
+        file_name = 'flow_duration_curves_low_' + str(subbasin_id).zfill(2) + '.jpg'
+        file_path = os.path.join(results_ws, "plots", "flow_duration_curves", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
+
+
+
+
 
         # LOCAL AND CUMULATIVE FLOWS  -------------------------------------------------####
 
