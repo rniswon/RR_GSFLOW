@@ -14,7 +14,7 @@ MNW2              21  ..\modflow\input\rr_tr.mnw2
 MNWi              22  ..\modflow\input\rr_tr.mnwi
 HOB               39  ..\modflow\input\rr_tr.hob
 GAGE             120  ..\modflow\input\rr_tr_heavy.gage
-OC                14  ..\modflow\input\rr_tr.oc
+OC                14  ..\modflow\input\rr_tr_heavy.oc
 NWT               32  ..\modflow\input\rr_tr.nwt
 DATA            1001  ..\modflow\input\Potter_Valley_inflow.dat
 DATA            1002  ..\modflow\input\Mendo_Lake_release.dat
@@ -1794,3 +1794,4 @@ DATA			8106	..\modflow\output\pond_div_iupseg_379.out
 DATA			8107	..\modflow\output\pond_div_iupseg_238.out
 DATA(BINARY) 	2000  ..\modflow\output\uzf_recharge.out
 DATA(BINARY)	2001  ..\modflow\output\uzf_discharge.out
+IRED            9001  ..\modflow\input\rr_modflow_restart.out

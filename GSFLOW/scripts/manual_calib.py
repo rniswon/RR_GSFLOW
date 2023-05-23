@@ -16,7 +16,7 @@ import geopandas
 
 script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230413_07")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230518_01")
 
 # # ag fields shapefile
 # ag_fields_file = (repo_ws, "GSFLOW", "scratch", "run_posproc_scripts", "GSFLOW", "worker_dir_ies", "results", "plots", "gsflow_inputs", "ag_frac.shp")
@@ -33,18 +33,21 @@ model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230413_07")
 # # sfr shapefile
 # sfr_file = os.path.join(repo_ws, "GSFLOW", "scratch", "script_inputs", "sfr.shp")
 
-# set ghb zone file
-#ghb_zone_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "ghb_hru_20220404.txt")
-ghb_zone_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "ghb_hru_20230412.txt")
-
-# set ghb input param file
-ghb_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_ghb.csv")
-
-# # set UPW input param file
-# upw_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_upw.csv")
+# # set ghb zone file
+# #ghb_zone_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "ghb_hru_20220404.txt")
+# ghb_zone_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "ghb_hru_20230412.txt")
 #
-# # set K zones file
-# K_zones_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "K_zone_ids_20220318.dat")
+# # set ghb input param file
+# ghb_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_ghb.csv")
+
+# set UPW input param file
+upw_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_upw.csv")
+
+# set K zones file
+K_zones_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "K_zone_ids_20230507.dat")
+
+# # set sfr file with subbasin and riparian data
+# sfr_subbasin_riparian_file = os.path.join(repo_ws, "GSFLOW", "scratch", "script_inputs", "sfr_subbasin_riparian.txt")
 
 
 
@@ -57,14 +60,18 @@ mf_ws = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW', 'SFR', 'LAK'])
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'LAK'])
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UZF'])
-mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'GHB'])
-#mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW'])
+#mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'GHB'])
+mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW'])
+#mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'SFR'])
 
 # # load gsflow
 # gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
 
 # # read in riparian zone shapefile
 # riparian_zone_5_6_9_12_13 = pd.read_csv(riparian_zone_file, sep=',')
+
+# # read in sfr shapefile with subbasins and riparian zone columns
+# sfr_subbasin_riparian = pd.read_csv(sfr_subbasin_riparian_file, sep=',')
 
 
 
@@ -242,21 +249,73 @@ mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DI
 #
 #
 #
-# # ---- Update SFR: run 5 -------------------------------------------####
+
+
+
+
+# # ---- Update SFR  -------------------------------------------####
+#
+# # set subbasins to change
+# subbasins_to_change = [1,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
+#
+# # set riparian flag to change
+# riparian_to_change = [1]
+#
+# # set change factor
+# change_factor = 1000
 #
 # # get list of segments to change
-# segs_to_change = riparian_zone_5_6_9_12_13['iseg']
+# mask = sfr_subbasin_riparian['subbasin'].isin(subbasins_to_change) & sfr_subbasin_riparian['riparian'].isin(riparian_to_change)
+# segs_to_change = sfr_subbasin_riparian.loc[mask, 'iseg'].unique()
+#
+# # update reach data
+# reach_data = pd.DataFrame(mf.sfr.reach_data)
+# # mask = reach_data['iseg'].isin(segs_to_change)
+# # reach_data.loc[mask, 'strhc1'] = reach_data.loc[mask, 'strhc1'] * change_factor
+# min_val = 0.009
+# mask = (reach_data['strhc1'] < min_val) & (reach_data['strhc1'] > 0)
+# reach_data.loc[mask, 'strhc1'] = min_val
+#
+# # # make sure no values are greater than max value
+# # max_val = 5
+# # mask = reach_data['strhc1'] > max_val
+# # reach_data.loc[mask, 'strhc1'] = max_val
+#
+# # export
+# mf.sfr.reach_data = reach_data.to_records()
+# mf.sfr.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.sfr")
+# mf.sfr.write_file()
+
+
+
+
+# # ---- Update SFR: by iseg -------------------------------------------####
+#
+# # get list of segments to change
+# #segs_to_change = [223, 228, 244, 293, 296, 308, 309, 316, 319, 323]
+# segs_to_change = [21, 55, 149, 152, 153]
+#
+# # set change factor
+# change_factor = 1000
 #
 # # update reach data
 # reach_data = pd.DataFrame(mf.sfr.reach_data)
 # mask = reach_data['iseg'].isin(segs_to_change)
-# reach_data.loc[mask, 'strhc1'] = 1
+# reach_data.loc[mask, 'strhc1'] = reach_data.loc[mask, 'strhc1'] * change_factor
+#
+# # make sure no values are greater than max value
+# max_val = 5
+# mask = reach_data['strhc1'] > max_val
+# reach_data.loc[mask, 'strhc1'] = max_val
 #
 # # export
 # mf.sfr.reach_data = reach_data.to_records()
+# mf.sfr.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.sfr")
 # mf.sfr.write_file()
-#
-#
+
+
+
+
 # # ---- Update SFR: run 6 -------------------------------------------####
 #
 # # get list of segments to change
@@ -270,8 +329,9 @@ mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DI
 # # export
 # mf.sfr.reach_data = reach_data.to_records()
 # mf.sfr.write_file()
-#
-#
+
+
+
 # #######################################################################################
 #
 # ########################################
@@ -401,185 +461,290 @@ mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DI
 
 
 
-# ---- Update GHB  ---------------------------------------------------####
-
-# extract ghb package stress period data
-ghb_spd = mf.ghb.stress_period_data.get_dataframe() # extract stress period data for per=0 since data doesn't change by stress period
-ghb_spd0 = ghb_spd[ghb_spd['per'] == 0].copy()
-
-# add column for the elevation of the bottom of each grid cell
-botm = mf.modelgrid.botm
-ghb_spd0['bottom_elev'] = -999
-for i, row in ghb_spd0.iterrows():
-
-    # get layer, row, col values
-    k_val = int(row['k'])
-    i_val = int(row['i'])
-    j_val = int(row['j'])
-
-    # get elevation of the bottom of this grid cell and store
-    mask_cell = (ghb_spd0['k'] == k_val) & (ghb_spd0['i'] == i_val) & (ghb_spd0['j'] == j_val)
-    ghb_spd0.loc[mask_cell, 'bottom_elev'] = botm[k_val, i_val, j_val]
-
-# read in csv with new input parameters
-df = pd.read_csv(ghb_input_file, index_col=False)
-
-# get ghb param
-df_ghb = df[df['pargp'] == 'ghb_bhead']
-
-# get GHB zones
-#zones = geopandas.read_file(Sim.ghb_file)
-zones = pd.read_csv(ghb_zone_file)
-
-# loop through GHB cells
-for i, row in zones.iterrows():
-
-    # get hru row, hru col, and ghb_id
-    hru_row_idx = row['HRU_ROW'] - 1   # subtract 1 to get  0-based python index
-    hru_col_idx = row['HRU_COL'] - 1
-    ghb_id = row['ghb_id_01']
-
-    # get bhead value for this ghb_id
-    par_name = 'bhead_mult_' + str(ghb_id)
-    mask = df_ghb['parnme'] == par_name
-    bhead_mult = df_ghb.loc[mask, 'parval1'].values[0]
-
-    # identify and update ghb cell
-    mask = (ghb_spd0['i'] == hru_row_idx) & (ghb_spd0['j'] == hru_col_idx)
-    ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead'] * bhead_mult
-
-    # make sure updated bhead value is greater than elevation of bottom of grid cell
-    k_vec = ghb_spd0.loc[mask, 'k'].values
-    for k in k_vec:
-
-        # get mask for each grid cell
-        mask_cell = (ghb_spd0['i'] == hru_row_idx) & (ghb_spd0['j'] == hru_col_idx) & (ghb_spd0['k'] == k)
-
-        # adjust bhead elevation if necessary
-        if ghb_spd0.loc[mask_cell, 'bhead'].values[0] <= ghb_spd0.loc[mask_cell, 'bottom_elev'].values[0]:
-            ghb_spd0.loc[mask_cell, 'bhead'] = ghb_spd0.loc[mask_cell, 'bottom_elev'] + 1
-
-
-# store
-ipakcb = mf.ghb.ipakcb
-ghb_spd_updated = {}
-ghb_spd0_subset = ghb_spd0[['k', 'i', 'j', 'bhead', 'cond']]
-ghb_spd_updated[0] = ghb_spd0_subset.values.tolist()
-ghb = flopy.modflow.mfghb.ModflowGhb(mf, ipakcb=ipakcb, stress_period_data=ghb_spd_updated, dtype=None, no_print=False, options=None, extension='ghb')
-mf.ghb = ghb
-
-# export
-mf.ghb.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.ghb")
-mf.ghb.write_file()
-
-
-
-
-
-# # ---- Update UPW  ---------------------------------------------------####
+# # ---- Update GHB: BHEAD  ---------------------------------------------------####
 #
-# # define load text function
-# def load_txt_3d(fn):
-#     fid = open(fn, 'r')
-#     cont = fid.readlines()
-#     fid.close()
-#     arr = []
-#     arrs = []
-#     for lin in cont:
-#         if '#' in lin:
-#             arrs.append(arr)
-#             arr = []
-#         else:
-#             arr.append(lin.split(','))
+# # extract ghb package stress period data
+# ghb_spd = mf.ghb.stress_period_data.get_dataframe() # extract stress period data for per=0 since data doesn't change by stress period
+# ghb_spd0 = ghb_spd[ghb_spd['per'] == 0].copy()
 #
-#     arrs = np.array(arrs)
-#     return arrs.astype(float)
+# # add column for the elevation of the bottom of each grid cell
+# botm = mf.modelgrid.botm
+# ghb_spd0['bottom_elev'] = -999
+# for i, row in ghb_spd0.iterrows():
 #
-# # extract upw package
-# upw = mf.upw
+#     # get layer, row, col values
+#     k_val = int(row['k'])
+#     i_val = int(row['i'])
+#     j_val = int(row['j'])
+#
+#     # get elevation of the bottom of this grid cell and store
+#     mask_cell = (ghb_spd0['k'] == k_val) & (ghb_spd0['i'] == i_val) & (ghb_spd0['j'] == j_val)
+#     ghb_spd0.loc[mask_cell, 'bottom_elev'] = botm[k_val, i_val, j_val]
 #
 # # read in csv with new input parameters
-# df = pd.read_csv(upw_input_file, index_col=False)
+# df = pd.read_csv(ghb_input_file, index_col=False)
 #
-# # get K zones
-# zones = load_txt_3d(K_zones_file)
+# # get ghb param
+# df_ghb = df[df['pargp'] == 'ghb_bhead']
+#
+# # get GHB zones
+# #zones = geopandas.read_file(Sim.ghb_file)
+# zones = pd.read_csv(ghb_zone_file)
+#
+# # loop through GHB cells
+# for i, row in zones.iterrows():
+#
+#     # get hru row, hru col, and ghb_id
+#     hru_row_idx = row['HRU_ROW'] - 1   # subtract 1 to get  0-based python index
+#     hru_col_idx = row['HRU_COL'] - 1
+#     ghb_id = row['ghb_id_02']
+#
+#     # get bhead value for this ghb_id
+#     par_name = 'bhead_mult_' + str(ghb_id)
+#     mask = df_ghb['parnme'] == par_name
+#     bhead_mult = df_ghb.loc[mask, 'parval1'].values[0]
+#
+#     # identify and update ghb cell
+#     mask = (ghb_spd0['i'] == hru_row_idx) & (ghb_spd0['j'] == hru_col_idx)
+#     #ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead'] * bhead_mult
+#     ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead'] + bhead_mult
+#     #ghb_spd0.loc[mask, 'bhead'] = ghb_spd0.loc[mask, 'bhead'] - bhead_mult
+#
+#     # make sure updated bhead value is greater than elevation of bottom of grid cell
+#     k_vec = ghb_spd0.loc[mask, 'k'].values
+#     for k in k_vec:
+#
+#         # get mask for each grid cell
+#         mask_cell = (ghb_spd0['i'] == hru_row_idx) & (ghb_spd0['j'] == hru_col_idx) & (ghb_spd0['k'] == k)
+#
+#         # adjust bhead elevation if necessary
+#         if ghb_spd0.loc[mask_cell, 'bhead'].values[0] <= ghb_spd0.loc[mask_cell, 'bottom_elev'].values[0]:
+#             ghb_spd0.loc[mask_cell, 'bhead'] = ghb_spd0.loc[mask_cell, 'bottom_elev'] + 1
 #
 #
-# # update ks ---------------------------------------####
+# # store
+# ipakcb = mf.ghb.ipakcb
+# ghb_spd_updated = {}
+# ghb_spd0_subset = ghb_spd0[['k', 'i', 'j', 'bhead', 'cond']]
+# ghb_spd_updated[0] = ghb_spd0_subset.values.tolist()
+# ghb = flopy.modflow.mfghb.ModflowGhb(mf, ipakcb=ipakcb, stress_period_data=ghb_spd_updated, dtype=None, no_print=False, options=None, extension='ghb')
+# mf.ghb = ghb
 #
-# # get current ks parameters
-# ks = upw.hk.array.copy()
+# # export
+# mf.ghb.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.ghb")
+# mf.ghb.write_file()
+
+
+
+
+
+# # ---- Update GHB: CONDUCTANCE  ---------------------------------------------------####
 #
-# # get new ks parameters
-# df_upw = df[df['pargp'] == 'upw_ks']
+# # extract ghb package stress period data
+# ghb_spd = mf.ghb.stress_period_data.get_dataframe() # extract stress period data for per=0 since data doesn't change by stress period
+# ghb_spd0 = ghb_spd[ghb_spd['per'] == 0].copy()
 #
-# # loop over zones and update ks
-# for i, row in df_upw.iterrows():
+# # add column for the elevation of the bottom of each grid cell
+# botm = mf.modelgrid.botm
+# ghb_spd0['bottom_elev'] = -999
+# for i, row in ghb_spd0.iterrows():
+#
+#     # get layer, row, col values
+#     k_val = int(row['k'])
+#     i_val = int(row['i'])
+#     j_val = int(row['j'])
+#
+#     # get elevation of the bottom of this grid cell and store
+#     mask_cell = (ghb_spd0['k'] == k_val) & (ghb_spd0['i'] == i_val) & (ghb_spd0['j'] == j_val)
+#     ghb_spd0.loc[mask_cell, 'bottom_elev'] = botm[k_val, i_val, j_val]
+#
+# # read in csv with new input parameters
+# df = pd.read_csv(ghb_input_file, index_col=False)
+#
+# # get ghb param
+# df_ghb = df[df['pargp'] == 'ghb_cond']
+#
+# # get GHB zones
+# #zones = geopandas.read_file(Sim.ghb_file)
+# zones = pd.read_csv(ghb_zone_file)
+#
+# # loop through GHB cells
+# for i, row in zones.iterrows():
+#
+#     # get hru row, hru col, and ghb_id
+#     hru_row_idx = row['HRU_ROW'] - 1   # subtract 1 to get  0-based python index
+#     hru_col_idx = row['HRU_COL'] - 1
+#     ghb_id = row['ghb_id_02']
+#
+#     # get cond value for this ghb_id
+#     par_name = 'cond_mult_' + str(ghb_id)
+#     mask = df_ghb['parnme'] == par_name
+#     cond_mult = df_ghb.loc[mask, 'parval1'].values[0]
+#
+#     # identify and update ghb cell
+#     mask = (ghb_spd0['i'] == hru_row_idx) & (ghb_spd0['j'] == hru_col_idx)
+#     ghb_spd0.loc[mask, 'cond'] = ghb_spd0.loc[mask, 'cond'] * cond_mult
+#
+#     # # make sure updated bhead value is greater than elevation of bottom of grid cell
+#     # k_vec = ghb_spd0.loc[mask, 'k'].values
+#     # for k in k_vec:
+#     #
+#     #     # get mask for each grid cell
+#     #     mask_cell = (ghb_spd0['i'] == hru_row_idx) & (ghb_spd0['j'] == hru_col_idx) & (ghb_spd0['k'] == k)
+#     #
+#     #     # adjust bhead elevation if necessary
+#     #     if ghb_spd0.loc[mask_cell, 'cond'].values[0] <= ghb_spd0.loc[mask_cell, 'bottom_elev'].values[0]:
+#     #         ghb_spd0.loc[mask_cell, 'cond'] = ghb_spd0.loc[mask_cell, 'bottom_elev'] + 1
+#
+#
+# # store
+# ipakcb = mf.ghb.ipakcb
+# ghb_spd_updated = {}
+# ghb_spd0_subset = ghb_spd0[['k', 'i', 'j', 'bhead', 'cond']]
+# ghb_spd_updated[0] = ghb_spd0_subset.values.tolist()
+# ghb = flopy.modflow.mfghb.ModflowGhb(mf, ipakcb=ipakcb, stress_period_data=ghb_spd_updated, dtype=None, no_print=False, options=None, extension='ghb')
+# mf.ghb = ghb
+#
+# # export
+# mf.ghb.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.ghb")
+# mf.ghb.write_file()
+
+
+
+
+
+# ---- Update UPW  ---------------------------------------------------####
+
+# define load text function
+def load_txt_3d(fn):
+    fid = open(fn, 'r')
+    cont = fid.readlines()
+    fid.close()
+    arr = []
+    arrs = []
+    for lin in cont:
+        if '#' in lin:
+            arrs.append(arr)
+            arr = []
+        else:
+            arr.append(lin.split(','))
+
+    arrs = np.array(arrs)
+    return arrs.astype(float)
+
+# extract upw package
+upw = mf.upw
+
+# read in csv with new input parameters
+df = pd.read_csv(upw_input_file, index_col=False)
+
+# get K zones
+zones = load_txt_3d(K_zones_file)
+
+
+
+
+# update hk ---------------------------------------####
+
+# get current hk parameters
+hk = upw.hk.array.copy()
+
+# get new hk parameters
+df_upw = df[df['pargp'] == 'upw_ks']
+
+# loop over zones and update hk
+for i, row in df_upw.iterrows():
+    nm = row['parnme']
+    zone_id = float(nm.split("_")[1])
+    mask = zones == zone_id
+    hk[mask] = hk[mask] * row['parval1']
+
+# update modflow object
+mf.upw.hk = hk
+
+
+
+# update vk ---------------------------------------####
+
+# get current vk parameters
+vk = upw.vka.array.copy()
+
+# get new vk parameters
+df_upw = df[df['pargp'] == 'upw_ks']
+
+# loop over zones and update vk
+for i, row in df_upw.iterrows():
+    nm = row['parnme']
+    zone_id = float(nm.split("_")[1])
+    mask = zones == zone_id
+    vk[mask] = vk[mask] * row['parval1']
+
+# update modflow object
+mf.upw.vka = vk
+
+
+
+
+# # update vka ---------------------------------------####
+#
+# # get new vka parameters
+# df_vka = df[df['pargp'] == 'upw_vka']
+#
+# # loop over zones and update vka
+# vka = np.zeros_like(ks)
+# for i, row in df_vka.iterrows():
+#     nm = row['parnme']
+#     layer_id = int(float(nm.split("_")[-1]))
+#     vka[layer_id - 1, :, :] = ks[layer_id - 1, :, :] * row['parval1']
+#
+# # update sy ---------------------------------------####
+#
+# # get current sy parameters
+# sy = upw.sy.array.copy()
+#
+# # get new sy parameters
+# df_sy = df[df['pargp'] == 'upw_sy']
+#
+# # loop over zones and update sy
+# for i, row in df_sy.iterrows():
 #     nm = row['parnme']
 #     zone_id = float(nm.split("_")[1])
 #     mask = zones == zone_id
-#     ks[mask] = ks[mask] * row['parval1']
+#     sy[mask] = row['parval1']
 #
-# # # update vka ---------------------------------------####
-# #
-# # # get new vka parameters
-# # df_vka = df[df['pargp'] == 'upw_vka']
-# #
-# # # loop over zones and update vka
-# # vka = np.zeros_like(ks)
-# # for i, row in df_vka.iterrows():
-# #     nm = row['parnme']
-# #     layer_id = int(float(nm.split("_")[-1]))
-# #     vka[layer_id - 1, :, :] = ks[layer_id - 1, :, :] * row['parval1']
-# #
-# # # update sy ---------------------------------------####
-# #
-# # # get current sy parameters
-# # sy = upw.sy.array.copy()
-# #
-# # # get new sy parameters
-# # df_sy = df[df['pargp'] == 'upw_sy']
-# #
-# # # loop over zones and update sy
-# # for i, row in df_sy.iterrows():
-# #     nm = row['parnme']
-# #     zone_id = float(nm.split("_")[1])
-# #     mask = zones == zone_id
-# #     sy[mask] = row['parval1']
-# #
-# # # update ss ---------------------------------------####
-# #
-# # # get current ss parameters
-# # ss = upw.ss.array.copy()
-# #
-# # # get new sy parameters
-# # df_ss = df[df['pargp'] == 'upw_ss']
-# #
-# # # loop over zones and update ss
-# # for i, row in df_ss.iterrows():
-# #     nm = row['parnme']
-# #     zone_id = float(nm.split("_")[1])
-# #     mask = zones == zone_id
-# #     ss[mask] = row['parval1']
+# # update ss ---------------------------------------####
 #
-# # checks and storage ---------------------------------------####
+# # get current ss parameters
+# ss = upw.ss.array.copy()
 #
-# # # make sure values aren't too low
-# # # TODO: should I still do this?
-# # ks[ks <= 1e-5] = 1e-5
-# # vka[vka <= 1e-5] = 1e-5
-# # sy[sy <= 1e-6] = 1e-6
-# # ss[ss <= 0.05] = 0.05
+# # get new sy parameters
+# df_ss = df[df['pargp'] == 'upw_ss']
 #
-# # update modflow object with new ks and vka parameters
-# mf.upw.hk = ks
-# # mf.upw.vka = vka
-# # mf.upw.sy = sy
-# # mf.upw.ss = ss
-#
-# # export
-# mf.upw.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.upw")
-# mf.upw.write_file()
+# # loop over zones and update ss
+# for i, row in df_ss.iterrows():
+#     nm = row['parnme']
+#     zone_id = float(nm.split("_")[1])
+#     mask = zones == zone_id
+#     ss[mask] = row['parval1']
+
+# checks and storage ---------------------------------------####
+
+# # make sure values aren't too low
+# # TODO: should I still do this?
+# ks[ks <= 1e-5] = 1e-5
+# vka[vka <= 1e-5] = 1e-5
+# sy[sy <= 1e-6] = 1e-6
+# ss[ss <= 0.05] = 0.05
+
+# update modflow object with new ks and vka parameters
+# mf.upw.hk = hk
+# mf.upw.vka = vka
+# mf.upw.sy = sy
+# mf.upw.ss = ss
+
+# export
+mf.upw.fn_path = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.upw")
+mf.upw.write_file()
 
 
 

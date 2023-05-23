@@ -2423,12 +2423,14 @@ class Gw_model(object):
         height_water = np.linspace(0, height_max, 151)
         width_trapezoid_water_surface = ((height_water / height_max) * width_trapezoid_top) + (
                     ((height_max - height_water) / height_max) * width_trapezoid_base)
-        area_trapezoid = 0.5 * (width_trapezoid_base + width_trapezoid_water_surface) * height_water
+        area_trapezoid = 0.5 * (width_trapezoid_base + width_trapezoid_water_surface) * height_water  # NOTE: this is the area of the cross-section, but it should be the surface area
         volume_trapezoidal_channel = area_trapezoid * length_channel
         stage_trapezoidal_channel = stage_min + height_water
+        surface_area = width_trapezoid_water_surface * length_channel
 
         # store lake bathymetry data
-        curr_bathy = np.array([stage_trapezoidal_channel, volume_trapezoidal_channel, area_trapezoid]).T
+        #curr_bathy = np.array([stage_trapezoidal_channel, volume_trapezoidal_channel, area_trapezoid]).T
+        curr_bathy = np.array([stage_trapezoidal_channel, volume_trapezoidal_channel, surface_area]).T
         lake_elev_range[lake_id] = [stage_min, stage_max]
 
         # prepare file path

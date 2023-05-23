@@ -23,7 +23,7 @@ start_time
 end_time
 6
 1
-2015
+1999
 12
 31
 0
@@ -109,7 +109,7 @@ print_type
 save_vars_to_file
 1
 1
-0
+1
 ####
 solrad_module
 1
@@ -538,12 +538,12 @@ stat_var_file
 var_init_file
 1
 4
-prms_ic.in
+..\PRMS\input\rr_prms_restart.in
 ####
 var_save_file
 1
 4
-..\PRMS\output\prms_ic_prms.out
+..\PRMS\output\rr_prms_restart.out
 ####
 print_debug
 1

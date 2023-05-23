@@ -18,7 +18,7 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set mf name file for model to be updated
-mf_name_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230327_02", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "windows", "rr_tr.nam")
+mf_name_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230510_01", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "windows", "rr_tr.nam")
 
 
 # ---- Read in -----------------------------------------------------------------------------####

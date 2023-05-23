@@ -89,7 +89,7 @@ potet_jh
 init_vars_from_file
 1
 1
-0
+1
 ####
 model_output_file
 1
@@ -538,12 +538,12 @@ stat_var_file
 var_init_file
 1
 4
-prms_ic.in
+..\PRMS\input\rr_prms_restart.out
 ####
 var_save_file
 1
 4
-..\PRMS\output\prms_ic_prms.out
+..\PRMS\output\rr_prms_restart.out
 ####
 print_debug
 1
