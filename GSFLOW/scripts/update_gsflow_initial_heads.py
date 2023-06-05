@@ -19,13 +19,13 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set initial heads file for model from which to get final heads
-initial_heads_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230519_01", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output", "rr_tr.hds")
+initial_heads_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230602_03", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "output", "rr_tr.hds")
 
 # set mf name file for model to be updated
-mf_name_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230520_01", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "windows", "rr_tr.nam")
+mf_name_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230603_03", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "windows", "rr_tr.nam")
 
 # set mf bas file for model to be updated
-mf_bas_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230520_01", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.bas")
+mf_bas_file = os.path.join(repo_ws, "GSFLOW", "scratch", "20230603_03", "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", "rr_tr.bas")
 
 # script settings
 chosen_time_step = "final"  # options: final, mean_of_final_ten_years

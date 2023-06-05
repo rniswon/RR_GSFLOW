@@ -1,0 +1,26 @@
+pcf version=2
+* control data keyword
+pestmode                                 estimation
+noptmax                                 5
+svdmode                                 1
+maxsing                          10000000
+eigthresh                           1e-06
+eigwrite                                1
+additional_ins_delimiters      ,
+uncertainty                    false
+ies_subset_size                10
+ies_num_reals                  300
+ies_lambda_mults               0.1,1,10
+lambda_scale_fac               1
+* parameter groups external
+tr_mf.pargp_data.csv
+* parameter data external
+tr_mf.par_data.csv
+* observation data external
+tr_mf.obs_data.csv
+* model command line
+run_model.bat
+* model input external
+tr_mf.tplfile_data.csv
+* model output external
+tr_mf.insfile_data.csv

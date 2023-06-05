@@ -15,7 +15,7 @@ script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
 
 # set model workspace
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230325_02", "GSFLOW", "worker_dir_ies", "gsflow_model_updated")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230603_03", "GSFLOW", "worker_dir_ies", "gsflow_model_updated")
 
 # set model name file
 mf_name_file = os.path.join(model_ws, "windows", "rr_tr.nam")
@@ -105,5 +105,5 @@ if exclude_subbasins_2_and_3 == 1:
 mf.uzf.iuzfbnd = iuzfbnd
 
 # write uzf file
-mf.uzf.fn_path = os.path.join(model_ws, "modflow", "input", "rr_tr_updated.uzf")
+mf.uzf.fn_path = os.path.join(model_ws, "modflow", "input", "rr_tr.uzf")
 mf.uzf.write_file()
