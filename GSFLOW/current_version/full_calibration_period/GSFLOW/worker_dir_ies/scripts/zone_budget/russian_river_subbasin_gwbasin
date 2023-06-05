@@ -1,0 +1,6 @@
+ ZONEBUDGET version 3.01                 
+ Program to compute a flow budget for subregions of a model using
+ budget data from MODFLOW, the USGS Modular Ground-Water Flow Model.
+ 
+  The cell-by-cell budget file is:
+ zone_bud_subbasin_groups_gwbasin.zon                                                          
