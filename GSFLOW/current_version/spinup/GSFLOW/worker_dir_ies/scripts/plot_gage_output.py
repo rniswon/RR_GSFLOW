@@ -660,7 +660,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
             sim_obs_daily_long_subset = sim_obs_daily_long[
                 (sim_obs_daily_long['year'] >= years[0]) & (sim_obs_daily_long['year'] <= years[1])]
             if len(sim_obs_daily_long_subset.index) > 0:
-                low_flow_cutoff = sim_obs_daily_long_subset['flow'].quantile(q=0.65)
+                #low_flow_cutoff = sim_obs_daily_long_subset['flow'].quantile(q=0.65)
+                low_flow_cutoff = 350
                 hue_order = ['obs_flow', 'sim_flow']
                 this_plot = sns.FacetGrid(data=sim_obs_daily_long_subset, col='year', col_wrap=2, sharex=False,
                                           sharey=False, height=4, aspect=1.3)
