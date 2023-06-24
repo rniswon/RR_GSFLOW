@@ -1,5 +1,5 @@
 GSFLOW model run in this folder:
-20230603_02
+20230623_02
 
 Python packages needed in the Miniconda distribution to run the forward model:
 os

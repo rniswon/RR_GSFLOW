@@ -17,7 +17,7 @@ import datetime as dt
 #---- Main function ---------------------------------------------------------####
 
 
-def main(model_ws, results_ws, mf_name_file_type):
+def main(model_ws, results_ws, mf_name_file_type, modflow_time_zero, start_date, end_date, modflow_time_zero_altformat, start_date_altformat, end_date_altformat):
 
     # # set workspaces
     # script_ws = os.path.abspath(os.path.dirname(__file__))
@@ -42,8 +42,8 @@ def main(model_ws, results_ws, mf_name_file_type):
     pond_div_input_file_path = os.path.join(model_ws, "modflow", "input",  "ag_diversions")
 
     # set model start date
-    model_start_date = "01-01-1990"
-    model_end_date = "12-31-2015"
+    model_start_date = start_date_altformat
+    model_end_date = end_date_altformat
 
     # set conversion factors
     acreft_per_m3 = 0.0008107132
@@ -286,4 +286,4 @@ if __name__ == "__main__":
     # note: model_ws and results_ws are defined in plot_all_gsflow.py,
     # if we want to run this script alone then need to define them here
 
-    main(model_ws, results_ws, mf_name_file_type)
+    main(model_ws, results_ws, mf_name_file_type, modflow_time_zero, start_date, end_date, modflow_time_zero_altformat, start_date_altformat, end_date_altformat)

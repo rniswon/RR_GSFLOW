@@ -30,6 +30,16 @@ end_time
 0
 0
 ####
+modflow_time_zero
+6
+1
+1990
+1
+1
+0
+0
+0
+####
 prms_warmup
 1
 1
@@ -761,16 +771,7 @@ nhruOut_freq
 1
 1
 6
-####
-modflow_time_zero
-6
-1
-1990
-1
-1
-0
-0
-0
+
 
 
 

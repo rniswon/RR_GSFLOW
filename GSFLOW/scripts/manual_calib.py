@@ -16,7 +16,7 @@ import geopandas
 
 script_ws = os.path.abspath(os.path.dirname(__file__))
 repo_ws = os.path.join(script_ws, "..", "..")
-model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230605_01")
+model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230623_01")
 
 # # ag fields shapefile
 # ag_fields_file = (repo_ws, "GSFLOW", "scratch", "run_posproc_scripts", "GSFLOW", "worker_dir_ies", "results", "plots", "gsflow_inputs", "ag_frac.shp")
@@ -27,8 +27,8 @@ model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230605_01")
 # # riparian zone shapefile
 # riparian_zone_file = os.path.join(repo_ws, "GSFLOW", "scratch", "script_inputs", "riparian_zone_sub_5_6_9_12_13.txt")
 
-# # set gsflow control file
-# gsflow_control = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", 'windows', 'gsflow_rr.control')
+# set gsflow control file
+gsflow_control = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", 'windows', 'gsflow_rr.control')
 
 # # sfr shapefile
 # sfr_file = os.path.join(repo_ws, "GSFLOW", "scratch", "script_inputs", "sfr.shp")
@@ -40,11 +40,11 @@ model_ws = os.path.join(repo_ws, "GSFLOW", "scratch", "20230605_01")
 # # set ghb input param file
 # ghb_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_ghb.csv")
 
-# set UPW input param file
-upw_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_upw.csv")
+# # set UPW input param file
+# upw_input_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "pest", "input_param_upw.csv")
 
-# set K zones file
-K_zones_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "K_zone_ids_20230507.dat")
+# # set K zones file
+# K_zones_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files", "K_zone_ids_20230507.dat")
 
 # # set sfr file with subbasin and riparian data
 # sfr_subbasin_riparian_file = os.path.join(repo_ws, "GSFLOW", "scratch", "script_inputs", "sfr_subbasin_riparian.txt")
@@ -58,14 +58,14 @@ K_zones_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "calib_files",
 mf_ws = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "windows")
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW', 'MNW2', 'SFR', 'LAK'])
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW', 'SFR', 'LAK'])
-mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'LAK'])
+#mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'LAK'])
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UZF'])
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'GHB'])
-#mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW'])
+mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'UPW'])
 #mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DIS', 'BAS6', 'SFR'])
 
-# # load gsflow
-# gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
+# load gsflow
+gs = gsflow.GsflowModel.load_from_file(control_file=gsflow_control)
 
 # # read in riparian zone shapefile
 # riparian_zone_5_6_9_12_13 = pd.read_csv(riparian_zone_file, sep=',')
@@ -93,25 +93,48 @@ mf = flopy.modflow.Modflow.load(r"rr_tr.nam", model_ws = mf_ws, load_only = ['DI
 
 
 
-# ---- Update LAK -------------------------------------------####
+# # ---- Update LAK -------------------------------------------####
+#
+# # load lak array and lakebed leakance
+# lakarr = mf.lak.lakarr.array[:,:,:,:]
+# bdlknc = mf.lak.bdlknc.array[:,:,:,:]
+#
+# # update lakebed leakance for lake 12
+# # bdlknc_lake_12 = 100
+# bdlknc_lake_12_factor = 1.5
+# mask = lakarr == 12
+# bdlknc[mask] = bdlknc[mask] * bdlknc_lake_12_factor
+#
+# # export lake file
+# cc = {0: bdlknc[0]}
+# cc = Transient3d(mf, mf.modelgrid.shape, np.float32, cc, "bdlknc_")
+# mf.lak.bdlknc = cc
+# lak_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", mf.lak.file_name[0])
+# mf.lak.fn_path = lak_file
+# mf.lak.write_file()
 
-# load lak array and lakebed leakance
-lakarr = mf.lak.lakarr.array[:,:,:,:]
-bdlknc = mf.lak.bdlknc.array[:,:,:,:]
 
-# update lakebed leakance for lake 12
-# bdlknc_lake_12 = 100
-bdlknc_lake_12_factor = 1.5
-mask = lakarr == 12
-bdlknc[mask] = bdlknc[mask] * bdlknc_lake_12_factor
 
-# export lake file
-cc = {0: bdlknc[0]}
-cc = Transient3d(mf, mf.modelgrid.shape, np.float32, cc, "bdlknc_")
-mf.lak.bdlknc = cc
-lak_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", mf.lak.file_name[0])
-mf.lak.fn_path = lak_file
-mf.lak.write_file()
+# ---- Update Kh: reduce max val ------------------------------------------------------------####
+
+# set min vals
+max_hk_val = 5000
+
+# get hk array
+hk = mf.upw.hk.array
+
+# get useful characteristics
+layers, nrows, ncols = hk.shape
+
+# update hk
+mask = hk > max_hk_val
+hk[mask] = max_hk_val
+
+# store updated hk arrays and export
+mf.upw.hk = hk
+upw_file = os.path.join(model_ws, "GSFLOW", "worker_dir_ies", "gsflow_model_updated", "modflow", "input", mf.upw.file_name[0])
+mf.upw.fn_path = upw_file
+mf.upw.write_file()
 
 
 
@@ -204,9 +227,9 @@ mf.lak.write_file()
 # gs.prms.parameters.write()
 #
 #
-#
-#
-# # ---- Update PRMS param: jh_coef -------------------------------------------####
+
+
+# # ---- Update PRMS param: jh_coef, subbasins 4-21 -------------------------------------------####
 #
 # # set mult factor
 # mult_factor = 2
@@ -235,8 +258,36 @@ mf.lak.write_file()
 # # export updated param file
 # gs.prms.parameters.set_values("jh_coef", jh_coef)
 # gs.prms.parameters.write()
-#
-#
+
+
+
+
+# ---- Update PRMS param: jh_coef, subbasin 22 -------------------------------------------####
+
+# set mult factor
+mult_factor = 0.96
+
+# get hru_subbasin
+hru_subbasin = gs.prms.parameters.get_values("hru_subbasin")
+mask_subbasin = hru_subbasin == 22
+
+# get jh_coef and split by month
+jh_coef = gs.prms.parameters.get_values("jh_coef")
+jh_coef_list = np.split(jh_coef, 12)
+for i, df, in enumerate(jh_coef_list):
+
+    # update jh_coef
+    df[mask_subbasin] = df[mask_subbasin] * mult_factor
+    jh_coef_list[i] = df
+
+# concat
+jh_coef = np.concatenate(jh_coef_list)
+
+# export updated param file
+gs.prms.parameters.set_values("jh_coef", jh_coef)
+gs.prms.parameters.write()
+
+
 
 
 # # ---- Update PRMS param: run 4 -------------------------------------------####

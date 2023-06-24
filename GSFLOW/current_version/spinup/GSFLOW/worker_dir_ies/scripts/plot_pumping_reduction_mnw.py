@@ -43,18 +43,14 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # Set constants -----------------------------------------------####
 
     # set dates for observed and simulated data
-    start_date_obs = start_date
-    end_date_obs = end_date
-    start_date_sim = start_date
-    end_date_sim = end_date
-    num_days_spinup = (pd.to_datetime(start_date) - pd.to_datetime(modflow_time_zero)).days
+    #num_days_spinup = (pd.to_datetime(start_date) - pd.to_datetime(modflow_time_zero)).days
 
 
     # Read in -----------------------------------------------####
 
     # read in pumping reduction
     pump_red = flopy.utils.observationfile.get_reduced_pumping(pump_red_file)
-    num_sp_spinup = pump_red['SP'].min() - 1  # use if spinup
+    #num_sp_spinup = pump_red['SP'].min() - 1  # use if restart
 
     # read in modflow model
     mf = flopy.modflow.Modflow.load(os.path.basename(modflow_name_file),
@@ -79,9 +75,25 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     gsflow_output = pd.read_csv(gsflow_output_file)
 
     # read in multinode wells output file
-    #mnw_output = pd.read_fwf(mnw_output_file)  # use if not spinup run
-    mnw_output = pd.read_fwf(mnw_output_file, header=None)   # use if spinup run
+    mnw_output = pd.read_fwf(mnw_output_file)  # use if not restart run
+    #mnw_output = pd.read_fwf(mnw_output_file, header=None)   # use if restart run
 
+
+    # Extract and update modeltime parameters -----------------------------------------------####
+
+    # only need to do this if not running every timestep in the last stress period and didn't update DIS file to say this
+    # (doesn't affect model run because model run stops on end_date from gsflow control file)
+
+    # no updates necessary for stress period
+    sp = mf.modeltime.nper
+
+    # update nstp
+    nstp = mf.modeltime.nstp
+    nstp[-1] = 30
+
+    # update totim
+    totim = mf.modeltime.totim
+    totim = totim[0:-1]
 
 
     # Reformat mnw input -----------------------------------------------####
@@ -90,12 +102,12 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     mnw_input['wellid'] = mnw_input['wellid'].str.upper()
 
     # calculate total desired pumping per stress period
-    sp = mf.modeltime.nper
-    nstp = mf.modeltime.nstp
+    # sp = mf.modeltime.nper
+    # nstp = mf.modeltime.nstp
     mnw_input['qdes_sp'] = np.nan
-    for i, sp in enumerate(list(range(sp))):
+    for i, spi in enumerate(list(range(sp))):
 
-        mask = mnw_input['per'] == sp
+        mask = mnw_input['per'] == spi
         mnw_input.loc[mask, 'qdes_sp'] = mnw_input.loc[mask, 'qdes'] * nstp[i]
 
 
@@ -105,8 +117,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # Reformat mnw output -----------------------------------------------####
 
     # get columns we care about
-    #mnw_output = mnw_output[['WELLID', 'Totim', 'Qin', 'Qout', 'Qnet', 'hwell']]
-    mnw_output.columns = ['WELLID', 'Totim', 'Qin', 'Qout', 'Qnet', 'hwell']
+    mnw_output = mnw_output[['WELLID', 'Totim', 'Qin', 'Qout', 'Qnet', 'hwell']]  # use if not restart run
+    #mnw_output.columns = ['WELLID', 'Totim', 'Qin', 'Qout', 'Qnet', 'hwell']    # use if restart run
 
     # get layer, row, and column for each well
     mnw_output['layer'] = -999
@@ -130,7 +142,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # create data frame of totim, stress period, and time step
     sp_list = []
     ts_list = []
-    for sp, ts in zip(list(range(mf.modeltime.nper)), mf.modeltime.nstp):
+    for sp, ts in zip(list(range(sp)), nstp):
         this_sp = np.repeat(sp, ts)
         sp_list.append(this_sp)
 
@@ -138,7 +150,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         ts_list.append(this_ts)
     sp_list = np.concatenate(sp_list).ravel()
     ts_list = np.concatenate(ts_list).ravel()
-    modeltime_df = pd.DataFrame({'totim': mf.modeltime.totim,
+    modeltime_df = pd.DataFrame({'totim': totim,
                                  'sp': sp_list,
                                  'ts': ts_list})
 
@@ -155,10 +167,10 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     mnw_sp = pd.merge(mnw_input, mnw_output_sp, how='left', left_on = ['wellid', 'i', 'j', 'per'], right_on=['WELLID', 'row', 'col', 'sp'])
 
     # adapt mnw_sp for spinup
-    mnw_sp = mnw_sp[mnw_sp['sp'] >= num_sp_spinup]
+    #mnw_sp = mnw_sp[mnw_sp['sp'] >= num_sp_spinup]  # use if restart run
 
     # adapt M&I for spinup
-    m_and_i_wells['Stress_period'] = m_and_i_wells['Stress_period'] + num_sp_spinup
+    #m_and_i_wells['Stress_period'] = m_and_i_wells['Stress_period'] + num_sp_spinup    # use if restart run
 
     # identify real M&I wells
     m_and_i_wells_real = m_and_i_wells
@@ -183,12 +195,12 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     wel_spd_df = wel_spd.get_dataframe()
 
     # calculate the total flux per stress period
-    sp = mf.modeltime.nper
-    nstp = mf.modeltime.nstp
+    # sp = mf.modeltime.nper
+    # nstp = mf.modeltime.nstp
     wel_spd_df['flux_sp'] = np.nan
-    for i, sp in enumerate(list(range(sp))):
+    for i, spi in enumerate(list(range(sp+1))):
 
-        mask = wel_spd_df['per'] == sp
+        mask = wel_spd_df['per'] == spi
         wel_spd_df.loc[mask, 'flux_sp'] = wel_spd_df.loc[mask, 'flux'] * nstp[i]
 
     # sum by stress period
@@ -207,8 +219,10 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     pump_red_sp_ts = pump_red_sp_ts.sort_values(by=['SP', 'TS'])
 
     # merge NetWellFlow_Q with pump_red_df
-    pump_red_sp_ts['totim'] = mf.modeltime.totim[num_days_spinup+1:]
-    gsflow_output['totim'] = mf.modeltime.totim[num_days_spinup+1:]
+    pump_red_sp_ts['totim'] = totim  # use if not restart run
+    gsflow_output['totim'] = totim  # use if not restart run
+    # pump_red_sp_ts['totim'] = mf.modeltime.totim[num_days_spinup+1:]  # use if restart run
+    # gsflow_output['totim'] = mf.modeltime.totim[num_days_spinup+1:]  # use if restart run
     pump_red_sp_ts = pd.merge(pump_red_sp_ts, gsflow_output[['totim', 'NetWellFlow_Q']], how='left', on='totim')
 
     # sum pump_red_sp_ts by stress period

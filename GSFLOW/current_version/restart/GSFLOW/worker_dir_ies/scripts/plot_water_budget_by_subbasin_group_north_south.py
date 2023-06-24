@@ -57,7 +57,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # model_ws = os.path.join(repo_ws, "GSFLOW")
 
     # set gsflow control file
-    gsflow_control_file = os.path.join(model_ws, "windows", "gsflow_rr.control")
+    gsflow_control_file = os.path.join(model_ws, "windows", "gsflow_rr_heavy.control")
 
     # set modflow name file
     modflow_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
@@ -173,9 +173,9 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     #---- Read in zone budget file and reformat ---------------------------------------------------------####
 
-    # read in modflow model
-    gsf = gsflow.GsflowModel.load_from_file(gsflow_control_file)
-    mf = gsf.mf
+    # # read in modflow model
+    # gsf = gsflow.GsflowModel.load_from_file(gsflow_control_file)
+    # mf = gsf.mf
 
     # read in zone budget file
     # can use net=True if you want a the net budget for plotting instead of in and out components

@@ -1794,4 +1794,3 @@ DATA			8106	..\modflow\output\pond_div_iupseg_379.out
 DATA			8107	..\modflow\output\pond_div_iupseg_238.out
 DATA(BINARY) 	2000  ..\modflow\output\uzf_recharge.out
 DATA(BINARY)	2001  ..\modflow\output\uzf_discharge.out
-IWRT			9000  ..\modflow\output\rr_modflow_restart.out

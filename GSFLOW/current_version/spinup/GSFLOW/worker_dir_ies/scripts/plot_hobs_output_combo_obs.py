@@ -1010,8 +1010,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
                     (var_gw_basin['gwbasin_nm'] == gw_basin) & (var_gw_basin['type'] == 'observed'), 'range'].values[0]
             except:
                 obs_range = 0
-            plt.hlines(obs_range*range_ratio, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
-            plt.hlines(obs_range*range_ratio*-1, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+            #plt.hlines(obs_range*range_ratio, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+            #plt.hlines(obs_range*range_ratio*-1, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
         plt.title(resid_vs_gw_basin_plot_title)
         plt.xlabel('Groundwater basin')
         plt.ylabel('Head residual (m)')
@@ -1041,8 +1041,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
             obs_range = var_gw_basin.loc[
                 (var_subbasin['subbasin'] == subbasin) & (var_subbasin['type'] == 'observed'), 'range'].values[0]
-            plt.hlines(obs_range*range_ratio, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
-            plt.hlines(obs_range*range_ratio*-1, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+            #plt.hlines(obs_range*range_ratio, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
+            #plt.hlines(obs_range*range_ratio*-1, xmin=xlim_min+ref_line_buffer,xmax=xlim_max-ref_line_buffer, linestyles='dotted', color='red')
         plt.title(resid_vs_subbasin_plot_title)
         plt.xlabel('Subbasin')
         plt.ylabel('Head residual (m)')
