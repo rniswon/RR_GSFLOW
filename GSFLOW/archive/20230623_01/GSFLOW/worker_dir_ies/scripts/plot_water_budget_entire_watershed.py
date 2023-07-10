@@ -348,7 +348,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # make date column a string
     streamflow_out['date'] = streamflow_out['date'].astype(str)
 
-    # keep only the watershed ouflow
+    # keep only the watershed outflow
     streamflow_out = streamflow_out[streamflow_out['subbasin'] == 21]
     streamflow_out['subbasin'] = 1
 

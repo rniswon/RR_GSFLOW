@@ -204,8 +204,6 @@ def plot_gaining_losing_streams(sfr_file, sfr_df_sum_wy, sfr_df_sum_all, sfr_df_
 
 
 
-    xx=1
-
     #---- Plot total volume exchanged per water year: sum over entire period --------------------------------------####
 
     # plot with regular scale: sfr_col, sum, all

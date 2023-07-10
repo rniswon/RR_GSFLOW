@@ -110,3 +110,5 @@ gsflow_applications/climate_scenarios/SRP/airport/download/
 gsflow_applications/climate_scenarios/SRP/santa_rosa/download/
 gsflow_applications/climate_scenarios/Russian_River/gcm_future_rr.csv
 gsflow_applications/climate_scenarios/Russian_River/russian_river_gcm_corrected.csv
+GSFLOW/scenarios_test/models
+GSFLOW/scenarios_test/results
