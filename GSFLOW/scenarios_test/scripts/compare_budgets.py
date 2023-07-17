@@ -81,6 +81,7 @@ def plot_boxplots_annual(df, variable, variable_pretty):
     plt.savefig(file_path)
 
 
+
 # define monthly boxplot function
 def plot_boxplots_monthly(df, variable, variable_pretty):
 

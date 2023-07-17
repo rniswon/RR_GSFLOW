@@ -1,10 +1,10 @@
 #---- Settings ------------------------------------------####
 
 # set model-simulated values
-ag_water_use_well_m3_per_num_years = 327371872
-ag_water_use_div_m3_per_num_years = 48357880
-ag_water_use_pond_m3_per_num_years = 416074720
-ag_water_use_total_m3_per_num_years = 791804480
+ag_water_use_well_m3_per_num_years = 327341408
+ag_water_use_div_m3_per_num_years = 48356312
+ag_water_use_pond_m3_per_num_years = 416642432
+ag_water_use_total_m3_per_num_years = 792340160
 
 # set field areas
 field_area_well_acres= 19192
