@@ -1,0 +1,5 @@
+../../gsflow_model/modflow/output/zone_budget_watershed.csv csv2
+../../gsflow_model/modflow/output/rr_tr.cbc
+russian_river_watershed
+zone_bud_watershed.zon
+A

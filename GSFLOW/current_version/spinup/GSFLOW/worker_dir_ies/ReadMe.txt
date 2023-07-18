@@ -1,5 +1,5 @@
 GSFLOW model run in this folder:
-20230603_02
+20230713_01 - with gsflow control file chnages for spinup run
 
 Python packages needed in the Miniconda distribution to run the forward model:
 os

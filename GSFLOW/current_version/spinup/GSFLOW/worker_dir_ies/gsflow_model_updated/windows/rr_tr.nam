@@ -197,4 +197,3 @@ DATA            7047  ..\modflow\output\lake_9_inflow.out
 DATA            7048  ..\modflow\output\lake_10_inflow.out
 DATA(BINARY) 	2000  ..\modflow\output\uzf_recharge.out
 DATA(BINARY)	2001  ..\modflow\output\uzf_discharge.out
-IWRT			9000  ..\modflow\output\rr_modflow_restart.out

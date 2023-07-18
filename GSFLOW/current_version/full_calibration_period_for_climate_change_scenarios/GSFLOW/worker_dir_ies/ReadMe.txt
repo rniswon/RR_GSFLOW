@@ -1,5 +1,5 @@
 GSFLOW model run in this folder:
-20230609_01
+20230713_01 - with updates for modsim compatibility
 
 Python packages needed in the Miniconda distribution to run the forward model:
 os

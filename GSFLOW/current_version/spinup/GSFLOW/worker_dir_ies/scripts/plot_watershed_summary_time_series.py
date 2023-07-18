@@ -38,6 +38,44 @@ def main(model_ws, results_ws, mf_name_file_type, modflow_time_zero, start_date,
         plt.savefig(file_path)
         plt.close('all')
 
+        if col_name == 'Sat_S':
+
+            xx=1
+
+            # calculate cumulative change in storage
+            gsflow['Sat_S_change'] = gsflow['Sat_S'].diff()
+            gsflow['Sat_S_change_cumulative'] = gsflow['Sat_S_change'].cumsum()
+
+            # plot change in storage
+            var_name = 'Sat_S_change'
+            plt.style.use('default')
+            plt.figure(figsize=(12, 8), dpi=150)
+            plt.plot(gsflow['Date'], gsflow[var_name])
+            plt.title(var_name)
+            plt.xlabel('Date')
+            plt.ylabel(var_name)
+            file_name = str(var_name) + '.jpg'
+            file_path = os.path.join(results_ws, "plots", "watershed_summary", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
+            plt.savefig(file_path)
+            plt.close('all')
+
+            # plot cumulative change in storage
+            var_name = 'Sat_S_change_cumulative'
+            plt.style.use('default')
+            plt.figure(figsize=(12, 8), dpi=150)
+            plt.plot(gsflow['Date'], gsflow[var_name])
+            plt.title(var_name)
+            plt.xlabel('Date')
+            plt.ylabel(var_name)
+            file_name = str(var_name) + '.jpg'
+            file_path = os.path.join(results_ws, "plots", "watershed_summary", file_name)
+            if not os.path.isdir(os.path.dirname(file_path)):
+                os.mkdir(os.path.dirname(file_path))
+            plt.savefig(file_path)
+            plt.close('all')
+
 
 # main function
 if __name__ == "__main__":

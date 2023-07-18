@@ -57,7 +57,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # model_ws = os.path.join(repo_ws, "GSFLOW")
 
     # set gsflow control file
-    gsflow_control_file = os.path.join(model_ws, "windows", "gsflow_rr.control")
+    gsflow_control_file = os.path.join(model_ws, "windows", "gsflow_rr_heavy.control")
 
     # set modflow name file
     modflow_name_file = os.path.join(model_ws, "windows", mf_name_file_type)
@@ -122,13 +122,13 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     subbasin_areas_file = os.path.join(script_ws, 'script_inputs', "subbasin_areas.txt")
 
     # set file name for daily budget table
-    budget_subbasin_daily_file = os.path.join(results_ws, 'tables', 'budget_subbasin_daily.csv')
+    budget_subbasin_daily_file = os.path.join(results_ws, 'tables', 'budget_northsouth_daily.csv')
 
     # set file name for annual budget table
-    budget_subbasin_annual_file = os.path.join(results_ws, 'tables', 'budget_subbasin_annual.csv')
+    budget_subbasin_annual_file = os.path.join(results_ws, 'tables', 'budget_northsouth_annual.csv')
 
     # set file name for monthly budget table
-    budget_subbasin_monthly_file = os.path.join(results_ws, 'tables', 'budget_subbasin_monthly.csv')
+    budget_subbasin_monthly_file = os.path.join(results_ws, 'tables', 'budget_northsouth_monthly.csv')
 
     # set plot folder name
     plot_folder = os.path.join(results_ws, 'plots', 'water_budget_northsouth')
@@ -173,9 +173,9 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     #---- Read in zone budget file and reformat ---------------------------------------------------------####
 
-    # read in modflow model
-    gsf = gsflow.GsflowModel.load_from_file(gsflow_control_file)
-    mf = gsf.mf
+    # # read in modflow model
+    # gsf = gsflow.GsflowModel.load_from_file(gsflow_control_file)
+    # mf = gsf.mf
 
     # read in zone budget file
     # can use net=True if you want a the net budget for plotting instead of in and out components
