@@ -59,7 +59,6 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     start_date_sim = start_date
     end_date_sim = end_date
     totim_start_date = (pd.to_datetime(start_date) - pd.to_datetime(modflow_time_zero)).days + 1
-    totim_end_date = (pd.to_datetime(end_date) - pd.to_datetime(modflow_time_zero)).days + 1
 
     # set conversion factors
     ft_per_m = 3.2808399
@@ -856,16 +855,42 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         plt.close('all')
 
 
+    # ---- Function to plot cumulative lake stage ---------------------------------------####
 
 
+    def plot_cumulative_lake_stage(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name):
 
+        # calculate cumulative stage: simulated
+        sim_lake_budget['sim_stage_cumsum'] = sim_lake_budget['Stage(H)'].cumsum()
+
+        # calculate cumulative stage: observed
+        obs_lake_stage['obs_stage_cumsum'] = obs_lake_stage[obs_lake_col].cumsum()
+        obs_lake_stage = obs_lake_stage.iloc[0:9495]
+
+        # plot
+        fig, ax = plt.subplots(1, 1, figsize=(12, 8), dpi=150)
+
+        # plot observed stage
+        ax.plot(obs_lake_stage['date'], obs_lake_stage['obs_stage_cumsum'], label='observed')
+        ax.plot(obs_lake_stage['date'], sim_lake_budget['sim_stage_cumsum'], label='simulated')
+        ax.legend()
+        ax.set_title('Cumulative Stage: ' + lake_name)
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Cumulative stage (ft)')
+
+        # export
+        file_path = os.path.join(results_ws, "plots", "lakes", out_file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
 
 
     # ---- Plot: lake 1 -------------------------------------------------------------------####
 
     # plot lake outflows
     specified_outflows = lake_1_release.copy()
-    specified_outflows = specified_outflows.iloc[totim_start_date-1:totim_end_date]
+    specified_outflows = specified_outflows.iloc[totim_start_date:]
     sim_gate_seg_outflows = lake_1_seg_446.copy()
     sim_spillway_seg_outflows = lake_1_seg_447.copy()
     obs_lake_storage = usace_mendo_storage
@@ -911,7 +936,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     # plot lake mendo investigation: sim
     specified_outflows = lake_1_release.copy()
-    specified_outflows = specified_outflows.iloc[totim_start_date-1:totim_end_date]
+    specified_outflows = specified_outflows.iloc[totim_start_date:]
     subbasin_2_sim.rename(columns = col_headers, inplace=True)
     mendo_inflow_seg64_rch3.rename(columns = col_headers, inplace=True)
     mendo_inflow_seg70_rch9.rename(columns = col_headers, inplace=True)
@@ -942,7 +967,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     # plot lake outflows
     specified_outflows = lake_2_release.copy()
-    specified_outflows = specified_outflows.iloc[totim_start_date-1:totim_end_date]
+    specified_outflows = specified_outflows.iloc[totim_start_date:]
     sim_gate_seg_outflows = lake_2_seg_448.copy()
     sim_spillway_seg_outflows = lake_2_seg_449.copy()
     obs_lake_storage = usace_sonoma_storage
@@ -986,6 +1011,13 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     out_file_name = 'lake_2_budget_annual_diff.jpg'
     plot_lake_budget_annual_diff(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim, end_date_sim)
 
+    # plot cumulative lake stage
+    sim_lake_budget = lake_2_budget.copy()
+    sim_lake_budget = sim_lake_budget.iloc[1:]
+    obs_lake_col = 'lake_sonoma_stage_feet_NGVD29'
+    lake_name = 'Lake Sonoma'
+    out_file_name = 'lake_2_cumul_lake_stage'
+    plot_cumulative_lake_stage(sim_lake_budget, obs_lake_stage, obs_lake_col, lake_name, out_file_name)
 
 # main function
 if __name__ == "__main__":

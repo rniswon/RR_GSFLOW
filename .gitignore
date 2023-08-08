@@ -81,6 +81,7 @@ GSFLOW/current_version/full_calibration_period_for_climate_change_scenarios/GSFL
 GSFLOW/current_version/full_calibration_period_for_climate_change_scenarios/GSFLOW/worker_dir_ies/results/
 GSFLOW/current_version/full_calibration_period_for_climate_change_scenarios/GSFLOW/worker_dir_ies/calib_files/
 GSFLOW/current_version/full_calibration_period_for_climate_change_scenarios/GSFLOW/worker_dir_ies/pest/
+GSFLOW/current_version/full_calibration_period_for_climate_change_scenarios_test
 GSFLOW/current_version/spinup/GSFLOW/worker_dir_ies/gsflow_model_updated/modflow/output/
 GSFLOW/current_version/spinup/GSFLOW/worker_dir_ies/gsflow_model_updated/PRMS/output/
 GSFLOW/current_version/spinup/GSFLOW/worker_dir_ies/results/
@@ -110,3 +111,9 @@ gsflow_applications/climate_scenarios/SRP/airport/download/
 gsflow_applications/climate_scenarios/SRP/santa_rosa/download/
 gsflow_applications/climate_scenarios/Russian_River/gcm_future_rr.csv
 gsflow_applications/climate_scenarios/Russian_River/russian_river_gcm_corrected.csv
+scenarios_test/models
+scenarios_test/results
+scenarios/models
+scenarios/results
+MMSFiles/MODSIM/BaseNet_OpsGSFLOWTS__r6MSGSFOUTPUT.sqlite
+MMSFiles/MODSIM/BaseNet_OpsGSFLOWTS__r6OUTPUT.sqlite

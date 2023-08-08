@@ -18,6 +18,10 @@ def main(model_ws, results_ws, mf_name_file_type):
     # # set repo work space
     # repo_ws = os.path.join(script_ws, "..", "..")
 
+    # set days for wet and dry periods
+    day_after_wet_period = 5917
+    day_after_dry_period = 8658
+
 
 
     # ---- Read in model -------------------------------------------####
@@ -35,6 +39,9 @@ def main(model_ws, results_ws, mf_name_file_type):
     ibound_lyr2 = ibound[1,:,:]
     ibound_lyr3 = ibound[2,:,:]
 
+    # get land surface elevation
+    land_surf = mf_tr.dis.top.array
+
 
 
     # ---- Plot transient heads: colormap -------------------------------------------####
@@ -43,7 +50,7 @@ def main(model_ws, results_ws, mf_name_file_type):
     mf_tr_heads_file = os.path.join(model_ws,  "modflow", "output", "rr_tr.hds")
     heads_file = os.path.join(os.getcwd(), mf_tr_heads_file)
     heads_all = flopy.utils.HeadFile(heads_file).get_alldata()
-    heads_idx = [0, len(heads_all)-1]
+    heads_idx = [0, day_after_wet_period, day_after_dry_period, len(heads_all)-1]
     heads_lyr1_list = []
     heads_lyr2_list = []
     heads_lyr3_list = []
@@ -115,13 +122,13 @@ def main(model_ws, results_ws, mf_name_file_type):
     # ---- Plot difference in sim heads over time: colormap -------------------------------------------####
 
     # calculate difference in sim heads
-    diff_lyr1 = heads_lyr1_list[1] - heads_lyr1_list[0]
-    diff_lyr2 = heads_lyr2_list[1] - heads_lyr2_list[0]
-    diff_lyr3 = heads_lyr3_list[1] - heads_lyr3_list[0]
+    diff_lyr1 = heads_lyr1_list[3] - heads_lyr1_list[0]
+    diff_lyr2 = heads_lyr2_list[3] - heads_lyr2_list[0]
+    diff_lyr3 = heads_lyr3_list[3] - heads_lyr3_list[0]
 
     # plotting prep
-    file_name = "sim_tr_heads_diff_ts" + str(ts_list[1] + 1) + '_minus_ts' + str(ts_list[0] + 1)
-    file_name_pretty = "Difference in simulated heads: \ntime step " + str(ts_list[1] + 1) + ' minus time step ' + str(ts_list[0] + 1)
+    file_name = "sim_tr_heads_diff_ts" + str(ts_list[3] + 1) + '_minus_ts' + str(ts_list[0] + 1)
+    file_name_pretty = "Difference in simulated heads: \ntime step " + str(ts_list[3] + 1) + ' minus time step ' + str(ts_list[0] + 1)
 
     # plot heads difference: layer 1
     plt.figure(figsize=(4.5, 6), dpi=150)
@@ -148,6 +155,104 @@ def main(model_ws, results_ws, mf_name_file_type):
     # plot heads difference: layer 3
     plt.figure(figsize=(4.5, 6), dpi=150)
     plt.imshow(diff_lyr3, norm=LogNorm())
+    plt.colorbar()
+    plt.title(file_name_pretty + "\nlayer 3")
+    file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr3.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    plt.savefig(file_path)
+    plt.close('all')
+
+
+
+    # ---- Plot difference in sim heads between a wet and dry period: colormap -------------------------------------------####
+
+    # calculate difference in sim heads between wet and dry period
+    diff_lyr1 = heads_lyr1_list[1] - heads_lyr1_list[2]
+    diff_lyr2 = heads_lyr2_list[1] - heads_lyr2_list[2]
+    diff_lyr3 = heads_lyr3_list[1] - heads_lyr3_list[2]
+
+    # plotting prep
+    file_name = "sim_tr_heads_diff_ts" + str(ts_list[1] + 1) + '_minus_ts' + str(ts_list[2] + 1)
+    file_name_pretty = "Difference in simulated heads between\n 3/15/06 (wet) and 9/15/14 (dry): \ntime step " + str(ts_list[1] + 1) + ' minus time step ' + str(
+        ts_list[2] + 1)
+
+    # plot heads difference: layer 1
+    plt.figure(figsize=(4.5, 6), dpi=150)
+    plt.imshow(diff_lyr1)
+    plt.colorbar()
+    plt.title(file_name_pretty + "\nlayer 1")
+    file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr1.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    plt.savefig(file_path)
+    plt.close('all')
+
+    # plot heads difference: layer 2
+    plt.figure(figsize=(4.5, 6), dpi=150)
+    plt.imshow(diff_lyr2)
+    plt.colorbar()
+    plt.title(file_name_pretty + "\nlayer 2")
+    file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr2.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    plt.savefig(file_path)
+    plt.close('all')
+
+    # plot heads difference: layer 3
+    plt.figure(figsize=(4.5, 6), dpi=150)
+    plt.imshow(diff_lyr3)
+    plt.colorbar()
+    plt.title(file_name_pretty + "\nlayer 3")
+    file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr3.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    plt.savefig(file_path)
+    plt.close('all')
+
+
+
+    # ---- Plot water table depth: colormap -------------------------------------------####
+
+    # calculate difference between land surface and sim heads in each layer at end of simulation
+    diff_lyr1 = land_surf - heads_lyr1_list[3]
+    diff_lyr2 = land_surf - heads_lyr2_list[3]
+    diff_lyr3 = land_surf - heads_lyr3_list[3]
+
+    # # set values less than 0 to nan
+    # diff_lyr1[diff_lyr1 < 0] = np.nan
+    # diff_lyr2[diff_lyr2 < 0] = np.nan
+    # diff_lyr3[diff_lyr3 < 0] = np.nan
+
+    # plotting prep
+    file_name = "sim_tr_heads_land_surf_minus_ts_" + str(ts_list[3] + 1)
+    file_name_pretty = "Water table depth\non 12/30/2015: \ntime step " + str(ts_list[3] + 1)
+
+    # plot heads difference: layer 1
+    plt.figure(figsize=(4.5, 6), dpi=150)
+    plt.imshow(diff_lyr1)
+    plt.colorbar()
+    plt.title(file_name_pretty + "\nlayer 1")
+    file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr1.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    plt.savefig(file_path)
+    plt.close('all')
+
+    # plot heads difference: layer 2
+    plt.figure(figsize=(4.5, 6), dpi=150)
+    plt.imshow(diff_lyr2)
+    plt.colorbar()
+    plt.title(file_name_pretty + "\nlayer 2")
+    file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr2.png')
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    plt.savefig(file_path)
+    plt.close('all')
+
+    # plot heads difference: layer 3
+    plt.figure(figsize=(4.5, 6), dpi=150)
+    plt.imshow(diff_lyr3)
     plt.colorbar()
     plt.title(file_name_pretty + "\nlayer 3")
     file_path = os.path.join(results_ws, 'plots', 'sim_heads', file_name + '_lyr3.png')
