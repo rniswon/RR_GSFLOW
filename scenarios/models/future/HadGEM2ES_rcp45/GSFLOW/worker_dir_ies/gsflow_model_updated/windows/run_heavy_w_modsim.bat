@@ -1,0 +1,2 @@
+.\bin\MWC_MS_GSF_Run.exe rr_HadGEM2ES_rcp45_heavy_modsim.control
+pause

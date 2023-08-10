@@ -113,7 +113,11 @@ gsflow_applications/climate_scenarios/Russian_River/gcm_future_rr.csv
 gsflow_applications/climate_scenarios/Russian_River/russian_river_gcm_corrected.csv
 scenarios_test/models
 scenarios_test/results
-scenarios/models
+scenarios/models/**/modflow/output
+scenarios/models/**/PRMS/output
+scenarios/models/**/calib_files
+scenarios/models/**/pest
+scenarios/models/**/scratch
 scenarios/results
 MMSFiles/MODSIM/BaseNet_OpsGSFLOWTS__r6MSGSFOUTPUT.sqlite
 MMSFiles/MODSIM/BaseNet_OpsGSFLOWTS__r6OUTPUT.sqlite
