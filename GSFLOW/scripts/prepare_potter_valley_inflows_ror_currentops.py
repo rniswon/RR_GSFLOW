@@ -49,10 +49,6 @@ df = pd.read_csv(pv_scenario_file, parse_dates=['date'])
 # cut to RR model dates
 df = df[(df['date'] >= start_date) & (df['date'] <= end_date)]
 
-# add modsim start date
-modsim_data_start_date_df = pd.DataFrame({'date': pd.to_datetime(['1909-10-01']), 'current_ops_cfs': 0, 'run_of_river_cfs': 0})
-df = pd.concat([modsim_data_start_date_df, df])
-
 # convert units from cfs to cmd
 df['current_ops_cmd'] = df['current_ops_cfs'] * (1/cubic_ft_per_cubic_m) * seconds_per_day
 df['run_of_river_cmd'] = df['run_of_river_cfs'] * (1/cubic_ft_per_cubic_m) * seconds_per_day
@@ -79,6 +75,13 @@ run_of_river_tab = df_tab[['model_day', 'run_of_river_cmd', 'date']]
 
 
 # ---- Reformat PV data for modsim -------------------------------------------####
+
+# add modsim start date
+modsim_data_start_date_df = pd.DataFrame({'date': pd.to_datetime(['1909-10-01']),
+                                          'current_ops_cfs': 0, 'run_of_river_cfs': 0,
+                                          'current_ops_cmd': 0, 'run_of_river_cmd': 0,
+                                          'current_ops_cfd': 0, 'run_of_river_cfd': 0})
+df = pd.concat([modsim_data_start_date_df, df])
 
 # only keep desired columns for modsim
 current_ops_mod = df[['date', 'current_ops_cfd']]
