@@ -95,8 +95,6 @@ redwood_valley_demand = redwood_valley_demand.fillna(0)
 
 # ---- Compare new redwood valley demand to old one -------------------------------------####
 
-xx=1
-
 # calculate cumulative flow: new
 redwood_valley_demand['flow_cumul_cmd'] = redwood_valley_demand['pumping_cmd'].cumsum()
 
