@@ -21,17 +21,18 @@ This script does .........
 
 # @@@ ---- @@@
 make_new_copy = True
-simulate_prms_av_temp = True
+simulate_prms_av_temp = False
 cluster_hrus_temp = False
 
 # ===============================
 # Globals
 # ===============================
-#archive_dir = r'D:\Workspace\projects\SantaRosa\SRB_MODSIM_GIT\SRP_MODSIM\model_archive_git'
 old_model_ws = r"D:\Workspace\projects\RussianRiver\RR_GSFLOW_GIT\RR_GSFLOW\GSFLOW\current_version\full_calibration_period\GSFLOW\worker_dir_ies"
 model_ws = r"D:\Workspace\projects\RussianRiver\forest_protection\gsflow"
-control_file = r"windows\gsflow_rr.control"
+control_file = r"gsflow_model_updated\windows\gsflow_rr.control"
 misc_data_dir = r"data"
+
+out_temp_file = os.path.join(misc_data_dir, 'nsub_tavgf.csv')
 
 
 # ================================
@@ -45,9 +46,9 @@ def copy_model():
     if os.path.isdir(model_ws):
         shutil.rmtree(model_ws)
 
-    shutil.copytree(src = old_model_ws, dst = model_ws)
-    os.mkdir(os.path.join(model_ws,'gsflow_model_updated', 'modflow', 'output'))
-
+    shutil.copytree(src=old_model_ws, dst=model_ws)
+    os.mkdir(os.path.join(model_ws, 'gsflow_model_updated', 'modflow', 'output'))
+    os.mkdir(os.path.join(model_ws, 'gsflow_model_updated', 'PRMS', 'output'))
 
 
 # ===============================
@@ -111,6 +112,24 @@ else:
 reach_data = pd.DataFrame(gs.mf.sfr.reach_data)
 segment_data = pd.DataFrame(gs.mf.sfr.segment_data[0])[['nseg', 'outseg', 'iupseg']]
 
+lakes = set(segment_data[segment_data['iupseg'] < 0]['iupseg'].values).union(
+    set(segment_data[segment_data['outseg'] < 0]['outseg'].values)
+)
+lakes = sorted(list(lakes))
+for lak in lakes:
+    df_ = segment_data[segment_data['iupseg'] == lak]
+    df_ = df_[df_['outseg'] > 0]
+    dn_segs = df_['nseg'].values.tolist()
+
+    df2_ = segment_data[segment_data['outseg'] == lak]
+    up_segs = df2_['nseg'].values.tolist()
+
+    for up_seg in up_segs:
+        for dn_seg in dn_segs:
+            dn = reach_data.loc[(reach_data['iseg'] == dn_seg), 'reachID'].values[0]
+            reach_data.loc[(reach_data['iseg'] == up_seg) &
+                           (reach_data['outreach'] == 0), 'outreach'] = dn
+
 sfr_edges = list(zip(reach_data['reachID'].values, reach_data['outreach'].values))
 G = nx.DiGraph()
 G.add_edges_from(sfr_edges)
@@ -132,22 +151,17 @@ Gseg.add_edges_from(seg_edges)
 # prepare prms rub
 # ==============================
 if simulate_prms_av_temp:
-    prms_contro_file = os.path.join(ws, "prms_run.control")
-    gs.control.set_values('model_mode', ['PRMS'])
+    prms_only_control_file = "prms_run_frost_prot.control"
+    prms_contro_file = os.path.join(ws, prms_only_control_file)
+    gs.control.set_values('model_mode', ['PRMS5'])
     out_list = gs.prms.control.get_values('nsubOutVar_names').tolist()
     out_list[-1] = 'tavgf'
     gs.control.set_values('nsubOutVar_names', out_list)
     gs.prms.control.set_values('nsubOutVar_names', out_list)
 
-    # # add subbasins
-    # gs.prms.parameters.set_values('nsub', [len(gw_hru['cluster'].unique())])
-    # gs.prms.parameters.set_values('hru_subbasin', gw_hru['cluster'].values)
-    # gs.prms.parameters.remove_record("subbasin_down")
-    gs.prms.parameters.write()
-
     prms_bat_file = os.path.join(ws, "prms_run.bat")
     fidw = open(prms_bat_file, 'w')
-    fidw.write(r"..\..\..\bin\gsflow.exe prms_run.control")
+    fidw.write(r"..\..\bin\gsflow.exe {}".format(prms_only_control_file))
     fidw.close()
     gs.control.write(prms_contro_file)
 
@@ -156,7 +170,6 @@ if simulate_prms_av_temp:
     os.system("prms_run.bat")
     os.chdir(base_dir)
 
-    out_temp_file = os.path.join(model_ws, r"output\output.model1_full\srphm_full_nsub_tavgf.csv")
     shutil.copy(src=out_temp_file, dst=os.path.join(misc_data_dir, os.path.basename(out_temp_file)))
     gs.control.set_values('model_mode', ['GSFLOW'])
 
@@ -167,30 +180,9 @@ if simulate_prms_av_temp:
 # =====================================
 if 1:
     mf = gs.mf
-    ag_file = os.path.join(model_ws, r".\model\external_files\srphm.ag")
-    ag = ModflowAg.load(ag_file, mf, nper=mf.nper)
-
-    npr = list(ag.irrwell.keys())
-
-    # Ag fields
-    all_feilds = []
-    change_flg = 0
-    start_period = 0
-    all_hrus = set()
-    for pr in npr:
-
-        if pr > 0:
-            prev_fields = curr_fields.copy()
-
-        df_ = pd.DataFrame(ag.irrwell[pr])
-        curr_fields = set(df_['hru_id0'].values)
-        all_hrus = all_hrus.union(curr_fields)
-        print(pr)
-        if pr > 0:
-            if len(curr_fields.symmetric_difference(prev_fields)) > 0:
-                all_feilds.append([start_period, pr, len(prev_fields)])
-                start_period = pr + 1
-    ag_fields_df = gw_hru[gw_hru['prms_hru'].isin(all_hrus)]
+    ag_file = os.path.join(model_ws, r".\gsflow_model_updated\modflow\input\rr_tr.ag")
+    df_ag = util_funcs.get_ag_fields(ag_file)
+    ag_fields_df = gw_hru[gw_hru['prms_hru'].isin(df_ag['field_hru'])]
     ag_fields_df.reset_index(inplace=True)
     del (ag_fields_df['index'])
 
@@ -200,7 +192,7 @@ climate_df = gs.prms.data.data_df.copy()
 # generate tab file for each subbasin
 # =====================================
 
-simulated_temp_df = pd.read_csv(os.path.join(misc_data_dir, 'srphm_full_nsub_tavgf.csv'))
+simulated_temp_df = pd.read_csv(out_temp_file)
 simulated_temp_df['Date'] = pd.to_datetime(simulated_temp_df['Date'])
 for c in simulated_temp_df.columns:
     c_ = c.strip()
@@ -209,22 +201,25 @@ for c in simulated_temp_df.columns:
         simulated_temp_df[c_] = simulated_temp_df[c]
         del (simulated_temp_df[c])
 
-# Every time Temp<5 apply irrigation equal 50 gal/min for 5 hours per acre
-frost_temp = 42
-gal_to_feet3 = 0.133681
-acre_to_ft2 = 43560
+# Every time Temp< tmin apply irrigation equal 50 gal/min for 5 hours per acre
+frost_temp = 35
+gal_to_m3 = 0.0037854117954011185
+acre_to_m2 = 4046.86
 flow = 50  # gal/min/acre
-flow = flow * gal_to_feet3  # ft3/min/acre
-flow = flow / acre_to_ft2  # ft/min
-flow = flow * 60 * 5  # ft per 5hr a day
-ag_fields_df['ag_frac'] = 0.3
+flow = flow * gal_to_m3  # m3/min/acre
+flow = flow / acre_to_m2  # m/min
+flow = flow * 60 * 5  # m /day
+# ag_fields_df['ag_frac'] = 0.3
 ag_fields_df['cell_area'] = mf.dis.delc.array[0] ** 2.0
 tabfiles_dict = {}
 tbfile_names = {}
-iunit = 1555
+iunit = 3000
 maxval = -999
-for sub in ag_fields_df['cluster'].unique():
-    fields_in_subbasin = ag_fields_df[ag_fields_df['cluster'] == sub]
+list_of_added_segments = []
+for sub in ag_fields_df['subbasin'].unique():
+    if sub == 0:
+        continue
+    fields_in_subbasin = ag_fields_df[ag_fields_df['subbasin'] == sub]
     subbasin_temp = simulated_temp_df[['Date', sub]].copy()
     subbasin_temp['irrigate'] = 0
     subbasin_temp.loc[subbasin_temp[sub] <= frost_temp, 'irrigate'] = 1
@@ -234,17 +229,28 @@ for sub in ag_fields_df['cluster'].unique():
     subbasin_temp['flow'] = frost_irr_per_subbasin * subbasin_temp['irrigate']
     subbasin_temp.reset_index(inplace=True)
     X = subbasin_temp[['index', 'flow']].values
+    X = np.vstack([X, [X[-1][0] + 1, 0.0]])  # to match other tab file lengths
 
     # tabfiles
-    fields_in_subbasin = ag_fields_df[ag_fields_df['cluster'] == sub]
+    fields_in_subbasin = ag_fields_df[ag_fields_df['subbasin'] == sub]
     flow_acc = reach_data[reach_data['iseg'].isin(fields_in_subbasin['seg'].unique())].copy()
     taken_segs = list(tabfiles_dict.keys())
     flow_acc = flow_acc[~(flow_acc['iseg'].isin(taken_segs))]
-    flow_acc.sort_values('flow_acc', inplace=True)
 
+    if (len(flow_acc) == 0) & (len(fields_in_subbasin) > 0):
+        segs = gw_hru[gw_hru['subbasin'] == sub]
+        segs = segs['seg'].values
+        flow_acc = reach_data[reach_data['iseg'].isin(segs)]
+        flow_acc = flow_acc[~(flow_acc['iseg'].isin(taken_segs))]
+        if len(flow_acc) == 0:
+            continue
+
+    flow_acc.sort_values('flow_acc', inplace=True)
     seg = flow_acc['iseg'].values[-1]
 
-    fname = os.path.join(misc_data_dir, 'frost_protect_div_{}.txt'.format(seg))
+    in_dir = os.path.join(model_ws, r"gsflow_model_updated\modflow\input\ag_diversions")
+    fname = os.path.join(in_dir, 'frost_protect_div_{}.txt'.format(seg))
+
     np.savetxt(fname, X, fmt='%i\t%1.2f')
 
     iunit = iunit + 1
@@ -252,31 +258,42 @@ for sub in ag_fields_df['cluster'].unique():
     tbfile_names[iunit] = fname
 
     if len(subbasin_temp) > maxval:
-        maxval = len(subbasin_temp)
+        maxval = len(X)
 
-# =====================================
-# link each subbasin with largets segmen
-# =====================================
-#
-# for sub in ag_fields_df['cluster'].unique():
-#     # get all segments in the current subbasin
-#     fields_in_subbasin = ag_fields_df[ag_fields_df['cluster'] == sub]
-#     flow_acc = reach_data[reach_data['iseg'].isin(fields_in_subbasin['seg'].unique())].copy()
-#     flow_acc.sort_values('flow_acc', inplace=True)
-#
-#     seg = flow_acc['iseg'].values[-1]
-
-
+    list_of_added_segments.append([seg, subbasin_temp['flow'].mean(), frost_irr_per_subbasin,
+                                   subbasin_temp['irrigate'].sum(),subbasin_temp[sub].quantile(0.05)
+                                   ])
+list_of_added_segments = pd.DataFrame(list_of_added_segments, columns= ['iupseg', 'mean_flow',
+                                                                        'irrigated_area', 'days<35', 'temp_5th_Qauntile'])
 # =====================================
 # change sfr package
 # =====================================
-
-
 mf_nam = gs.control.get_values('modflow_name')[0]
 mf_input_files = get_mf_files(mf_nam)
+
+# get file name by unit number
+ftypes = mf_input_files.keys()
+unit_file_dict = {}
+for f in ftypes:
+    iunit = int(mf_input_files[f][0])
+    unit_file_dict[iunit] = mf_input_files[f][1]
+
 mf.sfr.options.tabfiles = True
 mf.sfr.tabfiles = True
-mf.sfr.tabfiles_dict = tabfiles_dict
+
+# add new segments
+existing_tab_seg = mf.sfr.tabfiles_dict.keys()
+new_tab_seg = tabfiles_dict.keys()
+new_files_units = {}
+div_iupsegs = []
+for seg in new_tab_seg:
+    if seg in existing_tab_seg:
+        continue
+        # this is only inflow from markwest creek
+    else:
+        mf.sfr.tabfiles_dict[seg] = tabfiles_dict[seg]
+        new_files_units[tabfiles_dict[seg]['inuit']] = 'frost_protect_div_{}.txt'.format(seg)
+        div_iupsegs.append(seg)
 
 rch_data = pd.DataFrame(mf.sfr.reach_data)
 sg_data = pd.DataFrame(pd.DataFrame(mf.sfr.segment_data[0]))
@@ -285,22 +302,25 @@ rch_data.drop(columns=['reachID', 'outreach', 'node'], inplace=True)
 
 more_reach_data = []
 more_seg_data = []
-div_iupsegs = list(tabfiles_dict.keys())
+
 gw_hru['ij'] = list(zip(gw_hru['i'], gw_hru['j']))
-channel_geometry_data = mf.sfr.channel_geometry_data[0]
+
+list_of_added_segments['seg'] = 0
 for sg in div_iupsegs:
     new_iseg = sg_data['nseg'].max() + 1
 
     # segment_data
-    new_sg_record = sg_data[sg_data['nseg'].isin([sg])].copy()
+    new_sg_record = sg_data[sg_data['nseg'].isin([1])].copy()
     new_sg_record = new_sg_record.iloc[0]
     new_sg_record['nseg'] = new_iseg
     new_sg_record['outseg'] = 0
     new_sg_record['iupseg'] = sg
-    sg_data = sg_data.append(new_sg_record, ignore_index=True)
+    new_sg_record['icalc'] = 1
+    # sg_data = sg_data.append(new_sg_record, ignore_index=True)
+    sg_data = pd.concat([sg_data, pd.DataFrame([new_sg_record])], ignore_index=True)
 
     # reach_data
-    new_rch = rch_data[(rch_data['iseg'].isin([seg])) &
+    new_rch = rch_data[(rch_data['iseg'].isin([sg])) &
                        (rch_data['ireach'] == 1)].copy()
     new_rch = new_rch.iloc[0]
     rch_data['ij'] = list(zip(rch_data['i'], rch_data['j']))
@@ -315,10 +335,28 @@ for sg in div_iupsegs:
     new_rch['j'] = jj
     new_rch['iseg'] = new_iseg
     new_rch['ireach'] = 1
-    rch_data = rch_data.append(new_rch, ignore_index=True)
+    ibound = mf.bas6.ibound.array[:, ii, jj]
+    if np.sum(ibound) == 0:
+        raise ValueError("Inactive Cell")
+    for ib, b in enumerate(ibound):
+        if b > 0:
+            break
+    new_rch['k'] = ib
 
-    channel_geometry_data[new_iseg] = channel_geometry_data[sg]
+    elev = mf.modelgrid.botm[ib, ii, jj] + 0.99 * mf.modelgrid.cell_thickness[ib, ii, jj]
+    new_rch['strtop'] = elev
 
+    rch_data = pd.concat([rch_data, pd.DataFrame([new_rch])], ignore_index=True)
+    mask_iupseg = list_of_added_segments['iupseg'].isin([sg])
+    list_of_added_segments.loc[mask_iupseg, 'seg']  = new_iseg
+    list_of_added_segments.loc[mask_iupseg, 'i'] = ii
+    list_of_added_segments.loc[mask_iupseg, 'j'] = jj
+
+#iupseg = 408 is dropped because it is already an iupseg
+list_of_added_segments =(list_of_added_segments)[list_of_added_segments['seg']>0]
+plt.scatter(rch_data['j'], -1*rch_data['i'], s = 4)
+plt.scatter(list_of_added_segments['j'], -1*list_of_added_segments['i'],
+            s = 10, c = list_of_added_segments['mean_flow'], cmap = 'jet')
 del (rch_data['ij'])
 int_cols = ['nseg', 'icalc', 'outseg', 'iupseg', 'iprior']
 for c in int_cols:
@@ -330,15 +368,15 @@ for c in int_cols:
 
 mf.sfr.reach_data = rch_data.to_records(index=False)
 mf.sfr.segment_data = {0: sg_data.to_records(index=False)}
-mf.sfr.channel_geometry_data = {0: channel_geometry_data}
+# mf.sfr.channel_geometry_data = {0: channel_geometry_data}
 # opt = pd.DataFrame(mf.sfr.options.tabfiles)
 # opt['maxval'] = maxval
 
-mf.sfr.numtab = len(tabfiles_dict.keys())
-mf.sfr.options.numtab = len(tabfiles_dict.keys())
+mf.sfr.numtab = len(mf.sfr.tabfiles_dict.keys())
+mf.sfr.options.numtab = len(mf.sfr.tabfiles_dict.keys())
 mf.sfr.options.maxval = maxval
 mf.sfr.maxval = maxval
-mf.sfr.fn_path = os.path.join(model_ws, r"model\external_files\SRPHM_full.sfr.sfr")
+mf.sfr.fn_path = os.path.join(model_ws, r"gsflow_model_updated\modflow\input\rr_tr.sfr")
 mf.sfr.write_file()
 
 shutil.copy2(mf_nam, mf_nam + "__backup")
@@ -350,30 +388,19 @@ content = fidr.readlines()
 for line in content:
     fidw.write(line)
 units = list(tbfile_names.keys())
+fidw.write("\n")
 for unit in units:
     f = os.path.basename(tbfile_names[unit])
-    line = r"Data      {}      ..\..\external_files\{}".format(unit, f)
+    line = r"Data      {}      ..\modflow\input\ag_diversions\{}".format(unit, f)
     fidw.write(line + "\n")
 
 fidr.close()
 fidw.close()
 
 # also change nsegments and nreaches in prms
+param_file = os.path.join(model_ws, r"gsflow_model_updated\PRMS\input\prms_rr.param")
+param = gs.prms.parameters.load_from_file(param_file)
+param.set_values('nsegment', [len(sg_data)])
+param.set_values('nreach', [len(rch_data)])
+param.write()
 xx = 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

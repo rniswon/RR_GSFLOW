@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 
 def find_adjacent_zones(zones):
     """
@@ -95,6 +95,154 @@ def aggregate_adjacent_zones(zones, max_size, exclude_zone = []):
 
 def aggregate_cascading_subb(zones, ):
     pass
+
+def get_ag_fields(ag_file):
+
+    fidr = open(ag_file, 'r')
+    content = fidr.readlines()
+    fidr.close()
+
+    flg_in_stress_period = False
+    line_counter = -1
+    irr_data = []
+    while True:
+        line_counter = line_counter + 1
+        if line_counter >= len(content):
+            break
+        line = content[line_counter]
+
+        if "STRESS PERIOD" in line:
+            if (line.strip())[0] == "#":
+                continue
+            flg_in_stress_period = True
+
+            # get stress period number
+            sp = int(line.strip().split()[2])
+            continue
+
+        if not (flg_in_stress_period):
+            continue
+
+        # if you are here, then you are inside a stress period
+        type_of_irrigation = line.strip()
+
+        if type_of_irrigation == "IRRWELL":
+            line_counter = line_counter + 1
+            line = content[line_counter]
+
+            nwells = int(line.strip())
+
+            for iwell in range(1, nwells + 1):
+                line_counter = line_counter + 1
+                line = content[line_counter]
+
+                parts = line.strip().split()
+                well_id = int(parts[0])
+                ncell = int(parts[1])
+
+                for i in range(ncell):
+                    line_counter = line_counter + 1
+                    line = content[line_counter]
+
+                    parts = line.strip().split()
+                    hru_i = int(parts[0])
+
+                    irr_data.append([type_of_irrigation, sp, well_id, hru_i])
+
+            line_counter = line_counter + 1
+            line = content[line_counter]
+            print("Stress Period {}".format(sp))
+            if "END" in line:
+                flg_in_stress_period = False
+                continue
+            elif line.strip() in ['IRRDIVERSION', 'IRRWELL',  'IRRPOND', 'SUPWELL']:
+                line_counter = line_counter -1
+                continue
+            else:
+                raise ValueError("Something is wrong. This line must contain 'END' keyword ")
+
+        elif type_of_irrigation == "IRRDIVERSION":
+            line_counter = line_counter + 1
+            line = content[line_counter]
+            n_diversions = int(line.strip())
+            for ipod in range(1, n_diversions + 1):
+                line_counter = line_counter + 1
+                line = content[line_counter]
+
+                parts = line.strip().split()
+                seg_id = int(parts[0])
+                ncell = int(parts[1])
+
+                for i in range(ncell):
+                    line_counter = line_counter + 1
+                    line = content[line_counter]
+
+                    parts = line.strip().split()
+                    hru_i = int(parts[0])
+
+                    irr_data.append([type_of_irrigation, sp, seg_id, hru_i])
+
+            line_counter = line_counter + 1
+            line = content[line_counter]
+            print("Stress Period {}".format(sp))
+            if "END" in line:
+                flg_in_stress_period = False
+                continue
+            elif line.strip() in ['IRRDIVERSION', 'IRRWELL',  'IRRPOND', 'SUPWELL']:
+                line_counter = line_counter -1
+                continue
+            else:
+                raise ValueError("Something is wrong. This line must contain 'END' keyword ")
+
+
+        elif type_of_irrigation == "SUPWELL":
+            """
+            Not Ready... it will generate error if data is different
+            from zero
+            """
+            line_counter = line_counter + 1
+            line = content[line_counter]
+
+            if int(line.strip()) == 0:
+                continue
+
+
+        elif type_of_irrigation == "IRRPOND":
+            line_counter = line_counter + 1
+            line = content[line_counter]
+            n_diversions = int(line.strip())
+            for ipod in range(1, n_diversions + 1):
+                line_counter = line_counter + 1
+                line = content[line_counter]
+
+                parts = line.strip().split()
+                seg_id = int(parts[0])
+                ncell = int(parts[1])
+
+                for i in range(ncell):
+                    line_counter = line_counter + 1
+                    line = content[line_counter]
+
+                    parts = line.strip().split()
+                    hru_i = int(parts[0])
+
+                    irr_data.append([type_of_irrigation, sp, seg_id, hru_i])
+
+            line_counter = line_counter + 1
+            line = content[line_counter]
+            print("Stress Period {}".format(sp))
+            if "END" in line:
+                flg_in_stress_period = False
+                continue
+            elif line.strip() in ['IRRDIVERSION', 'IRRWELL', 'IRRPOND', 'SUPWELL']:
+                line_counter = line_counter - 1
+                continue
+            else:
+                raise ValueError("Something is wrong. This line must contain 'END' keyword ")
+
+            pass
+
+    return pd.DataFrame(irr_data, columns = ['irr_type', 'stress_period', 'element_id', 'field_hru'])
 
 
 
