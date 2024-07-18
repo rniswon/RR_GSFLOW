@@ -49,16 +49,25 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     # select models of interest
     pv_df_all = pv_df_all[pv_df_all['model'].isin(['hist-baseline-modsim', 'hist-pv1-modsim', 'hist-pv2-modsim'])]
 
-
+    # select five years to focus on
+    pv_df_all_select_years = pv_df_all[(pv_df_all['date'] > '2010-10-01') & (pv_df_all['date'] < '2015-09-30')]
 
 
     # ---- Plot -------------------------------------------####
 
     # plot
-    plt.subplots(figsize=(8, 4))
-    plot_title = 'Potter Valley Inflows'
-    p = sns.lineplot(data=pv_df_all, x="date", y="potter_valley_inflows", hue="model", style = 'model', legend=True)
-    p.set_title(plot_title)
+    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(8, 8))
+
+    plot_title = 'a) Potter Valley Inflows: 1/1/1990-12/30/2015'
+    p = sns.lineplot(data=pv_df_all, x="date", y="potter_valley_inflows", hue="model", style = 'model', legend=True, ax=axes[0])
+    p.set_title(plot_title, loc='left')
+    p.set_xlabel('Date')
+    p.set_ylabel('Potter Valley inflows ($\mathregular{m^3}$/day)')
+    p.legend(title='Model')
+
+    plot_title = 'b) Potter Valley Inflows: 10/1/2010 - 9/30/2015'
+    p = sns.lineplot(data=pv_df_all_select_years, x="date", y="potter_valley_inflows", hue="model", style = 'model', legend=True, ax=axes[1])
+    p.set_title(plot_title, loc='left')
     p.set_xlabel('Date')
     p.set_ylabel('Potter Valley inflows ($\mathregular{m^3}$/day)')
     p.legend(title='Model')
@@ -66,6 +75,7 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     # export figure
     file_name = 'potter_valley_inflows.jpg'
     file_path = os.path.join(results_ws, 'plots', 'compare_potter_valley_inflows', file_name)
+    plt.tight_layout()
     plt.savefig(file_path, bbox_inches='tight')
 
 

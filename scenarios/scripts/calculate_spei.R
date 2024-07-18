@@ -227,7 +227,7 @@ spei_60months <- spei(as.matrix(precip_potet_df),60)
 
 # Define SPEI plotting function ----------------------------------------------------------------####
 
-spei_ploting_function <- function(spei_output, precip_potet_df_old, output_file_name, plot_title){
+spei_plotting_function <- function(spei_output, precip_potet_df_old, output_file_name, plot_title){
   
   # reformat
   spei_df <- data.frame(spei_output$fitted)
@@ -286,31 +286,219 @@ spei_ploting_function <- function(spei_output, precip_potet_df_old, output_file_
 # plot SPEI: 3 months
 output_file_name <- 'spei_3months'
 plot_title <- '3-Month SPEI'
-spei_ploting_function(spei_3months, precip_potet_df_old, output_file_name, plot_title)
+spei_plotting_function(spei_3months, precip_potet_df_old, output_file_name, plot_title)
 
 
 # plot SPEI: 6 months
 output_file_name <- 'spei_6months'
 plot_title <- '6-Month SPEI'
-spei_ploting_function(spei_6months, precip_potet_df_old, output_file_name, plot_title)
+spei_plotting_function(spei_6months, precip_potet_df_old, output_file_name, plot_title)
 
 
 # plot SPEI: 9 months
 output_file_name <- 'spei_9months'
 plot_title <- '9-Month SPEI'
-spei_ploting_function(spei_9months, precip_potet_df_old, output_file_name, plot_title)
+spei_plotting_function(spei_9months, precip_potet_df_old, output_file_name, plot_title)
 
 
 # plot SPEI: 12 months
 output_file_name <- 'spei_12months'
 plot_title <- '12-Month SPEI'
-spei_ploting_function(spei_12months, precip_potet_df_old, output_file_name, plot_title)
+spei_plotting_function(spei_12months, precip_potet_df_old, output_file_name, plot_title)
 
 
 # plot SPEI: 60 months
 output_file_name <- 'spei_60months'
 plot_title <- '60-month SPEI'
-spei_ploting_function(spei_60months, precip_potet_df_old, output_file_name, plot_title)
+spei_plotting_function(spei_60months, precip_potet_df_old, output_file_name, plot_title)
+
+
+
+
+# Calculate drought severity, duration, and intensity for 3-month SPEI ----------------------------------------------------------------####
+
+
+# note: 
+# historical period is months 1-312 for SPEI-3
+# future period is months 313-1320 for SPEI-3
+# drought defined as SPEI < -1
+# drought frequency calculated as number of times that you have drought in the time period of interest
+# drought duration calculated as number of consecutive time periods in which you have drought
+# drought severity calculated as mean of SPEI during drought periods
+
+# identify drought periods
+drought_id = spei_3months$fitted
+mask = drought_id < -1
+drought_id[mask] <- 1
+drought_id[!mask] <- 0
+
+# prep for drought severity
+drought_severity_prep <- spei_3months$fitted
+mask = drought_severity_prep >= -1
+drought_severity_prep[mask] <- NA
+
+# separate hist and cc
+hist <- spei_3months$fitted[1:312,]
+hist_drought_id <- drought_id[1:312,]
+hist_drought_severity_prep <- drought_severity_prep[1:312,]
+cc <- spei_3months$fitted[313:1320,]
+cc_drought_id <- drought_id[313:1320,]
+cc_drought_severity_prep <- drought_severity_prep[313:1320,]
+
+# calculate drought frequency (as percentage of time spent in drought)
+hist_drought_freq <- colSums(hist_drought_id, na.rm=TRUE)/nrow(hist_drought_id)
+cc_drought_freq <- colSums(cc_drought_id, na.rm=TRUE)/nrow(cc_drought_id)
+
+# calculate drought severity
+hist_drought_severity <- apply(hist_drought_severity_prep, 2, min, na.rm=TRUE)
+cc_drought_severity <- apply(cc_drought_severity_prep, 2, min, na.rm=TRUE)
+
+# calculate drought duration
+hist_drought_duration_list <- list()
+cc_drought_duration_list <- list()
+num_cols <- ncol(hist_drought_id)
+for (col in 1:num_cols){
+  
+  # hist
+  hist_duration <- rle(hist_drought_id[,col])
+  hist_drought_duration_list[[col]] <- hist_duration
+
+  # cc
+  cc_duration <- rle(cc_drought_id[,col])
+  cc_drought_duration_list[[col]] <- cc_duration
+  
+}
+names(hist_drought_duration_list) <- colnames(hist_drought_id)
+names(cc_drought_duration_list) <- colnames(cc_drought_id)
+
+# calculate longest drought duration for each scenario
+drought_duration_longest <- data.frame(matrix(NA, nrow=length(colnames(hist_drought_id)), ncol=3))
+colnames(drought_duration_longest) <- c('scenarios', 'hist', 'cc')
+drought_duration_longest$scenarios <- colnames(hist_drought_id)
+drought_duration_longest$hist <- NA
+drought_duration_longest$cc <- NA
+num_rows <- nrow(drought_duration_longest)
+for (row in 1:num_rows){
+  
+  # get scenario 
+  scenario <- drought_duration_longest$scenario[row]
+  
+  # get longest drought duration: hist
+  length <- hist_drought_duration_list[[scenario]]$length
+  value <- hist_drought_duration_list[[scenario]]$values
+  df <- data.frame(length, value)
+  names(df) <- c('length', 'value')
+  df <- subset(df, value == 1)
+  longest_drought <- max(df$length)
+  drought_duration_longest$hist[row] <- longest_drought
+  
+  # get longest drought duration: cc
+  length <- cc_drought_duration_list[[scenario]]$length
+  value <- cc_drought_duration_list[[scenario]]$values
+  df <- data.frame(length, value)
+  names(df) <- c('length', 'value')
+  df <- subset(df, value == 1)
+  longest_drought <- max(df$length)
+  drought_duration_longest$cc[row] <- longest_drought
+  
+  
+}
+
+
+
+
+
+
+
+# Calculate drought severity, duration, and intensity for 12-month SPEI ----------------------------------------------------------------####
+
+
+# note:
+# historical period is months 1-312 for SPEI-12
+# future period is months 312-1320 for SPEI-12
+# drought defined as SPEI < -1
+# drought frequency calculated as number of times that you have drought in the time period of interest
+# drought duration calculated as number of consecutive time periods in which you have drought
+# drought severity calculated as mean of SPEI during drought periods
+
+# identify drought periods
+drought_id = spei_12months$fitted
+mask = drought_id < -1
+drought_id[mask] <- 1
+drought_id[!mask] <- 0
+
+# prep for drought severity
+drought_severity_prep <- spei_12months$fitted
+mask = drought_severity_prep >= -1
+drought_severity_prep[mask] <- NA
+
+# separate hist and cc
+hist <- spei_12months$fitted[1:312,]
+hist_drought_id <- drought_id[1:312,]
+hist_drought_severity_prep <- drought_severity_prep[1:312,]
+cc <- spei_12months$fitted[313:1320,]
+cc_drought_id <- drought_id[313:1320,]
+cc_drought_severity_prep <- drought_severity_prep[313:1320,]
+
+# calculate drought frequency (as percentage of time spent in drought)
+hist_drought_freq <- colSums(hist_drought_id, na.rm=TRUE)/nrow(hist_drought_id)
+cc_drought_freq <- colSums(cc_drought_id, na.rm=TRUE)/nrow(cc_drought_id)
+
+# calculate drought severity
+hist_drought_severity <- apply(hist_drought_severity_prep, 2, min, na.rm=TRUE)
+cc_drought_severity <- apply(cc_drought_severity_prep, 2, min, na.rm=TRUE)
+
+# calculate drought duration
+hist_drought_duration_list <- list()
+cc_drought_duration_list <- list()
+num_cols <- ncol(hist_drought_id)
+for (col in 1:num_cols){
+
+  # hist
+  hist_duration <- rle(hist_drought_id[,col])
+  hist_drought_duration_list[[col]] <- hist_duration
+
+  # cc
+  cc_duration <- rle(cc_drought_id[,col])
+  cc_drought_duration_list[[col]] <- cc_duration
+
+}
+names(hist_drought_duration_list) <- colnames(hist_drought_id)
+names(cc_drought_duration_list) <- colnames(cc_drought_id)
+
+# calculate longest drought duration for each scenario
+drought_duration_longest <- data.frame(matrix(NA, nrow=length(colnames(hist_drought_id)), ncol=3))
+colnames(drought_duration_longest) <- c('scenarios', 'hist', 'cc')
+drought_duration_longest$scenarios <- colnames(hist_drought_id)
+drought_duration_longest$hist <- NA
+drought_duration_longest$cc <- NA
+num_rows <- nrow(drought_duration_longest)
+for (row in 1:num_rows){
+
+  # get scenario
+  scenario <- drought_duration_longest$scenario[row]
+
+  # get longest drought duration: hist
+  length <- hist_drought_duration_list[[scenario]]$length
+  value <- hist_drought_duration_list[[scenario]]$values
+  df <- data.frame(length, value)
+  names(df) <- c('length', 'value')
+  df <- subset(df, value == 1)
+  longest_drought <- max(df$length)
+  drought_duration_longest$hist[row] <- longest_drought
+
+  # get longest drought duration: cc
+  length <- cc_drought_duration_list[[scenario]]$length
+  value <- cc_drought_duration_list[[scenario]]$values
+  df <- data.frame(length, value)
+  names(df) <- c('length', 'value')
+  df <- subset(df, value == 1)
+  longest_drought <- max(df$length)
+  drought_duration_longest$cc[row] <- longest_drought
+
+
+}
+
 
 
 

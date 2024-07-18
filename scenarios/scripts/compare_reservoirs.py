@@ -829,14 +829,34 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
         if variable == 'Stage':
 
             # calculate summary stats and percent change
-            df = df_annual[['model_name', 'model_name_pretty', 'variable', 'value']]
+            df_annual_stage = df_annual[['model_name', 'model_name_pretty', 'variable', 'value']]
             groupby_cols = ['model_name', 'model_name_pretty', 'variable']
             agg_cols = 'value'
             file_name_summary_stats = 'paper_' + lake_name + '_' + variable + '_annual_mean_facet_summary_stats.csv'
             file_name_percent_change = 'paper_' + lake_name + '_' + variable + '_annual_mean_facet_percent_change.csv'
-            summary_stats, percent_change = calculate_summary_stats_and_percent_change(df, groupby_cols, agg_cols,
+            summary_stats, percent_change = calculate_summary_stats_and_percent_change(df_annual_stage, groupby_cols, agg_cols,
                                                                                        file_name_summary_stats,
                                                                                        file_name_percent_change)
+
+            # calculate percent days below deadpool stage: daily
+            df_tmp = df.copy()
+            df_tmp['lt_deadpool'] = df_tmp['value'] <= mendo_deadpool_stage
+            df_tmp['num_days'] = 1
+            df_grouped_sum = df_tmp.groupby(['model_name'])['lt_deadpool', 'num_days'].sum()
+            df_grouped_sum['percent_days_lt_deadpool'] = (df_grouped_sum['lt_deadpool'] / df_grouped_sum['num_days']) * 100
+            file_name_lt_deadpool_daily = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_daily.csv'
+            file_path = os.path.join(results_ws, 'tables', file_name_lt_deadpool_daily)
+            df_grouped_sum.to_csv(file_path, index=False)
+
+            # calculate percent days below deadpool stage: annual
+            df_annual_tmp = df_annual.copy()
+            df_annual_tmp['lt_deadpool'] = df_annual_tmp['value'] <= mendo_deadpool_stage
+            df_annual_tmp['num_years'] = 1
+            df_annual_grouped_sum = df_annual_tmp.groupby(['model_name'])['lt_deadpool', 'num_years'].sum()
+            df_annual_grouped_sum['percent_days_lt_deadpool'] = (df_annual_grouped_sum['lt_deadpool'] / df_annual_grouped_sum['num_years']) * 100
+            file_name_lt_deadpool_annual = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_daily.csv'
+            file_path = os.path.join(results_ws, 'tables', file_name_lt_deadpool_annual)
+            df_annual_grouped_sum.to_csv(file_path, index=False)
 
 
 
@@ -864,17 +884,34 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
         if variable == 'Stage':
 
             # calculate summary stats and percent change
-            df = df_annual[['model_name', 'model_name_pretty', 'variable', 'value']]
+            df_annual_stage = df_annual[['model_name', 'model_name_pretty', 'variable', 'value']]
             groupby_cols = ['model_name', 'model_name_pretty', 'variable']
             agg_cols = 'value'
             file_name_summary_stats = 'paper_' + lake_name + '_' + variable + '_annual_mean_facet_summary_stats.csv'
             file_name_percent_change = 'paper_' + lake_name + '_' + variable + '_annual_mean_facet_percent_change.csv'
-            summary_stats, percent_change = calculate_summary_stats_and_percent_change(df, groupby_cols, agg_cols,
+            summary_stats, percent_change = calculate_summary_stats_and_percent_change(df_annual_stage, groupby_cols, agg_cols,
                                                                                        file_name_summary_stats,
                                                                                        file_name_percent_change)
 
+            # calculate percent days below deadpool stage: daily
+            df_tmp = df.copy()
+            df_tmp['lt_deadpool'] = df_tmp['value'] <= sonoma_deadpool_stage
+            df_tmp['num_days'] = 1
+            df_grouped_sum = df_tmp.groupby(['model_name'])['lt_deadpool', 'num_days'].sum()
+            df_grouped_sum['percent_days_lt_deadpool'] = (df_grouped_sum['lt_deadpool'] / df_grouped_sum['num_days']) * 100
+            file_name_lt_deadpool_daily = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_daily.csv'
+            file_path = os.path.join(results_ws, 'tables', file_name_lt_deadpool_daily)
+            df_grouped_sum.to_csv(file_path, index=False)
 
-
+            # calculate percent days below deadpool stage: annual
+            df_annual_tmp = df_annual.copy()
+            df_annual_tmp['lt_deadpool'] = df_annual_tmp['value'] <= sonoma_deadpool_stage
+            df_annual_tmp['num_years'] = 1
+            df_annual_grouped_sum = df_annual_tmp.groupby(['model_name'])['lt_deadpool', 'num_years'].sum()
+            df_annual_grouped_sum['percent_days_lt_deadpool'] = (df_annual_grouped_sum['lt_deadpool'] / df_annual_grouped_sum['num_years']) * 100
+            file_name_lt_deadpool_annual = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_daily.csv'
+            file_path = os.path.join(results_ws, 'tables', file_name_lt_deadpool_annual)
+            df_annual_grouped_sum.to_csv(file_path, index=False)
 
 
 
