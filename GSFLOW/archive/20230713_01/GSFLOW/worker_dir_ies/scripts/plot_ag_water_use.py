@@ -137,7 +137,7 @@ def main(model_ws, results_ws, mf_name_file_type, modflow_time_zero, start_date,
     # combine ET files together
     wellet['water_use'] = 'well'
     pondet['water_use'] = 'pond'
-    divet['water_use'] =  'diversion'
+    divet['water_use'] = 'diversion'
     ag_et = pd.concat([wellet, pondet, divet])
 
     # group by water use, sum, convert units
@@ -184,7 +184,7 @@ def main(model_ws, results_ws, mf_name_file_type, modflow_time_zero, start_date,
 
     #---- Reformat pond files, plot ---------------------------------------------------------####
 
-    pond['water_use'] =  'pond'
+    pond['water_use'] = 'pond'
     #pond_grouped = pond.groupby(['water_use'])['SEG-INFLOW', 'POND-OUTFLOW', 'POND-STORAGE'].sum().reset_index()
     pond_grouped = pond.groupby(['water_use'])['SEG-INFLOW', 'POND-OUTFLOW'].sum().reset_index()
     pond_grouped = pd.melt(pond_grouped, id_vars = ['water_use'], var_name = 'pond_use', value_name = 'value')

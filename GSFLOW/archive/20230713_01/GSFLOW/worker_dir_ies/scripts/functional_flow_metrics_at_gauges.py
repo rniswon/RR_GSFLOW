@@ -14,6 +14,13 @@
     # annual/seasonal mean low flow length: average length of continuous low flow conditions
     # annual/seasonal maximum low flow length: maximum length of continuous low flow conditions
 
+# Annual (water year) peak and nth percentile flows
+    # peak, 90th, 95th, and 99th percentile flows
+
+# Frequency of days in each water year with flows greater than the historical
+    # 4, 2, 1, 0.5, and 0.2% annual exceedance probability
+
+
 
 
 # ---- Import -------------------------------------------####
@@ -171,7 +178,71 @@ def calculate_annual_min_7day_flow(low_flow, sim_df, grouping_variable):
 
 
 
-# recession rate for N days prior to minimum 7-day flow
+# function to calculate water year peak and nth percentile flows
+def calculate_wy_peak_and_percentile_flows(sim_df, grouping_variable):
+
+    # create percentile flow data frame
+    percentile_flow = pd.DataFrame()
+    percentile_flow[grouping_variable] = sim_df[grouping_variable].unique()
+    percentile_flow['subbasin_id'] = sim_df['subbasin_id'].unique()[0]
+    percentile_flow['gage_id'] = sim_df['gage_id'].unique()[0]
+    percentile_flow['gage_name'] = sim_df['gage_name'].unique()[0]
+    percentile_flow['percentile_flow_20th'] = -999
+    percentile_flow['percentile_flow_40th'] = -999
+    percentile_flow['percentile_flow_60th'] = -999
+    percentile_flow['percentile_flow_80th'] = -999
+    percentile_flow['percentile_flow_90th'] = -999
+    percentile_flow['percentile_flow_95th'] = -999
+    percentile_flow['percentile_flow_99th'] = -999
+    percentile_flow['peak_flow'] = -999
+
+    # loop through groups
+    for idx, row in percentile_flow.iterrows():
+
+        # get group
+        group = row[grouping_variable]
+
+        # subset sim_df by group
+        sim_df_group = sim_df[sim_df[grouping_variable] == group]
+
+        # identify peak and percentile flows
+        percentile_flow_20th = sim_df_group['flow'].quantile(0.2)
+        percentile_flow_40th = sim_df_group['flow'].quantile(0.4)
+        percentile_flow_60th = sim_df_group['flow'].quantile(0.6)
+        percentile_flow_80th = sim_df_group['flow'].quantile(0.8)
+        percentile_flow_90th = sim_df_group['flow'].quantile(0.9)
+        percentile_flow_95th = sim_df_group['flow'].quantile(0.95)
+        percentile_flow_99th = sim_df_group['flow'].quantile(0.99)
+        peak_flow = sim_df_group['flow'].max()
+
+        # store in percentile flow data frame
+        percentile_flow.loc[idx, 'percentile_flow_20th'] = percentile_flow_20th
+        percentile_flow.loc[idx, 'percentile_flow_40th'] = percentile_flow_40th
+        percentile_flow.loc[idx, 'percentile_flow_60th'] = percentile_flow_60th
+        percentile_flow.loc[idx, 'percentile_flow_80th'] = percentile_flow_80th
+        percentile_flow.loc[idx, 'percentile_flow_90th'] = percentile_flow_90th
+        percentile_flow.loc[idx, 'percentile_flow_95th'] = percentile_flow_95th
+        percentile_flow.loc[idx, 'percentile_flow_99th'] = percentile_flow_99th
+        percentile_flow.loc[idx, 'peak_flow'] = peak_flow
+
+    return percentile_flow
+
+
+
+
+
+# function to calculate frequency of days in each water year with flows greater than the historical nth % annual exceedance probability
+def calculate_flow_duration_curve(sim_df):
+
+    # calculate exceedance probability
+    sim_df = sim_df.sort_values(by=['flow'], ascending=False).reset_index()
+    sim_df['rank'] = sim_df.index + 1
+    num_val = len(sim_df.index)
+    sim_df['exceedance_probability'] = 100 * (sim_df['rank'] / (num_val + 1))
+
+    return sim_df
+
+
 
 
 
@@ -274,10 +345,10 @@ def main(script_ws, model_ws, results_ws):
                 gage_id = gage_df.loc[mask, 'Name'].values[0]
                 sim_df['gage_id'] = gage_id
 
-            # convert flow units from m^3/day to ft^3/s
+            # convert flow units from m^3/day to m^3/s
             days_div_sec = 1 / 86400  # 1 day is 86400 seconds
-            ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
-            sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
+            #ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
+            sim_df['flow'] = sim_df['flow'].values * days_div_sec
 
             # add water year column
             sim_df = generate_water_year(sim_df)
@@ -290,14 +361,19 @@ def main(script_ws, model_ws, results_ws):
             pass
 
     # place all simulated values in one data frame
+    sim_df_list = list(sim_dict.values())
+    sim_df_all = pd.concat(sim_df_list)
 
     # export simulated data frame
-
+    file_path = os.path.join(results_ws, 'tables', 'sim_flows.csv')
+    sim_df_all.to_csv(file_path, index=False)
 
 
     # ---- Loop through gages and calculate functional flow metrics -------------------------------------------####
 
     func_flow_annual_list = []
+    func_flow_wy_list = []
+    fdc_list = []
     for gage_id, sim_df in sim_dict.items():
 
 
@@ -336,8 +412,6 @@ def main(script_ws, model_ws, results_ws):
 
         # recession rate for 30(?) days prior to annual minimum 7 day flow
 
-        # store
-        func_flow_annual_list.append(func_flow_annual)
 
 
 
@@ -363,14 +437,45 @@ def main(script_ws, model_ws, results_ws):
 
 
 
+
+
+        #---- Calculate water year peak and nth percentile flows -------------------------------------------####
+
+        grouping_variable = 'water_year'
+        percentile_flow = calculate_wy_peak_and_percentile_flows(sim_df, grouping_variable)
+
+
+        #---- Calculate flow duration curve -------------------------------------------####
+
+        fdc = calculate_flow_duration_curve(sim_df)
+
+
+
+        #---- Store -------------------------------------------####
+        func_flow_annual_list.append(func_flow_annual)
+        func_flow_wy_list.append(percentile_flow)
+        fdc_list.append(fdc)
+
+
+
     #---- Export -------------------------------------------####
 
     # convert to data frame
     func_flow_annual_df = pd.concat(func_flow_annual_list)
+    func_flow_wy_df = pd.concat(func_flow_wy_list)
+    fdc_df = pd.concat(fdc_list)
 
     # export annual metrics
     file_path = os.path.join(results_ws, 'tables', 'func_flow_annual_metrics.csv')
     func_flow_annual_df.to_csv(file_path, index=False)
+
+    # export water year metrics
+    file_path = os.path.join(results_ws, 'tables', 'func_flow_wy_metrics.csv')
+    func_flow_wy_df.to_csv(file_path, index=False)
+
+    # export fdc metrics
+    file_path = os.path.join(results_ws, 'tables', 'fdc.csv')
+    fdc_df.to_csv(file_path, index=False)
 
 
 
