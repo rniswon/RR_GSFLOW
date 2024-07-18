@@ -634,7 +634,7 @@ spei_plotting_function_combine_hist_and_future(spei_3months_hist, spei_3months_f
 
 
 
-# Calculate drought severity, duration, and intensity for 3-month SPEI: from separate hist/future SPEI calculation, with modified duration calculation -------------------####
+# Calculate drought severity, duration, and intensity for 3-month SPEI: from separate hist/future SPEI calculation, with modified drought id -------------------####
 
 
 # note: 
