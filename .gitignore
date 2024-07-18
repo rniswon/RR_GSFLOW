@@ -19,6 +19,7 @@ MODFLOW/bin
 *.lock
 PRMS/scripts/ponds/output
 PRMS/scripts/ponds/input
+GSFLOW/gis
 GSFLOW/PRMS/scripts/ponds/output
 GSFLOW/PRMS/scripts/ponds/input
 GSFLOW/archive/2020/gsflow/modflow/rr_tr.awu
@@ -40,7 +41,6 @@ GSFLOW/archive/**/results
 GSFLOW/modflow/old
 GSFLOW/PRMS/old
 GSFLOW/PRMS/output/**
-GSFLOW/gis
 GSFLOW/gsflow_scratch/
 GSFLOW/scratch/
 gsflow_scratch/
