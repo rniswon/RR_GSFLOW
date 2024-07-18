@@ -51,7 +51,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
 
 
     # function to plot 3d arrays
-    def plot_gsflow_input_array_3d(mf, arr, file_name, file_name_pretty):
+    def plot_gsflow_input_array_3d(mf, arr, file_name, file_name_pretty, legend_title):
 
         # extract ibound
         ibound = mf_tr.bas6.ibound.array
@@ -73,43 +73,78 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
         arr_lyr3[mask_lyr3] = np.nan
 
         # plot array: layer 1
-        plt.figure(figsize=(6, 6), dpi=150)
-        plt.imshow(arr_lyr1, norm=LogNorm())
+        plt.figure(figsize=(6, 6), dpi=300)
+        if file_name == "upw_sy":
+            plt.imshow(arr_lyr1)
+        else:
+            plt.imshow(arr_lyr1, norm=LogNorm())
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 1")
-        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr1.png')
+        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr1.jpg')
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
         plt.close('all')
 
         # plot array: layer 2
-        plt.figure(figsize=(6, 6), dpi=150)
-        plt.imshow(arr_lyr2, norm=LogNorm())
+        plt.figure(figsize=(6, 6), dpi=300)
+        if file_name == "upw_sy":
+            plt.imshow(arr_lyr2)
+        else:
+            plt.imshow(arr_lyr2, norm=LogNorm())
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 2")
-        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr2.png')
+        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr2.jpg')
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
         plt.close('all')
 
         # plot array: layer 3
-        plt.figure(figsize=(6, 6), dpi=150)
-        plt.imshow(arr_lyr3, norm=LogNorm())
+        plt.figure(figsize=(6, 6), dpi=300)
+        if file_name == "upw_sy":
+            plt.imshow(arr_lyr3)
+        else:
+            plt.imshow(arr_lyr3, norm=LogNorm())
         plt.colorbar()
         plt.title(file_name_pretty + ": layer 3")
-        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr3.png')
+        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_lyr3.jpg')
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
         plt.close('all')
 
-
-
+        # plot all 3 layers together
+        fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(8,4), dpi=300)
+        if file_name == "upw_sy":
+            im = ax[0].imshow(arr_lyr1)
+        else:
+            im = ax[0].imshow(arr_lyr1, norm=LogNorm())
+        fig.colorbar(im, label=legend_title, orientation="horizontal", ax=ax[0], pad=0.01)
+        ax[0].set_title('a) Layer 1', loc='left')
+        if file_name == "upw_sy":
+            im = ax[1].imshow(arr_lyr2)
+        else:
+            im = ax[1].imshow(arr_lyr2, norm=LogNorm())
+        fig.colorbar(im, label=legend_title, orientation="horizontal", ax=ax[1], pad=0.01)
+        ax[1].set_title('b) Layer 2', loc='left')
+        if file_name == "upw_sy":
+            im = ax[2].imshow(arr_lyr3)
+        else:
+            im = ax[2].imshow(arr_lyr3, norm=LogNorm())
+        fig.colorbar(im, label=legend_title, orientation="horizontal", ax=ax[2], pad=0.01)
+        ax[2].set_title('c) Layer 3', loc='left')
+        fig.tight_layout()
+        for x in ax:
+            x.axis('off')
+        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_all_layers.jpg')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
 
     # function to plot 1d uzf arrays
-    def plot_gsflow_input_array_1d_uzf(mf, arr, file_name, file_name_pretty, norm_type):
+    def plot_gsflow_input_array_1d_uzf(mf, arr, file_name, file_name_pretty, norm_type, legend_title):
 
         # extract iuzfbnd
         iuzfbnd = mf_tr.uzf.iuzfbnd.array
@@ -119,18 +154,56 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
         arr[mask] = np.nan
 
         # plot array
-        plt.figure(figsize=(6, 6), dpi=150)
+        plt.figure(figsize=(3.5, 4), dpi=300)
         if norm_type == "regular":
             plt.imshow(arr)
         elif norm_type == "log":
             plt.imshow(arr, norm=LogNorm())
-        plt.colorbar()
-        plt.title(file_name_pretty)
-        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '.png')
+        plt.colorbar(label=legend_title)
+        plt.tight_layout()
+        #plt.title(file_name_pretty)
+        plt.axis('off')
+        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '.jpg')
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
         plt.close('all')
+
+
+    # function to plot 12d gsflow arrays
+    def plot_gsflow_input_array_12d(mf, arr_list, file_name, file_name_pretty_list, legend_title):
+
+        # extract iuzfbnd
+        iuzfbnd = mf_tr.uzf.iuzfbnd.array
+
+        # plot all 12 months together
+        fig, ax = plt.subplots(nrows=4, ncols=3, figsize=(8, 11), dpi=300)
+
+        # loop through lists
+        x_idx_list = [0,0,0,1,1,1,2,2,2,3,3,3]
+        y_idx_list = [0,1,2,0,1,2,0,1,2,0,1,2]
+        subplot_letter_list = ['a) ', 'b) ', 'c) ', 'd) ', 'e) ', 'f) ', 'g) ', 'h) ', 'i) ', 'j) ', 'k) ', 'l) ']
+        for arr, file_name_pretty, x_idx, y_idx, subplot_letter in zip(arr_list, file_name_pretty_list, x_idx_list, y_idx_list, subplot_letter_list):
+
+            # set values outside of active grid cells to nan
+            mask = iuzfbnd == 0
+            arr[mask] = np.nan
+
+            # plot
+            im = ax[x_idx, y_idx].imshow(arr)
+            fig.colorbar(im, label=legend_title, orientation="vertical", ax=ax[x_idx, y_idx], pad=0.01)
+            ax[x_idx, y_idx].set_title(subplot_letter + file_name_pretty,  loc='left')
+            ax[x_idx, y_idx].axis('off')
+
+        # save figure
+        fig.tight_layout()
+        #fig.suptitle(file_name_pretty)
+        file_path = os.path.join(results_ws, 'plots', 'gsflow_inputs', file_name + '_all_months.jpg')
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
 
 
     # generate ag shapefiles
@@ -238,19 +311,23 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
 
     # plot BAS6 STRT (i.e. initial heads)
     strt = mf_tr.bas6.strt.array
-    plot_gsflow_input_array_3d(mf_tr, strt, "initial_heads", "Initial heads")
+    plot_gsflow_input_array_3d(mf_tr, strt, "initial_heads", "Initial heads", "Head (m)")
 
     # plot UPW HK
     hk = mf_tr.upw.hk.array
-    plot_gsflow_input_array_3d(mf_tr, hk, "upw_hk", "UPW HK")
+    plot_gsflow_input_array_3d(mf_tr, hk, "upw_hk", "UPW HK", "HK (m/day)")
 
     # plot UPW VKA
     vka = mf_tr.upw.vka.array
-    plot_gsflow_input_array_3d(mf_tr, vka, "upw_vka", "UPW VKA")
+    plot_gsflow_input_array_3d(mf_tr, vka, "upw_vka", "UPW VKA", "VKA (m/day)")
 
     # plot UPW SY
     sy = mf_tr.upw.sy.array
-    plot_gsflow_input_array_3d(mf_tr, sy, "upw_sy", "UPW SY")
+    plot_gsflow_input_array_3d(mf_tr, sy, "upw_sy", "UPW SY", "SY (-)")
+
+    # plot UPW SS
+    ss = mf_tr.upw.ss.array
+    plot_gsflow_input_array_3d(mf_tr, ss, "upw_ss", "UPW SS", "SS (1/m)")
 
 
 
@@ -258,21 +335,27 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
 
     # plot UZF VKS
     vks = mf_tr.uzf.vks.array
-    plot_gsflow_input_array_1d_uzf(mf_tr, vks, "uzf_vks", "UZF VKS", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, vks, "uzf_vks", "UZF VKS", "log", "VKS (m/day)")
 
     # plot UZF THTI
     thti = mf_tr.uzf.thti.array
-    plot_gsflow_input_array_1d_uzf(mf_tr, thti, "uzf_thti", "UZF THTI", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, thti, "uzf_thti", "UZF THTI", "log", "THTI (-)")
 
     # plot UZF FINF
     finf = mf_tr.uzf.finf.array[0,0,:,:]
-    plot_gsflow_input_array_1d_uzf(mf_tr, finf, "uzf_finf", "UZF FINF", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, finf, "uzf_finf", "UZF FINF", "log", "FINF (m/day)")
 
     # plot UZF SURFK
     surfk = mf_tr.uzf.surfk.array
-    plot_gsflow_input_array_1d_uzf(mf_tr, surfk, "uzf_surfk", "UZF surfk", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, surfk, "uzf_surfk", "UZF surfk", "log", "SURFK (m/day)")
 
+    # plot UZF EXTDP
+    extdp = mf_tr.uzf.extdp.array[0,0,:,:]
+    plot_gsflow_input_array_1d_uzf(mf_tr, extdp, "uzf_extdp", "UZF extdp", "regular", "EXTDP (m)")
 
+    # plot UZF PET
+    pet = mf_tr.uzf.pet.array[0, 0, :, :]
+    plot_gsflow_input_array_1d_uzf(mf_tr, pet, "uzf_pet", "UZF pet", "regular", "PET (m/day)")
 
 
     # ---- Generate PRMS param shapefile -------------------------------------------####
@@ -299,6 +382,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
     ag_soil_rechr_max_frac = gs.prms.parameters.get_values("ag_soil_rechr_max_frac")
     rain_adj = gs.prms.parameters.get_values("rain_adj")
     jh_coef = gs.prms.parameters.get_values("jh_coef")
+
 
     # split rain_adj by month
     rain_adj_list = np.split(rain_adj, 12)
@@ -329,6 +413,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
     jh_coef_10 = jh_coef_list[9]
     jh_coef_11 = jh_coef_list[10]
     jh_coef_12 = jh_coef_list[11]
+
+
 
     # create data frame
     nhru = gs.prms.parameters.get_values("nhru")
@@ -392,175 +478,232 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
 
     # plot covden_sum
     covden_sum_arr = covden_sum.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, covden_sum_arr, "covden_sum", "PRMS covden_sum", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, covden_sum_arr, "covden_sum", "PRMS covden_sum", "log", "covden_sum (-)")
 
     # plot covden_win
     covden_win_arr = covden_win.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, covden_win_arr, "covden_win", "PRMS covden_win", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, covden_win_arr, "covden_win", "PRMS covden_win", "log", "covden_win (-)")
 
     # plot hru_percent_imperv
     hru_percent_imperv_arr = hru_percent_imperv.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, hru_percent_imperv_arr, "hru_percent_imperv", "PRMS hru_percent_imperv", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, hru_percent_imperv_arr, "hru_percent_imperv", "PRMS hru_percent_imperv", "log",
+                                   "hru_percent_imperv (-)")
 
     # plot pref_flow_den
     pref_flow_den_arr = pref_flow_den.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, pref_flow_den_arr, "pref_flow_den", "PRMS pref_flow_den", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, pref_flow_den_arr, "pref_flow_den", "PRMS pref_flow_den", "regular",
+                                   "pref_flow_den (-)")
 
     # plot sat_threshold
     sat_threshold_arr = sat_threshold.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, sat_threshold_arr, "sat_threshold", "PRMS sat_threshold", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, sat_threshold_arr, "sat_threshold", "PRMS sat_threshold", "log",
+                                   "sat_threshold (in.)")
 
     # plot slowcoef_sq
     slowcoef_sq_arr = slowcoef_sq.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, slowcoef_sq_arr, "slowcoef_sq", "PRMS slowcoef_sq", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, slowcoef_sq_arr, "slowcoef_sq", "PRMS slowcoef_sq", "log",
+                                   "slowcoef_sq (-)")
 
     # plot slowcoef_lin
     slowcoef_lin_arr = slowcoef_lin.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, slowcoef_lin_arr, "slowcoef_lin", "PRMS slowcoef_lin", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, slowcoef_lin_arr, "slowcoef_lin", "PRMS slowcoef_lin", "log",
+                                   "slowcoef_lin (fraction/day)")
 
     # plot smidx_coef
     smidx_coef_arr = smidx_coef.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, smidx_coef_arr, "smidx_coef", "PRMS smidx_coef", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, smidx_coef_arr, "smidx_coef", "PRMS smidx_coef", "log",
+                                   "smidx_coef (-)")
 
     # plot ssr2gw_rate
     ssr2gw_rate_arr = ssr2gw_rate.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, ssr2gw_rate_arr, "ssr2gw_rate", "PRMS ssr2gw_rate", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, ssr2gw_rate_arr, "ssr2gw_rate", "PRMS ssr2gw_rate", "log",
+                                   "ssr2gw_rate (in./day)")
 
     # plot soil_moist_max
     soil_moist_max_arr = soil_moist_max.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, soil_moist_max_arr, "soil_moist_max", "PRMS soil_moist_max", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, soil_moist_max_arr, "soil_moist_max", "PRMS soil_moist_max", "log",
+                                   "soil_moist_max (in.)")
 
     # plot soil_rechr_max_frac
     soil_rechr_max_frac_arr = soil_rechr_max_frac.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, soil_rechr_max_frac_arr, "soil_rechr_max_frac", "PRMS soil_rechr_max_frac", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, soil_rechr_max_frac_arr, "soil_rechr_max_frac", "PRMS soil_rechr_max_frac", "log",
+                                   'soil_rechr_max_frac (-)')
 
     # plot soil_type
     soil_type_arr = soil_type.reshape(nrow, ncol)
     soil_type_arr = soil_type_arr.astype('float')
-    plot_gsflow_input_array_1d_uzf(mf_tr, soil_type_arr, "soil_type", "PRMS soil_type", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, soil_type_arr, "soil_type", "PRMS soil_type", "regular",
+                                   "soil_type (-)")
 
     # plot cov_type
     cov_type_arr = cov_type.reshape(nrow, ncol)
     cov_type_arr = cov_type_arr.astype('float')
-    plot_gsflow_input_array_1d_uzf(mf_tr, cov_type_arr, "cov_type", "PRMS cov_type", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, cov_type_arr, "cov_type", "PRMS cov_type", "regular",
+                                   "cov_type (-)")
 
     # plot carea_max
     carea_max_arr = carea_max.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, carea_max_arr, "carea_max", "PRMS carea_max", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, carea_max_arr, "carea_max", "PRMS carea_max", "log",
+                                   "carea_max (-)")
 
     # plot ag_frac
     ag_frac_arr = ag_frac.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, ag_frac_arr, "ag_frac", "PRMS ag_frac", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, ag_frac_arr, "ag_frac", "PRMS ag_frac", "regular",
+                                   "ag_frac (-)")
 
     # plot dprst_depth_avg
     dprst_depth_avg_arr = dprst_depth_avg.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, dprst_depth_avg_arr, "dprst_depth_avg", "PRMS dprst_depth_avg", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, dprst_depth_avg_arr, "dprst_depth_avg", "PRMS dprst_depth_avg", "regular",
+                                   "dprst_depth_avg (in.)")
 
     # plot ag_soil_moist_max
     ag_soil_moist_max_arr = ag_soil_moist_max.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, ag_soil_moist_max_arr, "ag_soil_moist_max", "PRMS ag_soil_moist_max", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, ag_soil_moist_max_arr, "ag_soil_moist_max", "PRMS ag_soil_moist_max", "log",
+                                   "ag_soil_moist_max (in.)")
 
     # plot ag_soil_rechr_max_frac
     ag_soil_rechr_max_frac_arr = ag_soil_rechr_max_frac.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, ag_soil_rechr_max_frac_arr, "ag_soil_rechr_max_frac", "PRMS ag_soil_rechr_max_frac", "log")
+    plot_gsflow_input_array_1d_uzf(mf_tr, ag_soil_rechr_max_frac_arr, "ag_soil_rechr_max_frac", "PRMS ag_soil_rechr_max_frac", "log",
+                                   "ag_soil_rechr_max_frac (-)")
 
     # plot rain_adj_01
     rain_adj_01_arr = rain_adj_01.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_01_arr, "rain_adj_01", "PRMS rain_adj_01", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_01_arr, "rain_adj_01", "PRMS rain_adj_01", "regular", "rain_adj (-)")
 
     # plot rain_adj_02
     rain_adj_02_arr = rain_adj_02.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_02_arr, "rain_adj_02", "PRMS rain_adj_02", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_02_arr, "rain_adj_02", "PRMS rain_adj_02", "regular", "rain_adj (-)")
 
     # plot rain_adj_03
     rain_adj_03_arr = rain_adj_03.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_03_arr, "rain_adj_03", "PRMS rain_adj_03", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_03_arr, "rain_adj_03", "PRMS rain_adj_03", "regular", "rain_adj (-)")
 
     # plot rain_adj_04
     rain_adj_04_arr = rain_adj_04.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_04_arr, "rain_adj_04", "PRMS rain_adj_04", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_04_arr, "rain_adj_04", "PRMS rain_adj_04", "regular", "rain_adj (-)")
 
     # plot rain_adj_05
     rain_adj_05_arr = rain_adj_05.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_05_arr, "rain_adj_05", "PRMS rain_adj_05", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_05_arr, "rain_adj_05", "PRMS rain_adj_05", "regular", "rain_adj (-)")
 
     # plot rain_adj_06
     rain_adj_06_arr = rain_adj_06.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_06_arr, "rain_adj_06", "PRMS rain_adj_06", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_06_arr, "rain_adj_06", "PRMS rain_adj_06", "regular", "rain_adj (-)")
 
     # plot rain_adj_07
     rain_adj_07_arr = rain_adj_07.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_07_arr, "rain_adj_07", "PRMS rain_adj_07", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_07_arr, "rain_adj_07", "PRMS rain_adj_07", "regular", "rain_adj (-)")
 
     # plot rain_adj_08
     rain_adj_08_arr = rain_adj_08.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_08_arr, "rain_adj_08", "PRMS rain_adj_08", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_08_arr, "rain_adj_08", "PRMS rain_adj_08", "regular", "rain_adj (-)")
 
     # plot rain_adj_09
     rain_adj_09_arr = rain_adj_09.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_09_arr, "rain_adj_09", "PRMS rain_adj_09", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_09_arr, "rain_adj_09", "PRMS rain_adj_09", "regular", "rain_adj (-)")
 
     # plot rain_adj_10
     rain_adj_10_arr = rain_adj_10.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_10_arr, "rain_adj_10", "PRMS rain_adj_10", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_10_arr, "rain_adj_10", "PRMS rain_adj_10", "regular", "rain_adj (-)")
 
     # plot rain_adj_11
     rain_adj_11_arr = rain_adj_11.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_11_arr, "rain_adj_11", "PRMS rain_adj_11", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_11_arr, "rain_adj_11", "PRMS rain_adj_11", "regular", "rain_adj (-)")
 
     # plot rain_adj_12
     rain_adj_12_arr = rain_adj_12.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_12_arr, "rain_adj_12", "PRMS rain_adj_12", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, rain_adj_12_arr, "rain_adj_12", "PRMS rain_adj_12", "regular", "rain_adj (-)")
 
     # plot jh_coef_01
     jh_coef_01_arr = jh_coef_01.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_01_arr, "jh_coef_01", "PRMS jh_coef_01", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_01_arr, "jh_coef_01", "PRMS jh_coef_01", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_02
     jh_coef_02_arr = jh_coef_02.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_02_arr, "jh_coef_02", "PRMS jh_coef_02", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_02_arr, "jh_coef_02", "PRMS jh_coef_02", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_03
     jh_coef_03_arr = jh_coef_03.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_03_arr, "jh_coef_03", "PRMS jh_coef_03", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_03_arr, "jh_coef_03", "PRMS jh_coef_03", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_04
     jh_coef_04_arr = jh_coef_04.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_04_arr, "jh_coef_04", "PRMS jh_coef_04", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_04_arr, "jh_coef_04", "PRMS jh_coef_04", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_05
     jh_coef_05_arr = jh_coef_05.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_05_arr, "jh_coef_05", "PRMS jh_coef_05", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_05_arr, "jh_coef_05", "PRMS jh_coef_05", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_06
     jh_coef_06_arr = jh_coef_06.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_06_arr, "jh_coef_06", "PRMS jh_coef_06", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_06_arr, "jh_coef_06", "PRMS jh_coef_06", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_07
     jh_coef_07_arr = jh_coef_07.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_07_arr, "jh_coef_07", "PRMS jh_coef_07", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_07_arr, "jh_coef_07", "PRMS jh_coef_07", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_08
     jh_coef_08_arr = jh_coef_08.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_08_arr, "jh_coef_08", "PRMS jh_coef_08", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_08_arr, "jh_coef_08", "PRMS jh_coef_08", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_09
     jh_coef_09_arr = jh_coef_09.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_09_arr, "jh_coef_09", "PRMS jh_coef_09", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_09_arr, "jh_coef_09", "PRMS jh_coef_09", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_10
     jh_coef_10_arr = jh_coef_10.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_10_arr, "jh_coef_10", "PRMS jh_coef_10", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_10_arr, "jh_coef_10", "PRMS jh_coef_10", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_11
     jh_coef_11_arr = jh_coef_11.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_11_arr, "jh_coef_11", "PRMS jh_coef_11", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_11_arr, "jh_coef_11", "PRMS jh_coef_11", "regular", "jh_coef (1/deg F)")
 
     # plot jh_coef_12
     jh_coef_12_arr = jh_coef_12.reshape(nrow, ncol)
-    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_12_arr, "jh_coef_12", "PRMS jh_coef_12", "regular")
+    plot_gsflow_input_array_1d_uzf(mf_tr, jh_coef_12_arr, "jh_coef_12", "PRMS jh_coef_12", "regular", "jh_coef (1/deg F)")
+
+    # plot rain_adj - all months
+    rain_adj_01_arr = rain_adj_01.reshape(nrow, ncol)
+    rain_adj_02_arr = rain_adj_02.reshape(nrow, ncol)
+    rain_adj_03_arr = rain_adj_03.reshape(nrow, ncol)
+    rain_adj_04_arr = rain_adj_04.reshape(nrow, ncol)
+    rain_adj_05_arr = rain_adj_05.reshape(nrow, ncol)
+    rain_adj_06_arr = rain_adj_06.reshape(nrow, ncol)
+    rain_adj_07_arr = rain_adj_07.reshape(nrow, ncol)
+    rain_adj_08_arr = rain_adj_08.reshape(nrow, ncol)
+    rain_adj_09_arr = rain_adj_09.reshape(nrow, ncol)
+    rain_adj_10_arr = rain_adj_10.reshape(nrow, ncol)
+    rain_adj_11_arr = rain_adj_11.reshape(nrow, ncol)
+    rain_adj_12_arr = rain_adj_12.reshape(nrow, ncol)
+    rain_adj_list = [rain_adj_01_arr, rain_adj_02_arr, rain_adj_03_arr, rain_adj_04_arr,
+                     rain_adj_05_arr, rain_adj_06_arr, rain_adj_07_arr, rain_adj_08_arr,
+                     rain_adj_09_arr, rain_adj_10_arr, rain_adj_11_arr, rain_adj_12_arr]
+    rain_adj_file_names = ['January', 'February', 'March', 'April',
+                          'May', 'June', 'July', 'August',
+                          'September', 'October', 'November', 'December']
+    plot_gsflow_input_array_12d(mf_tr, rain_adj_list, 'rain_adj', rain_adj_file_names, 'rain_adj (-)')
 
 
+    # plot jh_coef - all months
+    jh_coef_01_arr = jh_coef_01.reshape(nrow, ncol)
+    jh_coef_02_arr = jh_coef_02.reshape(nrow, ncol)
+    jh_coef_03_arr = jh_coef_03.reshape(nrow, ncol)
+    jh_coef_04_arr = jh_coef_04.reshape(nrow, ncol)
+    jh_coef_05_arr = jh_coef_05.reshape(nrow, ncol)
+    jh_coef_06_arr = jh_coef_06.reshape(nrow, ncol)
+    jh_coef_07_arr = jh_coef_07.reshape(nrow, ncol)
+    jh_coef_08_arr = jh_coef_08.reshape(nrow, ncol)
+    jh_coef_09_arr = jh_coef_09.reshape(nrow, ncol)
+    jh_coef_10_arr = jh_coef_10.reshape(nrow, ncol)
+    jh_coef_11_arr = jh_coef_11.reshape(nrow, ncol)
+    jh_coef_12_arr = jh_coef_12.reshape(nrow, ncol)
+    jh_coef_list = [jh_coef_01_arr, jh_coef_02_arr, jh_coef_03_arr, jh_coef_04_arr,
+                     jh_coef_05_arr, jh_coef_06_arr, jh_coef_07_arr, jh_coef_08_arr,
+                     jh_coef_09_arr, jh_coef_10_arr, jh_coef_11_arr, jh_coef_12_arr]
+    jh_coef_file_names = ['January', 'February', 'March', 'April',
+                          'May', 'June', 'July', 'August',
+                          'September', 'October', 'November', 'December']
+    plot_gsflow_input_array_12d(mf_tr, jh_coef_list, 'jh_coef', jh_coef_file_names, 'jh_coef (1/deg F)')
 
 
 
@@ -594,6 +737,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type):
                   "surfk": uzf.surfk.array,
                   "thti": uzf.thti.array,
                   "finf": uzf.finf.array[0,0,:,:],
+                  'extdp': uzf.extdp.array[0,0,:,:],
                   "lakarr_01": lak.lakarr.array[0,0,:,:],
                   "lakarr_02": lak.lakarr.array[0,1,:,:],
                   "lakarr_03": lak.lakarr.array[0,2,:,:],

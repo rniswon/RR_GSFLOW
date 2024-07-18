@@ -9,6 +9,7 @@ from gw_utils import general_util
 
 def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, start_date, end_date, modflow_time_zero_altformat, start_date_altformat, end_date_altformat):
 
+
     # ---- Settings ----------------------------------------------------####
 
     # # set workspaces
@@ -34,6 +35,9 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     # set file for observed lake stages
     obs_lake_stage_file = os.path.join(script_ws, "script_inputs", "LakeMendocino_LakeSonoma_Elevation.xlsx")
+
+    # set lake bathymetry file
+    lake_bathymetry_file = os.path.join(script_ws, "script_inputs", "LakeSonoma_LakeMendocino_StorageElevationCurve.xlsx")
 
     # set files for observed lake storage
     usace_mendo_storage_data_file = os.path.join(script_ws, "script_inputs", "usace_lake_mendo_storage.csv")
@@ -66,6 +70,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     m2_per_acre = 4046.85642
     ft3_per_acreft = 43560
     seconds_per_day = 86400
+    acreft_per_millions_m3 = 810.71318
 
 
 
@@ -92,6 +97,9 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     # read in observed lake stages
     obs_lake_stage = pd.read_excel(obs_lake_stage_file, sheet_name='stages', na_values="--", parse_dates=['date'])
+
+    # read in lake bathymetry
+    lake_sonoma_bathymetry = pd.read_excel(lake_bathymetry_file, sheet_name='lake_sonoma')
 
     # read in observed lake storage
     usace_mendo_storage = pd.read_csv(usace_mendo_storage_data_file)
@@ -125,6 +133,12 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
 
     # ---- Convert units ----------------------------------------------------####
+
+    # convert units: lake sonoma bathymetry
+    xx=1
+    lake_sonoma_bathymetry['height_m'] = lake_sonoma_bathymetry['height_ft'] * (1/ft_per_m)
+    lake_sonoma_bathymetry['area_m2'] = lake_sonoma_bathymetry['area_acres'] * m2_per_acre
+    lake_sonoma_bathymetry['storage_m3'] = lake_sonoma_bathymetry['storage_acre_ft'] * m3_per_acreft
 
     # convert units: specified outflows
     lake_1_release[1] = lake_1_release[1] * (1/m3_per_acreft)
@@ -179,6 +193,43 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # convert units: observed streamflows
     obs_flows['subbasin_2_obs'] = obs_flows['subbasin_2_obs'] * seconds_per_day * (1/ft3_per_acreft)
     obs_flows['subbasin_3_obs'] = obs_flows['subbasin_3_obs'] * seconds_per_day * (1/ft3_per_acreft)
+
+
+
+
+    # ---- Calculate lake sonoma storage ----------------------------------------------------####
+
+    # calculate elevation-storage relationship
+    xx=1
+
+    # fit curve
+    model2 = np.poly1d(np.polyfit(lake_sonoma_bathymetry['height_m'], lake_sonoma_bathymetry['storage_m3'], 2))
+
+    # get equation components
+    #print(model2)
+    x2_coef = model2.coef[0]
+    x_coef = model2.coef[1]
+    constant = model2.coef[2]
+
+    # # plot
+    # plt.scatter(lake_sonoma_bathymetry['height_m'], lake_sonoma_bathymetry['storage_m3'])
+    # plt.plot(lake_sonoma_bathymetry['height_m'], model2(lake_sonoma_bathymetry['height_m']), color='red')
+    # plt.show()
+
+    # use elevation-storage relationship to calculate Lake Sonoma storage for observed Lake Sonoma elevation
+    lake_sonoma_storage = obs_lake_stage.copy()
+    lake_sonoma_storage['lake_sonoma_stage_m'] = lake_sonoma_storage['lake_sonoma_stage_feet_NGVD29'] * (1/ft_per_m)
+    lake_sonoma_storage['storage_cmd'] = model2(lake_sonoma_storage['lake_sonoma_stage_m'])
+    lake_sonoma_storage = lake_sonoma_storage[['date', 'storage_cmd']]
+    lake_sonoma_storage['storage_acreft'] = np.nan
+    lake_sonoma_storage['type'] = 'calculated from sonoma county bathymetry and elevation'
+
+
+    # # plot observed lake sonoma storage
+    # plt.plot(lake_sonoma_storage['date'], lake_sonoma_storage['lake_sonoma_storage_m3'])
+    # plt.show()
+
+
 
 
 
@@ -351,6 +402,63 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
             os.mkdir(os.path.dirname(file_path))
         plt.savefig(file_path)
         plt.close('all')
+
+
+
+
+
+    # ---- Function to plot lake budget components: stages, evap, runoff, GW inflow/outflow, SW inflow/outflow ----------------------------####
+
+    def plot_lake_budget_daily_metric(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name,
+                                      start_date_sim, end_date_sim, ft_per_m, acreft_per_millions_m3):
+
+        # convert units to metric
+        if lake_name == 'Lake Mendocino':
+            obs_lake_stage['lake_mendocino_stage_feet_NGVD29'] = obs_lake_stage['lake_mendocino_stage_feet_NGVD29'] * (1/ft_per_m)
+            obs_lake_storage['storage_millions_cmd'] = obs_lake_storage['storage_acreft'] * (1 / acreft_per_millions_m3)
+        elif lake_name == 'Lake Sonoma':
+            obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] = obs_lake_stage['lake_sonoma_stage_feet_NGVD29'] * (1/ft_per_m)
+            obs_lake_storage['storage_millions_cmd'] = obs_lake_storage['storage_cmd'] * (1 / 1000000)
+        sim_lake_budget['Stage(H)'] = sim_lake_budget['Stage(H)'] * (1/ft_per_m)
+        sim_lake_budget['Volume'] = sim_lake_budget['Volume'] * (1/acreft_per_millions_m3)
+
+        # add date column to sim lake budget
+        sim_lake_budget['date'] = pd.date_range(start=start_date_sim, end=end_date_sim)
+
+        # initialise the subplot function using number of rows and columns
+        fig, ax = plt.subplots(2, 1, figsize=(8, 6), dpi=150)
+
+        # plot lake stages
+        ax[0].plot(obs_lake_stage['date'], obs_lake_stage[obs_lake_col], label = 'Observed', color='#1f77b4')
+        ax[0].plot(sim_lake_budget['date'], sim_lake_budget['Stage(H)'], label = 'Simulated', linestyle='dotted', color='#ff7f0e')
+        ax[0].set_title('a) ' + lake_name + ' Stage', loc='left')
+        ax[0].legend()
+        ax[0].set_xlabel('Date')
+        ax[0].set_ylabel('Stage (m)')
+
+        # plot lake volume
+        ax[1].plot(obs_lake_storage['date'], obs_lake_storage['storage_millions_cmd'], label='Observed', color='#1f77b4')
+        ax[1].plot(sim_lake_budget['date'], sim_lake_budget['Volume'], label='Simulated', linestyle='dotted', color='#ff7f0e')
+        ax[1].set_title('b) ' + lake_name + ' Volume', loc='left')
+        ax[1].legend()
+        ax[1].set_xlabel('Date')
+        ax[1].set_ylabel("Volume (millions of $\mathregular{m^3}$)")
+
+        # add spacing between subplots
+        fig.tight_layout()
+
+        # export
+        file_path = os.path.join(results_ws, "plots", "lakes", out_file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
+
+
+
+
+
 
 
 
@@ -907,8 +1015,11 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     lake_name = 'Lake Mendocino'
     out_file_name_01 = 'lake_1_budget_daily_01.jpg'
     out_file_name_02 = 'lake_1_budget_daily_02.jpg'
+    out_file_name_metric = 'lake_1_budget_daily_metric.jpg'
     plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
                            start_date_sim, end_date_sim)
+    plot_lake_budget_daily_metric(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name_metric,
+                           start_date_sim, end_date_sim, ft_per_m, acreft_per_millions_m3)
 
     # plot lake budget - daily cumulative
     sim_lake_budget = lake_1_budget.copy()
@@ -970,7 +1081,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     specified_outflows = specified_outflows.iloc[totim_start_date:]
     sim_gate_seg_outflows = lake_2_seg_448.copy()
     sim_spillway_seg_outflows = lake_2_seg_449.copy()
-    obs_lake_storage = usace_sonoma_storage
+    obs_lake_storage = lake_sonoma_storage
     lake_id = 2
     out_file_name = 'lake_2_specified_vs_sim_outflows.jpg'
     plot_lake_outflows(specified_outflows, sim_gate_seg_outflows, sim_spillway_seg_outflows, obs_lake_storage, lake_id, out_file_name,
@@ -979,18 +1090,21 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # plot lake budget - daily
     sim_lake_budget = lake_2_budget.copy()
     sim_lake_budget = sim_lake_budget.iloc[1:]
-    obs_lake_storage = usace_sonoma_storage
+    obs_lake_storage = lake_sonoma_storage
     obs_lake_col = 'lake_sonoma_stage_feet_NGVD29'
     lake_name = 'Lake Sonoma'
     out_file_name_01 = 'lake_2_budget_daily_01.jpg'
     out_file_name_02 = 'lake_2_budget_daily_02.jpg'
+    out_file_name_metric = 'lake_2_budget_daily_metric.jpg'
     plot_lake_budget_daily(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name_01, out_file_name_02,
                            start_date_sim, end_date_sim)
+    plot_lake_budget_daily_metric(sim_lake_budget, obs_lake_stage, obs_lake_storage, obs_lake_col, lake_name, out_file_name_metric,
+                                  start_date_sim, end_date_sim, ft_per_m, acreft_per_millions_m3)
 
     # plot lake budget - daily cumulative
     sim_lake_budget = lake_2_budget.copy()
     sim_lake_budget = sim_lake_budget.iloc[1:]
-    obs_lake_storage = usace_sonoma_storage
+    obs_lake_storage = lake_sonoma_storage
     lake_name = 'Lake Sonoma'
     out_file_name = 'lake_2_budget_daily_cumul.jpg'
     plot_lake_budget_daily_cumul(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim, end_date_sim)
@@ -998,7 +1112,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # plot lake budget - annual
     sim_lake_budget = lake_2_budget.copy()
     sim_lake_budget = sim_lake_budget.iloc[1:]
-    obs_lake_storage = usace_sonoma_storage
+    obs_lake_storage = lake_sonoma_storage
     lake_name = 'Lake Sonoma'
     out_file_name = 'lake_2_budget_annual.jpg'
     plot_lake_budget_annual(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim, end_date_sim)
@@ -1006,7 +1120,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # plot lake budget - annual diff
     sim_lake_budget = lake_2_budget.copy()
     sim_lake_budget = sim_lake_budget.iloc[1:]
-    obs_lake_storage = usace_sonoma_storage
+    obs_lake_storage = lake_sonoma_storage
     lake_name = 'Lake Sonoma'
     out_file_name = 'lake_2_budget_annual_diff.jpg'
     plot_lake_budget_annual_diff(sim_lake_budget, obs_lake_storage, lake_name, out_file_name, start_date_sim, end_date_sim)

@@ -555,6 +555,25 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         plt.savefig(file_path)
         plt.close('all')
 
+        # plot entire daily flow time series: metric
+        plt.style.use('default')
+        plt.figure(figsize=(6, 4), dpi=150)
+        cubic_meters_per_cubic_ft = 1 / 35.3146667
+        obs_flow_cmd  = sim_obs_daily['obs_flow'] * cubic_meters_per_cubic_ft  # convert cfs to cms
+        sim_flow_cmd = sim_obs_daily['sim_flow'] * cubic_meters_per_cubic_ft  # convert cfs to cms
+        plt.plot(sim_obs_daily.date, obs_flow_cmd, label='Observed')
+        plt.plot(sim_obs_daily.date, sim_flow_cmd, label='Simulated', linestyle='dotted')
+        plt.title('Daily streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Date')
+        plt.ylabel('Streamflow (cms)')
+        plt.legend()
+        file_name = 'daily_streamflow_time_series_all_' + str(subbasin_id).zfill(2) + '_metric.jpg'
+        file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
         # plot entire daily flow time series on log scale
         plt.style.use('default')
         plt.figure(figsize=(12, 8), dpi=150)
@@ -566,6 +585,26 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         plt.yscale('log')
         plt.legend()
         file_name = 'daily_streamflow_time_series_all_log_' + str(subbasin_id).zfill(2) + '.jpg'
+        file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
+        if not os.path.isdir(os.path.dirname(file_path)):
+            os.mkdir(os.path.dirname(file_path))
+        plt.savefig(file_path)
+        plt.close('all')
+
+        # plot entire daily flow time series on log scale: metric
+        plt.style.use('default')
+        plt.figure(figsize=(6, 4), dpi=150)
+        cubic_meters_per_cubic_ft = 1 / 35.3146667
+        obs_flow_cmd  = sim_obs_daily['obs_flow'] * cubic_meters_per_cubic_ft  # convert cfs to cms
+        sim_flow_cmd = sim_obs_daily['sim_flow'] * cubic_meters_per_cubic_ft  # convert cfs to cms
+        plt.plot(sim_obs_daily.date, obs_flow_cmd, label='Observed')
+        plt.plot(sim_obs_daily.date, sim_flow_cmd, label='Simulated', linestyle='dotted')
+        plt.title('Daily streamflow: subbasin ' + str(subbasin_id) + "\n" + gage_name)
+        plt.xlabel('Date')
+        plt.ylabel('Streamflow (cms)')
+        plt.yscale('log')
+        plt.legend()
+        file_name = 'daily_streamflow_time_series_all_log_' + str(subbasin_id).zfill(2) + '_metric.jpg'
         file_path = os.path.join(results_ws, "plots", "streamflow_daily", file_name)
         if not os.path.isdir(os.path.dirname(file_path)):
             os.mkdir(os.path.dirname(file_path))

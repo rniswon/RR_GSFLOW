@@ -146,6 +146,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     # set conversion factors
     cubic_meters_per_acreft = 1233.4818375
+    acreft_per_millions_of_cubic_meters = 810.71318210885
 
     # set upstream subbasins for each subbasin
     upstream_sub_dict = {1:[0],
@@ -656,6 +657,9 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         # convert units to acre-ft
         df_all['value'] = df_all['value'] * (1/cubic_meters_per_acreft)
 
+        # convert units to millions of cubic meters
+        df_all['value'] = df_all['value'] * (1/acreft_per_millions_of_cubic_meters)
+
         # plot surface and soil zone water budget: stacked bar plot
         selected_vars = ['precip', 'surface_and_soil_zone_et', 'recharge', 'hortonian_flow', 'dunnian_flow', 'flow_to_lakes', 'ssres_flow', 'SURFACE_LEAKAGE', 'ag_water_use', 'storage_change']
         df = df_all[df_all['variable'].isin(selected_vars)]
@@ -669,8 +673,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df['SURFACE_LEAKAGE'] = df['SURFACE_LEAKAGE'] * -1   # NOTE: multiplying by -1 because switching control volume for surface leakage from groundwater aquifer to surface and soil zone
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
                 title='Russian River watershed: surface and soil zone water budget, annual sum',
-                xlabel="Water Year", ylabel="Volume (acre-ft)", figsize=(12, 8))
-        file_name = 'surface_soil_zone_water_budget_bar_watershed.png'
+                xlabel="Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6))
+        file_name = 'surface_soil_zone_water_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
         if not os.path.isdir(os.path.dirname(file_path)):
@@ -686,8 +690,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df['AG_WE'] = df['AG_WE'] * -1   # note: multiplying by -1 to switch control volume from groundwater aquifer to ag field
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
                 title='Russian River watershed: agricultural water use, annual sum',
-                xlabel = "Water Year", ylabel="Volume (acre-ft)", figsize=(12, 8))
-        file_name = 'ag_water_use_budget_bar_watershed.png'
+                xlabel = "Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6))
+        file_name = 'ag_water_use_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
         if not os.path.isdir(os.path.dirname(file_path)):
@@ -705,8 +709,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df = pd.pivot(df, index='water_year', columns='variable', values='value').reset_index()
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
                 title='Russian River watershed: groundwater budget, annual sum',
-                xlabel = "Water Year", ylabel="Volume (acre-ft)", figsize=(12, 8), cmap='tab20')
-        file_name = 'groundwater_budget_bar_watershed.png'
+                xlabel = "Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6), cmap='tab20')
+        file_name = 'groundwater_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
         if not os.path.isdir(os.path.dirname(file_path)):
@@ -723,8 +727,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df['streamflow_out'] = df['streamflow_out'] * -1
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
                 title='Russian River watershed: stream network water budget, annual sum',
-                xlabel="Water Year", ylabel="Volume (acre-ft)", figsize=(12, 8))
-        file_name = 'stream_network_water_budget_bar_watershed.png'
+                xlabel="Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6))
+        file_name = 'stream_network_water_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
         fig = this_plot.get_figure()
         if not os.path.isdir(os.path.dirname(file_path)):

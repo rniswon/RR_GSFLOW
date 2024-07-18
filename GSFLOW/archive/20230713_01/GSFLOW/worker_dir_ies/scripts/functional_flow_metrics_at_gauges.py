@@ -86,7 +86,7 @@ def calculate_long_term_low_flow_threshold(low_flow_threshold_percentile, sim_df
 
 
 # function to calculate low flow duration and deficit
-def calculate_low_flow_duration_and_deficit(low_flow_threshold, sim_df, grouping_variable):
+def calculate_low_flow_duration_and_deficit(low_flow_threshold, low_flow_threshold_percentile, sim_df, grouping_variable):
 
     # create low flow data frame
     low_flow = pd.DataFrame()
@@ -139,7 +139,7 @@ def calculate_low_flow_duration_and_deficit(low_flow_threshold, sim_df, grouping
 
 
 # function to calculate minimum 7-day flow
-def calculate_annual_min_7day_flow(low_flow, sim_df):
+def calculate_annual_min_7day_flow(low_flow, sim_df, grouping_variable):
 
     # add columns to low flow data frame
     low_flow['min_7day_flow'] = -999
@@ -177,164 +177,207 @@ def calculate_annual_min_7day_flow(low_flow, sim_df):
 
 
 
+def main(script_ws, model_ws, results_ws):
 
 
-# ---- Set workspaces and files -------------------------------------------####
+    # ---- Set workspaces and files -------------------------------------------####
 
-# set workspaces
-# note: update these workspaces as needed
-script_ws = os.path.abspath(os.path.dirname(__file__))                                      # script workspace
-model_ws = os.path.join(script_ws, "..", "gsflow_model_updated")                            # model workspace
-results_ws = os.path.join(script_ws, "..", "results")                                       # results workspace
-
-
-# set name file
-mf_name_file = 'rr_tr.nam'  # options: rr_tr.nam or rr_tr_heavy.nam
-
-# set gage file
-gage_file = os.path.join(script_ws, 'script_inputs', 'gage_hru.shp')
+    # set workspaces
+    # note: update these workspaces as needed
+    # script_ws = os.path.abspath(os.path.dirname(__file__))                                      # script workspace
+    # model_ws = os.path.join(script_ws, "..", "gsflow_model_updated")                            # model workspace
+    # results_ws = os.path.join(script_ws, "..", "results")                                       # results workspace
 
 
+    # set name file
+    mf_name_file = 'rr_tr.nam'  # options: rr_tr.nam or rr_tr_heavy.nam
+
+    # set gage file
+    gage_file = os.path.join(script_ws, 'script_inputs', 'gage_hru.shp')
+
+    # set historical baseline flow thresh file
+    hist_baseline_flow_thresh_file = os.path.join(script_ws, 'script_inputs', 'func_flow_annual_metrics_hist_baseline_20230713_01.csv')
 
 
-# ---- Set constants -------------------------------------------####
+    # ---- Set constants -------------------------------------------####
 
-# date
-modflow_time_zero = "1990-01-01"
-modflow_time_zero_altformat = "01-01-1990"
-start_date = "1990-01-01"
-start_date_altformat = "01-01-1990"
-end_date = "2015-12-30"
-end_date_altformat = "12-30-2015"
+    # date
+    modflow_time_zero = "1990-01-01"
+    modflow_time_zero_altformat = "01-01-1990"
+    start_date = "1990-01-01"
+    start_date_altformat = "01-01-1990"
+    end_date = "2099-12-29"
+    end_date_altformat = "12-29-2099"
 
-# threshold
-low_flow_threshold_percentile = 0.1         # 10th percentile
-days_prior_to_annual_min_7day_flow = 30
-
-
-
-# ---- Read in and reformat -------------------------------------------####
-
-# convert start_date to date
-start_date = start_date_altformat
-end_date = end_date_altformat
-modflow_time_zero = modflow_time_zero_altformat
-start_date = pd.to_datetime(start_date)
-end_date = pd.to_datetime(end_date)
-
-# read in info about observed streamflow data
-gage_df = geopandas.read_file(gage_file)
-gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
-
-# read in sim flows and store in dictionary
-sim_file_path = os.path.join(model_ws, 'modflow', 'output')
-sim_files = [x for x in os.listdir(sim_file_path) if x.endswith('.go')]
-sim_dict = {}
-for file in sim_files:
-
-    try:
-
-        # read in gage file
-        gage_file = os.path.join(model_ws, 'modflow', 'output', file)
-        data = read_gage(gage_file, modflow_time_zero)
-        sim_df = pd.DataFrame.from_dict(data)
-        sim_df.date = pd.to_datetime(sim_df.date).dt.date
-        sim_df['gage_name'] = 'none'
-        sim_df['subbasin_id'] = 0
-        sim_df['gage_id'] = 0
-
-        # add gage name
-        gage_name = file.split(".")
-        gage_name = gage_name[0]
-        sim_df['gage_name'] = gage_name
-
-        # add subbasin id and gage id
-        mask = gage_df['Gage_Name'] == gage_name
-        subbasin_id = gage_df.loc[mask, 'subbasin'].values[0]
-        sim_df['subbasin_id'] = subbasin_id
-        gage_id = gage_df.loc[mask, 'Name'].values[0]
-        sim_df['gage_id'] = gage_id
-
-        # convert flow units from m^3/day to ft^3/s
-        days_div_sec = 1 / 86400  # 1 day is 86400 seconds
-        ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
-        sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
-
-        # add water year column
-        sim_df = generate_water_year(sim_df)
-
-        # store in dict
-        sim_dict.update({gage_id: sim_df})
-
-    except:
-
-        pass
-
-# place all simulated values in one data frame
-
-# export simulated data frame
+    # threshold
+    low_flow_threshold_percentile = 0.1         # 10th percentile
+    days_prior_to_annual_min_7day_flow = 30
 
 
 
-# ---- Loop through gages and calculate functional flow metrics -------------------------------------------####
+    # ---- Set script options -------------------------------------------####
 
-func_flow_annual_list = []
-for gage_id, sim_df in sim_dict.items():
-
-
-    #---- Annual low flow metrics -------------------------------------------####
-
-    # calculate long-term low flow threshold
-    grouping_variable = 'year'
-    low_flow_threshold_annual = calculate_long_term_low_flow_threshold(low_flow_threshold_percentile, sim_df)
-
-    # annual low flow duration (number of days below the low flow threshold) and deficit (accumulated flow departure below the low flow threshold calculated from the first day of the year)
-    func_flow_annual = calculate_low_flow_duration_and_deficit(low_flow_threshold_annual, sim_df, grouping_variable)
-
-    # annual number of discrete low flow periods: number of unique events where flow dropped below the low flow threshold
-
-    # annual mean low flow length: average length of continuous low flow conditions
-
-    # annual maximum low flow length: maximum length of continuous low flow conditions
-
-    # annual min 7-day flow (minimum daily streamflow value after applying a 7-day moving average) and day of year it is reached
-    func_flow_annual = calculate_annual_min_7day_flow(func_flow_annual, sim_df)
-
-    # recession rate for 30(?) days prior to annual minimum 7 day flow
-
-    # store
-    func_flow_annual_list.append(func_flow_annual)
+    use_historical_baseline_flow_threshold_for_all = 0
 
 
 
-    #---- Seasonal low flow metrics: dry season -------------------------------------------####
+    # ---- Read in and reformat -------------------------------------------####
 
-    # calculate long-term low flow threshold
+    # convert start_date to date
+    start_date = start_date_altformat
+    end_date = end_date_altformat
+    modflow_time_zero = modflow_time_zero_altformat
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
 
-    # seasonal low flow duration (number of days below the low flow threshold - threshold based on a long-term 10th? percentile of streamflow values)
+    # read in info about observed streamflow data
+    gage_df = geopandas.read_file(gage_file)
+    gage_df = gage_df[['subbasin', 'Name', 'Gage_Name']]
 
-    # seasonal low flow deficit (accumulated flow departure below the low flow threshold calculated from the first day of each year)
+    # read in sim flows and store in dictionary
+    sim_file_path = os.path.join(model_ws, 'modflow', 'output')
+    sim_files = [x for x in os.listdir(sim_file_path) if x.endswith('.go')]
+    sim_dict = {}
+    for file in sim_files:
+
+        try:
+
+            # read in gage file
+            gage_file = os.path.join(model_ws, 'modflow', 'output', file)
+            data = read_gage(gage_file, modflow_time_zero)
+            sim_df = pd.DataFrame.from_dict(data)
+            sim_df.date = pd.to_datetime(sim_df.date).dt.date
+            sim_df['gage_name'] = 'none'
+            sim_df['subbasin_id'] = 0
+            sim_df['gage_id'] = 0
+
+            # add gage name
+            gage_name = file.split(".")
+            gage_name = gage_name[0]
+            sim_df['gage_name'] = gage_name
+
+            # add subbasin id and gage id
+            if file == 'subbasin_21.go':
+                subbasin_id = 21
+                sim_df['subbasin_id'] = subbasin_id
+                gage_id = str(21)
+                sim_df['gage_id'] = gage_id
+            elif file == 'subbasin_22.go':
+                subbasin_id = 22
+                sim_df['subbasin_id'] = subbasin_id
+                gage_id = str(22)
+                sim_df['gage_id'] = gage_id
+            else:
+                mask = gage_df['Gage_Name'] == gage_name
+                subbasin_id = gage_df.loc[mask, 'subbasin'].values[0]
+                sim_df['subbasin_id'] = subbasin_id
+                gage_id = gage_df.loc[mask, 'Name'].values[0]
+                sim_df['gage_id'] = gage_id
+
+            # convert flow units from m^3/day to ft^3/s
+            days_div_sec = 1 / 86400  # 1 day is 86400 seconds
+            ft3_div_m3 = 35.314667 / 1  # 35.314667 cubic feet in 1 cubic meter
+            sim_df['flow'] = sim_df['flow'].values * days_div_sec * ft3_div_m3
+
+            # add water year column
+            sim_df = generate_water_year(sim_df)
+
+            # store in dict
+            sim_dict.update({gage_id: sim_df})
+
+        except:
+
+            pass
+
+    # place all simulated values in one data frame
+
+    # export simulated data frame
+
+
+
+    # ---- Loop through gages and calculate functional flow metrics -------------------------------------------####
+
+    func_flow_annual_list = []
+    for gage_id, sim_df in sim_dict.items():
+
+
+        #---- Annual low flow metrics -------------------------------------------####
+
+        # calculate long-term low flow threshold for this model
+        grouping_variable = 'year'
+        low_flow_threshold_annual = calculate_long_term_low_flow_threshold(low_flow_threshold_percentile, sim_df)
+
+
+        # if using historical baseline flow threshold for all models, replace values for this model with values from historical baseline model
+        if use_historical_baseline_flow_threshold_for_all == 1:
+
+            # read in flow thresholds from historical baseline model
+            hist_baseline_flow_thresh_df = pd.read_csv(hist_baseline_flow_thresh_file)
+
+            # mask both data frames
+            mask_hist_baseline = hist_baseline_flow_thresh_df['gage_id'] == int(gage_id)
+
+            # get threshold from hist baseline
+            hist_baseline_flow_thresh = hist_baseline_flow_thresh_df.loc[mask_hist_baseline, 'threshold_flow'].unique()[0]
+            low_flow_threshold_annual = hist_baseline_flow_thresh
+
+
+        # annual low flow duration (number of days below the low flow threshold) and deficit (accumulated flow departure below the low flow threshold calculated from the first day of the year)
+        func_flow_annual = calculate_low_flow_duration_and_deficit(low_flow_threshold_annual, low_flow_threshold_percentile, sim_df, grouping_variable)
+
+        # annual number of discrete low flow periods: number of unique events where flow dropped below the low flow threshold
+
+        # annual mean low flow length: average length of continuous low flow conditions
+
+        # annual maximum low flow length: maximum length of continuous low flow conditions
+
+        # annual min 7-day flow (minimum daily streamflow value after applying a 7-day moving average) and day of year it is reached
+        func_flow_annual = calculate_annual_min_7day_flow(func_flow_annual, sim_df, grouping_variable)
+
+        # recession rate for 30(?) days prior to annual minimum 7 day flow
+
+        # store
+        func_flow_annual_list.append(func_flow_annual)
+
+
+
+        #---- Seasonal low flow metrics: dry season -------------------------------------------####
+
+        # calculate long-term low flow threshold
+
+        # seasonal low flow duration (number of days below the low flow threshold - threshold based on a long-term 10th? percentile of streamflow values)
+
+        # seasonal low flow deficit (accumulated flow departure below the low flow threshold calculated from the first day of each year)
 
 
 
 
 
-    #---- Seasonal low flow metrics: dry-to-wet transition season -------------------------------------------####
+        #---- Seasonal low flow metrics: dry-to-wet transition season -------------------------------------------####
 
-    # calculate long-term low flow threshold
+        # calculate long-term low flow threshold
 
-    # seasonal low flow duration (number of days below the low flow threshold - threshold based on a long-term 10th? percentile of streamflow values)
+        # seasonal low flow duration (number of days below the low flow threshold - threshold based on a long-term 10th? percentile of streamflow values)
 
-    # seasonal low flow deficit (accumulated flow departure below the low flow threshold calculated from the first day of each year)
+        # seasonal low flow deficit (accumulated flow departure below the low flow threshold calculated from the first day of each year)
 
 
 
-#---- Export -------------------------------------------####
+    #---- Export -------------------------------------------####
 
-# convert to data frame
-func_flow_annual_df = pd.concat(func_flow_annual_list)
+    # convert to data frame
+    func_flow_annual_df = pd.concat(func_flow_annual_list)
 
-# export annual metrics
-file_path = os.path.join(results_ws, 'tables', 'func_flow_annual_metrics.csv')
-func_flow_annual_df.to_csv(file_path, index=False)
+    # export annual metrics
+    file_path = os.path.join(results_ws, 'tables', 'func_flow_annual_metrics.csv')
+    func_flow_annual_df.to_csv(file_path, index=False)
 
+
+
+
+if __name__ == "__main__":
+
+    # note: model_ws and results_ws are defined in plot_all_gsflow.py,
+    # if we want to run this script alone then need to define them here
+
+    main(script_ws, model_ws, results_ws)

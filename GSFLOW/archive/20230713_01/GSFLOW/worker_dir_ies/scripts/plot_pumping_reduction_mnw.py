@@ -367,7 +367,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # plot time series for all wells: fraction
     def plot_pumping_reduction_fraction_all(df, plot_title, file_name):
         plt.style.use('default')
-        plt.figure(figsize=(12, 6), dpi=150)
+        plt.figure(figsize=(8, 4), dpi=150)
         plt.scatter(df['SP'], df['reduced_fraction_all'])
         plt.plot(df['SP'], df['reduced_fraction_all'])
         plt.title(plot_title)
@@ -383,14 +383,14 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # plot time series for MNW wells: applied vs. actual pumping
     def plot_applied_vs_actual_pumping_mnw(df, plot_title, file_name):
         plt.style.use('default')
-        plt.figure(figsize=(12, 6), dpi=150)
+        plt.figure(figsize=(8, 4), dpi=150)
         plt.scatter(df['sp'], df['qdes_sp'], label='Applied pumping')
         plt.scatter(df['sp'], df['Qnet'], label='Actual pumping')
         plt.plot(df['sp'], df['qdes_sp'])
         plt.plot(df['sp'], df['Qnet'])
         plt.title(plot_title)
         plt.xlabel('Stress period')
-        plt.ylabel('Pumping (m^3/stress period)')
+        plt.ylabel('Pumping ($\mathregular{m^3}$/stress period)')
         plt.legend()
         file_name = file_name
         file_path = os.path.join(results_ws, "plots", "pumping_reduction", file_name)
@@ -418,14 +418,14 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # plot time series for WELL+MNW wells: applied vs. actual pumping
     def plot_applied_vs_actual_pumping_mnw_well(df, plot_title, file_name):
         plt.style.use('default')
-        plt.figure(figsize=(12, 6), dpi=150)
+        plt.figure(figsize=(8, 4), dpi=150)
         plt.scatter(df['sp'], df['applied_wel_mnw'], label='Applied pumping')
         plt.scatter(df['sp'], df['NetWellFlow_Q'], label='Actual pumping')
         plt.plot(df['sp'], df['applied_wel_mnw'])
         plt.plot(df['sp'], df['NetWellFlow_Q'])
         plt.title(plot_title)
         plt.xlabel('Stress period')
-        plt.ylabel('Pumping (m^3/stress period)')
+        plt.ylabel('Pumping ($\mathregular{m^3}$/stress period)')
         plt.legend()
         file_name = file_name
         file_path = os.path.join(results_ws, "plots", "pumping_reduction", file_name)
@@ -567,7 +567,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     # plot_pumping_reduction_fraction_all(df, plot_title, file_name)
 
     # plot time series for MNW wells: applied vs. actual pumping
-    plot_title = 'Applied and actual pumping: MNW wells\nall M&I wells'
+    plot_title = 'Applied and actual pumping: municipal and industrial wells'
     file_name = 'pumping_reduction_ts_compare_mnw_all_MandI.jpg'
     plot_applied_vs_actual_pumping_mnw(mnw_sp_type_all, plot_title, file_name)
 

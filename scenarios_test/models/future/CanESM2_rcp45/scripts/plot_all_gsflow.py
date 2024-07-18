@@ -10,7 +10,7 @@ import importlib
 
 
 # import plotting scripts
-import reorganize_file_structure
+# import reorganize_file_structure
 import plot_ag_diversions
 import plot_ag_diversions_iupseg
 import plot_ag_pond_div_iupseg
@@ -103,7 +103,7 @@ if 0:
 
 
 
-# ---- Reformat file structure -------------------------------------------####
+#---- Reformat file structure -------------------------------------------####
 
 print('reformat file structure')
 reorganize_file_structure.main(script_ws, climate_change_scenario)
@@ -111,8 +111,8 @@ reorganize_file_structure.main(script_ws, climate_change_scenario)
 
 
 
-# # ---- Run plotting scripts -------------------------------------------####
-#
+# ---- Run plotting scripts -------------------------------------------####
+
 # # print('plot ag diversions') # TODO: may need to update for updated dates
 # # plot_ag_diversions.main(model_ws, results_ws, mf_name_file_type)
 # #
@@ -140,8 +140,8 @@ reorganize_file_structure.main(script_ws, climate_change_scenario)
 # print('plot gage output')
 # plot_gage_output.main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, start_date, end_date, modflow_time_zero_altformat, start_date_altformat, end_date_altformat)
 
-# print('plot gsflow inputs')
-# plot_gsflow_inputs.main(script_ws, model_ws, results_ws, mf_name_file_type)
+print('plot gsflow inputs')
+plot_gsflow_inputs.main(script_ws, model_ws, results_ws, mf_name_file_type)
 
 # print('plot hobs output')
 # #plot_hobs_output.main(script_ws, model_ws, results_ws, mf_name_file_type)   # TODO: may need to update for updated dates

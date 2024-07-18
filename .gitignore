@@ -62,6 +62,7 @@ GSFLOW/worker_dir_ies/gsflow_model/PRMS/output
 **/*.jco
 GSFLOW/scripts/script_outputs/
 GSFLOW/archive/**/results/
+GSFLOW/archive/**/old/
 GSFLOW/archive/**/GSFLOW/worker_dir_ies/calib_files
 GSFLOW/archive/**/GSFLOW/worker_dir_ies/gsflow_model_updated/modflow/output/
 GSFLOW/archive/**/GSFLOW/worker_dir_ies/gsflow_model_updated/PRMS/output/
@@ -122,6 +123,8 @@ scenarios/models/**/PRMS/output
 scenarios/models/**/calib_files
 scenarios/models/**/pest
 scenarios/models/**/scratch
+scenarios/model_archive
 scenarios/results
+scenarios/old
 MMSFiles/MODSIM/BaseNet_OpsGSFLOWTS__r6MSGSFOUTPUT.sqlite
 MMSFiles/MODSIM/BaseNet_OpsGSFLOWTS__r6OUTPUT.sqlite
