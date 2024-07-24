@@ -854,7 +854,7 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
             df_annual_tmp['num_years'] = 1
             df_annual_grouped_sum = df_annual_tmp.groupby(['model_name'])['lt_deadpool', 'num_years'].sum()
             df_annual_grouped_sum['percent_days_lt_deadpool'] = (df_annual_grouped_sum['lt_deadpool'] / df_annual_grouped_sum['num_years']) * 100
-            file_name_lt_deadpool_annual = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_daily.csv'
+            file_name_lt_deadpool_annual = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_annual.csv'
             file_path = os.path.join(results_ws, 'tables', file_name_lt_deadpool_annual)
             df_annual_grouped_sum.to_csv(file_path, index=False)
 
@@ -909,7 +909,7 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
             df_annual_tmp['num_years'] = 1
             df_annual_grouped_sum = df_annual_tmp.groupby(['model_name'])['lt_deadpool', 'num_years'].sum()
             df_annual_grouped_sum['percent_days_lt_deadpool'] = (df_annual_grouped_sum['lt_deadpool'] / df_annual_grouped_sum['num_years']) * 100
-            file_name_lt_deadpool_annual = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_daily.csv'
+            file_name_lt_deadpool_annual = 'paper_' + lake_name + '_' + variable + '_percent_below_deadpool_stage_annual.csv'
             file_path = os.path.join(results_ws, 'tables', file_name_lt_deadpool_annual)
             df_annual_grouped_sum.to_csv(file_path, index=False)
 

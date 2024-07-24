@@ -406,6 +406,8 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
     mark_west_inflows['subbasin'] = 18
     mark_west_inflows = mark_west_inflows[['date', 'streamflow_in', 'subbasin']]
     streamflow_in = pd.concat([streamflow_in, mark_west_inflows])
+    streamflow_in = streamflow_in.groupby(['date', 'subbasin']).sum().reset_index()
+
 
 
 
