@@ -137,6 +137,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
 
     # set conversion factors
     inches_per_meter = 39.3700787
+    mm_per_m = 1000
 
     # set num days spinup
     num_days_spinup = (pd.to_datetime(start_date) - pd.to_datetime(modflow_time_zero)).days
@@ -672,7 +673,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df['flow_to_lakes'] = df['flow_to_lakes'] * -1
         df['SURFACE_LEAKAGE'] = df['SURFACE_LEAKAGE'] * -1   # NOTE: multiplying by -1 because switching control volume for surface leakage from groundwater aquifer to surface and soil zone
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
-                title='Russian River watershed: surface and soil zone water budget, annual sum',
+                #title='Russian River watershed: surface and soil zone water budget, annual sum',
                 xlabel="Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6))
         file_name = 'surface_soil_zone_water_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
@@ -689,7 +690,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df = pd.pivot(df, index= 'water_year', columns='variable', values='value').reset_index()
         df['AG_WE'] = df['AG_WE'] * -1   # note: multiplying by -1 to switch control volume from groundwater aquifer to ag field
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
-                title='Russian River watershed: agricultural water use, annual sum',
+                #title='Russian River watershed: agricultural water use, annual sum',
                 xlabel = "Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6))
         file_name = 'ag_water_use_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
@@ -708,7 +709,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df = df_all[df_all['variable'].isin(selected_vars)]
         df = pd.pivot(df, index='water_year', columns='variable', values='value').reset_index()
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
-                title='Russian River watershed: groundwater budget, annual sum',
+                #title='Russian River watershed: groundwater budget, annual sum',
                 xlabel = "Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6), cmap='tab20')
         file_name = 'groundwater_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
@@ -726,7 +727,7 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
         df['groundwater_flow'] = df['streamflow_out'] - df['streamflow_in'] - df['hortonian_flow'] - df['dunnian_flow'] - df['ssres_flow']
         df['streamflow_out'] = df['streamflow_out'] * -1
         this_plot = df.plot(x='water_year', kind='bar', stacked=True,
-                title='Russian River watershed: stream network water budget, annual sum',
+                #title='Russian River watershed: stream network water budget, annual sum',
                 xlabel="Water Year", ylabel="Volume (millions of $\mathregular{m^3}$)", figsize=(8, 6))
         file_name = 'stream_network_water_budget_bar_watershed.jpg'
         file_path = os.path.join(plot_folder, file_name)
@@ -735,6 +736,173 @@ def main(script_ws, model_ws, results_ws, mf_name_file_type, modflow_time_zero, 
             os.mkdir(os.path.dirname(file_path))
         fig.savefig(file_path)
         plt.close('all')
+
+
+
+
+    # ---- Calculate wet/dry periods based on precip ------------------------------------------------------------------------------####
+
+    # subset df_all
+    df_all = budget_annual.copy()
+
+    # convert df_all to long form
+    df_all = df_all.drop('subbasin', 1)
+    df_all = pd.melt(df_all, id_vars=['water_year'], var_name='variable', value_name='value')
+
+    # extract precip
+    precip_df = df_all[df_all['variable'] == 'precip']
+
+    # convert units to mm
+    watershed_area_m2 = subbasin_areas['area_m2'].sum()
+    precip_df['value'] = precip_df['value'] * (1/watershed_area_m2) * mm_per_m
+
+    # calculate wet and dry cutoffs
+    dry_cutoff = precip_df['value'].quantile(0.333333)
+    wet_cutoff = precip_df['value'].quantile(0.666666)
+
+    # classify year type
+    precip_df['water_year_type'] = 'average'
+    mask_dry = precip_df['value'] < dry_cutoff
+    precip_df.loc[mask_dry, 'water_year_type'] = 'dry'
+    mask_wet = precip_df['value'] > wet_cutoff
+    precip_df.loc[mask_wet, 'water_year_type'] = 'wet'
+
+
+
+
+    # ---- Plot cumulative change in groundwater storage along with wet/dry periods ----------------------------------------------####
+
+    # subset df_all
+    df = budget_annual.copy()
+
+    # convert df_all to long form
+    df = df.drop('subbasin', 1)
+    df = pd.melt(df, id_vars=['water_year'], var_name='variable', value_name='value')
+
+    # convert units to acre-ft
+    df['value'] = df['value'] * (1 / cubic_meters_per_acreft)
+
+    # convert units to millions of cubic meters
+    df['value'] = df['value'] * (1 / acreft_per_millions_of_cubic_meters)
+
+    # extract storage change
+    df = df[df['variable'] == 'STORAGE_CHANGE']
+
+    # multiply by -1 so that positive means groundwater storage is increasing and negative means groundwater storage is decreasing
+    df['value'] = df['value'] * -1
+
+    # calculate cumulative storage change
+    df = df.sort_values(by = 'water_year')
+    df['value_cumsum'] = df['value'].cumsum()
+
+
+    # plot cumulative storage change
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(df['water_year'], df['value_cumsum'], color='black')
+    ax.set_xlabel('Water Year')
+    ax.set_ylabel('Cumulative storage change (millions of $\mathregular{m^3}$)')
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] > wet_cutoff,
+                    color='tab:blue', alpha=0.5, transform=ax.get_xaxis_transform())
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] < dry_cutoff,
+                    color='tab:red', alpha=0.5, transform=ax.get_xaxis_transform())
+
+    # export
+    file_name = 'paper_annual_time_trend_watershed_cumul_storage_change_hist_baseline.jpg'
+    file_path = os.path.join(plot_folder, file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    fig.savefig(file_path, bbox_inches='tight')
+    plt.close('all')
+
+
+
+    # plot storage change
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(df['water_year'], df['value'], color='black')
+    ax.set_xlabel('Water Year')
+    ax.set_ylabel('Storage change (millions of $\mathregular{m^3}$)')
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] > wet_cutoff,
+                    color='tab:blue', alpha=0.5, transform=ax.get_xaxis_transform())
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] < dry_cutoff,
+                    color='tab:red', alpha=0.5, transform=ax.get_xaxis_transform())
+
+    # export
+    file_name = 'paper_annual_time_trend_watershed_storage_change_hist_baseline.jpg'
+    file_path = os.path.join(plot_folder, file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    fig.savefig(file_path, bbox_inches='tight')
+    plt.close('all')
+
+
+
+
+    # ---- Plot cumulative change in stream leakage along with wet/dry periods ---------------------------------------------####
+
+    # subset df_all
+    df = budget_annual.copy()
+
+    # convert df_all to long form
+    df = df.drop('subbasin', 1)
+    df = pd.melt(df, id_vars=['water_year'], var_name='variable', value_name='value')
+
+    # convert units to acre-ft
+    df['value'] = df['value'] * (1 / cubic_meters_per_acreft)
+
+    # convert units to millions of cubic meters
+    df['value'] = df['value'] * (1 / acreft_per_millions_of_cubic_meters)
+
+    # extract stream leakage
+    df = df[df['variable'] == 'STREAM_LEAKAGE']
+
+    # calculate cumulative change in stream leakage
+    df = df.sort_values(by = 'water_year')
+    df['value_diff'] = df['value'].diff()
+    df['value_diff_cumsum'] = df['value_diff'].cumsum()
+
+
+
+    # plot cumulative storage change
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(df['water_year'], df['value_diff_cumsum'], color='black')
+    ax.set_xlabel('Water Year')
+    ax.set_ylabel('Cumulative stream leakage (millions of $\mathregular{m^3}$)')
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] > wet_cutoff,
+                    color='tab:blue', alpha=0.5, transform=ax.get_xaxis_transform())
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] < dry_cutoff,
+                    color='tab:red', alpha=0.5, transform=ax.get_xaxis_transform())
+
+    # export
+    file_name = 'paper_annual_time_trend_watershed_cumul_stream_leakage_hist_baseline.jpg'
+    file_path = os.path.join(plot_folder, file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    fig.savefig(file_path, bbox_inches='tight')
+    plt.close('all')
+
+
+
+    # plot storage change
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.plot(df['water_year'], df['value_diff'], color='black')
+    ax.set_xlabel('Water Year')
+    ax.set_ylabel('Stream leakage (millions of $\mathregular{m^3}$)')
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] > wet_cutoff,
+                    color='tab:blue', alpha=0.5, transform=ax.get_xaxis_transform())
+    ax.fill_between(precip_df['water_year'], 0, 1, where=precip_df['value'] < dry_cutoff,
+                    color='tab:red', alpha=0.5, transform=ax.get_xaxis_transform())
+
+    # export
+    file_name = 'paper_annual_time_trend_watershed_stream_leakage_hist_baseline.jpg'
+    file_path = os.path.join(plot_folder, file_name)
+    if not os.path.isdir(os.path.dirname(file_path)):
+        os.mkdir(os.path.dirname(file_path))
+    fig.savefig(file_path, bbox_inches='tight')
+    plt.close('all')
+
+
+
+
 
 
 

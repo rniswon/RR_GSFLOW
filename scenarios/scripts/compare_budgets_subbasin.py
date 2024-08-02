@@ -1413,6 +1413,107 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
 
 
 
+
+
+    # ---- Make paper figures: dry season gw contribution to streamflow -------------------------------------------####
+
+    # get variable of interest
+    df = seasonal_budget_df[(seasonal_budget_df['variable'] == 'gw_to_streamflow') &
+                            (seasonal_budget_df['agg_month_name'] == 'dry') &
+                            (seasonal_budget_df['subbasin'].isin([2,4,10,17,18,21]))]
+
+    # convert to wide format
+    df_wide = df.pivot(index=['water_year', 'model_name', 'model_name_pretty', 'agg_month_name', 'agg_month_name_pretty'], columns='subbasin', values='value').reset_index()
+
+    # create boxplot in each subplot
+    fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(10, 8))
+    # plt.rcParams["axes.labelsize"] = 12
+    # plt.rcParams["axes.titlesize"] = 12
+    flierprops = dict(markerfacecolor='gray', markeredgecolor='gray', markersize=3, linestyle='none')
+
+    # create color palette
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+
+    # plot
+    plot_title = 'a) Subbasin 2'
+    x_axis_label = 'Aquifer-to-stream flow (m$^3$/s)'
+    p = sns.boxplot(data=df_wide, x=2, y='model_name_pretty', showmeans=True,
+          meanprops={"marker": "o", "markerfacecolor":"white", "markeredgecolor": "black", "markersize": "5"}, ax=axes[0, 0],
+                    hue_order=model_names_pretty, order=model_names_pretty, flierprops=flierprops)
+    p.set(xlabel=None)
+    p.set_ylabel('Scenario')
+    p.set_title(plot_title, loc='left')
+
+    plot_title = 'b) Subbasin 4'
+    x_axis_label = 'Aquifer-to-stream flow (m$^3$/s)'
+    p = sns.boxplot(data=df_wide, x=4, y='model_name_pretty', showmeans=True,
+          meanprops={"marker": "o", "markerfacecolor":"white", "markeredgecolor": "black", "markersize": "5"},ax=axes[0, 1],
+                    hue_order=model_names_pretty, order=model_names_pretty, flierprops=flierprops)
+    p.set(xlabel=None)
+    p.set(ylabel=None)
+    p.set(yticklabels=[])
+    p.set_title(plot_title, loc='left')
+
+    plot_title = 'c) Subbasin 10'
+    x_axis_label = 'Aquifer-to-stream flow (m$^3$/s)'
+    p = sns.boxplot(data=df_wide, x=10, y='model_name_pretty', showmeans=True,
+          meanprops={"marker": "o", "markerfacecolor":"white", "markeredgecolor": "black", "markersize": "5"},ax=axes[1, 0],
+                    hue_order=model_names_pretty, order=model_names_pretty, flierprops=flierprops)
+    p.set(xlabel=None)
+    p.set_ylabel('Scenario')
+    p.set_title(plot_title, loc='left')
+
+    plot_title = 'd) Subbasin 17'
+    x_axis_label = 'Aquifer-to-stream flow (m$^3$/s)'
+    p = sns.boxplot(data=df_wide, x=17, y='model_name_pretty', showmeans=True,
+          meanprops={"marker": "o", "markerfacecolor":"white", "markeredgecolor": "black", "markersize": "5"},ax=axes[1, 1],
+                    hue_order=model_names_pretty, order=model_names_pretty, flierprops=flierprops)
+    p.set(xlabel=None)
+    p.set(ylabel=None)
+    p.set(yticklabels=[])
+    p.set_title(plot_title, loc='left')
+
+    plot_title = 'e) Subbasin 18'
+    x_axis_label = 'Aquifer-to-stream flow (m$^3$/s)'
+    p = sns.boxplot(data=df_wide, x=18, y='model_name_pretty', showmeans=True,
+          meanprops={"marker": "o", "markerfacecolor":"white", "markeredgecolor": "black", "markersize": "5"},ax=axes[2, 0],
+                    hue_order=model_names_pretty, order=model_names_pretty, flierprops=flierprops)
+    p.set_xlabel(x_axis_label)
+    p.set_ylabel('Scenario')
+    p.set_xlim(-5,0)
+    p.set_title(plot_title, loc='left')
+
+    plot_title = 'f) Subbasin 21'
+    x_axis_label = 'Aquifer-to-stream flow (m$^3$/s)'
+    p = sns.boxplot(data=df_wide, x=21, y='model_name_pretty', showmeans=True,
+          meanprops={"marker": "o", "markerfacecolor":"white", "markeredgecolor": "black", "markersize": "5"},ax=axes[2, 1],
+                    hue_order=model_names_pretty, order=model_names_pretty, flierprops=flierprops)
+    p.set_xlabel(x_axis_label)
+    p.set(ylabel=None)
+    p.set(yticklabels=[])
+    p.set_title(plot_title, loc='left')
+
+    # export
+    file_name = 'paper_subbasins_subset_seasonal_dry_var_gw_contribution_to_streamflow_sub18zoom.jpg'
+    file_path = os.path.join(results_ws, 'plots', 'compare_budgets', file_name)
+    plt.tight_layout()
+    plt.savefig(file_path, bbox_inches='tight')
+    plt.close('all')
+
+    # # calculate summary stats and percent change
+    # df = df
+    # groupby_cols = ['subbasin', 'model_name', 'model_name_pretty', 'agg_month_name', 'agg_month_name_pretty', 'variable']
+    # agg_cols = 'value'
+    # file_name_summary_stats = 'paper_subbasins_subset_seasonal_dry_var_gw_contribution_to_streamflow_summary_stats.csv'
+    # file_name_percent_change = 'paper_subbasins_subset_seasonal_dry_var_gw_contribution_to_streamflow_percent_change.csv'
+    # summary_stats, percent_change = calculate_summary_stats_and_percent_change_seasonal(df, groupby_cols, agg_cols, file_name_summary_stats, file_name_percent_change)
+
+
+
+
+
+
     # ---- Make paper figures: dry season gw contribution to streamflow percentage -------------------------------------------####
 
     # get variable of interest
@@ -1717,6 +1818,93 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     file_name_summary_stats = 'paper_subbasins_all_seasonal_dry_var_gw_contribution_to_streamflow_percent_summary_stats.csv'
     file_name_percent_change = 'paper_subbasins_all_seasonal_dry_var_gw_contribution_to_streamflow_percent_percent_change.csv'
     summary_stats, percent_change = calculate_summary_stats_and_percent_change_seasonal(df, groupby_cols, agg_cols, file_name_summary_stats, file_name_percent_change)
+
+
+
+
+    # ---- Compare models: cumulative storage change in six key subbasins -------------------------------------------####
+
+    # extract groundwater storage change
+    df = annual_budget_df[annual_budget_df['variable'] == 'STORAGE_CHANGE']
+
+    # multiply by -1 so that positive means groundwater storage is increasing and negative means groundwater storage is decreasing
+    df['value'] = df['value'] * -1
+
+    # calculate cumulative storage change
+    df = df.sort_values(by = ['model_name', 'subbasin', 'water_year'])
+    df['value_cumsum'] = df.groupby(['model_name', 'subbasin'])['value'].cumsum()
+
+    # loop through subbasins and plot cumulative storage change on four subplots
+    key_subbasins = [2,4,10,17,18,21]
+    for sub in key_subbasins:
+
+        # extract df for this subbasin
+        df_sub = df[df['subbasin'] == sub]
+
+        # plot annual on four subplots: difference values and percent difference in trillions of cubic meters
+        y_col_1 = "value_cumsum"
+        y_axis_label_1 = 'Cumulative storage change (m$^3$)'
+
+        # calculate min and max values
+        min_val_cumsum = np.min([df_sub['value_cumsum'].min()])
+        max_val_cumsum = np.max([df_sub['value_cumsum'].max()])
+        ymin_cumsum = min_val_cumsum - (min_val_cumsum * 0.05)
+        ymax_cumsum = max_val_cumsum + (max_val_cumsum * 0.05)
+
+        # create boxplot in each subplot
+        fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(8, 10))
+        fig.supylabel(y_axis_label_1)
+
+        # CanESM
+        custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+        sns.set_palette(custom_color_palette)
+        df_sub_1 = df_sub[df_sub['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CanESM2_rcp45', 'CanESM2_rcp85'])]
+        plot_title = 'a)'
+        p = sns.lineplot(data=df_sub_1, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[0], legend=False, palette=custom_color_palette)
+        p.set_title(plot_title, loc='left')
+        p.set(xlabel=None, xticklabels=[], ylabel=None)
+        p.set_ylim([ymin_cumsum, ymax_cumsum])
+
+        # CNRM-CM5
+        custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+        sns.set_palette(custom_color_palette)
+        df_sub_2 = df_sub[df_sub['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CNRM-CM5_rcp45', 'CNRM-CM5_rcp85'])]
+        plot_title = 'b)'
+        p = sns.lineplot(data=df_sub_2, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[1], legend=False, palette=custom_color_palette)
+        p.set_title(plot_title, loc='left')
+        p.set(xlabel=None, xticklabels=[], ylabel=None)
+        p.set_ylim([ymin_cumsum, ymax_cumsum])
+
+        # HADGEM
+        custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+        sns.set_palette(custom_color_palette)
+        df_sub_3 = df_sub[df_sub['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'HADGEM2-ES_rcp45', 'HADGEM2-ES_rcp85'])]
+        plot_title = 'c)'
+        p = sns.lineplot(data=df_sub_3, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[2], legend=False, palette=custom_color_palette)
+        p.set_title(plot_title, loc='left')
+        p.set(xlabel=None, xticklabels=[], ylabel=None)
+        p.set_ylim([ymin_cumsum, ymax_cumsum])
+
+        # MIROC
+        custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+        sns.set_palette(custom_color_palette)
+        df_sub_4 = df_sub[df_sub['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'MIROC5_rcp45', 'MIROC5_rcp85'])]
+        plot_title = 'd)'
+        p = sns.lineplot(data=df_sub_4, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[3], palette=custom_color_palette)
+        p.set_title(plot_title, loc='left')
+        p.set(xlabel='Water year', ylabel=None)
+        p.set_ylim([ymin_cumsum, ymax_cumsum])
+        p.legend(title='Scenario', loc='upper center', bbox_to_anchor=(0.5, -0.4), ncol=3)
+
+        # export
+        file_name = 'paper_annual_time_trend_subbasin_storage_change_sub_' + str(sub) + '.jpg'
+        file_path = os.path.join(results_ws, 'plots', 'compare_budgets', file_name)
+        plt.tight_layout()
+        plt.savefig(file_path, bbox_inches='tight')
+        plt.close('all')
+
+
+
 
 
 

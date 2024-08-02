@@ -214,30 +214,36 @@ model_names_hist_cc_rcp85 = [
 
 # ---- Run plotting scripts -------------------------------------------####
 
+# USED FOR PAPER
 print('compare budgets: watershed')
 compare_budgets_watershed.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc)
 
+# USED FOR PAPER
 print('compare budgets: subbasin')
 compare_budgets_subbasin.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc)
 
 # print('compare gaining and losing streams')
 # compare_gaining_losing_streams.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty)
 
+# USED FOR PAPER
 print('compare functional flow metrics at gauges')
 compare_functional_flow_metrics_at_gauges.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc)
 
+# USED FOR PAPER
 print('compare reservoirs')
 compare_reservoirs.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc, model_names_hist_cc_rcp45, model_names_hist_cc_rcp85)
 
 # print('compare low flow relationships')
 # compare_low_flow_relationships.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc)
 
+# USED FOR PAPER
 print('compare climate indices')
 compare_climate_indices.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc)
 
 # print('compare streamflows')
 # compare_streamflows.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc)
 
+# USED FOR PAPER
 print('compare Potter Valley inflows')
 compare_potter_valley_inflows.main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, model_names_pretty, model_names_cc)
 

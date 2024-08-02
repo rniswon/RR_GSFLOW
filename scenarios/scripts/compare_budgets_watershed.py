@@ -638,7 +638,8 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     num_days_on = 61
     months = [1,2,3,4,5,6,7,8,9,10,11,12]  # jan-dec
     num_days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]  # jan-dec
-
+    m2_per_km2 = 1000000
+    mm_per_m = 1000
 
     # set subbasin area table
     subbasin_areas_file = os.path.join(script_ws, 'script_inputs', "subbasin_areas.txt")
@@ -1031,6 +1032,39 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
 
 
 
+    # ---- Calculate wet, average, and dry years based on precip quantiles -------------------------------------------####
+
+    # get precip for climate change scenarios (since the climate change scenarios have the historical period precip in their time series
+    precip_df = gsflow_out_annual_df[(gsflow_out_annual_df['variable'] == 'Precip_Q') & (~gsflow_out_annual_df['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim']))]
+
+    # get watershed area
+    subbasin_areas = pd.read_csv(subbasin_areas_file)
+    subbasin_areas['subbasin'] = subbasin_areas['subbasin'].astype(int)
+    subbasin_areas['area_m2'] = subbasin_areas['area_km_sq'] * m2_per_km2
+    watershed_area_m2 = subbasin_areas['area_m2'].sum()
+
+    # convert precip to mm
+    precip_df['value'] = precip_df['value'] * cubic_meters_per_acreft * (1/watershed_area_m2) * mm_per_m
+
+    # calculate dry year cutoff: 25th percentile
+    precip_df['dry_year_cutoff'] = precip_df['value'].quantile(.25)
+
+    # calculate wet year cutoff: 75th percentile
+    precip_df['wet_year_cutoff'] = precip_df['value'].quantile(.75)
+
+    # assign year type
+    precip_df['year_type'] = 'average'
+    mask_dry = precip_df['value'] < precip_df['dry_year_cutoff']
+    precip_df.loc[mask_dry, 'year_type'] = 'dry'
+    mask_wet = precip_df['value'] > precip_df['wet_year_cutoff']
+    precip_df.loc[mask_wet, 'year_type'] = 'wet'
+
+
+
+
+
+
+
 
     # ---- Compare models: annual time series, entire watershed -------------------------------------------####
 
@@ -1231,7 +1265,7 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     agg_cols = 'value'
     sat_s_annual_mean = sat_s.groupby(groupby_cols)[agg_cols].mean().reset_index()
 
-    # get historical minimum: annual
+    # get historical minimum: daily and annual
     sat_s_hist_base_mod = sat_s[sat_s['model_name'] == 'hist_baseline_modsim']
     hist_min_daily = sat_s_hist_base_mod['value'].min()
     sat_s_annual_mean_hist_base_mod = sat_s_annual_mean[sat_s_annual_mean['model_name'] == 'hist_baseline_modsim']
@@ -1244,6 +1278,16 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     # calculate percent departure from historical minimum: annual
     sat_s['diff_percent'] = (sat_s['diff'] / hist_min_daily) * 100
     sat_s_annual_mean['diff_percent'] = (sat_s_annual_mean['diff'] / hist_min_annual) * 100
+
+    # calculate cumulative sums of differences
+    sat_s['cumsum_diff'] = sat_s.groupby(['model_name'])['diff'].cumsum()
+    sat_s_annual_mean['cumsum_diff'] = sat_s_annual_mean.groupby(['model_name'])['diff'].cumsum()
+
+    # calculate percent departure from historical minimum: annual
+    sat_s['cumsum_diff_percent'] = (sat_s['cumsum_diff'] / hist_min_annual) * 100
+    sat_s_annual_mean['cumsum_diff_percent'] = (sat_s_annual_mean['cumsum_diff'] / hist_min_annual) * 100
+
+    ##---
 
     # plot daily: values
     df = sat_s.copy()
@@ -1293,7 +1337,6 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     file_name = 'annual_time_trend_entire_watershed_Sat_S_diff_percent.jpg'
     plot_sat_s_annual(df, y_col, plot_title, y_axis_label, file_name, model_names, model_names_pretty)
 
-
     # plot annual: difference values and percent difference
     df = sat_s_annual_mean.copy()
     y_col_1 = "diff"
@@ -1315,6 +1358,9 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     y_axis_label_2 = 'Percent departure from historical minimum (%)'
     file_name = 'annual_time_trend_entire_watershed_Sat_S_diff_and_diff_percent_Tm3.jpg'
     plot_sat_s_annual_doubleyaxis(df, y_col_1, y_col_2, plot_title, y_axis_label_1, y_axis_label_2, file_name, model_names, model_names_pretty)
+
+
+    ##----
 
 
     # plot annual on four subplots: difference values and percent difference in trillions of cubic meters
@@ -1416,6 +1462,434 @@ def main(script_ws, scenarios_ws, results_ws, model_folders_list, model_names, m
     plt.savefig(file_path, bbox_inches='tight')
     plt.close('all')
 
+
+
+    ##----
+
+    # plot annual on four subplots: cumulative difference values and (cumulative?) percent difference in trillions of cubic meters
+
+    # create working copy for plotting
+    df = sat_s_annual_mean.copy()
+
+    # convert units to trillions of cubic meters
+    df['value'] = df['value'] * cubic_meters_per_acreft * (1 / 1e12)
+    df['diff'] = df['diff'] * cubic_meters_per_acreft * (1 / 1e12)
+    df['cumsum_diff'] = df['cumsum_diff'] * cubic_meters_per_acreft * (1 / 1e12)
+
+    # prep for plotting
+    y_col_1 = "cumsum_diff"
+    y_col_2 = "cumsum_diff_percent"
+    plot_title = 'Saturated storage: water year mean'
+    y_axis_label_1 = 'Cumulative departure from historical minimum (T m$^3$)'
+    y_axis_label_2 = 'Percent cumulative departure from historical minimum (%)' + '\n' + '\n' + '\n' + '\n' + '\n'
+
+    # calculate min and max values: diff
+    min_val_diff = np.min([df['cumsum_diff'].min()])
+    max_val_diff = np.max([df['cumsum_diff'].max()])
+    ymin_diff = min_val_diff - (min_val_diff * 0.05)
+    ymax_diff = max_val_diff + (max_val_diff * 0.05)
+
+    # calculate min and max values: diff percent
+    min_val_diff_percent = np.min([df['cumsum_diff_percent'].min()])
+    max_val_diff_percent = np.max([df['cumsum_diff_percent'].max()])
+    ymin_diff_percent = min_val_diff_percent - (min_val_diff_percent * 0.05)
+    ymax_diff_percent = max_val_diff_percent + (max_val_diff_percent * 0.05)
+
+    # create boxplot in each subplot
+    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(8, 10))
+    # plt.rcParams["axes.labelsize"] = 12
+    # plt.rcParams["axes.titlesize"] = 12
+    fig.supylabel(y_axis_label_1)
+    fig.text(x=0.97, y=0.5, s=y_axis_label_2, size=12, rotation=270,
+             ha='center', va='center')
+
+    # CanESM
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_1 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CanESM2_rcp45', 'CanESM2_rcp85'])]
+    plot_title = 'a)'
+    p = sns.lineplot(data=df_1, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[0], legend=False, palette=custom_color_palette)
+    ax2 = p.twinx()
+    sns.lineplot(data=df_1, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+                 hue_order=model_names_pretty, palette=custom_color_palette)
+    ax2.set_ylabel(ylabel=None)
+    ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel=None, xticklabels=[], ylabel=None)
+    p.set_ylim([ymin_diff, ymax_diff])
+
+    # CNRM-CM5
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_2 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CNRM-CM5_rcp45', 'CNRM-CM5_rcp85'])]
+    plot_title = 'b)'
+    p = sns.lineplot(data=df_2, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[1], legend=False, palette=custom_color_palette)
+    ax2 = p.twinx()
+    sns.lineplot(data=df_2, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+                 hue_order=model_names_pretty, palette=custom_color_palette)
+    ax2.set_ylabel(ylabel=None)
+    ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel=None, xticklabels=[], ylabel=None)
+    p.set_ylim([ymin_diff, ymax_diff])
+
+    # HADGEM
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_3 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'HADGEM2-ES_rcp45', 'HADGEM2-ES_rcp85'])]
+    plot_title = 'c)'
+    p = sns.lineplot(data=df_3, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[2], legend=False, palette=custom_color_palette)
+    ax2 = p.twinx()
+    sns.lineplot(data=df_3, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+                 hue_order=model_names_pretty, palette=custom_color_palette)
+    ax2.set_ylabel(ylabel=None)
+    ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel=None, xticklabels=[], ylabel=None)
+    p.set_ylim([ymin_diff, ymax_diff])
+
+    # MIROC
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_4 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'MIROC5_rcp45', 'MIROC5_rcp85'])]
+    plot_title = 'd)'
+    p = sns.lineplot(data=df_4, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[3], palette=custom_color_palette)
+    ax2 = p.twinx()
+    sns.lineplot(data=df_4, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+                 hue_order=model_names_pretty, palette=custom_color_palette)
+    ax2.set_ylabel(ylabel=None)
+    ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel='Water year', ylabel=None)
+    p.set_ylim([ymin_diff, ymax_diff])
+    p.legend(title='Scenario', loc='upper center', bbox_to_anchor=(0.5, -0.4), ncol=3)
+
+    # export
+    file_name = 'paper_annual_time_trend_entire_watershed_Sat_S_diff_and_diff_percent_Tm3_subplots_cumulative.jpg'
+    file_path = os.path.join(results_ws, 'plots', 'compare_budgets', file_name)
+    plt.tight_layout()
+    plt.savefig(file_path, bbox_inches='tight')
+    plt.close('all')
+
+
+    ##------
+
+    # # plot annual on four subplots: difference values and percent difference in trillions of cubic meters; with water year type
+    #
+    # # prep for plotting
+    # df = sat_s_annual_mean.copy()
+    # df['value'] = df['value'] * cubic_meters_per_acreft * (1 / 1e12)
+    # df['diff'] = df['diff'] * cubic_meters_per_acreft * (1 / 1e12)
+    # y_col_1 = "diff"
+    # y_col_2 = "diff_percent"
+    # plot_title = 'Saturated storage: water year mean'
+    # y_axis_label_1 = 'Departure from historical minimum (T m$^3$)'
+    # y_axis_label_2 = 'Percent departure from historical minimum (%)' + '\n' + '\n' + '\n' + '\n' + '\n'
+    #
+    # # calculate min and max values: diff
+    # min_val_diff = np.min([df['diff'].min()])
+    # max_val_diff = np.max([df['diff'].max()])
+    # ymin_diff = min_val_diff - (min_val_diff * 0.05)
+    # ymax_diff = max_val_diff + (max_val_diff * 0.05)
+    #
+    # # calculate min and max values: diff percent
+    # min_val_diff_percent = np.min([df['diff_percent'].min()])
+    # max_val_diff_percent = np.max([df['diff_percent'].max()])
+    # ymin_diff_percent = min_val_diff_percent - (min_val_diff_percent * 0.05)
+    # ymax_diff_percent = max_val_diff_percent + (max_val_diff_percent * 0.05)
+    #
+    # # create boxplot in each subplot
+    # fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(8, 10))
+    # # plt.rcParams["axes.labelsize"] = 12
+    # # plt.rcParams["axes.titlesize"] = 12
+    # fig.supylabel(y_axis_label_1)
+    # fig.text(x=0.97, y=0.5, s=y_axis_label_2, size=12, rotation=270,
+    #          ha='center', va='center')
+    #
+    # # CanESM
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+    #                         '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_1 = df[df['model_name'].isin(
+    #     ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CanESM2_rcp45', 'CanESM2_rcp85'])]
+    # plot_title = 'a)'
+    # p = sns.lineplot(data=df_1, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+    #                  ax=axes[0], legend=False, palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_1, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel=None, xticklabels=[], ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    #
+    # # CNRM-CM5
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+    #                         '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_2 = df[df['model_name'].isin(
+    #     ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CNRM-CM5_rcp45', 'CNRM-CM5_rcp85'])]
+    # plot_title = 'b)'
+    # p = sns.lineplot(data=df_2, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+    #                  ax=axes[1], legend=False, palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_2, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel=None, xticklabels=[], ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    #
+    # # HADGEM
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+    #                         '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_3 = df[df['model_name'].isin(
+    #     ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'HADGEM2-ES_rcp45', 'HADGEM2-ES_rcp85'])]
+    # plot_title = 'c)'
+    # p = sns.lineplot(data=df_3, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+    #                  ax=axes[2], legend=False, palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_3, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel=None, xticklabels=[], ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    #
+    # # MIROC
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+    #                         '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_4 = df[df['model_name'].isin(
+    #     ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'MIROC5_rcp45', 'MIROC5_rcp85'])]
+    # plot_title = 'd)'
+    # p = sns.lineplot(data=df_4, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+    #                  ax=axes[3], palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_4, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel='Water year', ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    # p.legend(title='Scenario', loc='upper center', bbox_to_anchor=(0.5, -0.4), ncol=3)
+    #
+    # # export
+    # file_name = 'paper_annual_time_trend_entire_watershed_Sat_S_diff_and_diff_percent_Tm3_subplots_with_water_year_type.jpg'
+    # file_path = os.path.join(results_ws, 'plots', 'compare_budgets', file_name)
+    # plt.tight_layout()
+    # plt.savefig(file_path, bbox_inches='tight')
+    # plt.close('all')
+
+
+
+
+    ##----
+
+    # plot annual on four subplots: cumulative storage change values in cubic meters
+
+    # extract groundwater storage change
+    df = annual_budget_df[annual_budget_df['variable'] == 'STORAGE_CHANGE']
+
+    # multiply by -1 so that positive means groundwater storage is increasing and negative means groundwater storage is decreasing
+    df['value'] = df['value'] * -1
+
+    # calculate cumulative storage change
+    df = df.sort_values(by = ['model_name', 'water_year'])
+    df['value_cumsum'] = df.groupby(['model_name', 'subbasin'])['value'].cumsum()
+
+    # plot annual on four subplots
+    y_col_1 = "value_cumsum"
+    y_axis_label_1 = 'Cumulative storage change (m$^3$)'
+
+    # calculate min and max values
+    min_val_cumsum = np.min([df['value_cumsum'].min()])
+    max_val_cumsum = np.max([df['value_cumsum'].max()])
+    ymin_cumsum = min_val_cumsum - (min_val_cumsum * 0.05)
+    ymax_cumsum = max_val_cumsum + (max_val_cumsum * 0.05)
+
+    # create boxplot in each subplot
+    fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(8, 10))
+    fig.supylabel(y_axis_label_1)
+
+    # CanESM
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_sub_1 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CanESM2_rcp45', 'CanESM2_rcp85'])]
+    plot_title = 'a)'
+    p = sns.lineplot(data=df_sub_1, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[0], legend=False, palette=custom_color_palette)
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel=None, xticklabels=[], ylabel=None)
+    p.set_ylim([ymin_cumsum, ymax_cumsum])
+
+    # CNRM-CM5
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_sub_2 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CNRM-CM5_rcp45', 'CNRM-CM5_rcp85'])]
+    plot_title = 'b)'
+    p = sns.lineplot(data=df_sub_2, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[1], legend=False, palette=custom_color_palette)
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel=None, xticklabels=[], ylabel=None)
+    p.set_ylim([ymin_cumsum, ymax_cumsum])
+
+    # HADGEM
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_sub_3 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'HADGEM2-ES_rcp45', 'HADGEM2-ES_rcp85'])]
+    plot_title = 'c)'
+    p = sns.lineplot(data=df_sub_3, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[2], legend=False, palette=custom_color_palette)
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel=None, xticklabels=[], ylabel=None)
+    p.set_ylim([ymin_cumsum, ymax_cumsum])
+
+    # MIROC
+    custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728',
+                            '#FF9896', '#9467BD', '#C5B0D5']
+    sns.set_palette(custom_color_palette)
+    df_sub_4 = df[df['model_name'].isin(
+        ['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'MIROC5_rcp45', 'MIROC5_rcp85'])]
+    plot_title = 'd)'
+    p = sns.lineplot(data=df_sub_4, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty,
+                     ax=axes[3], palette=custom_color_palette)
+    p.set_title(plot_title, loc='left')
+    p.set(xlabel='Water year', ylabel=None)
+    p.set_ylim([ymin_cumsum, ymax_cumsum])
+    p.legend(title='Scenario', loc='upper center', bbox_to_anchor=(0.5, -0.4), ncol=3)
+
+    # export
+    file_name = 'paper_annual_time_trend_watershed_storage_change.jpg'
+    file_path = os.path.join(results_ws, 'plots', 'compare_budgets', file_name)
+    plt.tight_layout()
+    plt.savefig(file_path, bbox_inches='tight')
+    plt.close('all')
+
+    # df = sat_s_annual_mean.copy()
+    # df['value'] = df['value'] * cubic_meters_per_acreft * (1/1e12)
+    # df['diff'] = df['diff'] * cubic_meters_per_acreft * (1/1e12)
+    # y_col_1 = "diff"
+    # y_col_2 = "diff_percent"
+    # plot_title = 'Saturated storage: water year mean'
+    # y_axis_label_1 = 'Departure from historical minimum (T m$^3$)'
+    # y_axis_label_2 = 'Percent departure from historical minimum (%)' + '\n' + '\n' + '\n' + '\n' + '\n'
+    #
+    # # calculate min and max values: diff
+    # min_val_diff = np.min([df['diff'].min()])
+    # max_val_diff = np.max([df['diff'].max()])
+    # ymin_diff = min_val_diff - (min_val_diff * 0.05)
+    # ymax_diff = max_val_diff + (max_val_diff * 0.05)
+    #
+    # # calculate min and max values: diff percent
+    # min_val_diff_percent = np.min([df['diff_percent'].min()])
+    # max_val_diff_percent = np.max([df['diff_percent'].max()])
+    # ymin_diff_percent = min_val_diff_percent - (min_val_diff_percent * 0.05)
+    # ymax_diff_percent = max_val_diff_percent + (max_val_diff_percent * 0.05)
+    #
+    # # create boxplot in each subplot
+    # fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(8, 10))
+    # # plt.rcParams["axes.labelsize"] = 12
+    # # plt.rcParams["axes.titlesize"] = 12
+    # fig.supylabel(y_axis_label_1)
+    # fig.text(x=0.97, y=0.5, s=y_axis_label_2, size=12, rotation=270,
+    #          ha='center', va='center')
+    #
+    # # CanESM
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_1 = df[df['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CanESM2_rcp45', 'CanESM2_rcp85'])]
+    # plot_title = 'a)'
+    # p = sns.lineplot(data=df_1, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[0], legend=False, palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_1, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel=None, xticklabels=[], ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    #
+    # # CNRM-CM5
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_2 = df[df['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'CNRM-CM5_rcp45', 'CNRM-CM5_rcp85'])]
+    # plot_title = 'b)'
+    # p = sns.lineplot(data=df_2, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[1], legend=False, palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_2, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel=None, xticklabels=[], ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    #
+    # # HADGEM
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_3 = df[df['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'HADGEM2-ES_rcp45', 'HADGEM2-ES_rcp85'])]
+    # plot_title = 'c)'
+    # p = sns.lineplot(data=df_3, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[2], legend=False, palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_3, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel=None, xticklabels=[], ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    #
+    # # MIROC
+    # custom_color_palette = ['#7F7F7F', '#1F77B4', '#AEC7E8', '#FF7F0E', '#FFBB78', '#2CA02C', '#98DF8A', '#D62728', '#FF9896', '#9467BD', '#C5B0D5']
+    # sns.set_palette(custom_color_palette)
+    # df_4 = df[df['model_name'].isin(['hist_baseline_modsim', 'hist_pv1_modsim', 'hist_pv2_modsim', 'MIROC5_rcp45', 'MIROC5_rcp85'])]
+    # plot_title = 'd)'
+    # p = sns.lineplot(data=df_4, x="water_year", y=y_col_1, hue="model_name_pretty", hue_order=model_names_pretty, ax=axes[3], palette=custom_color_palette)
+    # ax2 = p.twinx()
+    # sns.lineplot(data=df_4, x="water_year", y=y_col_2, hue="model_name_pretty", ax=ax2, legend=False,
+    #              hue_order=model_names_pretty, palette=custom_color_palette)
+    # ax2.set_ylabel(ylabel=None)
+    # ax2.set_ylim([ymin_diff_percent, ymax_diff_percent])
+    # p.set_title(plot_title, loc='left')
+    # p.set(xlabel='Water year', ylabel=None)
+    # p.set_ylim([ymin_diff, ymax_diff])
+    # p.legend(title='Scenario', loc='upper center', bbox_to_anchor=(0.5, -0.4), ncol=3)
+    #
+    #
+    # # export
+    # file_name = 'paper_annual_time_trend_entire_watershed_storage_change_m3_subplots.jpg'
+    # file_path = os.path.join(results_ws, 'plots', 'compare_budgets', file_name)
+    # plt.tight_layout()
+    # plt.savefig(file_path, bbox_inches='tight')
+    # plt.close('all')
+
+
+
+    ##-----------------
 
 
 
