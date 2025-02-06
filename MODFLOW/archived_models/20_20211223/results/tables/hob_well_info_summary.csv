@@ -1,0 +1,45 @@
+variable,summary_category,count,mean,median,std,min,max
+num_well,upland,31,,,,,
+num_well,"valley, |residual| <= 5 m",79,,,,,
+num_well,"valley, |residual| = 5-10 m",33,,,,,
+num_well,"valley, |residual| > 10 m",28,,,,,
+num_obs,upland,,6,2,7,1,22
+num_obs,"valley, |residual| <= 5 m",,137,9,475,1,2367
+num_obs,"valley, |residual| = 5-10 m",,96,7,342,1,1763
+num_obs,"valley, |residual| > 10 m",,80,3,389,1,2065
+elev_land_obs_m,upland,,243,249,109,19,571
+elev_land_obs_m,"valley, |residual| <= 5 m",,148,176,84,19,292
+elev_land_obs_m,"valley, |residual| = 5-10 m",,134,149,87,6,284
+elev_land_obs_m,"valley, |residual| > 10 m",,202,234,92,14,329
+elev_land_model_m,upland,,232,245,103,19,553
+elev_land_model_m,"valley, |residual| <= 5 m",,148,176,84,17,291
+elev_land_model_m,"valley, |residual| = 5-10 m",,132,146,87,0,278
+elev_land_model_m,"valley, |residual| > 10 m",,189,220,90,2,318
+diff_elev_land_model_obs_m,upland,,14,8,16,0,56
+diff_elev_land_model_obs_m,"valley, |residual| <= 5 m",,2,2,2,0,8
+diff_elev_land_model_obs_m,"valley, |residual| = 5-10 m",,4,3,3,0,11
+diff_elev_land_model_obs_m,"valley, |residual| > 10 m",,14,14,11,0,37
+elev_well_screen_top_m,upland,,239,230,123,15,544
+elev_well_screen_top_m,"valley, |residual| <= 5 m",,115,135,73,2,273
+elev_well_screen_top_m,"valley, |residual| = 5-10 m",,106,128,101,-62,234
+elev_well_screen_top_m,"valley, |residual| > 10 m",,171,187,110,-31,311
+elev_well_screen_bottom_m,upland,,194,211,102,-16,501
+elev_well_screen_bottom_m,"valley, |residual| <= 5 m",,119,141,90,-41,280
+elev_well_screen_bottom_m,"valley, |residual| = 5-10 m",,94,123,93,-94,228
+elev_well_screen_bottom_m,"valley, |residual| > 10 m",,146,175,94,-40,305
+depth_to_water_m,upland,,17,14,15,0,52
+depth_to_water_m,"valley, |residual| <= 5 m",,6,5,5,0,43
+depth_to_water_m,"valley, |residual| = 5-10 m",,9,8,6,2,36
+depth_to_water_m,"valley, |residual| > 10 m",,24,20,18,1,90
+sim_mean,upland,,219,239,103,21,550
+sim_mean,"valley, |residual| <= 5 m",,142,169,85,8,291
+sim_mean,"valley, |residual| = 5-10 m",,127,145,87,1,272
+sim_mean,"valley, |residual| > 10 m",,180,215,91,3,297
+obs_mean,upland,,214,230,104,13,535
+obs_mean,"valley, |residual| <= 5 m",,141,166,85,4,291
+obs_mean,"valley, |residual| = 5-10 m",,124,140,86,-5,266
+obs_mean,"valley, |residual| > 10 m",,165,195,92,-11,312
+mae,upland,,13,7,13,0,46
+mae,"valley, |residual| <= 5 m",,2,2,1,0,5
+mae,"valley, |residual| = 5-10 m",,7,6,1,5,10
+mae,"valley, |residual| > 10 m",,20,16,11,10,62

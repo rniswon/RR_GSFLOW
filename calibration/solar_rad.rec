@@ -1,0 +1,447 @@
+
+                     PEST RUN RECORD: CASE solar_rad
+
+
+PEST Version: 14.01
+
+
+PEST run mode:-
+
+   Parameter estimation mode
+
+
+Case dimensions:-
+
+   Number of parameters                           :    24
+   Number of adjustable parameters                :    24
+   Number of parameter groups                     :     1
+   Number of observations                         :    24
+   Number of prior estimates                      :     0
+
+
+Model command line(s):-
+
+   runmodel.bat
+
+
+Jacobian command line:-
+
+   na
+
+
+Model interface files:-
+
+   Templates:
+      solar_rad.tpl
+   for model input files:
+      input_solar.dat
+
+   (Parameter values written using single precision protocol.)
+   (Decimal point always included.)
+
+   Instruction files:
+      solar_rad.ins
+   for reading model output files:
+      output_solar.dat
+
+
+PEST-to-model message file:-
+
+   na
+
+
+Derivatives calculation:-
+
+Param        Increment   Increment   Increment   Forward or   Multiplier  Method
+group        type                    low bound   central      (central)   (central)
+k            relative    1.0000E-02   none         switch       2.000     parabolic
+
+
+Parameter definitions:-
+
+Name         Trans-            Change       Initial        Lower          Upper
+             formation         limit        value          bound          bound
+dinctp_1     none              factor     -2.36000       -60.0000        4.00000    
+dinctp_2     none              factor     -2.51000       -60.0000        4.00000    
+dinctp_3     none              factor     -1.86600       -60.0000        4.00000    
+dinctp_4     none              factor     -1.04309       -60.0000        4.00000    
+dinctp_5     none              factor     1.000000E-02   -60.0000        4.00000    
+dinctp_6     none              factor     -2.02000       -60.0000        4.00000    
+dinctp_7     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_8     none              factor     -1.96000       -60.0000        4.00000    
+dinctp_9     none              factor     -2.27000       -60.0000        4.00000    
+dinctp_10    none              factor     -2.66000       -60.0000        4.00000    
+dinctp_11    none              factor     -2.92000       -60.0000        4.00000    
+dinctp_12    none              factor     -2.00000       -60.0000        4.00000    
+dslope_1     none              factor     0.220000       0.200000       0.700000    
+dslope_2     none              factor     0.300000       0.200000       0.700000    
+dslope_3     none              factor     0.200000       0.200000       0.700000    
+dslope_4     none              factor     0.310000       0.200000       0.700000    
+dslope_5     none              factor     0.270000       0.200000       0.700000    
+dslope_6     none              factor     0.490000       0.200000       0.700000    
+dslope_7     none              factor     0.390000       0.200000       0.700000    
+dslope_8     none              factor     0.600000       0.200000       0.700000    
+dslope_9     none              factor     0.470000       0.200000       0.700000    
+dslope_10    none              factor     0.500000       0.200000       0.700000    
+dslope_11    none              factor     0.500000       0.200000       0.700000    
+dslope_12    none              factor     0.300000       0.200000       0.700000    
+
+Name         Group          Scale         Offset        Model command number
+dinctp_1     k             1.00000        0.00000            1
+dinctp_2     k             1.00000        0.00000            1
+dinctp_3     k             1.00000        0.00000            1
+dinctp_4     k             1.00000        0.00000            1
+dinctp_5     k             1.00000        0.00000            1
+dinctp_6     k             1.00000        0.00000            1
+dinctp_7     k             1.00000        0.00000            1
+dinctp_8     k             1.00000        0.00000            1
+dinctp_9     k             1.00000        0.00000            1
+dinctp_10    k             1.00000        0.00000            1
+dinctp_11    k             1.00000        0.00000            1
+dinctp_12    k             1.00000        0.00000            1
+dslope_1     k             1.00000        0.00000            1
+dslope_2     k             1.00000        0.00000            1
+dslope_3     k             1.00000        0.00000            1
+dslope_4     k             1.00000        0.00000            1
+dslope_5     k             1.00000        0.00000            1
+dslope_6     k             1.00000        0.00000            1
+dslope_7     k             1.00000        0.00000            1
+dslope_8     k             1.00000        0.00000            1
+dslope_9     k             1.00000        0.00000            1
+dslope_10    k             1.00000        0.00000            1
+dslope_11    k             1.00000        0.00000            1
+dslope_12    k             1.00000        0.00000            1
+
+
+Prior information:-
+
+   No prior information supplied
+
+
+Observations:-
+
+Observation name        Observation       Weight       Group
+ hopland_0               199.280          1.000       head        
+ hopland_1               270.330          1.000       head        
+ hopland_2               379.960          1.000       head        
+ hopland_3               531.840          1.000       head        
+ hopland_4               651.690          1.000       head        
+ hopland_5               718.910          1.000       head        
+ hopland_6               735.750          1.000       head        
+ hopland_7               672.790          1.000       head        
+ hopland_8               529.050          1.000       head        
+ hopland_9               371.900          1.000       head        
+ hopland_10              237.080          1.000       head        
+ hopland_11              166.640          1.000       head        
+ hawkeye_0               185.070          1.000       head        
+ hawkeye_1               245.590          1.000       head        
+ hawkeye_2               317.330          1.000       head        
+ hawkeye_3               424.770          1.000       head        
+ hawkeye_4               505.900          1.000       head        
+ hawkeye_5               544.590          1.000       head        
+ hawkeye_6               600.190          1.000       head        
+ hawkeye_7               558.130          1.000       head        
+ hawkeye_8               455.200          1.000       head        
+ hawkeye_9               323.070          1.000       head        
+ hawkeye_10              242.890          1.000       head        
+ hawkeye_11              170.860          1.000       head        
+
+
+Control settings:-
+
+   Initial lambda                                               :  10.000    
+   Lambda adjustment factor                                     : iteration-dependent
+   Value of variable governing adjustment                       : -3.0000    
+   Sufficient new/old phi ratio per optimisation iteration      : 0.30000    
+   Limiting relative phi reduction between lambdas              : 3.00000E-02
+   Maximum trial lambdas per iteration                          :  10
+   Forgive model run failure during lamda testing               : no
+   Forgive model run failure during Jacobian runs               : no
+
+   Perform Broyden's update of Jacobian matrix                  : no
+   Undertake observation re-referencing                         : no
+
+   Maximum  factor  parameter change (factor-limited changes)   :  10.000
+   Maximum relative parameter change (relative-limited changes) : na
+   Fraction of initial parameter values used in computing
+   change limit for near-zero parameters                        : 1.00000E-03
+   Allow bending of parameter upgrade vector                    : no
+   Allow parameters to stick to their bounds                    : no
+
+   Relative phi reduction below which to begin use of
+   central derivatives                                          : 0.10000             
+   Iteration at which to first consider derivatives switch      :   1
+
+   Relative phi reduction indicating convergence                : 0.50000E-02
+   Number of phi values required within this range              :   3
+   Maximum number of consecutive failures to lower phi          :   3
+   Minimal relative parameter change indicating convergence     : 0.50000E-02
+   Number of consecutive iterations with minimal param change   :   3
+   Maximum number of optimisation iterations                    :   3
+
+   Attempt automatic user intervention                          : no
+
+   Attempt reuse of parameter sensitivities                     : no
+
+   Scale parameters by their bounds                             : no
+
+
+File saving options: -
+
+   Save best JCO file                                           : yes
+   Save multiple JCO files                                      : no
+   Save multiple REI files                                      : no
+   Save multiple PAR files                                      : no
+
+
+                            OPTIMISATION RECORD
+
+
+INITIAL CONDITIONS: 
+   Sum of squared weighted residuals (ie phi) =  1.43649E+05
+
+      Current parameter values
+      dinctp_1        -2.36000    
+      dinctp_2        -2.51000    
+      dinctp_3        -1.86600    
+      dinctp_4        -1.04309    
+      dinctp_5        1.000000E-02
+      dinctp_6        -2.02000    
+      dinctp_7        -2.00000    
+      dinctp_8        -1.96000    
+      dinctp_9        -2.27000    
+      dinctp_10       -2.66000    
+      dinctp_11       -2.92000    
+      dinctp_12       -2.00000    
+      dslope_1        0.220000    
+      dslope_2        0.300000    
+      dslope_3        0.200000    
+      dslope_4        0.310000    
+      dslope_5        0.270000    
+      dslope_6        0.490000    
+      dslope_7        0.390000    
+      dslope_8        0.600000    
+      dslope_9        0.470000    
+      dslope_10       0.500000    
+      dslope_11       0.500000    
+      dslope_12       0.300000    
+
+
+OPTIMISATION ITERATION NO.        : 1
+   Model calls so far             : 1
+   Starting phi for this iteration:  1.43649E+05
+
+       Lambda =   10.000     ----->
+          Phi =  1.31952E+05  (  0.919 of starting phi)
+
+       Lambda =   4.6416     ----->
+          Phi =  1.37090E+05  (  0.954 of starting phi)
+
+       Lambda =   21.544     ----->
+          Phi =  1.23686E+05  (  0.861 of starting phi)
+
+       Lambda =   46.416     ----->
+          Phi =  1.12237E+05  (  0.781 of starting phi)
+
+       Lambda =   100.00     ----->
+          Phi =  1.07152E+05  (  0.746 of starting phi)
+
+       Lambda =   215.44     ----->
+          Phi =  1.11709E+05  (  0.778 of starting phi)
+
+   No more lambdas: phi rising
+   Lowest phi this iteration:  1.07152E+05
+
+      Current parameter values                 Previous parameter values
+      dinctp_1        -2.25424                 dinctp_1         -2.36000    
+      dinctp_2        -1.87054                 dinctp_2         -2.51000    
+      dinctp_3        -1.87021                 dinctp_3         -1.86600    
+      dinctp_4       -0.884470                 dinctp_4         -1.04309    
+      dinctp_5        1.000000E-03             dinctp_5         1.000000E-02
+      dinctp_6        -2.10456                 dinctp_6         -2.02000    
+      dinctp_7        -2.01145                 dinctp_7         -2.00000    
+      dinctp_8        -1.95740                 dinctp_8         -1.96000    
+      dinctp_9        -2.27353                 dinctp_9         -2.27000    
+      dinctp_10       -2.46326                 dinctp_10        -2.66000    
+      dinctp_11       -2.93455                 dinctp_11        -2.92000    
+      dinctp_12       -1.99677                 dinctp_12        -2.00000    
+      dslope_1        0.244227                 dslope_1         0.220000    
+      dslope_2        0.261356                 dslope_2         0.300000    
+      dslope_3        0.207108                 dslope_3         0.200000    
+      dslope_4        0.285203                 dslope_4         0.310000    
+      dslope_5        0.200000                 dslope_5         0.270000    
+      dslope_6        0.324889                 dslope_6         0.490000    
+      dslope_7        0.384086                 dslope_7         0.390000    
+      dslope_8        0.673773                 dslope_8         0.600000    
+      dslope_9        0.578562                 dslope_9         0.470000    
+      dslope_10       0.610159                 dslope_10        0.500000    
+      dslope_11       0.366415                 dslope_11        0.500000    
+      dslope_12       0.285395                 dslope_12        0.300000    
+   Maximum   factor change:  10.00     ["dinctp_5"]
+   Maximum relative change: 0.9000     ["dinctp_5"]
+
+
+OPTIMISATION ITERATION NO.        : 2
+   Model calls so far             : 31
+   Starting phi for this iteration:  1.07152E+05
+       param "dslope_5" frozen: gradient and update vectors out of bounds
+
+       Lambda =   100.00     ----->
+          Phi =  1.07128E+05  (  1.000 of starting phi)
+
+       Lambda =   21.544     ----->
+          Phi =  1.07117E+05  (  1.000 of starting phi)
+
+   No more lambdas: relative phi reduction between lambdas less than 0.0300
+   Lowest phi this iteration:  1.07117E+05
+   Relative phi reduction between optimisation iterations less than 0.1000
+   Switch to higher order derivatives calculation
+
+      Current parameter values                 Previous parameter values
+      dinctp_1        -2.25262                 dinctp_1         -2.25424    
+      dinctp_2        -1.86698                 dinctp_2         -1.87054    
+      dinctp_3        -1.87028                 dinctp_3         -1.87021    
+      dinctp_4       -0.882490                 dinctp_4        -0.884470    
+      dinctp_5        1.000000E-04             dinctp_5         1.000000E-03
+      dinctp_6        -2.10625                 dinctp_6         -2.10456    
+      dinctp_7        -2.01162                 dinctp_7         -2.01145    
+      dinctp_8        -1.95740                 dinctp_8         -1.95740    
+      dinctp_9        -2.27366                 dinctp_9         -2.27353    
+      dinctp_10       -2.46168                 dinctp_10        -2.46326    
+      dinctp_11       -2.93468                 dinctp_11        -2.93455    
+      dinctp_12       -1.99661                 dinctp_12        -1.99677    
+      dslope_1        0.244128                 dslope_1         0.244227    
+      dslope_2        0.261091                 dslope_2         0.261356    
+      dslope_3        0.207114                 dslope_3         0.207108    
+      dslope_4        0.285062                 dslope_4         0.285203    
+      dslope_5        0.200000                 dslope_5         0.200000    
+      dslope_6        0.324959                 dslope_6         0.324889    
+      dslope_7        0.384090                 dslope_7         0.384086    
+      dslope_8        0.673875                 dslope_8         0.673773    
+      dslope_9        0.578693                 dslope_9         0.578562    
+      dslope_10       0.610165                 dslope_10        0.610159    
+      dslope_11       0.366402                 dslope_11        0.366415    
+      dslope_12       0.285377                 dslope_12        0.285395    
+   Maximum   factor change:  10.00     ["dinctp_5"]
+   Maximum relative change: 0.9000     ["dinctp_5"]
+
+
+OPTIMISATION ITERATION NO.        : 3
+   Model calls so far             : 57
+   Starting phi for this iteration:  1.07117E+05
+   All frozen parameters freed.
+
+       Lambda =   4.6416     ----->
+          Phi =  1.07117E+05  (  1.000 of starting phi)
+
+       Lambda =   2.3208     ----->
+          Phi =  1.07117E+05  (  1.000 of starting phi)
+
+       Lambda =   9.2832     ----->
+          Phi =  1.07116E+05  (  1.000 of starting phi)
+
+   No more lambdas: relative phi reduction between lambdas less than 0.0300
+   Lowest phi this iteration:  1.07116E+05
+
+      Current parameter values                 Previous parameter values
+      dinctp_1        -2.25254                 dinctp_1         -2.25262    
+      dinctp_2        -1.86687                 dinctp_2         -1.86698    
+      dinctp_3        -1.87028                 dinctp_3         -1.87028    
+      dinctp_4       -0.882405                 dinctp_4        -0.882490    
+      dinctp_5        1.000000E-05             dinctp_5         1.000000E-04
+      dinctp_6        -2.10632                 dinctp_6         -2.10625    
+      dinctp_7        -2.01164                 dinctp_7         -2.01162    
+      dinctp_8        -1.95740                 dinctp_8         -1.95740    
+      dinctp_9        -2.27367                 dinctp_9         -2.27366    
+      dinctp_10       -2.46159                 dinctp_10        -2.46168    
+      dinctp_11       -2.93470                 dinctp_11        -2.93468    
+      dinctp_12       -1.99661                 dinctp_12        -1.99661    
+      dslope_1        0.244122                 dslope_1         0.244128    
+      dslope_2        0.261083                 dslope_2         0.261091    
+      dslope_3        0.207115                 dslope_3         0.207114    
+      dslope_4        0.285056                 dslope_4         0.285062    
+      dslope_5        0.200003                 dslope_5         0.200000    
+      dslope_6        0.324962                 dslope_6         0.324959    
+      dslope_7        0.384091                 dslope_7         0.384090    
+      dslope_8        0.673877                 dslope_8         0.673875    
+      dslope_9        0.578697                 dslope_9         0.578693    
+      dslope_10       0.610162                 dslope_10        0.610165    
+      dslope_11       0.366402                 dslope_11        0.366402    
+      dslope_12       0.285377                 dslope_12        0.285377    
+   Maximum   factor change:  10.00     ["dinctp_5"]
+   Maximum relative change: 0.9000     ["dinctp_5"]
+
+   Optimisation complete: the  3 lowest phi's are within a relative distance
+                          of eachother of 5.000E-03
+   Total model calls:    108
+
+   The model has been run one final time using best parameters. 
+   Thus all model input files contain best parameter values, and model 
+   output files contain model results based on these parameters.
+
+
+                            OPTIMISATION RESULTS
+
+Covariance matrix and parameter confidence intervals cannot be determined:-
+No redundancy in non-zero-weighted observations plus prior information.
+
+
+Parameters ----->
+
+Parameter      Estimated value
+ dinctp_1       -2.25254    
+ dinctp_2       -1.86687    
+ dinctp_3       -1.87028    
+ dinctp_4      -0.882405    
+ dinctp_5       1.000000E-05
+ dinctp_6       -2.10632    
+ dinctp_7       -2.01164    
+ dinctp_8       -1.95740    
+ dinctp_9       -2.27367    
+ dinctp_10      -2.46159    
+ dinctp_11      -2.93470    
+ dinctp_12      -1.99661    
+ dslope_1       0.244122    
+ dslope_2       0.261083    
+ dslope_3       0.207115    
+ dslope_4       0.285056    
+ dslope_5       0.200003    
+ dslope_6       0.324962    
+ dslope_7       0.384091    
+ dslope_8       0.673877    
+ dslope_9       0.578697    
+ dslope_10      0.610162    
+ dslope_11      0.366402    
+ dslope_12      0.285377    
+
+See file solar_rad.sen for parameter sensitivities.
+
+
+Observations ----->
+
+Observation            Measured       Calculated     Residual       Weight     Group
+                       value          value
+hopland_0              199.280        221.046       -21.7657        1.000      head        
+hopland_1              270.330        341.158       -70.8281        1.000      head        
+hopland_2              379.960        378.248        1.71219        1.000      head        
+hopland_3              531.840        487.578        44.2619        1.000      head        
+hopland_4              651.690        627.510        24.1804        1.000      head        
+hopland_5              718.910        666.087        52.8227        1.000      head        
+hopland_6              735.750        693.624        42.1256        1.000      head        
+hopland_7              672.790        663.098        9.69158        1.000      head        
+hopland_8              529.050        541.194       -12.1437        1.000      head        
+hopland_9              371.900        425.646       -53.7458        1.000      head        
+hopland_10             237.080        288.395       -51.3151        1.000      head        
+hopland_11             166.640        205.761       -39.1206        1.000      head        
+hawkeye_0              185.070        84.5277        100.542        1.000      head        
+hawkeye_1              245.590        133.457        112.133        1.000      head        
+hawkeye_2              317.330        310.320        7.00960        1.000      head        
+hawkeye_3              424.770        490.009       -65.2392        1.000      head        
+hawkeye_4              505.900        614.357       -108.457        1.000      head        
+hawkeye_5              544.590        592.084       -47.4935        1.000      head        
+hawkeye_6              600.190        648.202       -48.0123        1.000      head        
+hawkeye_7              558.130        553.230        4.90042        1.000      head        
+hawkeye_8              455.200        382.445        72.7546        1.000      head        
+hawkeye_9              323.070        205.311        117.759        1.000      head        
+hawkeye_10             242.890        118.668        124.222        1.000      head        
+hawkeye_11             170.860        74.4565        96.4035        1.000      head        

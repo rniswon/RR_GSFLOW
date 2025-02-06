@@ -1,0 +1,118 @@
+                     PARAMETER SENSITIVITIES: CASE solar_rad2
+
+
+ OPTIMISATION ITERATION NO.  1 ----->
+ Parameter name    Group          Current value    Sensitivity
+   dinctp_1        k               -2.00000         0.770164    
+   dinctp_2        k               -2.00000         0.882157    
+   dinctp_3        k               -2.00000         0.927406    
+   dinctp_4        k               -2.00000          1.03904    
+   dinctp_5        k               -2.00000         0.905929    
+   dinctp_6        k               -2.00000         0.727968    
+   dinctp_7        k               -2.00000         0.541142    
+   dinctp_8        k               -2.00000         0.489890    
+   dinctp_9        k               -2.00000         0.449938    
+   dinct_10        k               -2.00000         0.515969    
+   dinct_11        k               -2.00000         0.683204    
+   dinct_12        k               -2.00000         0.742939    
+   dslope_1        k               0.400000          9.56035    
+   dslope_2        k               0.400000          11.5300    
+   dslope_3        k               0.400000          13.9432    
+   dslope_4        k               0.400000          17.2198    
+   dslope_5        k               0.400000          18.1704    
+   dslope_6        k               0.400000          17.5535    
+   dslope_7        k               0.400000          15.5828    
+   dslope_8        k               0.400000          14.0695    
+   dslope_9        k               0.400000          12.1435    
+   dslop_10        k               0.400000          10.8537    
+   dslop_11        k               0.400000          9.97230    
+   dslop_12        k               0.400000          8.86054    
+
+
+ OPTIMISATION ITERATION NO.  2 ----->
+ Parameter name    Group          Current value    Sensitivity
+   dinctp_1        k               -1.94967         0.833616    
+   dinctp_2        k               -1.86273         0.780575    
+   dinctp_3        k               -1.94673         0.737606    
+   dinctp_4        k               -1.90338         0.745816    
+   dinctp_5        k               -1.89769         0.752460    
+   dinctp_6        k               -1.96330         0.829683    
+   dinctp_7        k               -2.05388         0.545289    
+   dinctp_8        k               -1.99939         0.447262    
+   dinctp_9        k               -1.98014         0.489082    
+   dinct_10        k               -1.97124         0.732791    
+   dinct_11        k               -1.96601         0.721737    
+   dinct_12        k               -1.96245         0.808703    
+   dslope_1        k               0.369442          10.6491    
+   dslope_2        k               0.432736          9.99414    
+   dslope_3        k               0.472332          10.6578    
+   dslope_4        k               0.491291          12.0110    
+   dslope_5        k               0.443654          15.0188    
+   dslope_6        k               0.372245          20.1071    
+   dslope_7        k               0.401164          15.7705    
+   dslope_8        k               0.421863          12.8918    
+   dslope_9        k               0.381615          13.2561    
+   dslop_10        k               0.326258          15.7444    
+   dslop_11        k               0.384607          10.6454    
+   dslop_12        k               0.357431          10.0563    
+
+
+ OPTIMISATION ITERATION NO.  3 ----->
+ Parameter name    Group          Current value    Sensitivity
+   dinctp_1        k               -1.26949         0.846555    
+   dinctp_2        k              -0.576827         0.789158    
+   dinctp_3        k               -1.51392         0.677059    
+   dinctp_4        k               -1.20169         0.649036    
+   dinctp_5        k               -1.26232         0.730848    
+   dinctp_6        k               -1.62011         0.815131    
+   dinctp_7        k               -2.58658         0.553567    
+   dinctp_8        k               -2.01970         0.442898    
+   dinctp_9        k               -1.74525         0.482713    
+   dinct_10        k               -1.54953         0.647956    
+   dinct_11        k               -1.51892         0.710467    
+   dinct_12        k               -1.51094         0.832585    
+   dslope_1        k               0.320264          10.8303    
+   dslope_2        k               0.350501          10.0150    
+   dslope_3        k               0.473896          9.68586    
+   dslope_4        k               0.498166          10.3601    
+   dslope_5        k               0.418296          14.6978    
+   dslope_6        k               0.361063          19.8184    
+   dslope_7        k               0.417963          15.8955    
+   dslope_8        k               0.424248          12.7992    
+   dslope_9        k               0.375468          13.0906    
+   dslop_10        k               0.330876          13.8851    
+   dslop_11        k               0.359268          10.5812    
+   dslop_12        k               0.324273          10.2438    
+
+
+
+                        COMPLETION OF OPTIMISATION PROCESS
+
+ Composite sensitivities for all observations/prior info ----->
+
+ Number of observations with non-zero weight =    36
+ Parameter name    Group          Current value    Sensitivity
+   dinctp_1        k               -1.01910         0.846555    
+   dinctp_2        k              -5.768266E-02     0.789158    
+   dinctp_3        k               -1.32620         0.677059    
+   dinctp_4        k              -0.916310         0.649036    
+   dinctp_5        k              -0.955608         0.730848    
+   dinctp_6        k               -1.47661         0.815131    
+   dinctp_7        k               -2.86635         0.553567    
+   dinctp_8        k               -2.03018         0.442898    
+   dinctp_9        k               -1.62589         0.482713    
+   dinct_10        k               -1.30793         0.647956    
+   dinct_11        k               -1.36973         0.710467    
+   dinct_12        k               -1.28009         0.832585    
+   dslope_1        k               0.297442          10.8303    
+   dslope_2        k               0.294899          10.0150    
+   dslope_3        k               0.440503          9.68586    
+   dslope_4        k               0.448057          10.3601    
+   dslope_5        k               0.398797          14.6978    
+   dslope_6        k               0.353081          19.8184    
+   dslope_7        k               0.428263          15.8955    
+   dslope_8        k               0.423620          12.7992    
+   dslope_9        k               0.369308          13.0906    
+   dslop_10        k               0.304227          13.8851    
+   dslop_11        k               0.344865          10.5812    
+   dslop_12        k               0.304038          10.2438    

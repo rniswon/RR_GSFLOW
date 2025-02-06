@@ -1,0 +1,5 @@
+../../output/output.model08.CanESM2_rcp85/modflow/zb_subbasins.csv csv2
+../../output/output.model08.CanESM2_rcp85/modflow/rr_tr.cbc
+russian_river_subbasins
+zone_bud_subbasins.zon
+A

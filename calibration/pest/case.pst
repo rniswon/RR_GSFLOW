@@ -1,0 +1,55 @@
+pcf
+* control data
+restart estimation 
+27 7 1 0 1 
+1 1 single point 1 0 0 
+10.0 -3.0 0.3 0.03 10 
+10.0 10.0 0.001 
+0.1 
+3 0.005 3 3 0.005 3 
+1 1 1 
+* parameter groups
+K relative 0.01 0.0 switch 2.0 parabolic 
+* parameter data
+HK_0 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_1 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_2 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_3 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_4 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_5 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_6 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_7 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_8 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+HK_9 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_0 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_1 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_2 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_3 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_4 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_5 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_6 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_7 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_8 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+SS_9 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+FHB_cond_0 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+FHB_cond_1 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+FHB_cond_2 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+FHB_cond_3 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+FHB_cond_4 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+FHB_cond_5 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+FHB_cond_6 log factor 10.0 1e-10 10000000000.0 K 1.0 0.0 1 
+* observation groups
+head 
+* observation data
+HD0 0.375577498439 1.0 head 
+HD1 0.375577498439 1.0 head 
+HD2 0.375577498439 1.0 head 
+HD3 0.375577498439 1.0 head 
+HD4 0.375577498439 1.0 head 
+HD5 0.375577498439 1.0 head 
+HD6 0.375577498439 1.0 head 
+* model command line
+model_calib1.bat 
+* model input/output
+par_in.tpl par_in.dat 
+obs_out.ins obs_out.dat 

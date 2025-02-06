@@ -1,0 +1,5 @@
+./inputs_for_scripts/zone_budget_output.csv csv2
+../GSFLOW/modflow/output/rr_tr.cbc
+russian_river
+zone_bud_subbasins.zon
+A

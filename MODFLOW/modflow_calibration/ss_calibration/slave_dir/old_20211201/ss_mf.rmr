@@ -1,0 +1,19 @@
+
+PANTHER master listening on socket:0.0.0.0:4075 (IPv4)
+running model 1 times
+08/20/21 14:42:23->waiting for agents to appear
+
+08/20/21 14:42:52->new connection from: IGSWCGWWLT6828.gs.doi.net:60960
+08/20/21 14:42:52->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0:IGSWCGWWLT6828.gs.doi.net:60960, number of agents: 1
+08/20/21 14:42:53->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0:IGSWCGWWLT6828.gs.doi.net:60960
+08/20/21 14:42:53->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0  (group id:2, run id:0, concurrent runs:1)
+08/20/21 14:44:23->run 0 received from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\MODFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0  (run time:1.5006 min, avg run time:1.5006 min, group id:2, run id: 0 concurrent:1)
+08/20/21 14:44:23->run 0 processed
+
+---------------------
+   1 runs complete :  0 runs failed
+
+
+08/20/21 14:44:23->Started idle ping thread.
+08/20/21 14:44:23->Panther idle ping thread resumed.
+08/20/21 14:44:24->Stopped idle ping thread, as Panther manager is shutting down.

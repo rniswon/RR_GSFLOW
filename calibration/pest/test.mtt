@@ -1,0 +1,46 @@
+ PARAMETER STATISTICAL MATRICES: CASE test
+
+ OPTIMISATION ITERATION NUMBER  3
+
+
+ Parameter standard deviations ----->
+
+ Adjustable        Group           Current          Standard
+ parameter                         value            deviation
+ a                 k                9.98801          1224.75    
+ b                 k                5.08856         6.253289E-02
+ c                 k                2.84961          15.5527    
+
+ Note that if a parameter is log-transformed, the standard deviation in the 
+ above table refers to the log of the parameter. Note also that the objective
+ function used in the calculation of the covariance matrix (and eigenvalues
+ of the covariance matrix) was calculated at the end of the previous iteration.
+
+
+ Parameter covariance matrix ----->
+
+                   a            b            c      
+ a              1.5000E+06    70.96       1.8388E+04
+ b               70.96       3.9104E-03   0.9631    
+ c              1.8388E+04   0.9631        241.9    
+
+
+ Parameter correlation coefficient matrix ----->
+
+                   a            b            c      
+ a               1.000       0.9265       0.9653    
+ b              0.9265        1.000       0.9903    
+ c              0.9653       0.9903        1.000    
+
+
+ Normalized eigenvectors of covariance matrix ----->
+
+               Vector_1     Vector_2     Vector_3   
+ a             -2.2132E-05   1.2258E-02  -0.9999    
+ b              -1.000      -5.6640E-03  -4.7301E-05
+ c              5.6641E-03  -0.9999      -1.2258E-02
+
+
+ Eigenvalues ----->
+
+                2.5343E-05    16.47       1.5002E+06

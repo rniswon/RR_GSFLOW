@@ -1,0 +1,818 @@
+
+                    PEST RUN RECORD: CASE solar_rad2
+
+
+PEST Version: 14.01
+
+
+PEST run mode:-
+
+   Parameter estimation mode
+
+
+Case dimensions:-
+
+   Number of parameters                           :    24
+   Number of adjustable parameters                :    24
+   Number of parameter groups                     :     1
+   Number of observations                         :    36
+   Number of prior estimates                      :     0
+
+
+Model command line(s):-
+
+   runmodel.bat
+
+
+Jacobian command line:-
+
+   na
+
+
+Model interface files:-
+
+   Templates:
+      solar_rad2.tpl
+   for model input files:
+      input_solar2.dat
+
+   (Parameter values written using single precision protocol.)
+   (Decimal point always included.)
+
+   Instruction files:
+      solar_rad2.ins
+   for reading model output files:
+      output_solar2.dat
+
+
+PEST-to-model message file:-
+
+   na
+
+
+Derivatives calculation:-
+
+Param        Increment   Increment   Increment   Forward or   Multiplier  Method
+group        type                    low bound   central      (central)   (central)
+k            relative    1.0000E-02   none         switch       2.000     parabolic
+
+
+Parameter definitions:-
+
+Name         Trans-            Change       Initial        Lower          Upper
+             formation         limit        value          bound          bound
+dinctp_1     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_2     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_3     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_4     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_5     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_6     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_7     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_8     none              factor     -2.00000       -60.0000        4.00000    
+dinctp_9     none              factor     -2.00000       -60.0000        4.00000    
+dinct_10     none              factor     -2.00000       -60.0000        4.00000    
+dinct_11     none              factor     -2.00000       -60.0000        4.00000    
+dinct_12     none              factor     -2.00000       -60.0000        4.00000    
+dslope_1     none              factor     0.400000       0.200000       0.700000    
+dslope_2     none              factor     0.400000       0.200000       0.700000    
+dslope_3     none              factor     0.400000       0.200000       0.700000    
+dslope_4     none              factor     0.400000       0.200000       0.700000    
+dslope_5     none              factor     0.400000       0.200000       0.700000    
+dslope_6     none              factor     0.400000       0.200000       0.700000    
+dslope_7     none              factor     0.400000       0.200000       0.700000    
+dslope_8     none              factor     0.400000       0.200000       0.700000    
+dslope_9     none              factor     0.400000       0.200000       0.700000    
+dslop_10     none              factor     0.400000       0.200000       0.700000    
+dslop_11     none              factor     0.400000       0.200000       0.700000    
+dslop_12     none              factor     0.400000       0.200000       0.700000    
+
+Name         Group          Scale         Offset        Model command number
+dinctp_1     k             1.00000        0.00000            1
+dinctp_2     k             1.00000        0.00000            1
+dinctp_3     k             1.00000        0.00000            1
+dinctp_4     k             1.00000        0.00000            1
+dinctp_5     k             1.00000        0.00000            1
+dinctp_6     k             1.00000        0.00000            1
+dinctp_7     k             1.00000        0.00000            1
+dinctp_8     k             1.00000        0.00000            1
+dinctp_9     k             1.00000        0.00000            1
+dinct_10     k             1.00000        0.00000            1
+dinct_11     k             1.00000        0.00000            1
+dinct_12     k             1.00000        0.00000            1
+dslope_1     k             1.00000        0.00000            1
+dslope_2     k             1.00000        0.00000            1
+dslope_3     k             1.00000        0.00000            1
+dslope_4     k             1.00000        0.00000            1
+dslope_5     k             1.00000        0.00000            1
+dslope_6     k             1.00000        0.00000            1
+dslope_7     k             1.00000        0.00000            1
+dslope_8     k             1.00000        0.00000            1
+dslope_9     k             1.00000        0.00000            1
+dslop_10     k             1.00000        0.00000            1
+dslop_11     k             1.00000        0.00000            1
+dslop_12     k             1.00000        0.00000            1
+
+
+Prior information:-
+
+   No prior information supplied
+
+
+Observations:-
+
+Observation name        Observation       Weight       Group
+ hopland_0               199.280          1.000       head        
+ hopland_1               270.330          1.000       head        
+ hopland_2               379.960          1.000       head        
+ hopland_3               531.840          1.000       head        
+ hopland_4               651.690          1.000       head        
+ hopland_5               718.910          1.000       head        
+ hopland_6               735.750          1.000       head        
+ hopland_7               672.790          1.000       head        
+ hopland_8               529.050          1.000       head        
+ hopland_9               371.900          1.000       head        
+ hopland_10              237.080          1.000       head        
+ hopland_11              166.640          1.000       head        
+ hawkeye_0               185.070          1.000       head        
+ hawkeye_1               245.590          1.000       head        
+ hawkeye_2               317.330          1.000       head        
+ hawkeye_3               424.770          1.000       head        
+ hawkeye_4               505.900          1.000       head        
+ hawkeye_5               544.590          1.000       head        
+ hawkeye_6               600.190          1.000       head        
+ hawkeye_7               558.130          1.000       head        
+ hawkeye_8               455.200          1.000       head        
+ hawkeye_9               323.070          1.000       head        
+ hawkeye_10              242.890          1.000       head        
+ hawkeye_11              170.860          1.000       head        
+ sanel_0                 168.500          1.000       head        
+ sanel_1                 233.820          1.000       head        
+ sanel_2                 363.400          1.000       head        
+ sanel_3                 486.700          1.000       head        
+ sanel_4                 591.930          1.000       head        
+ sanel_5                 664.400          1.000       head        
+ sanel_6                 686.670          1.000       head        
+ sanel_7                 609.600          1.000       head        
+ sanel_8                 494.000          1.000       head        
+ sanel_9                 330.330          1.000       head        
+ sanel_10                209.000          1.000       head        
+ sanel_11                149.290          1.000       head        
+
+
+Control settings:-
+
+   Initial lambda                                               :  10.000    
+   Lambda adjustment factor                                     : iteration-dependent
+   Value of variable governing adjustment                       : -3.0000    
+   Sufficient new/old phi ratio per optimisation iteration      : 0.30000    
+   Limiting relative phi reduction between lambdas              : 3.00000E-02
+   Maximum trial lambdas per iteration                          :  10
+   Forgive model run failure during lamda testing               : no
+   Forgive model run failure during Jacobian runs               : no
+
+   Perform Broyden's update of Jacobian matrix                  : no
+   Undertake observation re-referencing                         : no
+
+   Maximum  factor  parameter change (factor-limited changes)   :  10.000
+   Maximum relative parameter change (relative-limited changes) : na
+   Fraction of initial parameter values used in computing
+   change limit for near-zero parameters                        : 1.00000E-03
+   Allow bending of parameter upgrade vector                    : no
+   Allow parameters to stick to their bounds                    : no
+
+   Relative phi reduction below which to begin use of
+   central derivatives                                          : 0.10000             
+   Iteration at which to first consider derivatives switch      :   1
+
+   Relative phi reduction indicating convergence                : 0.50000E-02
+   Number of phi values required within this range              :   3
+   Maximum number of consecutive failures to lower phi          :   3
+   Minimal relative parameter change indicating convergence     : 0.50000E-02
+   Number of consecutive iterations with minimal param change   :   3
+   Maximum number of optimisation iterations                    :   3
+
+   Attempt automatic user intervention                          : no
+
+   Attempt reuse of parameter sensitivities                     : no
+
+   Scale parameters by their bounds                             : no
+
+
+File saving options: -
+
+   Save best JCO file                                           : yes
+   Save multiple JCO files                                      : no
+   Save multiple REI files                                      : no
+   Save multiple PAR files                                      : no
+
+
+                            OPTIMISATION RECORD
+
+
+INITIAL CONDITIONS: 
+   Sum of squared weighted residuals (ie phi) =   98516.    
+
+      Current parameter values
+      dinctp_1        -2.00000    
+      dinctp_2        -2.00000    
+      dinctp_3        -2.00000    
+      dinctp_4        -2.00000    
+      dinctp_5        -2.00000    
+      dinctp_6        -2.00000    
+      dinctp_7        -2.00000    
+      dinctp_8        -2.00000    
+      dinctp_9        -2.00000    
+      dinct_10        -2.00000    
+      dinct_11        -2.00000    
+      dinct_12        -2.00000    
+      dslope_1        0.400000    
+      dslope_2        0.400000    
+      dslope_3        0.400000    
+      dslope_4        0.400000    
+      dslope_5        0.400000    
+      dslope_6        0.400000    
+      dslope_7        0.400000    
+      dslope_8        0.400000    
+      dslope_9        0.400000    
+      dslop_10        0.400000    
+      dslop_11        0.400000    
+      dslop_12        0.400000    
+
+
+OPTIMISATION ITERATION NO.        : 1
+   Model calls so far             : 1
+   Starting phi for this iteration:   98516.    
+
+       Lambda =   10.000     ----->
+          Phi =   90779.      (  0.921 of starting phi)
+
+       Lambda =   4.6416     ----->
+          Phi =   90718.      (  0.921 of starting phi)
+
+   No more lambdas: relative phi reduction between lambdas less than 0.0300
+   Lowest phi this iteration:   90718.    
+   Relative phi reduction between optimisation iterations less than 0.1000
+   Switch to higher order derivatives calculation
+
+      Current parameter values                 Previous parameter values
+      dinctp_1        -1.94967                 dinctp_1         -2.00000    
+      dinctp_2        -1.86273                 dinctp_2         -2.00000    
+      dinctp_3        -1.94673                 dinctp_3         -2.00000    
+      dinctp_4        -1.90338                 dinctp_4         -2.00000    
+      dinctp_5        -1.89769                 dinctp_5         -2.00000    
+      dinctp_6        -1.96330                 dinctp_6         -2.00000    
+      dinctp_7        -2.05388                 dinctp_7         -2.00000    
+      dinctp_8        -1.99939                 dinctp_8         -2.00000    
+      dinctp_9        -1.98014                 dinctp_9         -2.00000    
+      dinct_10        -1.97124                 dinct_10         -2.00000    
+      dinct_11        -1.96601                 dinct_11         -2.00000    
+      dinct_12        -1.96245                 dinct_12         -2.00000    
+      dslope_1        0.369442                 dslope_1         0.400000    
+      dslope_2        0.432736                 dslope_2         0.400000    
+      dslope_3        0.472332                 dslope_3         0.400000    
+      dslope_4        0.491291                 dslope_4         0.400000    
+      dslope_5        0.443654                 dslope_5         0.400000    
+      dslope_6        0.372245                 dslope_6         0.400000    
+      dslope_7        0.401164                 dslope_7         0.400000    
+      dslope_8        0.421863                 dslope_8         0.400000    
+      dslope_9        0.381615                 dslope_9         0.400000    
+      dslop_10        0.326258                 dslop_10         0.400000    
+      dslop_11        0.384607                 dslop_11         0.400000    
+      dslop_12        0.357431                 dslop_12         0.400000    
+   Maximum   factor change:  1.228     ["dslope_4"]
+   Maximum relative change: 0.2282     ["dslope_4"]
+
+
+OPTIMISATION ITERATION NO.        : 2
+   Model calls so far             : 27
+   Starting phi for this iteration:   90718.    
+
+       Lambda =   2.1544     ----->
+          Phi =   90237.      (  0.995 of starting phi)
+
+       Lambda =   1.0772     ----->
+          Phi =   89811.      (  0.990 of starting phi)
+
+   No more lambdas: relative phi reduction between lambdas less than 0.0300
+   Lowest phi this iteration:   89811.    
+
+      Current parameter values                 Previous parameter values
+      dinctp_1        -1.26949                 dinctp_1         -1.94967    
+      dinctp_2       -0.576827                 dinctp_2         -1.86273    
+      dinctp_3        -1.51392                 dinctp_3         -1.94673    
+      dinctp_4        -1.20169                 dinctp_4         -1.90338    
+      dinctp_5        -1.26232                 dinctp_5         -1.89769    
+      dinctp_6        -1.62011                 dinctp_6         -1.96330    
+      dinctp_7        -2.58658                 dinctp_7         -2.05388    
+      dinctp_8        -2.01970                 dinctp_8         -1.99939    
+      dinctp_9        -1.74525                 dinctp_9         -1.98014    
+      dinct_10        -1.54953                 dinct_10         -1.97124    
+      dinct_11        -1.51892                 dinct_11         -1.96601    
+      dinct_12        -1.51094                 dinct_12         -1.96245    
+      dslope_1        0.320264                 dslope_1         0.369442    
+      dslope_2        0.350501                 dslope_2         0.432736    
+      dslope_3        0.473896                 dslope_3         0.472332    
+      dslope_4        0.498166                 dslope_4         0.491291    
+      dslope_5        0.418296                 dslope_5         0.443654    
+      dslope_6        0.361063                 dslope_6         0.372245    
+      dslope_7        0.417963                 dslope_7         0.401164    
+      dslope_8        0.424248                 dslope_8         0.421863    
+      dslope_9        0.375468                 dslope_9         0.381615    
+      dslop_10        0.330876                 dslop_10         0.326258    
+      dslop_11        0.359268                 dslop_11         0.384607    
+      dslop_12        0.324273                 dslop_12         0.357431    
+   Maximum   factor change:  3.229     ["dinctp_2"]
+   Maximum relative change: 0.6903     ["dinctp_2"]
+
+
+OPTIMISATION ITERATION NO.        : 3
+   Model calls so far             : 77
+   Starting phi for this iteration:   89811.    
+
+       Lambda =  0.53861     ----->
+          Phi =   89191.      (  0.993 of starting phi)
+
+       Lambda =  0.26930     ----->
+          Phi =   89252.      (  0.994 of starting phi)
+
+       Lambda =   1.0772     ----->
+          Phi =   89155.      (  0.993 of starting phi)
+
+   No more lambdas: relative phi reduction between lambdas less than 0.0300
+   Lowest phi this iteration:   89155.    
+
+      Current parameter values                 Previous parameter values
+      dinctp_1        -1.01910                 dinctp_1         -1.26949    
+      dinctp_2       -5.768266E-02             dinctp_2        -0.576827    
+      dinctp_3        -1.32620                 dinctp_3         -1.51392    
+      dinctp_4       -0.916310                 dinctp_4         -1.20169    
+      dinctp_5       -0.955608                 dinctp_5         -1.26232    
+      dinctp_6        -1.47661                 dinctp_6         -1.62011    
+      dinctp_7        -2.86635                 dinctp_7         -2.58658    
+      dinctp_8        -2.03018                 dinctp_8         -2.01970    
+      dinctp_9        -1.62589                 dinctp_9         -1.74525    
+      dinct_10        -1.30793                 dinct_10         -1.54953    
+      dinct_11        -1.36973                 dinct_11         -1.51892    
+      dinct_12        -1.28009                 dinct_12         -1.51094    
+      dslope_1        0.297442                 dslope_1         0.320264    
+      dslope_2        0.294899                 dslope_2         0.350501    
+      dslope_3        0.440503                 dslope_3         0.473896    
+      dslope_4        0.448057                 dslope_4         0.498166    
+      dslope_5        0.398797                 dslope_5         0.418296    
+      dslope_6        0.353081                 dslope_6         0.361063    
+      dslope_7        0.428263                 dslope_7         0.417963    
+      dslope_8        0.423620                 dslope_8         0.424248    
+      dslope_9        0.369308                 dslope_9         0.375468    
+      dslop_10        0.304227                 dslop_10         0.330876    
+      dslop_11        0.344865                 dslop_11         0.359268    
+      dslop_12        0.304038                 dslop_12         0.324273    
+   Maximum   factor change:  10.00     ["dinctp_2"]
+   Maximum relative change: 0.9000     ["dinctp_2"]
+
+   Optimisation complete: optimisation iteration limit of   3 realized.
+   Total model calls:    128
+
+   The model has been run one final time using best parameters. 
+   Thus all model input files contain best parameter values, and model 
+   output files contain model results based on these parameters.
+
+
+                            OPTIMISATION RESULTS
+
+
+Parameters ----->
+
+Parameter        Estimated         95% percent confidence limits
+                 value             lower limit       upper limit
+ dinctp_1       -1.01910           -60.8318           58.7936    
+ dinctp_2      -5.768266E-02       -49.5633           49.4479    
+ dinctp_3       -1.32620           -66.3908           63.7384    
+ dinctp_4      -0.916310           -72.0902           70.2576    
+ dinctp_5      -0.955608           -72.5553           70.6441    
+ dinctp_6       -1.47661           -84.8416           81.8884    
+ dinctp_7       -2.86635           -140.024           134.291    
+ dinctp_8       -2.03018           -202.308           198.247    
+ dinctp_9       -1.62589           -164.236           160.984    
+ dinct_10       -1.30793           -98.0020           95.3861    
+ dinct_11       -1.36973           -71.7214           68.9819    
+ dinct_12       -1.28009           -64.4082           61.8480    
+ dslope_1       0.297442           -4.37786           4.97275    
+ dslope_2       0.294899           -3.60601           4.19581    
+ dslope_3       0.440503           -4.10763           4.98864    
+ dslope_4       0.448057           -4.01081           4.90693    
+ dslope_5       0.398797           -3.16149           3.95908    
+ dslope_6       0.353081           -3.07572           3.78188    
+ dslope_7       0.428263           -4.34832           5.20485    
+ dslope_8       0.423620           -6.50670           7.35394    
+ dslope_9       0.369308           -5.62690           6.36551    
+ dslop_10       0.304227           -4.20806           4.81651    
+ dslop_11       0.344865           -4.37886           5.06859    
+ dslop_12       0.304038           -4.82680           5.43487    
+
+Note: confidence limits provide only an indication of parameter uncertainty.
+      They rely on a linearity assumption which  may not extend as far in 
+      parameter space as the confidence limits themselves - see PEST manual.
+
+See file solar_rad2.sen for parameter sensitivities.
+
+
+Observations ----->
+
+Observation            Measured       Calculated     Residual       Weight     Group
+                       value          value
+hopland_0              199.280        217.678       -18.3980        1.000      head        
+hopland_1              270.330        289.122       -18.7924        1.000      head        
+hopland_2              379.960        390.543       -10.5828        1.000      head        
+hopland_3              531.840        505.259        26.5812        1.000      head        
+hopland_4              651.690        585.744        65.9461        1.000      head        
+hopland_5              718.910        631.752        87.1580        1.000      head        
+hopland_6              735.750        677.881        57.8689        1.000      head        
+hopland_7              672.790        644.439        28.3508        1.000      head        
+hopland_8              529.050        548.507       -19.4572        1.000      head        
+hopland_9              371.900        401.426       -29.5261        1.000      head        
+hopland_10             237.080        271.808       -34.7278        1.000      head        
+hopland_11             166.640        187.851       -21.2113        1.000      head        
+hawkeye_0              185.070        93.7203        91.3497        1.000      head        
+hawkeye_1              245.590        161.593        83.9970        1.000      head        
+hawkeye_2              317.330        283.073        34.2567        1.000      head        
+hawkeye_3              424.770        436.642       -11.8716        1.000      head        
+hawkeye_4              505.900        569.135       -63.2346        1.000      head        
+hawkeye_5              544.590        642.805       -98.2145        1.000      head        
+hawkeye_6              600.190        661.679       -61.4893        1.000      head        
+hawkeye_7              558.130        574.354       -16.2240        1.000      head        
+hawkeye_8              455.200        418.831        36.3685        1.000      head        
+hawkeye_9              323.070        246.341        76.7286        1.000      head        
+hawkeye_10             242.890        129.214        113.676        1.000      head        
+hawkeye_11             170.860        72.4299        98.4301        1.000      head        
+sanel_0                168.500        193.690       -25.1899        1.000      head        
+sanel_1                233.820        267.284       -33.4639        1.000      head        
+sanel_2                363.400        379.784       -16.3837        1.000      head        
+sanel_3                486.700        503.978       -17.2784        1.000      head        
+sanel_4                591.930        599.195       -7.26492        1.000      head        
+sanel_5                664.400        652.911        11.4891        1.000      head        
+sanel_6                686.670        679.294        7.37646        1.000      head        
+sanel_7                609.600        623.805       -14.2053        1.000      head        
+sanel_8                494.000        505.459       -11.4586        1.000      head        
+sanel_9                330.330        352.577       -22.2468        1.000      head        
+sanel_10               209.000        233.886       -24.8858        1.000      head        
+sanel_11               149.290        169.500       -20.2098        1.000      head        
+
+See file solar_rad2.res for more details of residuals in graph-ready format.
+
+See file solar_rad2.seo for composite observation sensitivities.
+
+
+Objective function ----->
+
+  Sum of squared weighted residuals (ie phi)                =  8.9155E+04
+
+
+Correlation Coefficient ----->
+
+  Correlation coefficient                                   =  0.96606    
+
+
+Analysis of residuals ----->
+
+  All residuals:-
+     Number of residuals with non-zero weight                       =    36
+     Mean value of non-zero weighted residuals                      =   6.202    
+     Maximum weighted residual [observation "hawkeye_10"]           =   113.7    
+     Minimum weighted residual [observation "hawkeye_5"]            =  -98.21    
+     Standard variance of weighted residuals                        =   7430.    
+     Standard error of weighted residuals                           =   86.20    
+
+     Note: the above variance was obtained by dividing the objective 
+     function by the number of system degrees of freedom (ie. number of 
+     observations with non-zero weight plus number of prior information 
+     articles with non-zero weight minus the number of adjustable parameters.)
+     If the degrees of freedom is negative the divisor becomes 
+     the number of observations with non-zero weight plus the number of 
+     prior information items with non-zero weight.
+
+
+K-L information statistics ----->
+
+
+  AIC   =   331.3261    
+  AICC  =   461.3261    
+  BIC   =   370.9141    
+  KIC   =   214.8477    
+
+Parameter covariance matrix ----->
+
+               dinctp_1     dinctp_2     dinctp_3     dinctp_4     dinctp_5     dinctp_6     dinctp_7     dinctp_8  
+               dinctp_9     dinct_10     dinct_11     dinct_12     dslope_1     dslope_2     dslope_3     dslope_4  
+               dslope_5     dslope_6     dslope_7     dslope_8     dslope_9     dslop_10     dslop_11     dslop_12  
+
+dinctp_1        753.5       7.1554E-14   3.6854E-15  -1.0431E-13  -1.1551E-13   1.7190E-13  -3.6400E-13   5.0668E-13
+               3.4754E-15  -4.1798E-29  -1.3282E-13   4.3747E-14   -58.58      -6.1253E-15  -9.1653E-16   6.3047E-15
+               4.9216E-15  -8.1021E-15   1.2612E-14  -1.8283E-14  -1.2844E-16   1.9243E-30   9.3674E-15  -3.8221E-15
+
+dinctp_2       7.1554E-14    516.2       2.1501E-13   1.7107E-14  -7.6726E-15  -3.8263E-14   3.6479E-13   2.7450E-28
+              -2.5052E-14   4.0894E-29  -3.4952E-14  -1.3711E-29  -5.5633E-15   -40.31      -1.4912E-14  -1.0786E-15
+               3.8343E-16   1.5784E-15  -1.2678E-14  -9.6546E-30   9.2584E-16  -1.9544E-30   2.3598E-15   1.0690E-30
+
+dinctp_3       3.6854E-15   2.1501E-13    891.6      -9.3688E-14   4.0626E-13  -4.3961E-13  -5.0944E-13  -5.1849E-14
+               4.9217E-13  -1.4906E-29  -1.1391E-13  -5.2318E-14  -7.0495E-16  -1.7194E-14   -61.89       5.4773E-15
+              -2.0036E-14   1.6027E-14   1.7051E-14   8.9836E-16  -1.9922E-14   7.1504E-31   6.5318E-15   3.7228E-15
+
+dinctp_4      -1.0431E-13   1.7107E-14  -9.3688E-14    1067.      -5.9133E-14   8.7224E-14  -7.8282E-13   8.9318E-14
+              -1.3884E-13   2.6204E-14   9.2385E-14   1.1631E-29   8.0004E-15  -1.1036E-15   6.5618E-15   -66.41    
+               3.1686E-15  -3.3905E-15   2.7671E-14  -3.2229E-15   5.1150E-15  -1.0493E-15  -6.0398E-15  -1.0701E-30
+
+dinctp_5      -1.1551E-13  -7.6726E-15   4.0626E-13  -5.9133E-14    1080.      -2.7747E-15  -2.9371E-13  -2.0232E-14
+               1.1972E-13   7.7835E-15  -7.4084E-14   1.0982E-14   9.1576E-15   7.2807E-16  -2.8418E-14   4.3062E-15
+               -53.42       7.8245E-16   1.0414E-14   1.1984E-15  -4.0984E-15  -3.1960E-16   5.0812E-15  -7.7643E-16
+
+dinctp_6       1.7190E-13  -3.8263E-14  -4.3961E-13   8.7224E-14  -2.7747E-15    1464.       2.4607E-13  -1.5009E-13
+               8.8493E-14  -2.3684E-14   5.8263E-14   3.2650E-29  -1.3260E-14   2.9493E-15   3.0513E-14  -4.9283E-15
+              -1.9618E-16   -60.02      -8.3165E-15   5.1526E-15  -3.0454E-15   9.4841E-16  -4.1627E-15  -2.3543E-30
+
+dinctp_7      -3.6400E-13   3.6479E-13  -5.0944E-13  -7.8282E-13  -2.9371E-13   2.4607E-13    3962.       2.5979E-12
+               8.4917E-13   4.3658E-13   1.4531E-13  -5.3654E-14   2.8122E-14  -2.7875E-14   3.5477E-14   5.2757E-14
+               1.1885E-14  -7.4618E-15   -137.7      -8.8268E-14  -3.1966E-14  -2.0893E-14  -9.3725E-15   5.6637E-15
+
+dinctp_8       5.0668E-13   2.7450E-28  -5.1849E-14   8.9318E-14  -2.0232E-14  -1.5009E-13   2.5979E-12    8448.    
+               5.9118E-15   2.8553E-28   1.7205E-13  -8.7508E-31  -3.9394E-14  -2.1244E-29   3.6917E-15  -5.6316E-15
+               1.0111E-15   6.1914E-15  -9.0251E-14   -291.8      -2.1848E-16  -1.3597E-29  -1.1615E-14   8.4147E-31
+
+dinctp_9       3.4754E-15  -2.5052E-14   4.9217E-13  -1.3884E-13   1.1972E-13   8.8493E-14   8.4917E-13   5.9118E-15
+                5569.       3.1630E-13  -2.8061E-15  -4.2122E-14  -1.9640E-16   3.2580E-15  -3.4762E-14   8.7539E-15
+              -5.8842E-15  -2.3694E-15  -3.0248E-14  -1.9791E-15   -204.9      -1.5489E-14   1.8945E-16   2.9781E-15
+
+dinct_10      -4.1798E-29   4.0894E-29  -1.4906E-29   2.6204E-14   7.7835E-15  -2.3684E-14   4.3658E-13   2.8553E-28
+               3.1630E-13    1969.      -3.3443E-14  -8.6409E-30   3.2232E-30  -3.0653E-30   9.9821E-31  -1.6522E-15
+              -3.8897E-16   9.7701E-16  -1.5177E-14  -9.8221E-30  -1.1689E-14   -91.57       2.2578E-15   8.0826E-31
+
+dinct_11      -1.3282E-13  -3.4952E-14  -1.1391E-13   9.2385E-14  -7.4084E-14   5.8263E-14   1.4531E-13   1.7205E-13
+              -2.8061E-15  -3.3443E-14    1042.       1.2453E-14   1.0570E-14   3.3703E-15   8.3496E-15  -4.8746E-15
+               4.1902E-15  -1.9682E-15  -4.5348E-15  -5.3030E-15   1.0081E-15   1.7980E-15   -69.61      -6.1103E-16
+
+dinct_12       4.3747E-14  -1.3711E-29  -5.2318E-14   1.1631E-29   1.0982E-14   3.2650E-29  -5.3654E-14  -8.7508E-31
+              -4.2122E-14  -8.6409E-30   1.2453E-14    839.3      -3.4013E-15   1.0541E-30   3.6432E-15  -7.5266E-31
+              -5.4880E-16  -1.3159E-30   1.8688E-15   4.3619E-32   1.5567E-15   4.1911E-31  -8.4076E-16   -67.88    
+
+dslope_1       -58.58      -5.5633E-15  -7.0495E-16   8.0004E-15   9.1576E-15  -1.3260E-14   2.8122E-14  -3.9394E-14
+              -1.9640E-16   3.2232E-30   1.0570E-14  -3.4013E-15    4.604       4.7624E-16   1.0041E-16  -4.8326E-16
+              -3.9148E-16   6.2560E-16  -9.7438E-16   1.4215E-15   7.2583E-18  -1.4833E-31  -7.4477E-16   2.9716E-16
+
+dslope_2      -6.1253E-15   -40.31      -1.7194E-14  -1.1036E-15   7.2807E-16   2.9493E-15  -2.7875E-14  -2.1244E-29
+               3.2580E-15  -3.0653E-30   3.3703E-15   1.0541E-30   4.7624E-16    3.205       1.1925E-15   6.9582E-17
+              -3.6385E-17  -1.2166E-16   9.6884E-16   7.4849E-31  -1.2040E-16   1.4658E-31  -2.2754E-16  -8.1337E-32
+
+dslope_3      -9.1653E-16  -1.4912E-14   -61.89       6.5618E-15  -2.8418E-14   3.0513E-14   3.5477E-14   3.6917E-15
+              -3.4762E-14   9.9821E-31   8.3496E-15   3.6432E-15   1.0041E-16   1.1925E-15    4.357      -3.8406E-16
+               1.4017E-15  -1.1124E-15  -1.1877E-15  -6.5710E-17   1.4054E-15  -4.7764E-32  -4.8318E-16  -2.5924E-16
+
+dslope_4       6.3047E-15  -1.0786E-15   5.4773E-15   -66.41       4.3062E-15  -4.9283E-15   5.2757E-14  -5.6316E-15
+               8.7539E-15  -1.6522E-15  -4.8746E-15  -7.5266E-31  -4.8326E-16   6.9582E-17  -3.8406E-16    4.187    
+              -2.2866E-16   1.9021E-16  -1.8631E-15   2.0321E-16  -3.2250E-16   6.6161E-17   3.1666E-16   7.0938E-32
+
+dslope_5       4.9216E-15   3.8343E-16  -2.0036E-14   3.1686E-15   -53.42      -1.9618E-16   1.1885E-14   1.0111E-15
+              -5.8842E-15  -3.8897E-16   4.1902E-15  -5.4880E-16  -3.9148E-16  -3.6385E-17   1.4017E-15  -2.2866E-16
+                2.670      -2.5289E-17  -4.2333E-16  -5.9890E-17   2.0116E-16   1.5972E-17  -2.8687E-16   3.8801E-17
+
+dslope_6      -8.1021E-15   1.5784E-15   1.6027E-14  -3.3905E-15   7.8245E-16   -60.02      -7.4618E-15   6.1914E-15
+              -2.3694E-15   9.7701E-16  -1.9682E-15  -1.3159E-30   6.2560E-16  -1.2166E-16  -1.1124E-15   1.9021E-16
+              -2.5289E-17    2.476       2.4945E-16  -2.1255E-16   7.8285E-17  -3.9123E-17   1.4234E-16   9.7235E-32
+
+dslope_7       1.2612E-14  -1.2678E-14   1.7051E-14   2.7671E-14   1.0414E-14  -8.3165E-15   -137.7      -9.0251E-14
+              -3.0248E-14  -1.5177E-14  -4.5348E-15   1.8688E-15  -9.7438E-16   9.6884E-16  -1.1877E-15  -1.8631E-15
+              -4.2333E-16   2.4945E-16    4.805       3.0662E-15   1.1381E-15   7.2626E-16   2.9086E-16  -1.9710E-16
+
+dslope_8      -1.8283E-14  -9.6546E-30   8.9836E-16  -3.2229E-15   1.1984E-15   5.1526E-15  -8.8268E-14   -291.8    
+              -1.9791E-15  -9.8221E-30  -5.3030E-15   4.3619E-32   1.4215E-15   7.4849E-31  -6.5710E-17   2.0321E-16
+              -5.9890E-17  -2.1255E-16   3.0662E-15    10.12       7.3142E-17   4.6795E-31   3.5803E-16  -2.8420E-32
+
+dslope_9      -1.2844E-16   9.2584E-16  -1.9922E-14   5.1150E-15  -4.0984E-15  -3.0454E-15  -3.1966E-14  -2.1848E-16
+               -204.9      -1.1689E-14   1.0081E-15   1.5567E-15   7.2583E-18  -1.2040E-16   1.4054E-15  -3.2250E-16
+               2.0116E-16   7.8285E-17   1.1381E-15   7.3142E-17    7.572       5.7240E-16  -6.8060E-17  -1.1006E-16
+
+dslop_10       1.9243E-30  -1.9544E-30   7.1504E-31  -1.0493E-15  -3.1960E-16   9.4841E-16  -2.0893E-14  -1.3597E-29
+              -1.5489E-14   -91.57       1.7980E-15   4.1911E-31  -1.4833E-31   1.4658E-31  -4.7764E-32   6.6161E-17
+               1.5972E-17  -3.9123E-17   7.2626E-16   4.6795E-31   5.7240E-16    4.288      -1.2139E-16  -3.9024E-32
+
+dslop_11       9.3674E-15   2.3598E-15   6.5318E-15  -6.0398E-15   5.0812E-15  -4.1627E-15  -9.3725E-15  -1.1615E-14
+               1.8945E-16   2.2578E-15   -69.61      -8.4076E-16  -7.4477E-16  -2.2754E-16  -4.8318E-16   3.1666E-16
+              -2.8687E-16   1.4234E-16   2.9086E-16   3.5803E-16  -6.8060E-17  -1.2139E-16    4.700       4.1253E-17
+
+dslop_12      -3.8221E-15   1.0690E-30   3.7228E-15  -1.0701E-30  -7.7643E-16  -2.3543E-30   5.6637E-15   8.4147E-31
+               2.9781E-15   8.0826E-31  -6.1103E-16   -67.88       2.9716E-16  -8.1337E-32  -2.5924E-16   7.0938E-32
+               3.8801E-17   9.7235E-32  -1.9710E-16  -2.8420E-32  -1.1006E-16  -3.9024E-32   4.1253E-17    5.544    
+
+
+
+Parameter correlation coefficient matrix ----->
+
+               dinctp_1     dinctp_2     dinctp_3     dinctp_4     dinctp_5     dinctp_6     dinctp_7     dinctp_8  
+               dinctp_9     dinct_10     dinct_11     dinct_12     dslope_1     dslope_2     dslope_3     dslope_4  
+               dslope_5     dslope_6     dslope_7     dslope_8     dslope_9     dslop_10     dslop_11     dslop_12  
+
+dinctp_1        1.000       1.1474E-16   4.4963E-18  -1.1634E-16  -1.2807E-16   1.6368E-16  -2.1067E-16   2.0083E-16
+               1.6966E-18  -3.4314E-32  -1.4986E-16   5.5011E-17  -0.9947      -1.2465E-16  -1.5997E-17   1.1224E-16
+               1.0973E-16  -1.8757E-16   2.0960E-16  -2.0942E-16  -1.7003E-18   3.3854E-32   1.5742E-16  -5.9133E-17
+
+dinctp_2       1.1474E-16    1.000       3.1693E-16   2.3053E-17  -1.0278E-17  -4.4020E-17   2.5508E-16   1.3145E-31
+              -1.4776E-17   4.0562E-32  -4.7650E-17  -2.0831E-32  -1.1413E-16  -0.9910      -3.1446E-16  -2.3201E-17
+               1.0329E-17   4.4151E-17  -2.5456E-16  -1.3361E-31   1.4809E-17  -4.1540E-32   4.7912E-17   1.9982E-32
+
+dinctp_3       4.4963E-18   3.1693E-16    1.000      -9.6058E-17   4.1406E-16  -3.8481E-16  -2.7105E-16  -1.8892E-17
+               2.2087E-16  -1.1249E-32  -1.1815E-16  -6.0478E-17  -1.1003E-17  -3.2165E-16  -0.9930       8.9642E-17
+              -4.1066E-16   3.4109E-16   2.6049E-16   9.4594E-18  -2.4245E-16   1.1564E-32   1.0091E-16   5.2949E-17
+
+dinctp_4      -1.1634E-16   2.3053E-17  -9.6058E-17    1.000      -5.5095E-17   6.9798E-17  -3.8074E-16   2.9751E-17
+              -5.6958E-17   1.8079E-17   8.7603E-17   1.2291E-32   1.1415E-16  -1.8873E-17   9.6246E-17  -0.9936    
+               5.9371E-17  -6.5966E-17   3.8646E-16  -3.1023E-17   5.6906E-17  -1.5513E-17  -8.5297E-17  -1.3913E-32
+
+dinctp_5      -1.2807E-16  -1.0278E-17   4.1406E-16  -5.5095E-17    1.000      -2.2071E-18  -1.4200E-16  -6.6989E-18
+               4.8824E-17   5.3380E-18  -6.9832E-17   1.1536E-17   1.2989E-16   1.2377E-17  -4.1435E-16   6.4043E-17
+              -0.9950       1.5133E-17   1.4458E-16   1.1467E-17  -4.5325E-17  -4.6969E-18   7.1331E-17  -1.0035E-17
+
+dinctp_6       1.6368E-16  -4.4020E-17  -3.8481E-16   6.9798E-17  -2.2071E-18    1.000       1.0218E-16  -4.2682E-17
+               3.0995E-17  -1.3951E-17   4.7168E-17   2.9457E-32  -1.6153E-16   4.3061E-17   3.8211E-16  -6.2951E-17
+              -3.1384E-18  -0.9970      -9.9164E-17   4.2345E-17  -2.8927E-17   1.1971E-17  -5.0191E-17  -2.6133E-32
+
+dinctp_7      -2.1067E-16   2.5508E-16  -2.7105E-16  -3.8074E-16  -1.4200E-16   1.0218E-16    1.000       4.4904E-16
+               1.8078E-16   1.5630E-16   7.1503E-17  -2.9422E-17   2.0823E-16  -2.4737E-16   2.7003E-16   4.0959E-16
+               1.1556E-16  -7.5335E-17  -0.9976      -4.4090E-16  -1.8455E-16  -1.6029E-16  -6.8685E-17   3.8212E-17
+
+dinctp_8       2.0083E-16   1.3145E-31  -1.8892E-17   2.9751E-17  -6.6989E-18  -4.2682E-17   4.4904E-16    1.000    
+               8.6190E-19   7.0006E-32   5.7977E-17  -3.2863E-34  -1.9976E-16  -1.2911E-31   1.9243E-17  -2.9942E-17
+               6.7324E-18   4.2809E-17  -4.4794E-16  -0.9983      -8.6381E-19  -7.1437E-32  -5.8295E-17   3.8881E-33
+
+dinctp_9       1.6966E-18  -1.4776E-17   2.2087E-16  -5.6958E-17   4.8824E-17   3.0995E-17   1.8078E-16   8.6190E-19
+                1.000       9.5515E-17  -1.1647E-18  -1.9483E-17  -1.2266E-18   2.4386E-17  -2.2317E-16   5.7325E-17
+              -4.8258E-17  -2.0177E-17  -1.8490E-16  -8.3385E-18  -0.9978      -1.0023E-16   1.1711E-18   1.6948E-17
+
+dinct_10      -3.4314E-32   4.0562E-32  -1.1249E-32   1.8079E-17   5.3380E-18  -1.3951E-17   1.5630E-16   7.0006E-32
+               9.5515E-17    1.000      -2.3342E-17  -6.7212E-33   3.3853E-32  -3.8585E-32   1.0777E-32  -1.8195E-17
+              -5.3647E-18   1.3992E-17  -1.5602E-16  -6.9593E-32  -9.5726E-17  -0.9965       2.3470E-17   7.7353E-33
+
+dinct_11      -1.4986E-16  -4.7650E-17  -1.1815E-16   8.7603E-17  -6.9832E-17   4.7168E-17   7.1503E-17   5.7977E-17
+              -1.1647E-18  -2.3342E-17    1.000       1.3314E-17   1.5258E-16   5.8310E-17   1.2390E-16  -7.3783E-17
+               7.9431E-17  -3.8742E-17  -6.4074E-17  -5.1643E-17   1.1347E-17   2.6892E-17  -0.9945      -8.0374E-18
+
+dinct_12       5.5011E-17  -2.0831E-32  -6.0478E-17   1.2291E-32   1.1536E-17   2.9457E-32  -2.9422E-17  -3.2863E-34
+              -1.9483E-17  -6.7212E-33   1.3314E-17    1.000      -5.4718E-17   2.0324E-32   6.0248E-17  -1.2696E-32
+              -1.1594E-17  -2.8866E-32   2.9426E-17   4.7338E-34   1.9526E-17   6.9859E-33  -1.3387E-17  -0.9951    
+
+dslope_1      -0.9947      -1.1413E-16  -1.1003E-17   1.1415E-16   1.2989E-16  -1.6153E-16   2.0823E-16  -1.9976E-16
+              -1.2266E-18   3.3853E-32   1.5258E-16  -5.4718E-17    1.000       1.2398E-16   2.2420E-17  -1.1007E-16
+              -1.1167E-16   1.8529E-16  -2.0716E-16   2.0830E-16   1.2293E-18  -3.3384E-32  -1.6012E-16   5.8818E-17
+
+dslope_2      -1.2465E-16  -0.9910      -3.2165E-16  -1.8873E-17   1.2377E-17   4.3061E-17  -2.4737E-16  -1.2911E-31
+               2.4386E-17  -3.8585E-32   5.8310E-17   2.0324E-32   1.2398E-16    1.000       3.1912E-16   1.8994E-17
+              -1.2439E-17  -4.3188E-17   2.4688E-16   1.3146E-31  -2.4440E-17   3.9539E-32  -5.8630E-17  -1.9295E-32
+
+dslope_3      -1.5997E-17  -3.1446E-16  -0.9930       9.6246E-17  -4.1435E-16   3.8211E-16   2.7003E-16   1.9243E-17
+              -2.2317E-16   1.0777E-32   1.2390E-16   6.0248E-17   2.2420E-17   3.1912E-16    1.000      -8.9920E-17
+               4.1102E-16  -3.3869E-16  -2.5958E-16  -9.8983E-18   2.4468E-16  -1.1051E-32  -1.0678E-16  -5.2747E-17
+
+dslope_4       1.1224E-16  -2.3201E-17   8.9642E-17  -0.9936       6.4043E-17  -6.2951E-17   4.0959E-16  -2.9942E-17
+               5.7325E-17  -1.8195E-17  -7.3783E-17  -1.2696E-32  -1.1007E-16   1.8994E-17  -8.9920E-17    1.000    
+              -6.8390E-17   5.9072E-17  -4.1534E-16   3.1223E-17  -5.7273E-17   1.5613E-17   7.1383E-17   1.4723E-32
+
+dslope_5       1.0973E-16   1.0329E-17  -4.1066E-16   5.9371E-17  -0.9950      -3.1384E-18   1.1556E-16   6.7324E-18
+              -4.8258E-17  -5.3647E-18   7.9431E-17  -1.1594E-17  -1.1167E-16  -1.2439E-17   4.1102E-16  -6.8390E-17
+                1.000      -9.8361E-18  -1.1819E-16  -1.1525E-17   4.4740E-17   4.7204E-18  -8.0989E-17   1.0085E-17
+
+dslope_6      -1.8757E-16   4.4151E-17   3.4109E-16  -6.5966E-17   1.5133E-17  -0.9970      -7.5335E-17   4.2809E-17
+              -2.0177E-17   1.3992E-17  -3.8742E-17  -2.8866E-32   1.8529E-16  -4.3188E-17  -3.3869E-16   5.9072E-17
+              -9.8361E-18    1.000       7.2316E-17  -4.2471E-17   1.8079E-17  -1.2006E-17   4.1726E-17   2.6243E-32
+
+dslope_7       2.0960E-16  -2.5456E-16   2.6049E-16   3.8646E-16   1.4458E-16  -9.9164E-17  -0.9976      -4.4794E-16
+              -1.8490E-16  -1.5602E-16  -6.4074E-17   2.9426E-17  -2.0716E-16   2.4688E-16  -2.5958E-16  -4.1534E-16
+              -1.1819E-16   7.2316E-17    1.000       4.3979E-16   1.8867E-16   1.5999E-16   6.1207E-17  -3.8186E-17
+
+dslope_8      -2.0942E-16  -1.3361E-31   9.4594E-18  -3.1023E-17   1.1467E-17   4.2345E-17  -4.4090E-16  -0.9983    
+              -8.3385E-18  -6.9593E-32  -5.1643E-17   4.7338E-34   2.0830E-16   1.3146E-31  -9.8983E-18   3.1223E-17
+              -1.1525E-17  -4.2471E-17   4.3979E-16    1.000       8.3570E-18   7.1049E-32   5.1927E-17  -3.7949E-33
+
+dslope_9      -1.7003E-18   1.4809E-17  -2.4245E-16   5.6906E-17  -4.5325E-17  -2.8927E-17  -1.8455E-16  -8.6381E-19
+              -0.9978      -9.5726E-17   1.1347E-17   1.9526E-17   1.2293E-18  -2.4440E-17   2.4468E-16  -5.7273E-17
+               4.4740E-17   1.8079E-17   1.8867E-16   8.3570E-18    1.000       1.0045E-16  -1.1409E-17  -1.6985E-17
+
+dslop_10       3.3854E-32  -4.1540E-32   1.1564E-32  -1.5513E-17  -4.6969E-18   1.1971E-17  -1.6029E-16  -7.1437E-32
+              -1.0023E-16  -0.9965       2.6892E-17   6.9859E-33  -3.3384E-32   3.9539E-32  -1.1051E-32   1.5613E-17
+               4.7204E-18  -1.2006E-17   1.5999E-16   7.1049E-32   1.0045E-16    1.000      -2.7040E-17  -8.0032E-33
+
+dslop_11       1.5742E-16   4.7912E-17   1.0091E-16  -8.5297E-17   7.1331E-17  -5.0191E-17  -6.8685E-17  -5.8295E-17
+               1.1711E-18   2.3470E-17  -0.9945      -1.3387E-17  -1.6012E-16  -5.8630E-17  -1.0678E-16   7.1383E-17
+              -8.0989E-17   4.1726E-17   6.1207E-17   5.1927E-17  -1.1409E-17  -2.7040E-17    1.000       8.0816E-18
+
+dslop_12      -5.9133E-17   1.9982E-32   5.2949E-17  -1.3913E-32  -1.0035E-17  -2.6133E-32   3.8212E-17   3.8881E-33
+               1.6948E-17   7.7353E-33  -8.0374E-18  -0.9951       5.8818E-17  -1.9295E-32  -5.2747E-17   1.4723E-32
+               1.0085E-17   2.6243E-32  -3.8186E-17  -3.7949E-33  -1.6985E-17  -8.0032E-33   8.0816E-18    1.000    
+
+
+
+Normalized eigenvectors of parameter covariance matrix ----->
+
+              Vector_1     Vector_2     Vector_3     Vector_4     Vector_5     Vector_6     Vector_7     Vector_8   
+              Vector_9     Vector_10    Vector_11    Vector_12    Vector_13    Vector_14    Vector_15    Vector_16  
+              Vector_17    Vector_18    Vector_19    Vector_20    Vector_21    Vector_22    Vector_23    Vector_24  
+
+dinctp_1       1.4577E-18   4.6203E-20   1.3654E-18  -1.6969E-26   6.2013E-20   1.0491E-18   7.7521E-02   6.3244E-18
+              -1.7011E-18   3.5391E-19   1.8516E-14  -1.5219E-18  -2.6776E-16  -0.9970      -5.0603E-16   2.7337E-17
+               4.5916E-16  -3.3221E-16   3.5454E-16  -2.3557E-16   1.9659E-19  -1.1369E-16   1.3268E-17   6.5811E-17
+
+dinctp_2       6.6800E-15   1.0499E-15   1.9619E-14   2.5316E-14  -6.9867E-15   4.7092E-15  -1.8622E-14   3.2390E-14
+               1.7239E-14   1.4152E-13   7.7863E-02  -6.5962E-14   0.9970      -2.9346E-16   1.3944E-16   7.5917E-16
+               1.0000E-16  -4.0495E-16  -3.1529E-16   3.1488E-17   9.8987E-18   1.0599E-16  -1.4536E-18  -1.2354E-16
+
+dinctp_3      -2.3710E-16   6.4421E-16  -6.8630E-16  -1.5618E-15   7.5327E-16  -2.0582E-15  -1.8281E-19  -9.0272E-15
+               3.9032E-15  -9.6874E-15  -5.8545E-14  -6.9248E-02  -3.6931E-16   2.7440E-17  -5.0451E-16   0.9976    
+               1.0432E-15  -2.2701E-16  -2.3102E-15   7.8702E-16  -2.4248E-16  -1.4235E-16   1.0462E-16   2.8529E-17
+
+dinctp_4      -4.6618E-16  -3.6556E-15  -1.3972E-15   1.3182E-16   2.9753E-16   6.3286E-16   2.0170E-18   4.0177E-14
+              -6.2130E-02   5.2599E-15   1.3754E-14  -3.5002E-15   4.1986E-16  -3.3418E-16   4.1340E-16   1.3028E-16
+               7.7090E-15   0.9981      -3.8297E-14  -3.0380E-16   6.1948E-16  -2.2399E-16  -5.3496E-17  -5.7903E-17
+
+dinctp_5      -1.3177E-16   6.5960E-15   4.9418E-02   6.0623E-15  -5.1107E-15  -8.3473E-16   5.6845E-18   1.0482E-15
+              -1.0514E-15  -1.0409E-15  -1.2456E-14  -4.9494E-16  -1.6255E-16  -3.5711E-16   3.4347E-16  -1.9664E-15
+              -1.8631E-14  -3.8974E-14  -0.9988       4.3358E-16  -2.4048E-16  -1.1883E-16  -3.0275E-16  -6.4202E-17
+
+dinctp_6       4.0975E-02  -1.3936E-15   1.5035E-16  -2.8997E-16   5.2654E-18  -1.2369E-16   1.5557E-17   2.4714E-16
+              -2.9253E-16  -2.2954E-17  -3.5161E-15  -1.4233E-16   5.8078E-17   2.4359E-16   1.5902E-17   8.0829E-16
+              -1.1748E-16  -4.5364E-16  -4.1995E-16  -0.9992      -4.6205E-17   1.1328E-16   2.3457E-16  -2.1735E-17
+
+dinctp_7       1.1798E-15   3.4722E-02  -4.6168E-15   1.4174E-15   1.0396E-16   4.1147E-16  -7.2270E-18   1.1557E-15
+              -2.0382E-15  -2.1091E-16  -4.7025E-16   3.2821E-16  -1.0662E-16  -1.1377E-16  -1.6003E-17   1.2878E-16
+               1.8748E-17   4.4519E-16  -1.4891E-16   9.5724E-17  -2.1949E-16   0.9994       2.9703E-16   5.6855E-16
+
+dinctp_8       9.0445E-17  -4.1471E-16   5.6367E-16   2.5144E-15  -2.2432E-15   3.4523E-02   7.2420E-19  -1.3633E-15
+               3.5179E-16  -5.5978E-16  -2.0972E-15  -1.0286E-15  -9.3662E-18   6.6042E-17  -3.0068E-18   3.3478E-17
+               4.7774E-17  -4.0346E-17  -6.0247E-17  -2.2299E-17   1.5570E-19  -5.4605E-16  -1.2089E-18   0.9994    
+
+dinctp_9      -1.1023E-17  -8.8131E-17   3.8073E-15   1.7263E-15   3.6769E-02   2.3869E-15  -1.6158E-16  -7.9523E-16
+               1.6925E-16  -6.2230E-17   3.2989E-15   3.9363E-16   2.5575E-17   7.2227E-19   1.8080E-17  -1.0622E-16
+               1.3503E-17   1.4482E-17   2.6089E-17   1.1224E-16  -8.7653E-17  -2.0348E-16   0.9993       1.3545E-18
+
+dinct_10      -3.2655E-16   1.9055E-15   5.6928E-15  -4.6454E-02   2.1782E-15   3.3811E-15  -2.0054E-20   1.0419E-15
+              -9.3970E-17   2.1749E-15   1.5086E-14   1.0384E-15  -2.7088E-18   2.7463E-32  -5.2203E-17   1.8063E-16
+              -2.7919E-16  -6.0090E-16  -2.4936E-16  -4.6179E-17   0.9989       2.1914E-16   8.7849E-17   4.6222E-24
+
+dinct_11       3.8099E-16   2.2438E-15   1.4272E-15  -1.5252E-15  -1.4392E-15  -2.6496E-15   1.8386E-17  -6.6633E-02
+              -4.3016E-14   6.1011E-15   2.7731E-14   8.6821E-15  -6.6682E-17  -4.6116E-16  -1.4173E-16   1.0063E-15
+              -0.9978       6.9846E-15   1.9181E-14   2.5421E-16  -3.0956E-16   4.6413E-17  -5.8456E-17   8.8155E-17
+
+dinct_12       4.4067E-17   4.9665E-16   1.6371E-15   3.8080E-15   1.1597E-16   1.3039E-15  -8.3798E-19   7.3581E-15
+               6.8687E-15   8.0617E-02  -1.4655E-13  -1.1278E-14   4.0389E-16   5.0594E-16  -0.9967      -6.2448E-17
+               2.5699E-16   4.6621E-16  -2.2143E-16  -2.1750E-17  -7.8965E-17  -1.6645E-17   1.5838E-18   3.2767E-17
+
+dslope_1       7.9222E-19   5.7530E-21   4.0295E-18  -2.1825E-25   7.8789E-19   1.8198E-19   0.9970       7.2858E-17
+              -1.8662E-17  -2.7667E-19   2.3813E-13  -8.3217E-18   3.5521E-16   7.7521E-02   3.6401E-17  -2.1700E-18
+              -3.9812E-17   3.3133E-17  -3.7521E-17   5.1952E-17   2.5535E-18   4.0419E-18   1.1950E-16  -5.5519E-18
+
+dslope_2       8.5540E-14   1.3498E-14   2.5128E-13   3.2404E-13  -8.9455E-14   6.0563E-14  -2.3810E-13   4.1487E-13
+               2.2078E-13   1.8125E-12   0.9970      -8.4383E-13  -7.7863E-02   2.3629E-17   3.6577E-18  -6.5921E-17
+              -1.6193E-17   2.5688E-17   2.9523E-17  -2.7996E-18  -4.2322E-17  -8.1263E-18   4.2855E-19   8.9497E-19
+
+dslope_3      -3.3597E-15   9.3646E-15  -9.8616E-15  -2.2466E-14   1.0697E-14  -2.9661E-14  -8.4235E-18  -1.2987E-13
+               5.6171E-14  -1.3933E-13  -8.4429E-13  -0.9976      -1.6899E-17  -1.0304E-18   1.7117E-17  -6.9248E-02
+              -7.2288E-17   1.4681E-17   1.5455E-16  -5.4617E-17   7.5258E-18   1.1477E-17  -7.4602E-18  -5.0647E-18
+
+dslope_4      -7.2626E-15  -5.7928E-14  -2.1859E-14   2.1722E-15   4.6047E-15   1.0263E-14  -1.8716E-17   6.4398E-13
+              -0.9981       8.4764E-14   2.2102E-13  -5.6267E-14  -4.0126E-17   2.1053E-17  -2.3417E-17  -3.3325E-18
+              -4.8516E-16  -6.2130E-02   2.3613E-15   2.1778E-17  -2.9367E-17   2.0644E-17   5.0439E-18   5.6520E-18
+
+dslope_5      -2.7093E-15   1.3286E-13   0.9988       1.2231E-13  -1.0356E-13  -1.6684E-14  -4.7937E-18   2.1640E-14
+              -2.1946E-14  -2.0408E-14  -2.5173E-13  -9.7332E-15   2.2500E-17   1.8719E-17  -5.2727E-18   1.0466E-16
+               8.9160E-16   1.9687E-15   4.9418E-02   7.5621E-18   3.7229E-18   4.4288E-18   4.4903E-18   1.8055E-18
+
+dslope_6       0.9992      -3.4127E-14   2.7066E-15  -7.0645E-15   4.1050E-16  -3.0175E-15  -2.1277E-18   5.9129E-15
+              -7.1725E-15  -4.9644E-16  -8.5729E-14  -3.4389E-15   7.4848E-19  -8.5961E-18   2.1100E-18  -3.2969E-17
+               1.2114E-18   2.9050E-17   1.9191E-17   4.0975E-02   8.2675E-19  -3.7840E-18  -1.0574E-17   9.0645E-19
+
+dslope_7       3.4019E-14   0.9994      -1.3291E-13   4.0795E-14   2.9568E-15   1.1853E-14   1.8525E-20   3.3248E-14
+              -5.8426E-14  -5.9948E-15  -1.3531E-14   9.3824E-15   7.6352E-18   3.9984E-18  -2.2378E-18  -1.9631E-18
+               8.7709E-18   3.7148E-17   2.6327E-17   5.0477E-19   8.7685E-19  -3.4722E-02  -1.0513E-17  -2.0141E-17
+
+dslope_8       2.5609E-15  -1.1989E-14   1.6444E-14   7.2790E-14  -6.4953E-14   0.9994      -2.7366E-19  -3.9602E-14
+               1.0289E-14  -1.6195E-14  -6.0711E-14  -2.9462E-14   1.3648E-17  -1.2491E-18   2.7723E-18  -1.2131E-17
+              -4.9281E-18  -1.8876E-18   3.2676E-19   7.2161E-19   4.5171E-18   1.9354E-17  -3.1436E-19  -3.4523E-02
+
+dslope_9      -4.3977E-16  -2.4284E-15   1.0346E-13   4.6923E-14   0.9993       6.4874E-14   2.9695E-18  -2.1645E-14
+               4.6154E-15  -1.6113E-15   8.9667E-14   1.0725E-14  -2.7421E-18  -2.5826E-20   3.9496E-18  -5.8930E-18
+               1.2899E-17  -1.1108E-17   1.3445E-17  -2.1260E-17   9.7007E-18   1.1306E-17  -3.6769E-02  -5.9407E-20
+
+dslop_10      -7.0647E-15   4.0737E-14   1.2232E-13  -0.9989       4.6934E-14   7.2752E-14   1.5889E-21   2.2723E-14
+              -2.2268E-15   4.7187E-14   3.2468E-13   2.2496E-14   9.7735E-18  -9.9336E-33   1.8699E-17  -1.0644E-17
+               2.3575E-17   2.4531E-17  -5.9067E-19   2.2240E-18  -4.6454E-02  -1.0340E-17  -4.2251E-18  -1.5666E-25
+
+dslop_11       5.8485E-15   3.3427E-14   2.1701E-14  -2.2703E-14  -2.1646E-14  -3.9746E-14   7.2287E-17  -0.9978    
+              -6.4434E-13   9.1078E-14   4.1521E-13   1.2994E-13  -2.7238E-17   3.0138E-17   2.0851E-17  -6.8026E-17
+               6.6633E-02  -3.9571E-16  -1.2436E-15  -1.0077E-17   1.7728E-18  -3.0001E-18   4.1852E-18  -5.6859E-18
+
+dslop_12       4.9859E-16   6.3031E-15   2.0161E-14   4.7257E-14   1.4950E-15   1.6182E-14   3.0563E-19   9.0867E-14
+               8.4643E-14   0.9967      -1.8121E-12  -1.3922E-13   3.7397E-18  -4.0545E-17   8.0617E-02   1.7436E-17
+              -1.0218E-17  -4.7084E-17  -5.0988E-19  -1.5797E-19   3.4401E-17   1.6679E-18  -4.1923E-19  -4.0777E-18
+
+
+
+Eigenvalues ----->
+
+               1.4571E-02   2.2662E-02   2.6472E-02   2.9670E-02   3.3408E-02   3.4952E-02   4.8581E-02   5.0975E-02
+               5.3205E-02   5.4275E-02   5.6809E-02   6.0813E-02    519.3        758.0        844.8        895.9    
+                1047.        1071.        1082.        1466.        1973.        3967.        5577.        8458.    

@@ -1,0 +1,25 @@
+ptf #
+# dinctp_1        #
+# dinctp_2        #
+# dinctp_3        #
+# dinctp_4        #
+# dinctp_5        #
+# dinctp_6        #
+# dinctp_7        #
+# dinctp_8        #
+# dinctp_9        #
+# dinct_10       #
+# dinct_11       #
+# dinct_12       #
+# dslope_1        #
+# dslope_2        #
+# dslope_3        #
+# dslope_4        #
+# dslope_5        #
+# dslope_6        #
+# dslope_7        #
+# dslope_8        #
+# dslope_9        #
+# dslop_10       #
+# dslop_11       #
+# dslop_12       #

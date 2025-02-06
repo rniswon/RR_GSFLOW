@@ -1,0 +1,70 @@
+                       PARAMETER SENSITIVITIES: CASE pot_et
+
+
+ OPTIMISATION ITERATION NO.  1 ----->
+ Parameter name    Group          Current value    Sensitivity
+   jh_cof_1        k               1.600000E-02      4.93091    
+   jh_cof_2        k               1.600000E-02      7.52798    
+   jh_cof_3        k               1.600000E-02      12.1790    
+   jh_cof_4        k               1.600000E-02      17.7985    
+   jh_cof_5        k               1.600000E-02      24.5953    
+   jh_cof_6        k               1.600000E-02      30.2396    
+   jh_cof_7        k               1.600000E-02      33.5461    
+   jh_cof_8        k               1.600000E-02      30.2311    
+   jh_cof_9        k               1.600000E-02      23.0096    
+   jh_cof_10       k               1.600000E-02      13.8116    
+   jh_cof_11       k               1.600000E-02      7.19273    
+   jh_cof_12       k               1.600000E-02      4.15285    
+
+
+ OPTIMISATION ITERATION NO.  2 ----->
+ Parameter name    Group          Current value    Sensitivity
+   jh_cof_1        k               1.540136E-02      4.93087    
+   jh_cof_2        k               1.485032E-02      7.52826    
+   jh_cof_3        k               1.385312E-02      12.1791    
+   jh_cof_4        k               1.373368E-02      17.7985    
+   jh_cof_5        k               1.167478E-02      24.5950    
+   jh_cof_6        k               1.132605E-02      30.2397    
+   jh_cof_7        k               1.088165E-02      33.5462    
+   jh_cof_8        k               1.085784E-02      30.2312    
+   jh_cof_9        k               1.177298E-02      23.0098    
+   jh_cof_10       k               1.376412E-02      13.8118    
+   jh_cof_11       k               1.510280E-02      7.19268    
+   jh_cof_12       k               1.565934E-02      4.15304    
+
+
+ OPTIMISATION ITERATION NO.  3 ----->
+ Parameter name    Group          Current value    Sensitivity
+   jh_cof_1        k               1.241447E-02      4.93116    
+   jh_cof_2        k               1.224330E-02      7.52806    
+   jh_cof_3        k               1.214952E-02      12.1788    
+   jh_cof_4        k               1.311214E-02      17.7985    
+   jh_cof_5        k               1.145437E-02      24.5954    
+   jh_cof_6        k               1.148025E-02      30.2398    
+   jh_cof_7        k               1.120847E-02      33.5464    
+   jh_cof_8        k               1.102700E-02      30.2314    
+   jh_cof_9        k               1.140872E-02      23.0096    
+   jh_cof_10       k               1.247065E-02      13.8118    
+   jh_cof_11       k               1.287581E-02      7.19272    
+   jh_cof_12       k               1.339835E-02      4.15301    
+
+
+
+                        COMPLETION OF OPTIMISATION PROCESS
+
+ Composite sensitivities for all observations/prior info ----->
+
+ Number of observations with non-zero weight =    24
+ Parameter name    Group          Current value    Sensitivity
+   jh_cof_1        k               1.205229E-02      4.93116    
+   jh_cof_2        k               1.220924E-02      7.52806    
+   jh_cof_3        k               1.221650E-02      12.1788    
+   jh_cof_4        k               1.314748E-02      17.7985    
+   jh_cof_5        k               1.146855E-02      24.5954    
+   jh_cof_6        k               1.146991E-02      30.2398    
+   jh_cof_7        k               1.118623E-02      33.5464    
+   jh_cof_8        k               1.101566E-02      30.2314    
+   jh_cof_9        k               1.143171E-02      23.0096    
+   jh_cof_10       k               1.253100E-02      13.8118    
+   jh_cof_11       k               1.282899E-02      7.19272    
+   jh_cof_12       k               1.295681E-02      4.15301    

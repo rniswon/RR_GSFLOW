@@ -1,0 +1,51 @@
+
+PANTHER master listening on socket:0.0.0.0:4075 (IPv4)
+running model 409 times
+07/22/21 23:17:32->waiting for agents to appear
+
+07/22/21 23:17:52->new connection from: IGSWCGWWLT6828.gs.doi.net:63959
+07/22/21 23:17:52->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0:IGSWCGWWLT6828.gs.doi.net:63959, number of agents: 1
+07/22/21 23:17:53->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0:IGSWCGWWLT6828.gs.doi.net:63959
+07/22/21 23:17:53->Sending run 0 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0  (group id:2, run id:0, concurrent runs:1)
+07/22/21 23:18:06->new connection from: IGSWCGWWLT6828.gs.doi.net:63970
+07/22/21 23:18:06->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_1:IGSWCGWWLT6828.gs.doi.net:63970, number of agents: 2
+07/22/21 23:18:08->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_1:IGSWCGWWLT6828.gs.doi.net:63970
+07/22/21 23:18:08->Sending run 1 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_1  (group id:2, run id:1, concurrent runs:1)
+07/22/21 23:18:38->new connection from: IGSWCGWWLT6828.gs.doi.net:63974
+07/22/21 23:18:38->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_2:IGSWCGWWLT6828.gs.doi.net:63974, number of agents: 3
+07/22/21 23:18:39->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_2:IGSWCGWWLT6828.gs.doi.net:63974
+07/22/21 23:18:39->Sending run 2 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_2  (group id:2, run id:2, concurrent runs:1)
+07/22/21 23:19:46->new connection from: IGSWCGWWLT6828.gs.doi.net:63981
+07/22/21 23:19:46->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3:IGSWCGWWLT6828.gs.doi.net:63981, number of agents: 4
+07/22/21 23:19:47->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3:IGSWCGWWLT6828.gs.doi.net:63981
+07/22/21 23:19:47->Sending run 3 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3  (group id:2, run id:3, concurrent runs:1)
+07/22/21 23:20:55->Run 3 failed on agent:IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3  (group id: 2, run id: 3, concurrent: 1) , worker message:  thread processing instruction file raised an exception: InstructionFile error in file 'insfile.ins' : output file'model_output.csv' not found 
+07/22/21 23:20:55->Sending run 4 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3  (group id:2, run id:4, concurrent runs:1)
+07/22/21 23:22:06->new connection from: IGSWCGWWLT6828.gs.doi.net:64015
+07/22/21 23:22:06->initializing new agent connection from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_4:IGSWCGWWLT6828.gs.doi.net:64015, number of agents: 5
+07/22/21 23:22:07->new agent ready: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_4:IGSWCGWWLT6828.gs.doi.net:64015
+07/22/21 23:22:07->Sending run 3 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_4  (group id:2, run id:3, concurrent runs:1)
+07/22/21 23:22:36->run 0 received from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0  (run time:4.72495 min, avg run time:4.72495 min, group id:2, run id: 0 concurrent:1)
+07/22/21 23:22:36->run 0 processed
+07/22/21 23:22:36->Sending run 5 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0  (group id:2, run id:5, concurrent runs:1)
+07/22/21 23:22:52->run 2 received from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_2  (run time:4.20752 min, avg run time:4.46623 min, group id:2, run id: 2 concurrent:1)
+07/22/21 23:22:52->run 2 processed
+07/22/21 23:22:52->Sending run 6 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_2  (group id:2, run id:6, concurrent runs:1)
+07/22/21 23:23:02->run 1 received from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_1  (run time:4.90888 min, avg run time:4.61378 min, group id:2, run id: 1 concurrent:1)
+07/22/21 23:23:02->run 1 processed
+07/22/21 23:23:02->Sending run 7 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_1  (group id:2, run id:7, concurrent runs:1)
+07/22/21 23:23:22->Run 3 failed on agent:IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_4  (group id: 2, run id: 3, concurrent: 1) , worker message:  thread processing instruction file raised an exception: InstructionFile error in file 'insfile.ins' : output file'model_output.csv' not found 
+07/22/21 23:23:22->Sending run 8 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_4  (group id:2, run id:8, concurrent runs:1)
+07/22/21 23:26:10->run 4 received from: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3  (run time:5.24125 min, avg run time:4.77065 min, group id:2, run id: 4 concurrent:1)
+07/22/21 23:26:10->run 4 processed
+07/22/21 23:26:10->Sending run 9 to: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3  (group id:2, run id:9, concurrent runs:1)
+07/22/21 23:26:40->receive failed from agent: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_3: NetPackage::lost connection
+07/22/21 23:26:40->closed connection to agent: IGSWCGWWLT6828.gs.doi.net:63981, number of agents: 4
+07/22/21 23:26:40->receive failed from agent: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_1: NetPackage::lost connection
+07/22/21 23:26:40->closed connection to agent: IGSWCGWWLT6828.gs.doi.net:63970, number of agents: 3
+07/22/21 23:26:41->receive failed from agent: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_4: NetPackage::lost connection
+07/22/21 23:26:41->closed connection to agent: IGSWCGWWLT6828.gs.doi.net:64015, number of agents: 2
+07/22/21 23:26:42->receive failed from agent: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_0: NetPackage::lost connection
+07/22/21 23:26:42->closed connection to agent: IGSWCGWWLT6828.gs.doi.net:63959, number of agents: 1
+07/22/21 23:26:43->receive failed from agent: IGSWCGWWLT6828.gs.doi.net$C:\work\projects\russian_river\model\RR_GSFLOW\modflow_calibration\ss_calibration\slave_dir\worker_2: NetPackage::lost connection
+07/22/21 23:26:43->closed connection to agent: IGSWCGWWLT6828.gs.doi.net:63974, number of agents: 0

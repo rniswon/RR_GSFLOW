@@ -1,0 +1,5 @@
+../../scratch/20221104_01/modflow/output/zone_budget_output.csv csv2
+../../scratch/20221104_01/modflow/output/rr_tr.cbc
+russian_river
+zone_bud_subbasins.zon
+A

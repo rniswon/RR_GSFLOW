@@ -1,0 +1,10 @@
+xul -123.396064            # x-coordinate of the upper left of the model grid
+yul 39.404133              # y-coordinate of the upper left of the model grid
+rotation 0                # rotation of the model grid in degrees
+length_units meters        # length unit of the model grid 
+time_units days            # time unit of the model grid 
+start_date 1/1/1990        # state date of the model
+start_time 00:00:00        # start time of the model
+model GSFLOW, MODSIM       # model type 
+EPSG 4269
+

@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+  <idinfo>
+    <citation>
+      <citeinfo>
+        <origin>Saalem T. Adera</origin>
+        <origin>Ayman H. Alzraiee</origin>
+        <origin>Richard G. Niswonger</origin>
+        <origin>John A. Engott</origin>
+        <origin>Derek W. Ryter</origin>		
+        <pubdate>2024</pubdate>
+        <title>GSFLOW and MODSIM-GSFLOW models used to evaluate the impacts of climate change and water use in the Russian River watershed</title>
+        <geoform>surface-groundwater-operations model</geoform>
+        <pubinfo>
+          <pubplace>Reston, Va.</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P149F9SB</onlink>
+        <lworkcit>
+          <citeinfo>
+            <origin>Saalem T. Adera</origin>
+            <origin>Ayman H. Alzraiee</origin>
+            <origin>Richard G. Niswonger</origin>
+			<origin>John A. Engott</origin>
+            <origin>Derek W. Ryter</origin>
+            <pubdate>2024</pubdate>
+            <title>Future hydrologic extremes: integrating hydrology and operations in the Russian River watershed to evaluate impacts of climate change and water use</title>
+            <geoform>Journal article</geoform>
+            <serinfo>
+              <sername>Journal of Hydrology: Regional Studies</sername>
+              <issue>[INSERT ISSUE, VOLUME, AND PAGES OF JOURNAL ARTICLE]</issue>
+            </serinfo>
+            <pubinfo>
+              <pubplace>[INSERT PUBLICATION PLACE]</pubplace>
+              <publish>Elsevier B.V.</publish>
+            </pubinfo>
+            <onlink>[INSERT DOI LINK FOR PUBLICATION]</onlink>
+          </citeinfo>
+        </lworkcit>
+      </citeinfo>
+    </citation>
+    <descript>
+      <abstract>Water managers in northern California's Russian River watershed are facing the challenge of balancing growing water demand with environmental flow requirements and groundwater sustainability. This challenge becomes particularly pronounced during the dry season when low streamflows are sensitive to factors like reservoir releases, water use, and groundwater levels.  To address this challenge, water managers use models to consider conjunctive water use scenarios, which involve the coordinated use of surface and groundwater supplies.  Accurate simulation of conjunctive water use scenarios in the Russian River watershed requires that a model represent dynamic agricultural water use, reservoir operations, river water allocations, and the spatiotemporal variability of stream-aquifer interactions. To accomplish this, an integrated water operations model (MODSIM) and surface-groundwater model (GSFLOW) of the Russian River watershed were developed.  This MODSIM-GSFLOW model, along with the stand-alone GSFLOW model, were used to examine the impacts of water use and climate change on water availability, stream-aquifer exchange, and hydrologic extremes.  This USGS data release contains all of the input and output files for the simulations described in the associated journal article ([INSERT PUBLICATION DOI]). </abstract>
+      <purpose>The GSFLOW and MODSIM-GSFLOW models were used to examine three and eleven scenarios, respectively, in the Russian River watershed.  These scenarios evaluated the impacts of water use and climate change on water availability, stream-aquifer exchange, and hydrologic extremes.  The development of the model input and output files included in this data release are documented in the Journal of Hydrology: Regional Studies publication ([INSERT PUBLICATION DOI])
+</purpose>
+      <supplinf>Support is provided for correcting errors in the data release and clarification of the modeling conducted by the U.S. Geological Survey. Users are encouraged to review the model documentation journal article ([INSERT DOI LINK FOR PUBLICATION]) to understand the purpose, construction, and limitations of this model. The model will run successfully only if the original directory structure is correctly restored. The model archive is broken into several pieces to reduce the likelihood of download timeouts. Instructions for reconstructing the original directory structure and running the model included in this data release and described in the model documentation report can be found in the readme.txt ASCII file which can be downloaded as part of this data release.
+       
+Files in this data release include:
+-readme.txt: ASCII text file that describes the model data release. This file also includes instructions on how to run the models contained in this data release.
+
+-modelgeoref.txt: ASCII text file that defines the four corners of the model domain in decimal degrees. 
+
+-ancillary.zip: ZIP file containing ancillary data including the ZoneBudget program used to post-process the MODFLOW cell-by-cell output and scripts that can be used to generate calibration plots and tables.
+
+-bin.zip: ZIP file containing the executables for GSFLOW and MODSIM used to run the simulations documented in this data release.
+
+-georef.zip: ZIP file containing a shapefile which defines the extent of the model domain and active portions of the model.
+
+-model.zip: ZIP file containing the input files for the regional Rasa model (which provides boundary flows for the local model) and the local Forsythe model simulations documented in this data release.
+
+-output.model01.hist_baseline.zip: ZIP file containing the output files for the hist_baseline scenario of the Russian River model documented in this data release.
+
+-output.model02.hist_unimpaired.zip: ZIP file containing the output files for the hist_unimpaired scenario of the Russian River model documented in this data release.
+
+-output.model03.hist_frost.zip: ZIP file containing the output files for the hist_frost scenario of the Russian River model documented in this data release.
+
+-output.model04.hist_baseline_modsim.zip: ZIP file containing the output files for the hist_baseline_modsim scenario of the Russian River model documented in this data release.
+
+-output.model05.hist_pv1_modsim.zip: ZIP file containing the output files for the hist_pv1_modsim scenario of the Russian River model documented in this data release.
+
+-output.model06.hist_pv2_modsim.zip: ZIP file containing the output files for the hist_pv2_modsim scenario of the Russian River model documented in this data release.
+
+-output.model07.CanESM2_rcp45.zip: ZIP file containing the output files for the CanESM2_rcp45 scenario of the Russian River model documented in this data release.
+
+-output.model08.CanESM2_rcp85.zip: ZIP file containing the output files for the CanESM2_rcp85 scenario of the Russian River model documented in this data release.
+
+-output.model09.CNRM-CM5_rcp45.zip:ZIP file containing the output files for the CNRM-CM5_rcp45 scenario of the Russian River model documented in this data release.
+
+-output.model10.CNRM-CM5_rcp85.zip: ZIP file containing the output files for the CNRM-CM5_rcp85 scenario of the Russian River model documented in this data release.
+
+-output.model11.HadGEM2-ES_rcp45.zip: ZIP file containing the output files for the HadGEM2-ES_rcp45 scenario of the Russian River model documented in this data release.
+
+-output.model12.HadGEM2-ES_rcp85.zip: ZIP file containing the output files for the HadGEM2-ES_rcp85 scenario of the Russian River model documented in this data release.
+
+-output.model13.MIROC5_rcp45.zip: ZIP file containing the output files for the MIROC5_rcp45 scenario of the Russian River model documented in this data release.
+
+-output.model14.MIROC5_rcp85.zip: ZIP file containing the output files for the MIROC5_rcp85 scenario of the Russian River model documented in this data release.
+
+-source.zip: ZIP file containing references for the source code for the versions of GSFLOW and MODSIM used to run the simulations documented in this data release.</supplinf>
+    </descript>
+    <timeperd>
+      <timeinfo>
+        <rngdates>
+          <begdate>19900101</begdate>
+          <enddate>20151231</enddate>
+        </rngdates>
+      </timeinfo>
+      <current>publication date</current>
+    </timeperd>
+    <status>
+      <progress>Complete</progress>
+      <update>Not planned</update>
+    </status>
+    <spdom>
+      <bounding>
+        <westbc>-123.396064</westbc>
+        <eastbc>-122.521999</eastbc>
+        <northbc>38.292704</northbc>
+        <southbc>39.404133</southbc>
+      </bounding>
+    </spdom>
+    <keywords>
+      <theme>
+        <themekt>USGS Thesaurus</themekt>
+        <themekey>groundwater</themekey>
+        <themekey>surface water</themekey>
+        <themekey>streamflow</themekey>
+        <themekey>water resources</themekey>
+        <themekey>groundwater and surface-water interaction</themekey>
+      </theme>
+      <theme>
+        <themekt>none</themekt>
+        <themekey>usgsgroundwatermodel</themekey>
+        <themekey>InlandWaters</themekey>
+        <themekey>Groundwater Model</themekey>
+        <themekey>Watershed Model</themekey>
+        <themekey>Operations Model</themekey>
+        <themekey>GSFLOW</themekey>
+        <themekey>MODSIM</themekey>
+        <themekey>integrated operations-hydrology model</themekey>
+        <themekey>climate change</themekey>
+        <themekey>water use</themekey>
+        <themekey>water availability</themekey>
+        <themekey>stream-aquifer exchange</themekey>
+        <themekey>hydrologic extremes</themekey>
+      </theme>
+      <theme>
+        <themekt>ISO 19115 Topic Category</themekt>
+        <themekey>geoscientificInformation</themekey>
+        <themekey>inlandWaters</themekey>
+        <themekey>environment</themekey>
+      </theme>
+      <place>
+        <placekt>Geographic Names Information System</placekt>
+        <placekey>California</placekey>
+        <placekey>Sonoma County</placekey>
+        <placekey>Mendocino County</placekey>
+        <placekey>Russian River</placekey>
+      </place>
+      <place>
+        <placekt>none</placekt>
+        <placekey>Russian River watershed</placekey>
+        <placekey>Alexander Valley</placekey>
+        <placekey>Ukiah Valley</placekey>
+        <placekey>Lower Russian River Valley</placekey>
+        <placekey>Potter Valley</placekey>
+        <placekey>Santa Rosa Valley</placekey>
+        <placekey>Wilson Grove Formation Highlands</placekey>
+      </place>
+    </keywords>
+    <accconst>None. Acknowledgement of the U.S. Geological Survey would be appreciated in products derived from this data release.</accconst>
+    <useconst>These groundwater model input and output files are provided to support the analyses documented in the associated journal article ([INSERT PUBLICATION DOI LINK]). Although the information contained in the model files may be useful for other purposes, it is incumbent on the user to understand the purpose, construction, and limitations of this model. Data have been checked to ensure consistency with the accompanying report. If any errors are detected, please notify the originating office.</useconst>
+    <ptcontac>
+      <cntinfo>
+        <cntperp>
+          <cntper>Saalem Adera</cntper>
+          <cntorg>U.S. Geological Survey</cntorg>
+        </cntperp>
+        <cntaddr>
+          <addrtype>mailing and physical</addrtype>
+          <address>6000 J Street, Placer Hall</address>
+          <city>Sacramento</city>
+          <state>CA</state>
+          <postal>95819</postal>
+          <country>USA</country>
+        </cntaddr>
+        <cntvoice>[INSERT PHONE NUMBER]</cntvoice>
+        <cntemail>sadera@usgs.gov</cntemail>
+      </cntinfo>
+    </ptcontac>
+    <datacred>California State Water Resources Control Board, Sonoma County Water Agency</datacred>
+    <secinfo>
+      <secsys>None</secsys>
+      <secclass>Unclassified</secclass>
+      <sechandl>None</sechandl>
+    </secinfo>
+    <crossref>  # INSERT RUSSIAN RIVER HYDROGEOLOGIC FRAMEWORK REPORT: 2024
+      <citeinfo>
+        <origin>[AUTHOR NAME]</origin>
+        <origin>[AUTHOR NAME]</origin>
+        <pubdate>[PUBLICATION DATE]</pubdate>
+        <title>[PUBLICATION TITLE]</title>
+        <geoform>Publication</geoform>
+        <serinfo>
+          <sername>[PUBLICATION NAME]</sername>
+          <issue>[PUBLICATION ISSUE]</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>[PUBLICATION PLACE]</pubplace>
+          <publish>[PUBLISHER]</publish>
+        </pubinfo>
+        <onlink>[PUBLICATION LINK]</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref>  # INSERT RUSSIAN RIVER HYDROLOGIC CHARACTERIZATION REPORT: 2024
+      <citeinfo>
+        <origin>[AUTHOR NAME]</origin>
+        <origin>[AUTHOR NAME]</origin>
+        <pubdate>[PUBLICATION DATE]</pubdate>
+        <title>[PUBLICATION TITLE]</title>
+        <geoform>Publication</geoform>
+        <serinfo>
+          <sername>[PUBLICATION NAME]</sername>
+          <issue>[PUBLICATION ISSUE]</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>[PUBLICATION PLACE]</pubplace>
+          <publish>[PUBLISHER]</publish>
+        </pubinfo>
+        <onlink>[PUBLICATION LINK]</onlink>
+      </citeinfo>
+    </crossref>
+	<crossref>  # INSERT SANTA ROSA PLAIN REPORT: 2024
+      <citeinfo>
+        <origin>[AUTHOR NAME]</origin>
+        <origin>[AUTHOR NAME]</origin>
+        <pubdate>[PUBLICATION DATE]</pubdate>
+        <title>[PUBLICATION TITLE]</title>
+        <geoform>Publication</geoform>
+        <serinfo>
+          <sername>[PUBLICATION NAME]</sername>
+          <issue>[PUBLICATION ISSUE]</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>[PUBLICATION PLACE]</pubplace>
+          <publish>[PUBLISHER]</publish>
+        </pubinfo>
+        <onlink>[PUBLICATION LINK]</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref>  
+      <citeinfo>
+        <origin>Linda R. Woolfenden</origin>
+        <origin>Tracy Nishikawa</origin>
+        <pubdate>2014</pubdate>
+        <title>Simulation of groundwater and surface-water resources of the Santa Rosa Plain watershed, Sonoma County, California</title>
+        <geoform>Publication</geoform>
+        <serinfo>
+          <sername>Scientific Investigations Report</sername>
+          <issue>2014-5052</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.3133/sir20145052</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>Ayman H. Alzraiee</origin>
+        <origin>Saalem T. Adera</origin>
+        <pubdate>2023</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Streamflow-Routing Package (SFR)</title>
+        <geoform>tabular data, shapefiles of geospatial data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P96BN9ZF</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>Ayman H. Alzraiee</origin>
+        <origin>Saalem T. Adera</origin>
+        <pubdate>2023</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Agricultural Water Use Package (AG)</title>
+        <geoform>tabular data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://www.sciencebase.gov/catalog/item/64a5fc2dd34ef77fcb062955</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>Ayman H. Alzraiee</origin>
+        <origin>Whitney A. Seymour</origin>
+        <pubdate>2024</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Model Grid Properties</title>
+        <geoform>shapefile of geospatial data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P9DIECEZ</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>Ayman H. Alzraiee</origin>
+        <origin>Sandra Bond</origin>
+        <origin>Christopher P. Ely</origin>
+        <origin>Saalem T. Adera</origin>
+        <origin>Whitney A. Seymour</origin>
+        <pubdate>2024</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Wells</title>
+        <geoform>tabular data, shapefiles of geospatial data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P95BFU08</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>John A. Engott</origin>
+        <origin>Ayman H. Alzraiee</origin>
+        <origin>Sarah E. Ogle</origin>
+        <origin>Saalem T. Adera</origin>
+        <pubdate>2023</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Climate Data for 1990-2015</title>
+        <geoform>shapefiles of geospatial data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P9WQVKSS</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>Whitney A. Seymour</origin>
+        <origin>Ayman H. Alzraiee</origin>
+        <pubdate>2022</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Land Use</title>
+        <geoform>shapefiles of geospatial data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P9DG0RQN</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>Whitney A. Seymour</origin>
+        <origin>John A. Engott</origin>
+        <pubdate>2023</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Watershed Data</title>
+        <geoform>shapefiles of geospatial data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P9PLR5H1</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>Whitney A. Seymour</origin>
+        <origin>Meghan C. Dick</origin>
+        <origin>Saalem T. Adera</origin>
+        <origin>Ayman H. Alzraiee</origin>
+        <origin>John A. Engott</origin>
+        <pubdate>2022</pubdate>
+        <title>Russian River Integrated Hydrologic Model (RRIHM): Groundwater & Streamflow Observations</title>
+        <geoform>shapefiles of geospatial data</geoform>
+        <serinfo>
+          <sername>U.S. Geological Survey data release</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, VA, USA</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <onlink>https://doi.org/10.5066/P9CBBCE6</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref>  
+      <citeinfo>
+        <origin>Steven L. Markstrom</origin>
+        <origin>Richard G. Niswonger</origin>
+        <origin>Steven R. Regan</origin>
+        <origin>David E. Prudic</origin>
+        <origin>Paul M. Barlow</origin>
+        <pubdate>2008</pubdate>
+        <title>GSFLOW - Coupled Ground-Water and Surface-Water Flow Model Based on the Integration of the Precipitation-Runoff Modeling System (PRMS) and the Modular Ground-Water Flow Model (MODFLOW-2005)</title>
+        <geoform>Publication</geoform>
+        <serinfo>
+          <sername>Techniques and Methods</sername>
+          <issue>6-D1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, Va.</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <othercit>Detailed description of the model input and output files included in this data release can be found in this model code documentation report.</othercit>
+        <onlink>https://doi.org/10.3133/tm6D1</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref> 
+      <citeinfo>
+        <origin>John W. Labadie</origin>
+        <pubdate>2010</pubdate>
+        <title>MODSIM 8.1: River Basin Management Decision Support System</title>
+        <geoform>Publication</geoform>
+        <serinfo>
+          <sername>User Manual and Documentation</sername>
+          <issue>1</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Fort Collins, CO</pubplace>
+          <publish>Colorado State University</publish>
+        </pubinfo>
+        <othercit>Detailed description of the model input and output files included in this data release can be found in the MODSIM model code documentation report.</othercit>
+        <onlink>http://modsim.engr.colostate.edu/modsim.php</onlink>
+      </citeinfo>
+    </crossref>
+    <crossref>
+      <citeinfo>
+        <origin>A.W. Harbaugh</origin>
+        <pubdate>1990</pubdate>
+        <title>A computer program for calculating subregional water budgets using results from the U.S. Geological Survey modular three-dimensional ground-water flow model</title>
+        <geoform>Publication</geoform>
+        <serinfo>
+          <sername>Open-File Report</sername>
+          <issue>90-392</issue>
+        </serinfo>
+        <pubinfo>
+          <pubplace>Reston, Va.</pubplace>
+          <publish>U.S. Geological Survey</publish>
+        </pubinfo>
+        <othercit>Detailed description of the model input and output files included in this data release can be found in the Zone Budget model code documentation report.</othercit>
+        <onlink>https://doi.org/10.3133/ofr90392</onlink>
+      </citeinfo>
+    </crossref>
+  </idinfo>
+  <dataqual>
+    <attracc>
+      <attraccr>Following initial model parameterization, a subset of uncertain parameters were modified during model calibration to improve representation of important simulated values like groundwater heads, streamflow, reservoir stages, and other water balance components.  The calibration process consisted of three stages.  In stages 1 and 2, the watershed model (PRMS) and the steady state groundwater model (MODFLOW) were calibrated separately.  Then, in stage 3, the transient integrated GSFLOW model was calibrated.  All stages involved a combination of automated calibration using PEST and manual calibration.  During model calibration, parameters controlling evapotranspiration,  the spatial distribution of rainfall, and hydraulic properties of the saturated zone, unsaturated zone, streambed, lakebed, general head boundaries, and PRMS soil zone were all adjusted.  The calibration targets for stage 1 of the calibration included monthly average reference ET, monthly solar radiation, along with annual, monthly, and daily streamflow.  In stage 2 of the calibration, mean baseflow, mean streamflow, mean groundwater heads, and pumping reduction were used as calibration targets.  In stage 3, daily streamflow, daily groundwater heads, drawdown, reservoir stages, pumping reduction, and mean agricultural water use were all used as calibration targets.</attraccr>
+    </attracc>
+    <logic>No formal logical accuracy tests were conducted</logic>
+    <complete>Dataset is considered complete for the information presented, as described in the abstract. Users are advised to read the rest of the metadata record and the associated model documentation report ([INSERT PUBLICATION DOI]) for additional details.</complete>
+    <posacc>
+      <horizpa>
+        <horizpar>No formal positional accuracy tests were conducted</horizpar>
+      </horizpa>
+      <vertacc>
+        <vertaccr>No formal positional accuracy tests were conducted</vertaccr>
+      </vertacc>
+    </posacc>
+    <lineage>
+      <procstep>
+        <procdesc>The process used to develop, calibrate, and apply the model is fully described in the model documentation journal article ([INSERT PUBLICATION DOI]).</procdesc>
+        <procdate>2024</procdate>
+      </procstep>
+    </lineage>
+  </dataqual>
+  <spdoinfo>
+    <direct>Raster</direct>
+    <rastinfo>
+      <rasttype>Pixel</rasttype>
+    </rastinfo>
+  </spdoinfo>
+  <spref>
+    <horizsys>
+      <planar>
+        <mapproj>
+          <mapprojn>NAD_1983_UTM_Zone_10N</mapprojn>
+          <transmer>
+            <sfctrmer>0.9996</sfctrmer>
+            <longcm>-123.0</longcm>
+            <latprjo>0.0</latprjo>
+            <feast>500000.0</feast>
+            <fnorth>0.0</fnorth>
+          </transmer>
+        </mapproj>
+        <planci>
+          <plance>row and column</plance>
+          <coordrep>
+            <absres>300</absres>
+            <ordres>300</ordres>
+          </coordrep>
+          <plandu>meters</plandu>
+        </planci>
+      </planar>
+    </horizsys>
+    <vertdef>
+      <altsys>
+        <altdatum>North American Vertical Datum of 1988</altdatum>
+        <altres>1.0</altres>
+        <altunits>feet</altunits>
+        <altenc>Attribute values</altenc>
+      </altsys>
+    </vertdef>
+  </spref>
+  <eainfo>
+    <detailed>
+      <enttyp>
+        <enttypl>rr_model_grid.shp</enttypl>
+        <enttypd>ESRI Polygon shapefile</enttypd>
+        <enttypds>U.S. Geological Survey</enttypds>
+      </enttyp>
+      <attr>
+        <attrlabl>Area</attrlabl>
+        <attrdef>Text string indicating is polygon area is active or inactive in the model.</attrdef>
+        <attrdefs>[INSERT PUBLICATION DOI LINK]</attrdefs>
+        <attrdomv>
+          <edom>
+            <edomv>usgsgroundwatermodel</edomv>
+            <edomvd>Delineation of active and inactive areas in the model.</edomvd>
+            <edomvds>[INSERT PUBLICATION DOI LINK]</edomvds>
+          </edom>
+        </attrdomv>
+      </attr>
+    </detailed>
+    <overview>
+      <eaover>This model application data release contains all the model input and output files needed to replicate the simulations described in the associated model documentation journal article ([INSERT PUBLICATION DOI LINK]).</eaover>
+      <eadetcit>[INSERT PUBLICATION DOI LINK]</eadetcit>
+    </overview>
+    <overview>
+      <eaover>Detailed descriptions of the GSFLOW input and output files can be found in the GSFLOW model documentation (https://doi.org/10.3133/tm6D1) and, for the GSFLOW inputs that overlap with MODFLOW-NWT inputs, online at: https://water.usgs.gov/ogw/modflow-nwt/MODFLOW-NWT-Guide/index.html accessed April 15, 2024.</eaover>
+      <eadetcit>https://doi.org/10.3133/tm6D1</eadetcit>
+    </overview>
+    <overview>
+      <eaover>Detailed descriptions of the MODSIM input and output files can be found in the MODSIM model documentation (http://modsim.engr.colostate.edu/modsim.php) accessed April 15, 2024.</eaover>
+      <eadetcit>http://modsim.engr.colostate.edu/modsim.php</eadetcit>
+    </overview>
+    <overview> 
+      <eaover>Detailed descriptions of the ZoneBudget input and output files can be found in the ZoneBudget model documentation (https://doi.org/10.3133/ofr90392)</eaover>
+      <eadetcit>https://doi.org/10.3133/ofr90392</eadetcit>
+    </overview>
+  </eainfo>
+  <distinfo>
+    <distrib>
+      <cntinfo>
+        <cntperp>
+          <cntper>GS ScienceBase</cntper>
+          <cntorg>U.S. Geological Survey</cntorg>
+        </cntperp>
+        <cntaddr>
+          <addrtype>mailing and physical</addrtype>
+          <address>Denver Federal Center, Building 810, Mail Stop 302</address>
+          <city>Denver</city>
+          <state>CO</state>
+          <postal>80225</postal>
+          <country>United States</country>
+        </cntaddr>
+        <cntvoice>1-888-275-8747</cntvoice>
+        <cntemail>sciencebase@usgs.gov</cntemail>
+      </cntinfo>
+    </distrib>
+    <distliab>Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although the data, software, and related material have been processed successfully on a computer system at the U.S. Geological Survey (USGS), reviewed for accuracy and completeness, and approved for release by the USGS, no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty. Although the data have been subjected to rigorous review and are substantially complete, the USGS reserves the right to revise the data pursuant to further analysis and review. Furthermore, the data are released on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from authorized or unauthorized use. The USGS or the U.S. Government shall not be held liable for improper or incorrect use of the data described and/or contained herein. Any use of trade, firm, or product names is for descriptive purposes only and does not imply endorsement by the U.S. Government.</distliab>
+    <stdorder>
+      <digform>
+        <digtinfo>
+          <formname>Digital datasets</formname>
+          <formvern>None</formvern>
+          <transize>[INSERT SIZE IN MB]</transize>
+        </digtinfo>
+        <digtopt>
+          <onlinopt>
+            <computer>
+              <networka>
+                <networkr>https://doi.org/10.5066/P149F9SB</networkr> 
+              </networka>
+            </computer>
+          </onlinopt>
+        </digtopt>
+      </digform>
+      <fees>None. No fees are applicable for obtaining the dataset.</fees>
+    </stdorder>
+  </distinfo>
+  <metainfo>
+    <metd>[UPDATE METADATA DATE]</metd>
+    <metc>
+      <cntinfo>
+        <cntperp>
+          <cntper>Saalem Adera</cntper>
+          <cntorg>U.S. Geological Survey, California Water Science Center</cntorg>
+        </cntperp>
+        <cntpos>Hydrologist</cntpos>
+        <cntaddr>
+          <addrtype>mailing</addrtype>
+          <address>6000 J Street</address>
+          <address>Placer Hall</address>
+          <city>Sacramento</city>
+          <state>CA</state>
+          <postal>95819</postal>
+          <country>United States</country>
+        </cntaddr>
+        <cntvoice>[INSERT PHONE NUMBER]</cntvoice>
+        <cntemail>sadera@usgs.gov</cntemail>
+      </cntinfo>
+    </metc>
+    <metstdn>Content Standard for Digital Geospatial Metadata</metstdn>
+    <metstdv>FGDC-STD-001-1998</metstdv>
+  </metainfo>
+</metadata>
