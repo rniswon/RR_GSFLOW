@@ -1,1 +1,0 @@
-This folder can be used to store model post-processing scripts and utilities.

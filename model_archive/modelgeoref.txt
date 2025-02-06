@@ -1,0 +1,11 @@
+# [insert publication, data release, and model archive data release references]
+
+
+# EPSG 4269
+# European Petroleum Survey Group (EPSG) spatial reference code: NAD 1983
+
+upper_left  -123.396064 39.40413271 
+upper_right -122.521999 39.40413271
+lower_right -122.521999 38.292704
+lower_left  -123.396064 38.292704
+

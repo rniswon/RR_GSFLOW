@@ -1,5 +1,0 @@
-../../gsflow_model/modflow/output/zone_budget_subbasins.csv csv2
-../../gsflow_model/modflow/output/rr_tr.cbc
-russian_river_subbasins
-zone_bud_subbasins.zon
-A
